@@ -93,7 +93,7 @@ class AppImageProvider(Provider):
         return output
 
     def is_installed(self, el: AppImageListElement, alt_sources: list[AppListElement] = []) -> tuple[bool, Optional[AppListElement]]:
-        if el.file_path:
+        if el.file_path and os.path.exists(self.get_appimages_default_destination_path()):
             for file_name in os.listdir(self.get_appimages_default_destination_path()):
                 installed_gfile = Gio.File.new_for_path(self.get_appimages_default_destination_path() + '/' + file_name)
                 loaded_gfile = Gio.File.new_for_path(el.file_path)
@@ -260,11 +260,7 @@ class AppImageProvider(Provider):
         except Exception as g:
             pass
 
-        list_element.installed_status = InstalledStatus.ERROR
-
         terminal.sh(['update-desktop-database'])
-        callback(list_element.installed_status == InstalledStatus.INSTALLED)
-        return True
 
     def create_list_element_from_file(self, file: Gio.File) -> AppListElement:
         app_name: str = file.get_parse_name().split('/')[-1]
@@ -331,12 +327,6 @@ class AppImageProvider(Provider):
         self.modal_gfile_createshortcut_check = None
         self.modal_gfile = None
         self.open_file_options_dialog.close()
-
-    def get_selected_source(self, list_element: list[AppListElement], source_id: str) -> AppListElement:
-        pass
-
-    def get_source_details(self, list_element: AppListElement) -> tuple[str, str]:
-        pass
 
     def set_refresh_installed_status_callback(self, callback: Optional[Callable]):
         pass

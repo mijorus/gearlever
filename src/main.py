@@ -67,17 +67,11 @@ class BoutiqueApplication(Adw.Application):
         if files:
             for p, provider in providers.items():
                 if provider.can_install_file(files[0]):
-                    self.win = Adw.ApplicationWindow(application=self, visible=False)
+                    if not self.win:
+                        self.win = BoutiqueWindow(application=self, from_file=True)
 
-                    dialog = provider.open_file_dialog(files[0], self.win)
-                    dialog.connect('response', lambda w, _: self.win.close())
-                    dialog.show()
+                    self.win.on_selected_local_file(files[0])
                     break
-
-        # for f in files:
-        #     if isinstance(self.props.active_window, BoutiqueWindow):
-        #         self.props.active_window.on_selected_local_file(f)
-        #         break
 
     def on_about_action(self, widget, _):
         """Callback for the app.about action."""

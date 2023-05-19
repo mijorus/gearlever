@@ -84,14 +84,6 @@ class Provider(ABC):
     @abstractmethod
     def open_file_dialog(self, file: Gio.File, parent: Gtk.Widget):
         pass
-
-    @abstractmethod
-    def get_selected_source(self, list_element: list[AppListElement], source_id: str) -> AppListElement:
-        pass
-
-    @abstractmethod
-    def get_source_details(self, list_element: AppListElement) -> tuple[str, str]:
-        pass
     
     @abstractmethod
     def set_refresh_installed_status_callback(self, callback: Optional[Callable[[InstalledStatus, bool], None]]):

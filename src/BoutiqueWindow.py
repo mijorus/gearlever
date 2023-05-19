@@ -25,8 +25,9 @@ from gi.repository import Gtk, Adw, Gio
 
 
 class BoutiqueWindow(Gtk.ApplicationWindow):
-    def __init__(self, **kwargs):
+    def __init__(self, from_file=False, **kwargs):
         super().__init__(**kwargs)
+        self.from_file = from_file
 
         # Create a container stack 
         self.container_stack = Gtk.Stack()
@@ -70,9 +71,6 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         self.installed_apps_list.connect('selected-app', self.on_selected_installed_app)
         self.app_details.connect('refresh-updatable', lambda _: self.installed_apps_list.refresh_upgradable())
         
-        # # come back to the list from the app details window
-        # self.app_details.connect('show_list', self.on_show_installed_list)
-
         # left arrow click
         self.left_button.connect('clicked', self.on_left_button_clicked)
         # change visible child of the app list stack
@@ -100,6 +98,11 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         if self.app_details.set_from_local_file(file):
             self.container_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
             self.container_stack.set_visible_child(self.app_details)
+
+            if self.from_file:
+                self.set_default_size(500, 550)
+                self.left_button.set_visible(False)
+
         else:
             utils.send_notification(
                 Gio.Notification.new('Unsupported file type: Boutique can\'t handle these types of files.')

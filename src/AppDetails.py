@@ -50,6 +50,9 @@ class AppDetails(Gtk.ScrolledWindow):
         self.source_selector = Gtk.ComboBoxText()
         self.source_selector_revealer = Gtk.Revealer(child=self.source_selector, transition_type=Gtk.RevealerTransitionType.CROSSFADE)
 
+        self.trust_app_check_button = Gtk.CheckButton(label=_('I have verified the source of this app'))
+        self.trust_app_check_button.connect('toggled', lambda w: self.update_buttons_after_interaction())
+
         self.primary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, css_classes=self.common_btn_css_classes)
         self.secondary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, visible=False, css_classes=self.common_btn_css_classes)
 
@@ -58,7 +61,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.primary_action_button.connect('clicked', self.on_primary_action_button_clicked)
         self.secondary_action_button.connect('clicked', self.on_secondary_action_button_clicked)
 
-        for el in [self.secondary_action_button, self.primary_action_button]:
+        for el in [self.trust_app_check_button, self.secondary_action_button, self.primary_action_button]:
             action_buttons_row.append(el)
 
         for el in [self.icon_slot, title_col, action_buttons_row]:
@@ -137,7 +140,7 @@ class AppDetails(Gtk.ScrolledWindow):
         if self.source_selector_hdlr:
             self.source_selector.disconnect(self.source_selector_hdlr)
 
-        self.update_installation_status(check_installed=True)
+        self.update_installation_status()
         self.provider.set_refresh_installed_status_callback(self.provider_refresh_installed_status)
 
     def set_from_local_file(self, file: Gio.File):
@@ -201,47 +204,41 @@ class AppDetails(Gtk.ScrolledWindow):
         self.secondary_action_button.set_css_classes(self.common_btn_css_classes)
         self.source_selector.set_visible(False)
 
-        if check_installed:
-            if self.provider.is_updatable(self.app_list_element.id):
-                self.app_list_element.installed_status = InstalledStatus.UPDATE_AVAILABLE
-
-            else:
-                is_installed, _ = self.provider.is_installed(self.app_list_element)
-                self.app_list_element.installed_status = qq(is_installed, InstalledStatus.INSTALLED, InstalledStatus.NOT_INSTALLED)
-
         if self.app_list_element.installed_status == InstalledStatus.INSTALLED:
-            self.secondary_action_button.set_label('Launch')
+            self.secondary_action_button.set_label(_('Launch'))
             self.secondary_action_button.set_visible(True)
 
-            self.primary_action_button.set_label('Uninstall')
+            self.primary_action_button.set_label(_('Uninstall'))
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
 
         elif self.app_list_element.installed_status == InstalledStatus.UNINSTALLING:
-            self.primary_action_button.set_label('Uninstalling...')
+            self.primary_action_button.set_label(_('Uninstalling...'))
 
         elif self.app_list_element.installed_status == InstalledStatus.INSTALLING:
-            self.primary_action_button.set_label('Installing...')
+            self.primary_action_button.set_label(_('Installing...'))
 
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
+            self.update_buttons_after_interaction()
+
             self.secondary_action_button.set_visible(True)
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'suggested-action'])
 
-            self.primary_action_button.set_label('Integrate into the system')
-            self.secondary_action_button.set_label('Launch')
+            self.primary_action_button.set_label(_('Move to the app menu'))
+            self.secondary_action_button.set_label(_('Launch'))
 
         elif self.app_list_element.installed_status == InstalledStatus.UPDATE_AVAILABLE:
-            self.secondary_action_button.set_label('Update')
+            self.secondary_action_button.set_label(_('Update'))
             self.secondary_action_button.set_css_classes([*self.common_btn_css_classes, 'suggested-action'])
             self.secondary_action_button.set_visible(True)
 
-            self.primary_action_button.set_label('Uninstall')
+            self.primary_action_button.set_label(_('Remove app'))
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
 
         elif self.app_list_element.installed_status == InstalledStatus.UPDATING:
-            self.primary_action_button.set_label('Updating')
+            self.primary_action_button.set_label(_('Updating'))
 
         elif self.app_list_element.installed_status == InstalledStatus.ERROR:
-            self.primary_action_button.set_label('Error')
+            self.primary_action_button.set_label(_('Error'))
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
 
     # Loads the description text from external sources, like an HTTP request
@@ -310,3 +307,12 @@ class AppDetails(Gtk.ScrolledWindow):
     def show_row_spinner(self, status: bool):
         self.desc_row_spinner.set_visible(status)
         self.desc_row_spinner.set_spinning(status)
+
+    def update_buttons_after_interaction(self):
+        self.secondary_action_button.set_sensitive(False)
+        self.primary_action_button.set_sensitive(False)
+
+        print(self.trust_app_check_button.get_active())
+        if self.trust_app_check_button.get_active():
+            self.secondary_action_button.set_sensitive(True)
+            self.primary_action_button.set_sensitive(True)
