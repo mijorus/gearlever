@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <gresource prefix="/it/mijorus/boutique">
+        <file>window.ui</file>
+        <file>gtk/main-menu.xml</file>
+        <file>assets/flathub-badge-logo.svg</file>
+        <file>assets/App-image-logo-bw.svg</file>
+        <file>assets/App-image-logo.png</file>
+        <file>assets/Flatpak-Logo-showcase.png</file>
+        <file>assets/appimage-showcase.png</file>
+        <file>assets/style.css</file>
+    </gresource>
+</gresources>

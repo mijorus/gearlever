@@ -1,0 +1,49 @@
+{
+    "app-id" : "it.mijorus.boutique",
+    "runtime" : "org.gnome.Platform",
+    "runtime-version" : "43",
+    "sdk" : "org.gnome.Sdk",
+    "command" : "boutique",
+    "finish-args" : [
+        "--share=ipc",
+        "--share=network",
+        "--socket=wayland",
+        "--socket=fallback-x11",
+        "--device=dri",
+
+        "--filesystem=xdg-data/applications:rw",
+        "--filesystem=xdg-data/icons:ro",
+        "--filesystem=xdg-data/flatpak:ro",
+        "--filesystem=home/AppImages>rw",
+
+        "--talk-name=org.freedesktop.FileManager1",
+        "--talk-name=org.freedesktop.Flatpak",
+
+        "--filesystem=/tmp:rw"
+    ],
+    "cleanup" : [
+        "/include",
+        "/lib/pkgconfig",
+        "/man",
+        "/share/doc",
+        "/share/gtk-doc",
+        "/share/man",
+        "/share/pkgconfig",
+        "*.la",
+        "*.a"
+    ],
+    "modules" : [
+        "./python3-requirements.json",
+        {
+            "name" : "boutique",
+            "builddir" : true,
+            "buildsystem" : "meson",
+            "sources" : [
+                {
+                    "type" : "dir",
+                    "path" : "./"
+                }
+            ]
+        }
+    ]
+}

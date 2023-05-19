@@ -1,0 +1,7 @@
+data/it.mijorus.boutique.desktop.in
+data/it.mijorus.boutique.appdata.xml.in
+data/it.mijorus.boutique.gschema.xml
+src/window.ui
+src/main.py
+src/window.py
+

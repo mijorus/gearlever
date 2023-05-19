@@ -1,0 +1,10 @@
+
+.flatpak-builder
+build
+builddir
+run.sh
+test.py
+install.sh
+.flatpak/*
+
+build-aux/patches

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 16 16"
+   version="1.1"
+   id="svg27812"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs27816" />
+  <path
+     color="#bebebe"
+     d="M0 16h16V0H0z"
+     fill="gray"
+     fill-opacity=".01"
+     id="path27808" />
+  <path
+     d="M3 1.03c-2 0-2 2-2 2v10c0 2 2 2 2 2h3.072l-.008-.012-.002-.004-.125-.217 1.633-.943a5.5 5.5 0 0 1-.07-.824 5.57 5.57 0 0 1 .074-.822l-1.637-.946.125-.216 1.75-3.032.125-.216 1.637.945A5.519 5.519 0 0 1 11 7.919V6.03h4v-3s0-2-2-2zm10 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"
+     fill="#232323"
+     id="path27810"
+     style="fill:#2e3436;fill-opacity:1" />
+</svg>
