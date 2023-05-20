@@ -1,3 +1,4 @@
 requests >= 2.25.1
 html2text == 2020.1.16
 pyxdg == 0.28
+dbus-python == 1.2.18

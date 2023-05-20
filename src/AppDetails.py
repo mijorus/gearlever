@@ -15,9 +15,6 @@ from .components.CustomComponents import CenteringBox, LabelStart
 
 class AppDetails(Gtk.ScrolledWindow):
     """The presentation screen for an application"""
-    __gsignals__ = {
-        "refresh-updatable": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, ()),
-    }
 
     def __init__(self):
         super().__init__()
@@ -104,7 +101,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.provider = providers[el.provider]
         self.load_icon_from_network = load_icon_from_network
 
-        is_installed, alt_list_element_installed = self.provider.is_installed(self.app_list_element, self.alt_sources)
+        is_installed = self.provider.is_installed(self.app_list_element)
         self.load(is_installed, False)
 
     def load(self, is_installed: bool, alt_list_element_installed):
@@ -141,7 +138,6 @@ class AppDetails(Gtk.ScrolledWindow):
             self.source_selector.disconnect(self.source_selector_hdlr)
 
         self.update_installation_status()
-        self.provider.set_refresh_installed_status_callback(self.provider_refresh_installed_status)
 
     def set_from_local_file(self, file: Gio.File):
         for p, provider in providers.items():
@@ -158,10 +154,7 @@ class AppDetails(Gtk.ScrolledWindow):
             self.app_list_element.set_installed_status(InstalledStatus.UNINSTALLING)
             self.update_installation_status()
 
-            self.provider.uninstall(
-                self.app_list_element,
-                self.update_status_callback
-            )
+            self.provider.uninstall(self.app_list_element)
 
         elif self.app_list_element.installed_status == InstalledStatus.UNINSTALLING:
             pass
@@ -176,21 +169,20 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.update_status_callback(False)
 
         elif self.app_list_element.installed_status == InstalledStatus.UPDATE_AVAILABLE:
-            self.provider.uninstall(
-                self.app_list_element,
-                self.update_status_callback
-            )
+            self.provider.uninstall(self.app_list_element)
 
     def on_secondary_action_button_clicked(self, button: Gtk.Button):
-        if self.app_list_element.installed_status == InstalledStatus.INSTALLED:
-            self.provider.run(self.app_list_element)
+        if self.app_list_element.installed_status in [InstalledStatus.INSTALLED, InstalledStatus.NOT_INSTALLED]:
+            try:
+                self.provider.run(self.app_list_element)
+            except Exception as e:
+                logging.error(str(e))
+
         elif self.app_list_element.installed_status == InstalledStatus.UPDATE_AVAILABLE:
             self.app_list_element.set_installed_status(InstalledStatus.UPDATING)
             self.update_installation_status()
-            self.provider.update(
-                self.app_list_element,
-                lambda result: self.update_installation_status()
-            )
+            self.provider.update(self.app_list_element)
+
 
     def update_status_callback(self, status: bool):
         if not status:
@@ -312,7 +304,6 @@ class AppDetails(Gtk.ScrolledWindow):
         self.secondary_action_button.set_sensitive(False)
         self.primary_action_button.set_sensitive(False)
 
-        print(self.trust_app_check_button.get_active())
         if self.trust_app_check_button.get_active():
             self.secondary_action_button.set_sensitive(True)
             self.primary_action_button.set_sensitive(True)

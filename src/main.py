@@ -23,6 +23,7 @@ from .BoutiqueWindow import BoutiqueWindow
 import sys
 import gi
 import logging
+import os
 import subprocess
 
 gi.require_version('Gtk', '4.0')
@@ -120,13 +121,17 @@ class BoutiqueApplication(Adw.Application):
         if not self.win:
             return
 
-        sh(['xdg-open',  GLib.get_user_cache_dir() + '/boutique.log'])
+        sh(['xdg-open',  GLib.get_user_cache_dir() + '/logs'])
 
 
 def main(version):
     """The application's entry point."""
 
-    log_file = GLib.get_user_cache_dir() + '/boutique.log'
+    log_file = GLib.get_user_cache_dir() + '/logs/boutique.log'
+
+    if not os.path.exists(GLib.get_user_cache_dir() + '/logs'):
+         os.makedirs(GLib.get_user_cache_dir() + '/logs')
+
     print('Logging to file ' + log_file)
 
     app = BoutiqueApplication()

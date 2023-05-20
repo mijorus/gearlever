@@ -18,7 +18,7 @@ class Provider(ABC):
         pass
 
     @abstractmethod
-    def is_installed(self, el: AppListElement, alt_sources: list[AppListElement]=[]) -> Tuple[bool, Optional[AppListElement]]:
+    def is_installed(self, el: AppListElement) -> Tuple[bool]:
         pass
 
     @abstractmethod
@@ -26,11 +26,11 @@ class Provider(ABC):
         pass
 
     @abstractmethod
-    def uninstall(self, el: AppListElement, c: Callable[[bool], None]):
+    def uninstall(self, el: AppListElement):
         pass
 
     @abstractmethod
-    def install(self, el: AppListElement, c: Callable[[bool], None]):
+    def install(self, el: AppListElement):
         pass
 
     @abstractmethod
@@ -50,11 +50,11 @@ class Provider(ABC):
         pass
 
     @abstractmethod
-    def update(self, el: AppListElement, callback: Callable[[bool], None]):
+    def update(self, el: AppListElement):
         pass
     
     @abstractmethod
-    def update_all(self, callback: Callable[[bool, str, bool], None]):
+    def update_all(self):
         pass
 
     @abstractmethod
@@ -79,14 +79,6 @@ class Provider(ABC):
 
     @abstractmethod
     def create_list_element_from_file(self, file: Gio.File) -> AppListElement:
-        pass
-
-    @abstractmethod
-    def open_file_dialog(self, file: Gio.File, parent: Gtk.Widget):
-        pass
-    
-    @abstractmethod
-    def set_refresh_installed_status_callback(self, callback: Optional[Callable[[InstalledStatus, bool], None]]):
         pass
 
     @abstractmethod

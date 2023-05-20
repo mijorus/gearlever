@@ -69,8 +69,7 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         
         # Show details of an installed app
         self.installed_apps_list.connect('selected-app', self.on_selected_installed_app)
-        self.app_details.connect('refresh-updatable', lambda _: self.installed_apps_list.refresh_upgradable())
-        
+
         # left arrow click
         self.left_button.connect('clicked', self.on_left_button_clicked)
         # change visible child of the app list stack

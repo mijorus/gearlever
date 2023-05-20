@@ -1,15 +1,9 @@
-import random
-import string
-import threading
 import logging
-import urllib
 import re
 import os
 import shutil
-import time
 import hashlib
-import html2text
-import subprocess
+import dbus
 import filecmp
 from xdg import DesktopEntry
 
@@ -92,7 +86,7 @@ class AppImageProvider(Provider):
 
         return output
 
-    def is_installed(self, el: AppImageListElement, alt_sources: list[AppListElement] = []) -> tuple[bool, Optional[AppListElement]]:
+    def is_installed(self, el: AppImageListElement) -> bool:
         if el.file_path and os.path.exists(self.get_appimages_default_destination_path()):
             for file_name in os.listdir(self.get_appimages_default_destination_path()):
                 installed_gfile = Gio.File.new_for_path(self.get_appimages_default_destination_path() + '/' + file_name)
@@ -101,15 +95,13 @@ class AppImageProvider(Provider):
                 if get_giofile_content_type(installed_gfile) == 'application/vnd.appimage':
                     if filecmp.cmp(installed_gfile.get_path(), loaded_gfile.get_path(), shallow=False):
                         el.file_path = installed_gfile.get_path()
-                        return True, None
+                        return True
 
-        return False, None
+        return False
 
     def get_icon(self, el: AppImageListElement, repo: str = None, load_from_network: bool = False) -> Gtk.Image:
         icon_path = None
 
-        # if hasattr(el, name):
-        #     icon_path = el.extra_data['tmp_icon'].get_path()
         if el.desktop_entry:
             icon_path = el.desktop_entry.getIcon()
 
@@ -123,19 +115,13 @@ class AppImageProvider(Provider):
 
             return Gtk.Image(icon_name='application-x-executable-symbolic')
 
-    def uninstall(self, el: AppImageListElement, callback: Callable[[bool], None]):
-        try:
-            os.remove(el.file_path)
-            os.remove(el.desktop_entry.getFileName())
-            el.set_installed_status(InstalledStatus.NOT_INSTALLED)
+    def uninstall(self, el: AppImageListElement):
+        os.remove(el.file_path)
+        os.remove(el.desktop_entry.getFileName())
+        el.set_installed_status(InstalledStatus.NOT_INSTALLED)
 
-            callback(True)
-        except Exception as e:
-            logging.error(e)
-            callback(False)
-
-    def install(self, el: AppListElement, c: Callable[[bool], None]):
-        pass
+    def install(self, el: AppListElement):
+        print('qwe')
 
     def search(self, query: str) -> List[AppListElement]:
         return []
@@ -159,9 +145,11 @@ class AppImageProvider(Provider):
         return False
 
     def run(self, el: AppImageListElement):
-        if self.get_appimages_default_destination_path() in el.file_path:
-            terminal.threaded_sh([f'{el.file_path}'])
+        os.chmod(el.file_path, 0o755)
+        # if not os.access(el.file_path, os.X_OK):
 
+        terminal.threaded_sh([f'{el.file_path}'])
+            
     def can_install_file(self, file: Gio.File) -> bool:
         return get_giofile_content_type(file) in ['application/vnd.appimage', 'application/x-iso9660-appimage']
 
@@ -276,60 +264,57 @@ class AppImageProvider(Provider):
             icon=None
         )
 
-    def open_file_dialog(self, file: Gio.File, parent: Gtk.Widget):
-        self.modal_gfile = file
-        app_name: str = file.get_parse_name().split('/')[-1]
-        modal_text = f"<b>You are trying to open the following AppImage: </b>\n\n📦️ {app_name}"
-        modal_text += '\n\nAppImages are self-contained applications that\ncan be executed without requiring installation'
-        modal_text += '\n\nYou can decide to execute this app immediately\nor create a desktop shortcut for faster access.\n'
+    # def open_file_dialog(self, file: Gio.File, parent: Gtk.Widget):
+    #     self.modal_gfile = file
+    #     app_name: str = file.get_parse_name().split('/')[-1]
+    #     modal_text = f"<b>You are trying to open the following AppImage: </b>\n\n📦️ {app_name}"
+    #     modal_text += '\n\nAppImages are self-contained applications that\ncan be executed without requiring installation'
+    #     modal_text += '\n\nYou can decide to execute this app immediately\nor create a desktop shortcut for faster access.\n'
 
-        extra_content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        modal_text_label = Gtk.Label()
-        modal_text_label.set_markup(modal_text)
-        extra_content.append(modal_text_label)
+    #     extra_content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+    #     modal_text_label = Gtk.Label()
+    #     modal_text_label.set_markup(modal_text)
+    #     extra_content.append(modal_text_label)
 
-        self.modal_gfile_createshortcut_check = Gtk.CheckButton(label='Create a desktop shortcut')
-        extra_content.append(self.modal_gfile_createshortcut_check)
+    #     self.modal_gfile_createshortcut_check = Gtk.CheckButton(label='Create a desktop shortcut')
+    #     extra_content.append(self.modal_gfile_createshortcut_check)
 
-        self.open_file_options_dialog = Adw.MessageDialog(
-            heading='Opening sideloaded AppImage',
-            body='',
-            extra_child=extra_content
-        )
+    #     self.open_file_options_dialog = Adw.MessageDialog(
+    #         heading='Opening sideloaded AppImage',
+    #         body='',
+    #         extra_child=extra_content
+    #     )
 
-        self.open_file_options_dialog.add_response('cancel', 'Cancel')
-        self.open_file_options_dialog.add_response('run', 'Run')
-        self.open_file_options_dialog.set_response_appearance('cancel', Adw.ResponseAppearance.DESTRUCTIVE)
-        self.open_file_options_dialog.set_response_appearance('run', Adw.ResponseAppearance.SUGGESTED)
+    #     self.open_file_options_dialog.add_response('cancel', 'Cancel')
+    #     self.open_file_options_dialog.add_response('run', 'Run')
+    #     self.open_file_options_dialog.set_response_appearance('cancel', Adw.ResponseAppearance.DESTRUCTIVE)
+    #     self.open_file_options_dialog.set_response_appearance('run', Adw.ResponseAppearance.SUGGESTED)
 
-        self.open_file_options_dialog.connect('response', self.on_file_dialog_run_option_selected)
-        self.open_file_options_dialog.set_transient_for(parent)
-        return self.open_file_options_dialog
+    #     self.open_file_options_dialog.connect('response', self.on_file_dialog_run_option_selected)
+    #     self.open_file_options_dialog.set_transient_for(parent)
+    #     return self.open_file_options_dialog
 
-    def on_file_dialog_run_option_selected(self, widget: Adw.MessageDialog, user_response: str):
-        if user_response == 'run' and self.modal_gfile:
-            logging.info('Running appimage: ' + self.modal_gfile.get_path())
-            os.chmod(self.modal_gfile.get_path(), 0o755)
-            terminal.threaded_sh([self.modal_gfile.get_path()])
+    # def on_file_dialog_run_option_selected(self, widget: Adw.MessageDialog, user_response: str):
+    #     if user_response == 'run' and self.modal_gfile:
+    #         logging.info('Running appimage: ' + self.modal_gfile.get_path())
+    #         os.chmod(self.modal_gfile.get_path(), 0o755)
+    #         terminal.threaded_sh([self.modal_gfile.get_path()])
 
-            if self.modal_gfile_createshortcut_check and (self.modal_gfile_createshortcut_check.get_active()):
-                l = AppListElement(
-                    name=self.modal_gfile.get_path(), 
-                    description='', 
-                    app_id=get_file_hash(self.modal_gfile), 
-                    provider=self.name,
-                    installed_status=InstalledStatus.NOT_INSTALLED, 
-                    file_path=self.modal_gfile.get_path()
-                )
+    #         if self.modal_gfile_createshortcut_check and (self.modal_gfile_createshortcut_check.get_active()):
+    #             l = AppListElement(
+    #                 name=self.modal_gfile.get_path(), 
+    #                 description='', 
+    #                 app_id=get_file_hash(self.modal_gfile), 
+    #                 provider=self.name,
+    #                 installed_status=InstalledStatus.NOT_INSTALLED, 
+    #                 file_path=self.modal_gfile.get_path()
+    #             )
 
-                self.install_file(l, lambda x: None)
+    #             self.install_file(l, lambda x: None)
 
-        self.modal_gfile_createshortcut_check = None
-        self.modal_gfile = None
-        self.open_file_options_dialog.close()
-
-    def set_refresh_installed_status_callback(self, callback: Optional[Callable]):
-        pass
+    #     self.modal_gfile_createshortcut_check = None
+    #     self.modal_gfile = None
+    #     self.open_file_options_dialog.close()
 
     def post_file_extraction_cleanup(self, extraction: ExtractedAppImage):
         print(extraction.container_folder.get_path())
