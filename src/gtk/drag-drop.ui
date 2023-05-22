@@ -8,7 +8,7 @@
     <child>
       <object class="GtkImage">
         <property name="name">logo</property>
-        <property name="icon-name">drag-drop-icon-symbolic</property>
+        <property name="icon-name">drag-drop</property>
         <property name="pixel-size">120</property>
         <property name="margin-bottom">30</property>
       </object>
