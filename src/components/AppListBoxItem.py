@@ -67,8 +67,8 @@ class AppListBoxItem(Gtk.ListBoxRow):
         if self._app.installed_status in [InstalledStatus.UPDATING, InstalledStatus.INSTALLING]:
             self.set_opacity(0.5)
 
-    def load_icon(self, load_from_network: bool = False):
-        image = appimage_provider.get_icon(self._app, load_from_network=load_from_network)
+    def load_icon(self):
+        image = appimage_provider.get_icon(self._app)
         image.set_pixel_size(45)
         self.image_container.append(image)
 

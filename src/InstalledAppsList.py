@@ -72,8 +72,6 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
     def on_activated_row(self, listbox, row: Gtk.ListBoxRow):
         """Emit and event that changes the active page of the Stack in the parent widget"""
-        if not self.update_all_btn.get_sensitive() or not self.updates_fetched:
-            return
 
         self.emit('selected-app', row._app)
 
@@ -91,7 +89,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
             list_row = AppListBoxItem(i, activatable=True, selectable=True, hexpand=True)
             list_row.set_update_version(key_in_dict(i.extra_data, 'version'))
 
-            list_row.load_icon(load_from_network=False)
+            list_row.load_icon()
             self.installed_apps_list_rows.append(list_row)
             self.installed_apps_list.append(list_row)
 

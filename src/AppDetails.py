@@ -76,7 +76,7 @@ class AppDetails(Gtk.ScrolledWindow):
         )
 
         # row
-        self.desc_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin_top=20)
+        self.desc_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin_top=20, margin_bottom=20)
         self.description = Gtk.Label(label='', halign=Gtk.Align.START, wrap=True, selectable=True)
 
         self.desc_row_spinner = Gtk.Spinner(spinning=True, visible=True)
@@ -118,7 +118,9 @@ class AppDetails(Gtk.ScrolledWindow):
         version_label = key_in_dict(self.app_list_element.extra_data, 'version')
         self.version.set_markup('' if not version_label else f'<small>{version_label}</small>')
         self.app_id.set_markup(f'<small>{self.app_list_element.id}</small>')
-        self.description.set_label('')
+        self.description.set_label(
+            self.provider.get_description(self.app_list_element)
+        )
 
         self.third_row.remove(self.extra_data)
         self.extra_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -255,44 +257,11 @@ class AppDetails(Gtk.ScrolledWindow):
             self.primary_action_button.set_label(_('Error'))
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
 
-    @idle
-    def set_description(self, desc):
-        self.description.set_markup(desc)
-
     def provider_refresh_installed_status(self, status: Optional[InstalledStatus] = None, final=False):
         if status:
             self.app_list_element.installed_status = status
 
         self.update_installation_status()
-
-    # Load the preview images
-    def load_previews(self):
-        self.show_row_spinner(True)
-
-        if self.previews_row.get_first_child():
-            self.previews_row.remove(self.previews_row.get_first_child())
-
-        carousel_row = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL,
-            spacing=10,
-            margin_top=20,
-        )
-
-        carousel = Adw.Carousel(hexpand=True, spacing=10, allow_scroll_wheel=False)
-        carousel_indicator = Adw.CarouselIndicatorDots(carousel=carousel)
-        for widget in self.provider.get_previews(self.app_list_element):
-            carousel.append(widget)
-
-        carousel_row.append(carousel)
-        carousel_row.append(carousel_indicator)
-
-        carousel_row_revealer = Gtk.Revealer(transition_type=Gtk.RevealerTransitionType.SLIDE_DOWN)
-        carousel_row_revealer.set_child(carousel_row)
-
-        self.previews_row.append(carousel_row_revealer)
-        carousel_row_revealer.set_reveal_child(True)
-
-        self.show_row_spinner(False)
 
     # Load the boxed list with additional information
     def load_extra_details(self):

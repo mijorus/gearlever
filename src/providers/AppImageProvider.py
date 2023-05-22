@@ -120,6 +120,12 @@ class AppImageProvider():
 
         return Gtk.Image(icon_name='application-x-executable-symbolic')
 
+    def get_description(self, el: AppImageListElement) -> str:
+        if el.desktop_entry:
+            return el.desktop_entry.getComment()
+        
+        return ''
+
     def refresh_title(self, el: AppImageListElement) -> str:
         if el.desktop_entry:
             el.name = el.desktop_entry.getName()
@@ -282,58 +288,6 @@ class AppImageProvider():
             icon=None
         )
 
-    # def open_file_dialog(self, file: Gio.File, parent: Gtk.Widget):
-    #     self.modal_gfile = file
-    #     app_name: str = file.get_parse_name().split('/')[-1]
-    #     modal_text = f"<b>You are trying to open the following AppImage: </b>\n\n📦️ {app_name}"
-    #     modal_text += '\n\nAppImages are self-contained applications that\ncan be executed without requiring installation'
-    #     modal_text += '\n\nYou can decide to execute this app immediately\nor create a desktop shortcut for faster access.\n'
-
-    #     extra_content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-    #     modal_text_label = Gtk.Label()
-    #     modal_text_label.set_markup(modal_text)
-    #     extra_content.append(modal_text_label)
-
-    #     self.modal_gfile_createshortcut_check = Gtk.CheckButton(label='Create a desktop shortcut')
-    #     extra_content.append(self.modal_gfile_createshortcut_check)
-
-    #     self.open_file_options_dialog = Adw.MessageDialog(
-    #         heading='Opening sideloaded AppImage',
-    #         body='',
-    #         extra_child=extra_content
-    #     )
-
-    #     self.open_file_options_dialog.add_response('cancel', 'Cancel')
-    #     self.open_file_options_dialog.add_response('run', 'Run')
-    #     self.open_file_options_dialog.set_response_appearance('cancel', Adw.ResponseAppearance.DESTRUCTIVE)
-    #     self.open_file_options_dialog.set_response_appearance('run', Adw.ResponseAppearance.SUGGESTED)
-
-    #     self.open_file_options_dialog.connect('response', self.on_file_dialog_run_option_selected)
-    #     self.open_file_options_dialog.set_transient_for(parent)
-    #     return self.open_file_options_dialog
-
-    # def on_file_dialog_run_option_selected(self, widget: Adw.MessageDialog, user_response: str):
-    #     if user_response == 'run' and self.modal_gfile:
-    #         logging.info('Running appimage: ' + self.modal_gfile.get_path())
-    #         os.chmod(self.modal_gfile.get_path(), 0o755)
-    #         terminal.threaded_sh([self.modal_gfile.get_path()])
-
-    #         if self.modal_gfile_createshortcut_check and (self.modal_gfile_createshortcut_check.get_active()):
-    #             l = AppListElement(
-    #                 name=self.modal_gfile.get_path(), 
-    #                 description='', 
-    #                 app_id=get_file_hash(self.modal_gfile), 
-    #                 provider=self.name,
-    #                 installed_status=InstalledStatus.NOT_INSTALLED, 
-    #                 file_path=self.modal_gfile.get_path()
-    #             )
-
-    #             self.install_file(l, lambda x: None)
-
-    #     self.modal_gfile_createshortcut_check = None
-    #     self.modal_gfile = None
-    #     self.open_file_options_dialog.close()
-
     def post_file_extraction_cleanup(self, extraction: ExtractedAppImage):
         print(extraction.container_folder.get_path())
         if extraction.container_folder.query_exists():
@@ -417,12 +371,3 @@ class AppImageProvider():
 
     def get_appimages_default_destination_path(self) -> str:
         return get_gsettings().get_string('appimages-default-folder').replace('~', GLib.get_home_dir())
-
-    def get_previews(self, el):
-        return []
-
-    def get_available_from_labels(self, el):
-        return el.file_path
-
-    def get_installed_from_source(self, el):
-        return 'Local file'
