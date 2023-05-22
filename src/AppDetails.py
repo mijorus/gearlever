@@ -5,9 +5,9 @@ from typing import Optional
 from .lib.utils import qq
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
 from .State import state
-from .models.AppListElement import AppListElement, InstalledStatus
-from .models.Provider import Provider
-from .providers.providers_list import providers
+from .models.AppListElement import InstalledStatus
+from .providers.AppImageProvider import AppImageListElement
+from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle
 from .lib.utils import cleanhtml, key_in_dict, set_window_cursor, get_application_window
 from .components.CustomComponents import CenteringBox, LabelStart
@@ -18,9 +18,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
     def __init__(self):
         super().__init__()
-        self.app_list_element: AppListElement = None
-        self.active_alt_source: Optional[AppListElement] = None
-        self.alt_sources: list[AppListElement] = []
+        self.app_list_element: AppImageListElement = None
         self.common_btn_css_classes = ['pill', 'text-button']
 
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin_top=10, margin_bottom=10, margin_start=20, margin_end=20,)
@@ -47,18 +45,24 @@ class AppDetails(Gtk.ScrolledWindow):
         self.source_selector = Gtk.ComboBoxText()
         self.source_selector_revealer = Gtk.Revealer(child=self.source_selector, transition_type=Gtk.RevealerTransitionType.CROSSFADE)
 
-        self.trust_app_check_button = Gtk.CheckButton(label=_('I have verified the source of this app'))
+        # Trust app check button
+        self.trust_app_check_button = Gtk.CheckButton(label=_('I have verified the source of this app'), active=True)
         self.trust_app_check_button.connect('toggled', lambda w: self.update_buttons_after_interaction())
 
+        self.trust_app_check_button_revealer = Gtk.Revealer(
+            child=self.trust_app_check_button, 
+            reveal_child=False
+        )
+
+        # Action buttons
         self.primary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, css_classes=self.common_btn_css_classes)
         self.secondary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, visible=False, css_classes=self.common_btn_css_classes)
 
-        # Action buttons
         action_buttons_row = CenteringBox(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.primary_action_button.connect('clicked', self.on_primary_action_button_clicked)
         self.secondary_action_button.connect('clicked', self.on_secondary_action_button_clicked)
 
-        for el in [self.trust_app_check_button, self.secondary_action_button, self.primary_action_button]:
+        for el in [self.trust_app_check_button_revealer, self.secondary_action_button, self.primary_action_button]:
             action_buttons_row.append(el)
 
         for el in [self.icon_slot, title_col, action_buttons_row]:
@@ -93,19 +97,16 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.loading_thread = False
 
-    def set_app_list_element(self, el: AppListElement, load_icon_from_network=False, local_file=False, alt_sources: list[AppListElement] = []):
+    def set_app_list_element(self, el: AppImageListElement, local_file=False):
         self.app_list_element = el
-        self.active_alt_source = None
-        self.alt_sources = alt_sources
         self.local_file = local_file
-        self.provider = providers[el.provider]
-        self.load_icon_from_network = load_icon_from_network
+        self.provider = appimage_provider
 
         is_installed = self.provider.is_installed(self.app_list_element)
         self.load(is_installed, False)
 
     def load(self, is_installed: bool, alt_list_element_installed):
-        icon = self.provider.get_icon(self.app_list_element, load_from_network=self.load_icon_from_network)
+        icon = self.provider.get_icon(self.app_list_element)
 
         self.details_row.remove(self.icon_slot)
         self.icon_slot = icon
@@ -140,11 +141,15 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_installation_status()
 
     def set_from_local_file(self, file: Gio.File):
-        for p, provider in providers.items():
-            if provider.can_install_file(file):
-                list_element = provider.create_list_element_from_file(file)
-                self.set_app_list_element(list_element, True, True)
-                return True
+        if appimage_provider.can_install_file(file):
+            list_element = appimage_provider.create_list_element_from_file(file)
+            self.set_app_list_element(list_element)
+
+            self.trust_app_check_button.set_active(False)
+            self.trust_app_check_button_revealer.set_reveal_child(True)
+            self.update_buttons_after_interaction()
+
+            return True
 
         logging.debug('Trying to open an unsupported file')
         return False
@@ -161,28 +166,37 @@ class AppDetails(Gtk.ScrolledWindow):
 
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
             self.app_list_element.set_installed_status(InstalledStatus.INSTALLING)
-            self.update_installation_status()
 
-            try:
-                self.provider.install_file(self.app_list_element)
-            except Exception as e:
-                self.update_status_callback(False)
+            if self.trust_app_check_button.get_active():
+                self.update_installation_status()
+                self.install_file(self.app_list_element)
 
         elif self.app_list_element.installed_status == InstalledStatus.UPDATE_AVAILABLE:
             self.provider.uninstall(self.app_list_element)
 
+        self.update_installation_status()
+
     def on_secondary_action_button_clicked(self, button: Gtk.Button):
         if self.app_list_element.installed_status in [InstalledStatus.INSTALLED, InstalledStatus.NOT_INSTALLED]:
-            try:
-                self.provider.run(self.app_list_element)
-            except Exception as e:
-                logging.error(str(e))
+            if self.trust_app_check_button.get_active():
+                try:
+                    self.provider.run(self.app_list_element)
+                except Exception as e:
+                    logging.error(str(e))
 
         elif self.app_list_element.installed_status == InstalledStatus.UPDATE_AVAILABLE:
             self.app_list_element.set_installed_status(InstalledStatus.UPDATING)
             self.update_installation_status()
             self.provider.update(self.app_list_element)
 
+    @_async
+    def install_file(self, el: AppImageListElement):
+        try:
+            self.provider.install_file(el)
+        except Exception as e:
+            logging.error(str(e))
+
+        self.update_installation_status()
 
     def update_status_callback(self, status: bool):
         if not status:
@@ -200,7 +214,7 @@ class AppDetails(Gtk.ScrolledWindow):
             self.secondary_action_button.set_label(_('Launch'))
             self.secondary_action_button.set_visible(True)
 
-            self.primary_action_button.set_label(_('Uninstall'))
+            self.primary_action_button.set_label(_('Remove'))
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
 
         elif self.app_list_element.installed_status == InstalledStatus.UNINSTALLING:
@@ -223,7 +237,7 @@ class AppDetails(Gtk.ScrolledWindow):
             self.secondary_action_button.set_css_classes([*self.common_btn_css_classes, 'suggested-action'])
             self.secondary_action_button.set_visible(True)
 
-            self.primary_action_button.set_label(_('Remove app'))
+            self.primary_action_button.set_label(_('Remove'))
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
 
         elif self.app_list_element.installed_status == InstalledStatus.UPDATING:
@@ -307,3 +321,4 @@ class AppDetails(Gtk.ScrolledWindow):
         if self.trust_app_check_button.get_active():
             self.secondary_action_button.set_sensitive(True)
             self.primary_action_button.set_sensitive(True)
+            self.trust_app_check_button_revealer.set_reveal_child(False)

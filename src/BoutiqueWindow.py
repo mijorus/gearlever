@@ -77,15 +77,15 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         # change visible child of the container stack
         self.container_stack.connect('notify::visible-child', self.on_container_stack_change)
 
+    # Show app details
     def on_selected_installed_app(self, source: Gtk.Widget, list_element: AppListElement):
-        """Show app details"""
 
         self.app_details.set_app_list_element(list_element)
         self.container_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
         self.container_stack.set_visible_child(self.app_details)
 
+    # Show details for an app from global search
     def on_selected_browsed_app(self, source: Gtk.Widget, custom_event: tuple[AppListElement, list[AppListElement]]):
-        """Show details for an app from global search"""
         list_element, alt_sources = custom_event
 
         self.app_details.set_app_list_element(list_element, load_icon_from_network=True, alt_sources=alt_sources)

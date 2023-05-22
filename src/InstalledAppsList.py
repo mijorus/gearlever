@@ -5,7 +5,7 @@ from gi.repository import Gtk, Adw, Gdk, GObject, Pango
 from typing import Dict, List, Optional
 import re
 
-from .providers.providers_list import providers
+from .providers.providers_list import appimage_provider
 from .models.AppListElement import AppListElement, InstalledStatus
 from .models.Provider import Provider
 from .models.Models import AppUpdateElement
@@ -55,10 +55,6 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.updates_title_label = Gtk.Label(label='', css_classes=['title-4'], hexpand=True, halign=Gtk.Align.START)
         updates_title_row.append( self.updates_title_label )
         
-        self.update_all_btn = Gtk.Button(label='Update all', css_classes=['suggested-action'], valign=Gtk.Align.CENTER) 
-        self.update_all_btn.connect('clicked', self.on_update_all_btn_clicked)
-
-        updates_title_row.append(self.update_all_btn)
         self.updates_row.append(updates_title_row)
         self.updates_row.append(self.updates_row_list)
 
@@ -89,16 +85,15 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.installed_apps_list= Gtk.ListBox(css_classes=["boxed-list"])
         self.installed_apps_list_rows = []
 
-        for p, provider in providers.items():
-            installed: List[AppListElement] = provider.list_installed()
+        installed: List[AppListElement] = appimage_provider.list_installed()
 
-            for i in installed:
-                list_row = AppListBoxItem(i, activatable=True, selectable=True, hexpand=True)
-                list_row.set_update_version(key_in_dict(i.extra_data, 'version'))
+        for i in installed:
+            list_row = AppListBoxItem(i, activatable=True, selectable=True, hexpand=True)
+            list_row.set_update_version(key_in_dict(i.extra_data, 'version'))
 
-                list_row.load_icon(load_from_network=False)
-                self.installed_apps_list_rows.append(list_row)
-                self.installed_apps_list.append(list_row)
+            list_row.load_icon(load_from_network=False)
+            self.installed_apps_list_rows.append(list_row)
+            self.installed_apps_list.append(list_row)
 
         self.installed_apps_list.append(self.no_apps_found_row)
         self.no_apps_found_row.set_visible(False)
@@ -153,55 +148,54 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         upgradable = 0
         self.updates_row_list_spinner.set_visible(True)
 
-        for p, provider in providers.items():
-            updatable_elements = provider.list_updatables()
+        updatable_elements = appimage_provider.list_updatables()
 
-            updatable_libs: list[AppUpdateElement] = []
-            for upg in updatable_elements:
-                update_is_an_app = False
+        updatable_libs: list[AppUpdateElement] = []
+        for upg in updatable_elements:
+            update_is_an_app = False
 
-                for row in self.installed_apps_list_rows:
-                    if row._app.id == upg.id:
-                        update_is_an_app = True
+            for row in self.installed_apps_list_rows:
+                if row._app.id == upg.id:
+                    update_is_an_app = True
 
-                        upgradable += 1
-                        app_list_item = AppListBoxItem(row._app, activatable=True, selectable=True, hexpand=True)
-                        app_list_item.force_show = True
-                        
-                        if upg.to_version and ('version' in row._app.extra_data):
-                            app_list_item.set_update_version(f'{row._app.extra_data["version"]} > {upg.to_version}')
+                    upgradable += 1
+                    app_list_item = AppListBoxItem(row._app, activatable=True, selectable=True, hexpand=True)
+                    app_list_item.force_show = True
+                    
+                    if upg.to_version and ('version' in row._app.extra_data):
+                        app_list_item.set_update_version(f'{row._app.extra_data["version"]} > {upg.to_version}')
 
-                        app_list_item.load_icon()
-                        self.updates_row_list.append( app_list_item )
-                        self.updates_row_list_items.append( app_list_item )
-                        row._app.set_installed_status(InstalledStatus.UPDATE_AVAILABLE)
-                        break
+                    app_list_item.load_icon()
+                    self.updates_row_list.append( app_list_item )
+                    self.updates_row_list_items.append( app_list_item )
+                    row._app.set_installed_status(InstalledStatus.UPDATE_AVAILABLE)
+                    break
 
-                if not update_is_an_app:
-                    updatable_libs.append(upg)
+            if not update_is_an_app:
+                updatable_libs.append(upg)
 
-            if updatable_libs:
-                upgradable += 1
-                updatable_libs_desc = ', '.join([upl.id for upl in updatable_libs])
+        if updatable_libs:
+            upgradable += 1
+            updatable_libs_desc = ', '.join([upl.id for upl in updatable_libs])
 
-                lib_list_element = AppListElement(
-                    'System libraries', 
-                    'The following libraries can be updated: ' + updatable_libs_desc, 
-                    '__updatable_libs__', 
-                    'flatpak', 
-                    InstalledStatus.UPDATE_AVAILABLE
-                )
+            lib_list_element = AppListElement(
+                'System libraries', 
+                'The following libraries can be updated: ' + updatable_libs_desc, 
+                '__updatable_libs__', 
+                'flatpak', 
+                InstalledStatus.UPDATE_AVAILABLE
+            )
 
-                app_list_item = AppListBoxItem(lib_list_element, activatable=False, selectable=False, hexpand=True)
-                app_list_item.force_show = True
-                
-                if upg.to_version and ('version' in row._app.extra_data):
-                    app_list_item.set_update_version(f'{row._app.extra_data["version"]} > {upg.to_version}')
+            app_list_item = AppListBoxItem(lib_list_element, activatable=False, selectable=False, hexpand=True)
+            app_list_item.force_show = True
+            
+            if upg.to_version and ('version' in row._app.extra_data):
+                app_list_item.set_update_version(f'{row._app.extra_data["version"]} > {upg.to_version}')
 
-                app_list_item.load_icon()
-                self.updates_row_list.append( app_list_item )
-                self.updates_row_list_items.append( app_list_item )
-                row._app.set_installed_status(InstalledStatus.UPDATE_AVAILABLE)
+            app_list_item.load_icon()
+            self.updates_row_list.append( app_list_item )
+            self.updates_row_list_items.append( app_list_item )
+            row._app.set_installed_status(InstalledStatus.UPDATE_AVAILABLE)
 
 
         self.updates_fetched = True
@@ -220,29 +214,29 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
         #         break
 
-    def after_update_all(self, result: bool, prov: str):
-        if result and (not self.update_all_btn.has_css_class('destructive-action')):
-            if self.updates_row_list and prov == [*providers.keys()][-1]:
-                self.updates_row_list.set_opacity(1)
-                self.update_all_btn.set_sensitive(True)
-                self.update_all_btn.set_label('Update all')
+    # def after_update_all(self, result: bool, prov: str):
+    #     if result and (not self.update_all_btn.has_css_class('destructive-action')):
+    #         if self.updates_row_list and prov == [*providers.keys()][-1]:
+    #             self.updates_row_list.set_opacity(1)
+    #             self.update_all_btn.set_sensitive(True)
+    #             self.update_all_btn.set_label('Update all')
 
-        else:
-            self.update_all_btn.set_label('Error')
-            self.update_all_btn.set_css_classes(['destructive-action'])
+    #     else:
+    #         self.update_all_btn.set_label('Error')
+    #         self.update_all_btn.set_css_classes(['destructive-action'])
 
-        self.refresh_upgradable(only_provider=prov)
+    #     self.refresh_upgradable(only_provider=prov)
 
-    def on_update_all_btn_clicked(self, widget: Gtk.Button):
-        if not self.updates_row_list:
-            return
+    # def on_update_all_btn_clicked(self, widget: Gtk.Button):
+    #     if not self.updates_row_list:
+    #         return
 
-        self.updates_row_list.set_opacity(0.5)
-        self.update_all_btn.set_sensitive(False)
-        self.update_all_btn.set_label('Updating...')
+    #     self.updates_row_list.set_opacity(0.5)
+    #     self.update_all_btn.set_sensitive(False)
+    #     self.update_all_btn.set_label('Updating...')
 
-        for p, provider in providers.items():
-            provider.update_all(self.after_update_all)
+    #     for p, provider in providers.items():
+    #     provider.update_all(self.after_update_all)
 
     def sort_installed_apps_list(self, row: AppListBoxItem, row1: AppListBoxItem):
         if (not hasattr(row1, '_app')):

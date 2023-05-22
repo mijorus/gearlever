@@ -17,7 +17,7 @@
 
 from .lib.terminal import sh
 from .lib.utils import log
-from .providers.providers_list import providers
+from .providers.providers_list import appimage_provider
 from .AboutDialog import AboutDialog
 from .BoutiqueWindow import BoutiqueWindow
 import sys

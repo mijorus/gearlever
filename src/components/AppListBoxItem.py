@@ -6,7 +6,7 @@ from ..lib.async_utils import idle, _async
 import re
 
 from ..models.AppListElement import AppListElement, InstalledStatus
-from ..providers.providers_list import providers
+from ..providers.providers_list import appimage_provider
 
 
 class AppListBoxItem(Gtk.ListBoxRow):
@@ -57,7 +57,7 @@ class AppListBoxItem(Gtk.ListBoxRow):
         col.append(app_details_box)
 
         provider_icon_box = Gtk.Button(css_classes=['provider-icon'])
-        provider_icon = Gtk.Image(resource=providers[list_element.provider].small_icon)
+        provider_icon = Gtk.Image(resource=appimage_provider.small_icon)
         provider_icon.set_pixel_size(18)
         provider_icon_box.set_child(provider_icon)
         col.append(provider_icon_box)
@@ -68,7 +68,7 @@ class AppListBoxItem(Gtk.ListBoxRow):
             self.set_opacity(0.5)
 
     def load_icon(self, load_from_network: bool = False):
-        image = providers[self._app.provider].get_icon(self._app, load_from_network=load_from_network)
+        image = appimage_provider.get_icon(self._app, load_from_network=load_from_network)
         image.set_pixel_size(45)
         self.image_container.append(image)
 
