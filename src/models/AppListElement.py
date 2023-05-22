@@ -14,14 +14,13 @@ class InstalledStatus(Enum):
     UPDATING = 8
 
 class AppListElement():
-    def __init__(self, name: str, description: str, app_id: str, provider: str, installed_status: InstalledStatus, size: float=None, alt_sources: Optional[other: AppListElement]=None, **kwargs):
+    def __init__(self, name: str, description: str, app_id: str, provider: str, installed_status: InstalledStatus, size: float=0, **kwargs):
         self.name: str = name
-        self.description: str = description if description.strip() else 'No description provided'
+        self.description: str = description if description.strip() else _('No description provided')
         self.id = app_id
         self.provider: str = provider
         self.installed_status: InstalledStatus = installed_status
         self.size: Optional[float] = size
-        self.alt_sources: Optional[other: AppListElement] = alt_sources
 
         self.extra_data: Dict[str, str] = {}
         for k, v in kwargs.items():

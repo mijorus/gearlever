@@ -1,7 +1,7 @@
 import threading
 import time
 import logging
-from typing import Optional
+from typing import Optional, Callable
 from .lib.utils import qq
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
 from .State import state
@@ -47,7 +47,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         # Trust app check button
         self.trust_app_check_button = Gtk.CheckButton(label=_('I have verified the source of this app'), active=True)
-        self.trust_app_check_button.connect('toggled', lambda w: self.update_buttons_after_interaction())
+        self.trust_app_check_button.connect('toggled', lambda w: self.after_trust_buttons_interaction())
 
         self.trust_app_check_button_revealer = Gtk.Revealer(
             child=self.trust_app_check_button, 
@@ -79,7 +79,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.desc_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin_top=20)
         self.description = Gtk.Label(label='', halign=Gtk.Align.START, wrap=True, selectable=True)
 
-        self.desc_row_spinner = Gtk.Spinner(spinning=False, visible=False)
+        self.desc_row_spinner = Gtk.Spinner(spinning=True, visible=True)
         self.desc_row.append(self.desc_row_spinner)
 
         self.desc_row.append(self.description)
@@ -102,11 +102,16 @@ class AppDetails(Gtk.ScrolledWindow):
         self.local_file = local_file
         self.provider = appimage_provider
 
-        is_installed = self.provider.is_installed(self.app_list_element)
-        self.load(is_installed, False)
+        self.load()
 
-    def load(self, is_installed: bool, alt_list_element_installed):
-        icon = self.provider.get_icon(self.app_list_element)
+    @idle
+    def load(self):
+        self.show_row_spinner(True)
+        icon = Gtk.Image(icon_name='application-x-executable-symbolic')
+
+        if self.trust_app_check_button.get_active():
+            icon = self.provider.get_icon(self.app_list_element)
+            self.provider.refresh_title(self.app_list_element)
 
         self.details_row.remove(self.icon_slot)
         self.icon_slot = icon
@@ -124,7 +129,6 @@ class AppDetails(Gtk.ScrolledWindow):
         self.extra_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.third_row.append(self.extra_data)
 
-        self.show_row_spinner(True)
         self.load_description()
 
         self.install_button_label_info = None
@@ -139,16 +143,19 @@ class AppDetails(Gtk.ScrolledWindow):
             self.source_selector.disconnect(self.source_selector_hdlr)
 
         self.update_installation_status()
+        self.show_row_spinner(False)
 
     def set_from_local_file(self, file: Gio.File):
         if appimage_provider.can_install_file(file):
             list_element = appimage_provider.create_list_element_from_file(file)
-            self.set_app_list_element(list_element)
 
             self.trust_app_check_button.set_active(False)
             self.trust_app_check_button_revealer.set_reveal_child(True)
-            self.update_buttons_after_interaction()
 
+            self.secondary_action_button.set_sensitive(False)
+            self.primary_action_button.set_sensitive(False)
+
+            self.set_app_list_element(list_element)
             return True
 
         logging.debug('Trying to open an unsupported file')
@@ -224,7 +231,8 @@ class AppDetails(Gtk.ScrolledWindow):
             self.primary_action_button.set_label(_('Installing...'))
 
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
-            self.update_buttons_after_interaction()
+            # self.secondary_action_button.set_sensitive(False)
+            # self.primary_action_button.set_sensitive(False)
 
             self.secondary_action_button.set_visible(True)
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'suggested-action'])
@@ -260,7 +268,6 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @idle
     def set_description(self, desc):
-        self.show_row_spinner(False)
         self.description.set_markup(desc)
 
     def provider_refresh_installed_status(self, status: Optional[InstalledStatus] = None, final=False):
@@ -314,11 +321,14 @@ class AppDetails(Gtk.ScrolledWindow):
         self.desc_row_spinner.set_visible(status)
         self.desc_row_spinner.set_spinning(status)
 
-    def update_buttons_after_interaction(self):
+    def after_trust_buttons_interaction(self):
         self.secondary_action_button.set_sensitive(False)
         self.primary_action_button.set_sensitive(False)
 
         if self.trust_app_check_button.get_active():
+            self.trust_app_check_button_revealer.set_reveal_child(False)
+            self.title.set_label('...')
+            self.load()
+
             self.secondary_action_button.set_sensitive(True)
             self.primary_action_button.set_sensitive(True)
-            self.trust_app_check_button_revealer.set_reveal_child(False)

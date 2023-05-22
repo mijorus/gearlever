@@ -113,7 +113,22 @@ class AppImageProvider():
             if el.desktop_entry and icon_theme.has_icon(el.desktop_entry.getIcon()):
                 return Gtk.Image.new_from_icon_name(el.desktop_entry.getIcon())
 
-            return Gtk.Image(icon_name='application-x-executable-symbolic')
+            extracted = self.extract_appimage(el.file_path, el)
+
+            if extracted.icon_file and os.path.exists(extracted.icon_file.get_path()):
+                return Gtk.Image.new_from_file(extracted.icon_file.get_path())
+
+        return Gtk.Image(icon_name='application-x-executable-symbolic')
+
+    def refresh_title(self, el: AppImageListElement) -> str:
+        if el.desktop_entry:
+            el.name = el.desktop_entry.getName()
+        
+        extracted = self.extract_appimage(el.file_path, el)
+        if extracted.desktop_entry:
+            el.name = extracted.desktop_entry.getName()
+        
+        return el.name
 
     def uninstall(self, el: AppImageListElement):
         os.remove(el.file_path)
@@ -327,7 +342,8 @@ class AppImageProvider():
         if extraction.container_folder.query_exists():
             shutil.rmtree(extraction.container_folder.get_path())
 
-    def extract_appimage(self, file_path: str) -> ExtractedAppImage:
+    def extract_appimage(self, file_path: str, el: Optional[AppImageListElement]=None) -> ExtractedAppImage:
+
         file = Gio.File.new_for_path(file_path)
 
         if get_giofile_content_type(file) in ['application/x-iso9660-appimage']:
@@ -396,6 +412,9 @@ class AppImageProvider():
         result.appimage_file = dest_file
         result.desktop_file = desktop_file
         result.icon_file = icon_file
+
+        if el:
+            el.desktop_entry = desktop_entry
 
         return result
 
