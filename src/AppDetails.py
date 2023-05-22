@@ -105,13 +105,8 @@ class AppDetails(Gtk.ScrolledWindow):
         self.load()
 
     @idle
-    def load(self):
+    def complete_load(self, icon: Gtk.Image, load_completed_callback: Optional[Callable]):
         self.show_row_spinner(True)
-        icon = Gtk.Image(icon_name='application-x-executable-symbolic')
-
-        if self.trust_app_check_button.get_active():
-            icon = self.provider.get_icon(self.app_list_element)
-            self.provider.refresh_title(self.app_list_element)
 
         self.details_row.remove(self.icon_slot)
         self.icon_slot = icon
@@ -129,21 +124,26 @@ class AppDetails(Gtk.ScrolledWindow):
         self.extra_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.third_row.append(self.extra_data)
 
-        self.load_description()
-
         self.install_button_label_info = None
 
         self.load_extra_details()
-        self.provider.load_extra_data_in_appdetails(self.extra_data, self.app_list_element)
-
-        self.install_button_label_info = None
-
-        self.source_selector.remove_all()
-        if self.source_selector_hdlr:
-            self.source_selector.disconnect(self.source_selector_hdlr)
 
         self.update_installation_status()
         self.show_row_spinner(False)
+
+        if load_completed_callback is not None:
+            load_completed_callback()
+
+    @_async
+    def load(self, load_completed_callback: Optional[Callable]=None):
+        self.show_row_spinner(True)
+        icon = Gtk.Image(icon_name='application-x-executable-symbolic')
+
+        if self.trust_app_check_button.get_active():
+            icon = self.provider.get_icon(self.app_list_element)
+            self.provider.refresh_title(self.app_list_element)
+
+        self.complete_load(icon, load_completed_callback)
 
     def set_from_local_file(self, file: Gio.File):
         if appimage_provider.can_install_file(file):
@@ -255,17 +255,6 @@ class AppDetails(Gtk.ScrolledWindow):
             self.primary_action_button.set_label(_('Error'))
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
 
-    # Loads the description text from external sources, like an HTTP request
-    @_async
-    def load_description(self):
-        try:
-            desc = self.provider.get_long_description(self.app_list_element)
-        except Exception as e:
-            logging.error(e)
-            desc = ''
-
-        self.set_description(desc)
-
     @idle
     def set_description(self, desc):
         self.description.set_markup(desc)
@@ -328,7 +317,9 @@ class AppDetails(Gtk.ScrolledWindow):
         if self.trust_app_check_button.get_active():
             self.trust_app_check_button_revealer.set_reveal_child(False)
             self.title.set_label('...')
-            self.load()
-
-            self.secondary_action_button.set_sensitive(True)
-            self.primary_action_button.set_sensitive(True)
+            self.load(load_completed_callback=lambda: [
+                self.secondary_action_button.set_sensitive(True),
+                self.primary_action_button.set_sensitive(True)
+            ])
+ 
+            

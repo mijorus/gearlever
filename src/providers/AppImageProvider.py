@@ -147,9 +147,6 @@ class AppImageProvider():
     def get_long_description(self, el: AppListElement) -> str:
         return ''
 
-    def load_extra_data_in_appdetails(self, widget: Gtk.Widget, list_element: AppListElement):
-        pass
-
     def list_updatables(self) -> List[AppUpdateElement]:
         return []
 
