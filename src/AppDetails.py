@@ -290,5 +290,3 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.secondary_action_button.set_sensitive(True),
                 self.primary_action_button.set_sensitive(True)
             ])
- 
-            

@@ -7,7 +7,6 @@ import re
 
 from .providers.providers_list import appimage_provider
 from .models.AppListElement import AppListElement, InstalledStatus
-from .models.Provider import Provider
 from .models.Models import AppUpdateElement
 from .components.FilterEntry import FilterEntry
 from .components.CustomComponents import NoAppsFoundRow

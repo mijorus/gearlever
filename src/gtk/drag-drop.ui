@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <object class="GtkBox" id="drag-drop">
+    <property name="orientation">1</property>
+    <property name="valign">3</property>
+    <property name="halign">3</property>
+    <child>
+      <object class="GtkImage">
+        <property name="name">logo</property>
+        <property name="icon-name">drag-drop-icon-symbolic</property>
+        <property name="pixel-size">120</property>
+        <property name="margin-bottom">30</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel">
+        <property name="label" translatable="yes">Drop your file here</property>
+        <property name="margin-bottom">30</property>
+        <style>
+          <class name="title-3"/>
+        </style>
+      </object>
+    </child>
+  </object>
+</interface>

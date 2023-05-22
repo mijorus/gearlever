@@ -21,7 +21,7 @@ from .models.AppListElement import AppListElement
 from .State import state
 from .lib import utils
 
-from gi.repository import Gtk, Adw, Gio
+from gi.repository import Gtk, Adw, Gio, Gdk, GObject
 
 
 class BoutiqueWindow(Gtk.ApplicationWindow):
@@ -65,7 +65,6 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
 
         self.container_stack.add_child(self.app_lists_stack)
         self.container_stack.add_child(self.app_details)
-        self.set_child(self.container_stack)
         
         # Show details of an installed app
         self.installed_apps_list.connect('selected-app', self.on_selected_installed_app)
@@ -77,9 +76,22 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         # change visible child of the container stack
         self.container_stack.connect('notify::visible-child', self.on_container_stack_change)
 
+        builder = Gtk.Builder.new_from_resource('/it/mijorus/boutique/gtk/drag-drop.ui')
+        self.drag_drop_ui = builder.get_object('drag-drop')
+
+        self.drop_target_controller = Gtk.DropTarget.new(Gio.File, Gdk.DragAction.COPY)
+        self.drop_target_controller.connect('drop', self.on_drop_event)
+        self.drop_target_controller.connect('enter', self.on_drop_enter)
+        self.drop_target_controller.connect('leave', self.on_drop_leave)
+        self.visible_before_dragdrop_start = None
+
+        self.container_stack.add_controller(self.drop_target_controller)
+        self.container_stack.add_child(self.drag_drop_ui)
+
+        self.set_child(self.container_stack)
+
     # Show app details
     def on_selected_installed_app(self, source: Gtk.Widget, list_element: AppListElement):
-
         self.app_details.set_app_list_element(list_element)
         self.container_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
         self.container_stack.set_visible_child(self.app_details)
@@ -134,3 +146,25 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         in_app_details = self.container_stack.get_visible_child() == self.app_details
         self.left_button.set_visible(in_app_details)
         self.view_title_widget.set_visible(not in_app_details)
+
+    def on_drop_event(self, widget, value, x, y):
+        print(value)
+
+        return False
+    
+    def on_drop_enter(self, widget, x, y):
+        self.container_stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+        self.visible_before_dragdrop_start = self.container_stack.get_visible_child()
+        self.container_stack.set_visible_child(self.drag_drop_ui)
+
+        return Gdk.DragAction.COPY
+    
+    def on_drop_leave(self, widget):
+        self.container_stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+
+        if self.visible_before_dragdrop_start:
+            self.container_stack.set_visible_child(self.visible_before_dragdrop_start)
+        else:
+            self.container_stack.set_visible_child(self.app_lists_stackp)
+
+        return Gdk.DragAction.COPY

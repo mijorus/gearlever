@@ -12,7 +12,6 @@ from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async
 from ..lib.utils import log, cleanhtml, key_in_dict, gtk_image_from_url, qq, get_application_window, get_giofile_content_type, get_gsettings, create_dict, gio_copy, get_file_hash
 from ..components.CustomComponents import LabelStart
-from ..models.Provider import Provider
 from ..models.Models import FlatpakHistoryElement, AppUpdateElement
 from typing import List, Callable, Union, Dict, Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, GdkPixbuf, Gio, GObject, Pango, Adw

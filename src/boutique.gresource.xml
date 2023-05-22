@@ -3,6 +3,7 @@
     <gresource prefix="/it/mijorus/boutique">
         <file>window.ui</file>
         <file>gtk/main-menu.xml</file>
+        <file>gtk/drag-drop.ui</file>
         <file>assets/flathub-badge-logo.svg</file>
         <file>assets/App-image-logo-bw.svg</file>
         <file>assets/App-image-logo.png</file>
