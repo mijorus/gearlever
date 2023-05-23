@@ -56,12 +56,6 @@ class AppListBoxItem(Gtk.ListBoxRow):
         app_details_box.set_hexpand(True)
         col.append(app_details_box)
 
-        provider_icon_box = Gtk.Button(css_classes=['provider-icon'])
-        provider_icon = Gtk.Image(resource=appimage_provider.small_icon)
-        provider_icon.set_pixel_size(18)
-        provider_icon_box.set_child(provider_icon)
-        col.append(provider_icon_box)
-
         self.set_child(col)
 
         if self._app.installed_status in [InstalledStatus.UPDATING, InstalledStatus.INSTALLING]:

@@ -40,7 +40,6 @@ class AppImageProvider():
     def __init__(self):
         self.name = 'appimage'
         self.icon = "/it/mijorus/boutique/assets/App-image-logo.png"
-        self.small_icon = "/it/mijorus/boutique/assets/appimage-showcase.png"
         logging.info(f'Activating {self.name} provider')
 
         self.supported_mimes = ['application/vnd.appimage', 'application/x-iso9660-appimage']
@@ -72,7 +71,7 @@ class AppImageProvider():
                                 description=entry.getComment(),
                                 icon=entry.getIcon(),
                                 app_id='',
-                                version=entry.get('X-AppImage-Version'),
+                                version=f"v. {entry.get('X-AppImage-Version')}",
                                 installed_status=InstalledStatus.INSTALLED,
                                 file_path=entry.getExec(),
                                 provider=self.name,
@@ -248,8 +247,6 @@ class AppImageProvider():
                         final_app_name = extracted_appimage.appimage_file.get_basename()
                         if extracted_appimage.desktop_entry:
                             final_app_name = f"{extracted_appimage.desktop_entry.getName()}"
-                            # if extracted_appimage.desktop_entry.get('X-AppImage-Version'):
-                            #     final_app_name += f' ({extracted_appimage.desktop_entry.get("X-AppImage-Version")})'
 
                         desktop_file_content = re.sub(
                             r'Name=.*$',

@@ -128,8 +128,14 @@ class AppDetails(Gtk.ScrolledWindow):
         self.title.set_label(cleanhtml(self.app_list_element.name))
 
         version_label = key_in_dict(self.app_list_element.extra_data, 'version')
-        self.version.set_markup('' if not version_label else f'<small>{version_label}</small>')
-        self.app_id.set_markup(f'<small>{self.app_list_element.id}</small>')
+        version_label = '' if not version_label else f'<small>{version_label}</small>'
+
+        self.version.set_markup(version_label)
+        self.app_id.set_markup(f'<small>{self.app_list_element.app_id}</small>')
+
+        self.app_id.set_visible(len(self.app_list_element.app_id) > 0)
+        self.version.set_visible(len(version_label) > 0)
+
         self.description.set_label(
             self.provider.get_description(self.app_list_element)
         )
@@ -140,7 +146,17 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.install_button_label_info = None
 
-        self.load_extra_details()
+
+        # Load the boxed list with additional information
+        gtk_list = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
+
+        row = Adw.ActionRow(title=self.provider.name.capitalize(), subtitle='Package type')
+        logging.info(self.provider.icon)
+        row_img = Gtk.Image(resource=self.provider.icon, pixel_size=34)
+        row.add_prefix(row_img)
+        gtk_list.append(row)
+
+        self.extra_data.append(gtk_list)
 
         self.update_installation_status()
         self.show_row_spinner(False)
@@ -155,7 +171,9 @@ class AppDetails(Gtk.ScrolledWindow):
 
         if self.trust_app_check_button.get_active():
             icon = self.provider.get_icon(self.app_list_element)
-            self.provider.refresh_title(self.app_list_element)
+
+            if self.app_list_element.installed_status is not InstalledStatus.INSTALLED:
+                self.provider.refresh_title(self.app_list_element)
 
         self.complete_load(icon, load_completed_callback)
 
@@ -260,16 +278,16 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_installation_status()
 
     # Load the boxed list with additional information
-    def load_extra_details(self):
-        gtk_list = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
+    # def load_extra_details(self):
+    #     gtk_list = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
 
-        row = Adw.ActionRow(title=self.provider.name.capitalize(), subtitle='Package type')
-        logging.info(self.provider.icon)
-        row_img = Gtk.Image(resource=self.provider.icon, pixel_size=34)
-        row.add_prefix(row_img)
-        gtk_list.append(row)
+    #     row = Adw.ActionRow(title=self.provider.name.capitalize(), subtitle='Package type')
+    #     logging.info(self.provider.icon)
+    #     row_img = Gtk.Image(resource=self.provider.icon, pixel_size=34)
+    #     row.add_prefix(row_img)
+    #     gtk_list.append(row)
 
-        self.extra_data.append(gtk_list)
+    #     self.extra_data.append(gtk_list)
 
     def show_row_spinner(self, status: bool):
         self.desc_row_spinner.set_visible(status)
@@ -288,7 +306,7 @@ class AppDetails(Gtk.ScrolledWindow):
             self.primary_action_button.set_sensitive(False)
 
     def after_trust_buttons_interaction(self, widget):
-        if self.trust_app_check_button.get_active():
+        if self.app_list_element and self.trust_app_check_button.get_active():
             self.app_list_element.trusted = True
 
             self.trust_app_check_button_revealer.set_reveal_child(False)

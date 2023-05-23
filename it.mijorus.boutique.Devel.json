@@ -13,8 +13,7 @@
 
         "--filesystem=xdg-data/applications:rw",
         "--filesystem=xdg-data/icons:ro",
-        "--filesystem=xdg-data/flatpak:ro",
-        "--filesystem=home/AppImages>rw",
+        "--filesystem=home/AppImages:rw",
 
         "--talk-name=org.freedesktop.FileManager1",
         "--talk-name=org.freedesktop.Flatpak",

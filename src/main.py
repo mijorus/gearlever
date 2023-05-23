@@ -51,7 +51,7 @@ class BoutiqueApplication(Adw.Application):
         css_provider.load_from_resource('/it/mijorus/boutique/assets/style.css')
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
-    def do_activate(self):
+    def do_activate(self, from_file=False):
         """Called when the application is activated.
 
         We raise the application's main window, creating it if
@@ -60,19 +60,14 @@ class BoutiqueApplication(Adw.Application):
         self.win = self.props.active_window
 
         if not self.win:
-            self.win = BoutiqueWindow(application=self)
+            self.win = BoutiqueWindow(application=self, from_file=from_file)
 
         self.win.present()
 
     def do_open(self, files: list[Gio.File], n_files: int, _):
-        if files:
-            for p, provider in providers.items():
-                if provider.can_install_file(files[0]):
-                    if not self.win:
-                        self.win = BoutiqueWindow(application=self, from_file=True)
-
-                    self.win.on_selected_local_file(files[0])
-                    break
+        if files and appimage_provider.can_install_file(files[0]):
+            self.do_activate(from_file=True)
+            self.win.on_selected_local_file(files[0])
 
     def on_about_action(self, widget, _):
         """Callback for the app.about action."""

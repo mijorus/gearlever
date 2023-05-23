@@ -17,7 +17,7 @@ class AppListElement():
     def __init__(self, name: str, description: str, app_id: str, provider: str, installed_status: InstalledStatus, size: float=0, **kwargs):
         self.name: str = name
         self.description: str = description if description.strip() else _('No description provided')
-        self.id = app_id
+        self.app_id = app_id
         self.provider: str = provider
         self.installed_status: InstalledStatus = installed_status
         self.size: Optional[float] = size

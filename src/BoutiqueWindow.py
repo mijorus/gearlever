@@ -108,7 +108,10 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
 
     def on_selected_local_file(self, file: Gio.File) -> bool:
         if self.app_details.set_from_local_file(file):
-            self.container_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
+            self.container_stack.set_transition_type(
+                Gtk.StackTransitionType.NONE if self.from_file else Gtk.StackTransitionType.SLIDE_LEFT
+            )
+
             self.container_stack.set_visible_child(self.app_details)
 
             if self.from_file:
@@ -129,7 +132,6 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         self.left_button.set_visible(False)
 
         self.installed_apps_list.refresh_list()
-        self.installed_apps_list.refresh_upgradable()
         self.container_stack.set_visible_child(self.app_lists_stack)
 
     def on_left_button_clicked(self, widget):
