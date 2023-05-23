@@ -12,7 +12,7 @@ from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async
 from ..lib.utils import log, cleanhtml, key_in_dict, gtk_image_from_url, qq, get_application_window, get_giofile_content_type, get_gsettings, create_dict, gio_copy, get_file_hash
 from ..components.CustomComponents import LabelStart
-from ..models.Models import FlatpakHistoryElement, AppUpdateElement
+from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalError
 from typing import List, Callable, Union, Dict, Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, GdkPixbuf, Gio, GObject, Pango, Adw
 
@@ -32,6 +32,8 @@ class AppImageListElement(AppListElement):
         self.file_path = file_path
         self.desktop_entry = desktop_entry
         self.icon = icon
+        self.extracted: Optional[ExtractedAppImage] = None
+        self.trusted = (self.installed_status is InstalledStatus.INSTALLED)
 
 
 class AppImageProvider():
@@ -41,13 +43,15 @@ class AppImageProvider():
         self.small_icon = "/it/mijorus/boutique/assets/appimage-showcase.png"
         logging.info(f'Activating {self.name} provider')
 
+        self.supported_mimes = ['application/vnd.appimage', 'application/x-iso9660-appimage']
+
         self.general_messages = []
         self.update_messages = []
 
         self.modal_gfile: Optional[Gio.File] = None
         self.modal_gfile_createshortcut_check: Optional[Gtk.CheckButton] = None
 
-    def list_installed(self) -> List[AppListElement]:
+    def list_installed(self) -> List[AppImageListElement]:
         default_folder_path = self.get_appimages_default_destination_path()
         output = []
 
@@ -91,7 +95,7 @@ class AppImageProvider():
                 installed_gfile = Gio.File.new_for_path(self.get_appimages_default_destination_path() + '/' + file_name)
                 loaded_gfile = Gio.File.new_for_path(el.file_path)
 
-                if get_giofile_content_type(installed_gfile) == 'application/vnd.appimage':
+                if get_giofile_content_type(installed_gfile) in self.supported_mimes:
                     if filecmp.cmp(installed_gfile.get_path(), loaded_gfile.get_path(), shallow=False):
                         el.file_path = installed_gfile.get_path()
                         return True
@@ -112,10 +116,11 @@ class AppImageProvider():
             if el.desktop_entry and icon_theme.has_icon(el.desktop_entry.getIcon()):
                 return Gtk.Image.new_from_icon_name(el.desktop_entry.getIcon())
 
-            extracted = self.extract_appimage(el.file_path, el)
+            if el.trusted:
+                extracted = self.extract_appimage(el)
 
-            if extracted.icon_file and os.path.exists(extracted.icon_file.get_path()):
-                return Gtk.Image.new_from_file(extracted.icon_file.get_path())
+                if extracted.icon_file and os.path.exists(extracted.icon_file.get_path()):
+                    return Gtk.Image.new_from_file(extracted.icon_file.get_path())
 
         return Gtk.Image(icon_name='application-x-executable-symbolic')
 
@@ -129,9 +134,10 @@ class AppImageProvider():
         if el.desktop_entry:
             el.name = el.desktop_entry.getName()
         
-        extracted = self.extract_appimage(el.file_path, el)
-        if extracted.desktop_entry:
-            el.name = extracted.desktop_entry.getName()
+        if el.trusted:
+            extracted = self.extract_appimage(el)
+            if extracted.desktop_entry:
+                el.name = extracted.desktop_entry.getName()
         
         return el.name
 
@@ -171,7 +177,7 @@ class AppImageProvider():
         terminal.threaded_sh([f'{el.file_path}'])
             
     def can_install_file(self, file: Gio.File) -> bool:
-        return get_giofile_content_type(file) in ['application/vnd.appimage', 'application/x-iso9660-appimage']
+        return get_giofile_content_type(file) in self.supported_mimes
 
     def is_updatable(self, app_id: str) -> bool:
         return False
@@ -182,7 +188,7 @@ class AppImageProvider():
         extracted_appimage: Optional[ExtractedAppImage] = None
 
         try:
-            extracted_appimage = self.extract_appimage(file_path=el.file_path)
+            extracted_appimage = self.extract_appimage(el)
             dest_file_info = extracted_appimage.appimage_file.query_info('*', Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS)
 
             if extracted_appimage.extraction_folder.query_exists():
@@ -276,7 +282,7 @@ class AppImageProvider():
     def create_list_element_from_file(self, file: Gio.File) -> AppImageListElement:
         app_name: str = file.get_parse_name().split('/')[-1]
 
-        return AppImageListElement(
+        el = AppImageListElement(
             name=re.sub('\.appimage$', '', app_name, 1, re.IGNORECASE),
             description='',
             app_id='MD5: ' + hashlib.md5(open(file.get_path(), 'rb').read()).hexdigest(),
@@ -287,14 +293,26 @@ class AppImageProvider():
             icon=None
         )
 
+        if self.is_installed(el):
+            for installed in self.list_installed():
+                if filecmp.cmp(installed.file_path, el.file_path, shallow=False):
+                    return installed
+
+        return el
+
     def post_file_extraction_cleanup(self, extraction: ExtractedAppImage):
         print(extraction.container_folder.get_path())
         if extraction.container_folder.query_exists():
             shutil.rmtree(extraction.container_folder.get_path())
 
-    def extract_appimage(self, file_path: str, el: Optional[AppImageListElement]=None) -> ExtractedAppImage:
+    def extract_appimage(self, el: AppImageListElement) -> ExtractedAppImage:
+        if not el.trusted:
+            raise InternalError(message=_('Cannot load an untrusted AppImage'))
+        
+        if el.extracted:
+            return el.extracted
 
-        file = Gio.File.new_for_path(file_path)
+        file = Gio.File.new_for_path(el.file_path)
 
         if get_giofile_content_type(file) in ['application/x-iso9660-appimage']:
             raise Exception('This file format cannot be extracted!')
@@ -329,7 +347,7 @@ class AppImageProvider():
 
                 # set exec permission for dest_file
                 os.chmod(dest_file.get_path(), 0o755)
-                logging.info('Appimage, extracting ' + file_path)
+                logging.info('Appimage, extracting ' + el.file_path)
                 terminal.sh(["bash", "-c", f"cd {folder.get_path()} && {dest_file.get_path()} --appimage-extract"])
 
                 if squash_folder.query_exists():
@@ -363,8 +381,8 @@ class AppImageProvider():
         result.desktop_file = desktop_file
         result.icon_file = icon_file
 
-        if el:
-            el.desktop_entry = desktop_entry
+        el.desktop_entry = desktop_entry
+        el.extracted = result
 
         return result
 

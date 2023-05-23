@@ -4,8 +4,8 @@ from typing import Optional, Dict, List
 from enum import Enum
 
 class InstalledStatus(Enum):
+    NOT_INSTALLED = 0
     INSTALLED = 1
-    NOT_INSTALLED = 2
     UNINSTALLING = 3
     ERROR = 4
     UNKNOWN = 5

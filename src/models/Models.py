@@ -28,3 +28,8 @@ class ProviderMessage():
         """ severity can be: info, warn, danger """
         self.message = message
         self.severity = severity
+
+class InternalError(Exception):
+    def __init__(self, message: str, *args) -> None:
+        super().__init__(*args)
+        self.message = message

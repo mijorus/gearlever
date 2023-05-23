@@ -46,12 +46,11 @@ class AppDetails(Gtk.ScrolledWindow):
         self.source_selector_revealer = Gtk.Revealer(child=self.source_selector, transition_type=Gtk.RevealerTransitionType.CROSSFADE)
 
         # Trust app check button
-        self.trust_app_check_button = Gtk.CheckButton(label=_('I have verified the source of this app'), active=True)
-        self.trust_app_check_button.connect('toggled', lambda w: self.after_trust_buttons_interaction())
+        self.trust_app_check_button = Gtk.CheckButton(label=_('I have verified the source of this app'))
+        self.trust_app_check_button.connect('toggled', self.after_trust_buttons_interaction)
 
         self.trust_app_check_button_revealer = Gtk.Revealer(
             child=self.trust_app_check_button, 
-            reveal_child=False
         )
 
         # Action buttons
@@ -93,9 +92,9 @@ class AppDetails(Gtk.ScrolledWindow):
             self.main_box.append(el)
 
         clamp = Adw.Clamp(child=self.main_box, maximum_size=600, margin_top=10, margin_bottom=20)
+        
+        self.set_trust_button(trusted=True)
         self.set_child(clamp)
-
-        self.loading_thread = False
 
     def set_app_list_element(self, el: AppImageListElement, local_file=False):
         self.app_list_element = el
@@ -103,6 +102,19 @@ class AppDetails(Gtk.ScrolledWindow):
         self.provider = appimage_provider
 
         self.load()
+
+    def set_from_local_file(self, file: Gio.File):
+        if appimage_provider.can_install_file(file):
+            list_element = appimage_provider.create_list_element_from_file(file)
+
+            self.set_trust_button(trusted=(list_element.installed_status is InstalledStatus.INSTALLED))
+
+            self.set_app_list_element(list_element)
+            return True
+
+        logging.warn('Trying to open an unsupported file')
+        return False
+
 
     @idle
     def complete_load(self, icon: Gtk.Image, load_completed_callback: Optional[Callable]):
@@ -147,21 +159,14 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.complete_load(icon, load_completed_callback)
 
-    def set_from_local_file(self, file: Gio.File):
-        if appimage_provider.can_install_file(file):
-            list_element = appimage_provider.create_list_element_from_file(file)
+    @_async
+    def install_file(self, el: AppImageListElement):
+        try:
+            self.provider.install_file(el)
+        except Exception as e:
+            logging.error(str(e))
 
-            self.trust_app_check_button.set_active(False)
-            self.trust_app_check_button_revealer.set_reveal_child(True)
-
-            self.secondary_action_button.set_sensitive(False)
-            self.primary_action_button.set_sensitive(False)
-
-            self.set_app_list_element(list_element)
-            return True
-
-        logging.debug('Trying to open an unsupported file')
-        return False
+        self.update_installation_status()
 
     def on_primary_action_button_clicked(self, button: Gtk.Button):
         if self.app_list_element.installed_status == InstalledStatus.INSTALLED:
@@ -197,15 +202,6 @@ class AppDetails(Gtk.ScrolledWindow):
             self.app_list_element.set_installed_status(InstalledStatus.UPDATING)
             self.update_installation_status()
             self.provider.update(self.app_list_element)
-
-    @_async
-    def install_file(self, el: AppImageListElement):
-        try:
-            self.provider.install_file(el)
-        except Exception as e:
-            logging.error(str(e))
-
-        self.update_installation_status()
 
     def update_status_callback(self, status: bool):
         if not status:
@@ -279,11 +275,22 @@ class AppDetails(Gtk.ScrolledWindow):
         self.desc_row_spinner.set_visible(status)
         self.desc_row_spinner.set_spinning(status)
 
-    def after_trust_buttons_interaction(self):
-        self.secondary_action_button.set_sensitive(False)
-        self.primary_action_button.set_sensitive(False)
+    def set_trust_button(self, trusted=False):
+        if trusted:
+            self.trust_app_check_button_revealer.set_reveal_child(False)
+            self.trust_app_check_button.set_active(True)
+            self.secondary_action_button.set_sensitive(True),
+            self.primary_action_button.set_sensitive(True)
+        else:
+            self.trust_app_check_button_revealer.set_reveal_child(True)
+            self.trust_app_check_button.set_active(False)
+            self.secondary_action_button.set_sensitive(False)
+            self.primary_action_button.set_sensitive(False)
 
+    def after_trust_buttons_interaction(self, widget):
         if self.trust_app_check_button.get_active():
+            self.app_list_element.trusted = True
+
             self.trust_app_check_button_revealer.set_reveal_child(False)
             self.title.set_label('...')
             self.load(load_completed_callback=lambda: [
