@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from .InstalledAppsList import InstalledAppsList
 from .AppDetails import AppDetails
 from .models.AppListElement import AppListElement
@@ -105,7 +106,7 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         self.container_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
         self.container_stack.set_visible_child(self.app_details)
 
-    def on_selected_local_file(self, file: Gio.File):
+    def on_selected_local_file(self, file: Gio.File) -> bool:
         if self.app_details.set_from_local_file(file):
             self.container_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
             self.container_stack.set_visible_child(self.app_details)
@@ -114,10 +115,14 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
                 self.set_default_size(500, 550)
                 self.left_button.set_visible(False)
 
-        else:
-            utils.send_notification(
-                Gio.Notification.new('Unsupported file type: Boutique can\'t handle these types of files.')
-            )
+            return True
+
+        
+        utils.send_notification(
+            Gio.Notification.new('Unsupported file type: Boutique can\'t handle these types of files.')
+        )
+
+        return False
 
     def on_show_installed_list(self, source: Gtk.Widget=None, _=None):
         self.container_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT)
@@ -148,7 +153,9 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         self.view_title_widget.set_visible(not in_app_details)
 
     def on_drop_event(self, widget, value, x, y):
-        print(value)
+        if isinstance(value, Gio.File):
+            logging.debug('Opening file from drag and drop')
+            return self.on_selected_local_file(value)
 
         return False
     
