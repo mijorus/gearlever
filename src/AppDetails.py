@@ -16,6 +16,9 @@ from .components.AppDetailsConflictModal import AppDetailsConflictModal
 
 class AppDetails(Gtk.ScrolledWindow):
     """The presentation screen for an application"""
+    __gsignals__ = {
+        "uninstalled-app": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
+    }
 
     def __init__(self):
         super().__init__()
@@ -187,9 +190,12 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_installation_status()
 
     def on_conflict_modal_close(self, widget, data: str):
-        if data != 'cancel':
-            self.app_list_element.update_logic = AppImageUpdateLogic[data]
-            self.on_primary_action_button_clicked()
+        if data == 'cancel':
+            self.app_list_element.update_logic = None
+            return
+
+        self.app_list_element.update_logic = AppImageUpdateLogic[data]
+        self.on_primary_action_button_clicked()
 
     def on_primary_action_button_clicked(self, button: Optional[Gtk.Button]=None):
         if self.app_list_element.installed_status == InstalledStatus.INSTALLED:
@@ -197,6 +203,7 @@ class AppDetails(Gtk.ScrolledWindow):
             self.update_installation_status()
 
             self.provider.uninstall(self.app_list_element)
+            self.emit('uninstalled-app', self)
 
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
             if self.provider.is_updatable(self.app_list_element) and not self.app_list_element.update_logic:

@@ -14,5 +14,7 @@ class AppDetailsConflictModal():
         self.modal.add_response('cancel', _('Cancel'))
         self.modal.set_response_appearance('cancel', Adw.ResponseAppearance.DESTRUCTIVE)
 
-        self.modal.add_response(AppImageUpdateLogic.REPLACE.value, _('Replace'))
         self.modal.add_response(AppImageUpdateLogic.KEEP.value, _('Keep both'))
+
+        self.modal.add_response(AppImageUpdateLogic.REPLACE.value, _('Replace'))
+        self.modal.set_response_appearance(AppImageUpdateLogic.REPLACE.value, Adw.ResponseAppearance.SUGGESTED)

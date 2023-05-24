@@ -55,6 +55,7 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         # Create the "stack" widget for the "installed apps" view
         self.installed_stack = Gtk.Stack()
         self.app_details = AppDetails()
+        self.app_details.connect('uninstalled-app', self.on_uninstalled_app)
 
         self.installed_apps_list = InstalledAppsList()
         self.installed_stack.add_child(self.installed_apps_list)
@@ -106,8 +107,11 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
             self.container_stack.set_visible_child(self.app_details)
 
             if self.from_file:
+                # open the app with a minimal UI when opening a single file
                 self.set_default_size(500, 550)
                 self.left_button.set_visible(False)
+                self.menu_button.set_visible(False)
+                self.set_resizable(False)
 
             return True
 
@@ -118,7 +122,7 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
 
         return False
 
-    def on_show_installed_list(self, source: Gtk.Widget=None, _=None):
+    def on_show_installed_list(self, source: Gtk.Widget=None, data=None):
         self.container_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT)
         self.left_button.set_visible(False)
 
@@ -131,10 +135,10 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
                 self.titlebar.set_title_widget(self.view_title_widget)
                 self.on_show_installed_list()
 
-    def on_app_lists_stack_change(self, widget, _):
+    def on_app_lists_stack_change(self, widget, data):
         pass
 
-    def on_container_stack_change(self, widget, _):
+    def on_container_stack_change(self, widget, data):
         in_app_details = self.container_stack.get_visible_child() is self.app_details
         self.left_button.set_visible(in_app_details)
         self.view_title_widget.set_visible(not in_app_details)
@@ -162,3 +166,9 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
             self.container_stack.set_visible_child(self.app_lists_stack)
 
         return Gdk.DragAction.COPY
+    
+    def on_uninstalled_app(self, widget, data):
+        if self.from_file:
+            return self.close()
+
+        self.on_show_installed_list(widget, data)

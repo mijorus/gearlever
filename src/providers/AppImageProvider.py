@@ -40,6 +40,7 @@ class AppImageListElement(AppListElement):
         self.extracted: Optional[ExtractedAppImage] = None
         self.trusted = (self.installed_status is InstalledStatus.INSTALLED)
         self.update_logic: Optional[AppImageUpdateLogic] = None
+        self.local_file = kwargs['local_file'] if 'local_file' in kwargs else False
 
 
 class AppImageProvider():
@@ -72,6 +73,8 @@ class AppImageProvider():
                     if get_giofile_content_type(gfile) == 'application/x-desktop':
 
                         entry = DesktopEntry.DesktopEntry(filename=gfile.get_path())
+                        version = entry.get('X-AppImage-Version')
+
                         if entry.getExec().startswith(default_folder_path) and GLib.file_test(entry.getExec(), GLib.FileTest.EXISTS):
                             list_element = AppImageListElement(
                                 name=entry.getName(),
@@ -82,7 +85,7 @@ class AppImageProvider():
                                 installed_status=InstalledStatus.INSTALLED,
                                 file_path=entry.getExec(),
                                 provider=self.name,
-                                desktop_entry=entry
+                                desktop_entry=entry,
                             )
 
                             output.append(list_element)
@@ -238,8 +241,8 @@ class AppImageProvider():
                     dest_destop_file_path = f'{GLib.get_user_data_dir()}/applications/{safe_app_name}.desktop'
                     dest_destop_file_path = dest_destop_file_path.replace(' ', '_')
 
-                    with open(extracted_appimage.desktop_file.get_path(), 'r') as desktop_file_python:
-                        desktop_file_content = desktop_file_python.read()
+                    with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
+                        desktop_file_content = dskt_file.read()
 
                         # replace executable path
                         desktop_file_content = re.sub(
@@ -262,11 +265,14 @@ class AppImageProvider():
                         if extracted_appimage.desktop_entry:
                             final_app_name = f"{extracted_appimage.desktop_entry.getName()}"
 
+                            version = extracted_appimage.desktop_entry.get('X-AppImage-Version') 
+                            
+                            if not version:
+                                version = extracted_appimage.md5[0:6]
+                                desktop_file_content += f'\nX-AppImage-Version={version}'
+
                             if el.update_logic is AppImageUpdateLogic.KEEP:
-                                if extracted_appimage.desktop_entry.get('X-AppImage-Version'):
-                                    final_app_name += f' ({extracted_appimage.desktop_entry.get("X-AppImage-Version")})'
-                                else:
-                                    final_app_name += f' ({extracted_appimage.md5[0:6]})'
+                                final_app_name += f' ({version})'
 
                         final_app_name = final_app_name.strip()
                         desktop_file_content = re.sub(
@@ -294,9 +300,9 @@ class AppImageProvider():
         try:
             self.post_file_extraction_cleanup(extracted_appimage)
         except Exception as g:
-            logging.error('Appimage cleanup error: ' + str(e))
+            logging.error('Appimage cleanup error: ' + str(g))
 
-        terminal.sh(['update-desktop-database'])
+        terminal.sh(['update-desktop-database', '-q'])
 
     def create_list_element_from_file(self, file: Gio.File) -> AppImageListElement:
         app_name: str = file.get_parse_name().split('/')[-1]
@@ -309,7 +315,8 @@ class AppImageProvider():
             installed_status=InstalledStatus.NOT_INSTALLED,
             file_path=file.get_path(),
             desktop_entry=None,
-            icon=None
+            icon=None,
+            local_file=True
         )
 
         if self.is_installed(el):
