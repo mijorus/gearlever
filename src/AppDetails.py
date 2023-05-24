@@ -96,9 +96,8 @@ class AppDetails(Gtk.ScrolledWindow):
         self.set_trust_button(trusted=True)
         self.set_child(clamp)
 
-    def set_app_list_element(self, el: AppImageListElement, local_file=False):
+    def set_app_list_element(self, el: AppImageListElement):
         self.app_list_element = el
-        self.local_file = local_file
         self.provider = appimage_provider
 
         self.load()

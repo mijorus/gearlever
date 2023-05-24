@@ -29,19 +29,21 @@ import subprocess
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
+LOG_FILE_MAX_N_LINES = 2000
+
 from gi.repository import Gtk, Gio, Adw, Gdk, GLib # noqa
 
 class BoutiqueApplication(Adw.Application):
     """The main application singleton class."""
 
-    def __init__(self):
+    def __init__(self, version):
         super().__init__(application_id='it.mijorus.boutique', flags=Gio.ApplicationFlags.HANDLES_OPEN)
-        self.create_action('quit', self.quit, ['<primary>q'])
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action)
         self.create_action('open_file', self.on_open_file_chooser)
         self.create_action('open_log_file', self.on_open_log_file)
         self.win = None
+        self.version = version
 
     def do_startup(self):
         log('\n\n---- Application startup')
@@ -64,14 +66,13 @@ class BoutiqueApplication(Adw.Application):
 
         self.win.present()
 
-    def do_open(self, files: list[Gio.File], n_files: int, _):
+    def do_open(self, files: list[Gio.File], n_files: int, data):
         if files and appimage_provider.can_install_file(files[0]):
             self.do_activate(from_file=True)
             self.win.on_selected_local_file(files[0])
 
     def on_about_action(self, widget, _):
-        """Callback for the app.about action."""
-        about = AboutDialog(self.props.active_window)
+        about = AboutDialog(self.props.active_window, self.version)
         about.present()
 
     def on_preferences_action(self, widget, _):
@@ -116,6 +117,7 @@ class BoutiqueApplication(Adw.Application):
         if not self.win:
             return
 
+        #!TODO: replace with a portal call
         sh(['xdg-open',  GLib.get_user_cache_dir() + '/logs'])
 
 
@@ -129,6 +131,16 @@ def main(version):
 
     print('Logging to file ' + log_file)
 
+    # Clear log file if it's too big
+    log_file_size = 0
+    if os.path.exists(log_file): 
+        with open(log_file, 'r').readlines() as f:
+            log_file_size = len(f.readlines())
+        
+        if log_file_size > LOG_FILE_MAX_N_LINES:
+            with open(log_file, 'w+') as f:
+                f.write('')
+
     app = BoutiqueApplication()
     logging.basicConfig(
         filename=log_file,
@@ -138,4 +150,4 @@ def main(version):
         force=True
     )
 
-    return app.run(sys.argv)
+    return app.run(sys.argv, version)

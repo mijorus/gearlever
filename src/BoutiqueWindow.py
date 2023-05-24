@@ -97,15 +97,6 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         self.container_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
         self.container_stack.set_visible_child(self.app_details)
 
-    # Show details for an app from global search
-    def on_selected_browsed_app(self, source: Gtk.Widget, custom_event: tuple[AppListElement, list[AppListElement]]):
-        list_element, alt_sources = custom_event
-
-        self.app_details.set_app_list_element(list_element, load_icon_from_network=True, alt_sources=alt_sources)
-        # self.app_details.set_alt_sources(alt_sources)
-        self.container_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
-        self.container_stack.set_visible_child(self.app_details)
-
     def on_selected_local_file(self, file: Gio.File) -> bool:
         if self.app_details.set_from_local_file(file):
             self.container_stack.set_transition_type(
@@ -140,17 +131,11 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
                 self.titlebar.set_title_widget(self.view_title_widget)
                 self.on_show_installed_list()
 
-        elif self.app_lists_stack.get_visible_child() == self.browse_stack:
-            if self.container_stack.get_visible_child() == self.app_details:
-                self.titlebar.set_title_widget(self.view_title_widget)
-                self.on_show_browsed_list()
-
     def on_app_lists_stack_change(self, widget, _):
-        if self.app_lists_stack.get_visible_child() == self.updates_stack:
-            self.updates_list.on_show()
+        pass
 
     def on_container_stack_change(self, widget, _):
-        in_app_details = self.container_stack.get_visible_child() == self.app_details
+        in_app_details = self.container_stack.get_visible_child() is self.app_details
         self.left_button.set_visible(in_app_details)
         self.view_title_widget.set_visible(not in_app_details)
 
@@ -174,6 +159,6 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         if self.visible_before_dragdrop_start:
             self.container_stack.set_visible_child(self.visible_before_dragdrop_start)
         else:
-            self.container_stack.set_visible_child(self.app_lists_stackp)
+            self.container_stack.set_visible_child(self.app_lists_stack)
 
         return Gdk.DragAction.COPY
