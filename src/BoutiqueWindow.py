@@ -25,7 +25,7 @@ from .lib import utils
 from gi.repository import Gtk, Adw, Gio, Gdk, GObject
 
 
-class BoutiqueWindow(Gtk.ApplicationWindow):
+class GearleverWindow(Gtk.ApplicationWindow):
     def __init__(self, from_file=False, **kwargs):
         super().__init__(**kwargs)
         self.from_file = from_file
@@ -40,7 +40,7 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         self.view_title_widget = Adw.ViewSwitcherTitle(stack=self.app_lists_stack)
         self.left_button = Gtk.Button(icon_name='go-previous', visible=False)
 
-        menu_obj = Gtk.Builder.new_from_resource('/it/mijorus/boutique/gtk/main-menu.xml')
+        menu_obj = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/main-menu.xml')
         self.menu_button = Gtk.MenuButton(icon_name='open-menu', menu_model=menu_obj.get_object('primary_menu'))
 
         self.titlebar.pack_start(self.left_button)
@@ -49,7 +49,7 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         self.titlebar.set_title_widget(self.view_title_widget)
         self.set_titlebar(self.titlebar)
 
-        self.set_title('Boutique')
+        self.set_title('Gear lever')
         self.set_default_size(700, 700)
 
         # Create the "stack" widget for the "installed apps" view
@@ -78,7 +78,7 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
         # change visible child of the container stack
         self.container_stack.connect('notify::visible-child', self.on_container_stack_change)
 
-        builder = Gtk.Builder.new_from_resource('/it/mijorus/boutique/gtk/drag-drop.ui')
+        builder = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/drag-drop.ui')
         self.drag_drop_ui = builder.get_object('drag-drop')
 
         self.drop_target_controller = Gtk.DropTarget.new(Gio.File, Gdk.DragAction.COPY)
@@ -117,7 +117,7 @@ class BoutiqueWindow(Gtk.ApplicationWindow):
 
         
         utils.send_notification(
-            Gio.Notification.new('Unsupported file type: Boutique can\'t handle these types of files.')
+            Gio.Notification.new('Unsupported file type: Gear lever can\'t handle these types of files.')
         )
 
         return False

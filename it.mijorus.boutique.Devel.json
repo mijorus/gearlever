@@ -1,9 +1,9 @@
 {
-    "app-id" : "it.mijorus.boutique",
+    "app-id" : "it.mijorus.gearlever",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "43",
     "sdk" : "org.gnome.Sdk",
-    "command" : "boutique",
+    "command" : "gearlever",
     "finish-args" : [
         "--share=ipc",
         "--share=network",
@@ -34,7 +34,7 @@
     "modules" : [
         "./python3-requirements.json",
         {
-            "name" : "boutique",
+            "name" : "gearlever",
             "builddir" : true,
             "buildsystem" : "meson",
             "sources" : [

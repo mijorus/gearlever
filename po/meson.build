@@ -1,1 +1,1 @@
-i18n.gettext('boutique', preset: 'glib')
+i18n.gettext('gearlever', preset: 'glib')

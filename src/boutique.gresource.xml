@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-    <gresource prefix="/it/mijorus/boutique">
+    <gresource prefix="/it/mijorus/gearlever">
         <file>window.ui</file>
         <file>gtk/main-menu.xml</file>
         <file>gtk/drag-drop.ui</file>

@@ -1,6 +1,6 @@
-data/it.mijorus.boutique.desktop.in
-data/it.mijorus.boutique.appdata.xml.in
-data/it.mijorus.boutique.gschema.xml
+data/it.mijorus.gearlever.desktop.in
+data/it.mijorus.gearlever.appdata.xml.in
+data/it.mijorus.gearlever.gschema.xml
 src/window.ui
 src/main.py
 src/window.py

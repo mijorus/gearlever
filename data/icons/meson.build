@@ -1,4 +1,4 @@
-application_id = 'it.mijorus.boutique'
+application_id = 'it.mijorus.gearlever'
 
 scalable_dir = join_paths('hicolor', 'scalable', 'apps')
 install_data(

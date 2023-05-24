@@ -1,9 +1,9 @@
 pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
-moduledir = join_paths(pkgdatadir, 'boutique')
+moduledir = join_paths(pkgdatadir, 'gearlever')
 gnome = import('gnome')
 
-gnome.compile_resources('boutique',
-  'boutique.gresource.xml',
+gnome.compile_resources('gearlever',
+  'gearlever.gresource.xml',
   gresource_bundle: true,
   install: true,
   install_dir: pkgdatadir,
@@ -20,8 +20,8 @@ conf.set('localedir', join_paths(get_option('prefix'), get_option('localedir')))
 conf.set('pkgdatadir', pkgdatadir)
 
 configure_file(
-  input: 'boutique.in',
-  output: 'boutique',
+  input: 'gearlever.in',
+  output: 'gearlever',
   configuration: conf,
   install: true,
   install_dir: get_option('bindir')

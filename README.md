@@ -1,11 +1,11 @@
-# Boutique
+# Gear lever
 
 This project is no longer in development 😢, sorry for that...
 
 ___
 
 <p align="center">
-  <img width="150" src="data/icons/hicolor/scalable/apps/it.mijorus.boutique.svg">
+  <img width="150" src="data/icons/hicolor/scalable/apps/it.mijorus.gearlever.svg">
 </p>
 
 <p align="center">
@@ -38,8 +38,8 @@ Thanks!
 
 ```sh
 # builds the project 
-flatpak-builder build/ it.mijorus.boutique.json --user --force-clean
+flatpak-builder build/ it.mijorus.gearlever.json --user --force-clean
 
 # runs the project
-flatpak-builder --run build/ it.mijorus.boutique.json boutique
+flatpak-builder --run build/ it.mijorus.gearlever.json gearlever
 ```

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schemalist gettext-domain="boutique">
-	<schema id="it.mijorus.boutique" path="/it/mijorus/boutique/">
+<schemalist gettext-domain="gearlever">
+	<schema id="it.mijorus.gearlever" path="/it/mijorus/gearlever/">
         <key name="appimages-default-folder" type="s">
             <default>"~/AppImages"</default>
         </key>

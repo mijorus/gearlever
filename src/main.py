@@ -19,7 +19,7 @@ from .lib.terminal import sh
 from .lib.utils import log
 from .providers.providers_list import appimage_provider
 from .AboutDialog import AboutDialog
-from .BoutiqueWindow import BoutiqueWindow
+from .GearleverWindow import GearleverWindow
 import sys
 import gi
 import logging
@@ -33,11 +33,11 @@ LOG_FILE_MAX_N_LINES = 2000
 
 from gi.repository import Gtk, Gio, Adw, Gdk, GLib # noqa
 
-class BoutiqueApplication(Adw.Application):
+class GearleverApplication(Adw.Application):
     """The main application singleton class."""
 
     def __init__(self, version):
-        super().__init__(application_id='it.mijorus.boutique', flags=Gio.ApplicationFlags.HANDLES_OPEN)
+        super().__init__(application_id='it.mijorus.gearlever', flags=Gio.ApplicationFlags.HANDLES_OPEN)
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action)
         self.create_action('open_file', self.on_open_file_chooser)
@@ -50,7 +50,7 @@ class BoutiqueApplication(Adw.Application):
         Adw.Application.do_startup(self)
 
         css_provider = Gtk.CssProvider()
-        css_provider.load_from_resource('/it/mijorus/boutique/assets/style.css')
+        css_provider.load_from_resource('/it/mijorus/gearlever/assets/style.css')
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
     def do_activate(self, from_file=False):
@@ -62,7 +62,7 @@ class BoutiqueApplication(Adw.Application):
         self.win = self.props.active_window
 
         if not self.win:
-            self.win = BoutiqueWindow(application=self, from_file=from_file)
+            self.win = GearleverWindow(application=self, from_file=from_file)
 
         self.win.present()
 
@@ -101,7 +101,7 @@ class BoutiqueApplication(Adw.Application):
         def on_open_file_chooser_reponse(widget, id):
             selected_file = widget.get_file()
 
-            if selected_file and isinstance(self.props.active_window, BoutiqueWindow):
+            if selected_file and isinstance(self.props.active_window, GearleverWindow):
                 self.props.active_window.on_selected_local_file(selected_file)
 
         self.file_chooser_dialog = Gtk.FileChooserNative(
@@ -124,7 +124,7 @@ class BoutiqueApplication(Adw.Application):
 def main(version):
     """The application's entry point."""
 
-    log_file = GLib.get_user_cache_dir() + '/logs/boutique.log'
+    log_file = GLib.get_user_cache_dir() + '/logs/gearlever.log'
 
     if not os.path.exists(GLib.get_user_cache_dir() + '/logs'):
          os.makedirs(GLib.get_user_cache_dir() + '/logs')
@@ -141,7 +141,7 @@ def main(version):
             with open(log_file, 'w+') as f:
                 f.write('')
 
-    app = BoutiqueApplication(version)
+    app = GearleverApplication(version)
     logging.basicConfig(
         filename=log_file,
         filemode='a',

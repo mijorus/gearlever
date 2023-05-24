@@ -1,6 +1,6 @@
 desktop_file = i18n.merge_file(
-  input: 'it.mijorus.boutique.desktop.in',
-  output: 'it.mijorus.boutique.desktop',
+  input: 'it.mijorus.gearlever.desktop.in',
+  output: 'it.mijorus.gearlever.desktop',
   type: 'desktop',
   po_dir: '../po',
   install: true,
@@ -15,8 +15,8 @@ if desktop_utils.found()
 endif
 
 appstream_file = i18n.merge_file(
-  input: 'it.mijorus.boutique.appdata.xml.in',
-  output: 'it.mijorus.boutique.appdata.xml',
+  input: 'it.mijorus.gearlever.appdata.xml.in',
+  output: 'it.mijorus.gearlever.appdata.xml',
   po_dir: '../po',
   install: true,
   install_dir: join_paths(get_option('datadir'), 'appdata')
@@ -29,7 +29,7 @@ if appstream_util.found()
   )
 endif
 
-install_data('it.mijorus.boutique.gschema.xml',
+install_data('it.mijorus.gearlever.gschema.xml',
   install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )
 

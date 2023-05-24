@@ -103,7 +103,7 @@ def send_notification(notification=Gio.Notification, tag=None):
 
 
 def get_gsettings() -> Gio.Settings:
-    return Gio.Settings.new('it.mijorus.boutique')
+    return Gio.Settings.new('it.mijorus.gearlever')
 
 
 def create_dict(*args: str):

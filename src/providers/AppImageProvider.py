@@ -46,7 +46,7 @@ class AppImageListElement(AppListElement):
 class AppImageProvider():
     def __init__(self):
         self.name = 'appimage'
-        self.icon = "/it/mijorus/boutique/assets/App-image-logo.png"
+        self.icon = "/it/mijorus/gearlever/assets/App-image-logo.png"
         logging.info(f'Activating {self.name} provider')
 
         self.supported_mimes = ['application/vnd.appimage', 'application/x-iso9660-appimage']
@@ -56,7 +56,7 @@ class AppImageProvider():
 
         self.modal_gfile: Optional[Gio.File] = None
         self.modal_gfile_createshortcut_check: Optional[Gtk.CheckButton] = None
-        self.extraction_folder = GLib.get_tmp_dir() + '/it.mijorus.boutique/appimages'
+        self.extraction_folder = GLib.get_tmp_dir() + '/it.mijorus.gearlever/appimages'
 
     def list_installed(self) -> List[AppImageListElement]:
         default_folder_path = self.get_appimages_default_destination_path()
@@ -212,7 +212,7 @@ class AppImageProvider():
                     os.mkdir(f'{appimages_destination_path}')
 
                 # how the appimage will be called
-                safe_app_name = f'boutique_{dest_file_info.get_name()}'
+                safe_app_name = f'gearlever_{dest_file_info.get_name()}'
                 if extracted_appimage.desktop_entry:
                     safe_app_name = f'{terminal.sanitize(extracted_appimage.desktop_entry.getName())}_{dest_file_info.get_name()}'
 
@@ -353,7 +353,7 @@ class AppImageProvider():
 
         # hash file
         md5_hash = get_file_hash(file)
-        temp_file = 'boutique_appimage_' + md5_hash
+        temp_file = 'gearlever_appimage_' + md5_hash
         folder = Gio.File.new_for_path(f'{self.extraction_folder}/{temp_file}')
 
         if folder.query_exists():

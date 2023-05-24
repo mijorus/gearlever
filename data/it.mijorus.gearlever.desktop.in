@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=Boutique
-Exec=boutique %U
-Icon=it.mijorus.boutique
+Name=Gear lever
+Exec=gearlever %U
+Icon=it.mijorus.gearlever
 Terminal=false
 Type=Application
 Categories=GTK;
