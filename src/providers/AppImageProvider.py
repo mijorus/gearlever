@@ -15,6 +15,7 @@ from ..components.CustomComponents import LabelStart
 from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalError
 from typing import List, Callable, Union, Dict, Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, GdkPixbuf, Gio, GObject, Pango, Adw
+from enum import Enum
 
 
 class ExtractedAppImage():
@@ -25,6 +26,9 @@ class ExtractedAppImage():
     desktop_file: Optional[Gio.File]
     icon_file: Optional[Gio.File]
 
+class AppImageUpdateLogic(Enum):
+    REPLACE = 'REPLACE'
+    KEEP = 'KEEP'
 
 class AppImageListElement(AppListElement):
     def __init__(self, file_path: str, desktop_entry: Optional[DesktopEntry.DesktopEntry], icon: Optional[str], **kwargs):
@@ -34,6 +38,7 @@ class AppImageListElement(AppListElement):
         self.icon = icon
         self.extracted: Optional[ExtractedAppImage] = None
         self.trusted = (self.installed_status is InstalledStatus.INSTALLED)
+        self.update_logic: Optional[AppImageUpdateLogic] = None
 
 
 class AppImageProvider():
@@ -180,7 +185,11 @@ class AppImageProvider():
         return get_giofile_content_type(file) in self.supported_mimes
 
     def is_updatable(self, el: AppImageListElement) -> bool:
-        return any([(item.name is el.name) for item in self.list_installed()])
+        for item in self.list_installed():
+            if item.name == el.name:
+                return True
+        
+        return False
 
     def install_file(self, el: AppImageListElement):
         logging.info('Installing appimage: ' + el.file_path)
@@ -194,6 +203,9 @@ class AppImageProvider():
             if extracted_appimage.extraction_folder.query_exists():
                 # Move .appimage to its default location
                 appimages_destination_path = self.get_appimages_default_destination_path()
+
+                if not os.path.exists(f'{appimages_destination_path}'):
+                    os.mkdir(f'{appimages_destination_path}')
 
                 # how the appimage will be called
                 safe_app_name = f'boutique_{dest_file_info.get_name()}'
@@ -284,7 +296,7 @@ class AppImageProvider():
         el = AppImageListElement(
             name=re.sub('\.appimage$', '', app_name, 1, re.IGNORECASE),
             description='',
-            app_id='MD5: ' + get_file_hash(file.get_path()),
+            app_id='MD5: ' + get_file_hash(file),
             provider=self.name,
             installed_status=InstalledStatus.NOT_INSTALLED,
             file_path=file.get_path(),

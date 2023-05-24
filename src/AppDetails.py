@@ -6,11 +6,12 @@ from .lib.utils import qq
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
 from .State import state
 from .models.AppListElement import InstalledStatus
-from .providers.AppImageProvider import AppImageListElement
+from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle
 from .lib.utils import cleanhtml, key_in_dict, set_window_cursor, get_application_window
 from .components.CustomComponents import CenteringBox, LabelStart
+from .components.AppDetailsConflictModal import AppDetailsConflictModal
 
 
 class AppDetails(Gtk.ScrolledWindow):
@@ -185,6 +186,10 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.update_installation_status()
 
+    def on_conflict_modal_close(self, widget, data: str):
+        if data != 'cancel':
+            self.app_list_element.update_logic = AppImageUpdateLogic[data]
+
     def on_primary_action_button_clicked(self, button: Gtk.Button):
         if self.app_list_element.installed_status == InstalledStatus.INSTALLED:
             self.app_list_element.set_installed_status(InstalledStatus.UNINSTALLING)
@@ -193,8 +198,12 @@ class AppDetails(Gtk.ScrolledWindow):
             self.provider.uninstall(self.app_list_element)
 
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
-            if self.provider.is_updatable(self.app_list_element):
-                pass
+            if self.provider.is_updatable(self.app_list_element) and not self.app_list_element.update_logic:
+                confirm_modal = AppDetailsConflictModal()
+
+                confirm_modal.connect('response', self.on_conflict_modal_close)
+                confirm_modal.present()
+                return
 
             self.app_list_element.set_installed_status(InstalledStatus.INSTALLING)
 

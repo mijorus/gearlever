@@ -134,14 +134,14 @@ def main(version):
     # Clear log file if it's too big
     log_file_size = 0
     if os.path.exists(log_file): 
-        with open(log_file, 'r').readlines() as f:
+        with open(log_file, 'r') as f:
             log_file_size = len(f.readlines())
         
         if log_file_size > LOG_FILE_MAX_N_LINES:
             with open(log_file, 'w+') as f:
                 f.write('')
 
-    app = BoutiqueApplication()
+    app = BoutiqueApplication(version)
     logging.basicConfig(
         filename=log_file,
         filemode='a',
@@ -150,4 +150,4 @@ def main(version):
         force=True
     )
 
-    return app.run(sys.argv, version)
+    return app.run(sys.argv)
