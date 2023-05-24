@@ -367,8 +367,6 @@ class AppImageProvider():
                 None, None, None, None
             )
 
-            dest_file_info = dest_file.query_info('*', Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS)
-
             if file_copy:
                 squash_folder = Gio.File.new_for_path(f'{folder.get_path()}/squashfs-root')
 
@@ -390,15 +388,35 @@ class AppImageProvider():
 
                     if desktop_file:
                         desktop_entry = DesktopEntry.DesktopEntry(desktop_file.get_path())
+                        desktop_entry_icon = desktop_entry.getIcon()
 
-                        if desktop_entry.getIcon():
+                        if desktop_entry_icon:
                             # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#the-filesystem-image
-                            for icon_xt in ['.svgz', '.svg', '.png']:
-                                icon_xt_f = Gio.File.new_for_path(extraction_folder.get_path() + f'/{desktop_entry.getIcon()}{icon_xt}')
+
+                            for icon_xt in ['.svg', '.png']:
+                                icon_xt_f = Gio.File.new_for_path(extraction_folder.get_path() + f'/{desktop_entry_icon}{icon_xt}')
 
                                 if icon_xt_f.query_exists():
                                     icon_file = icon_xt_f
                                     break
+
+                            if icon_xt_f.get_path().endswith('.png'):
+                                # always prefer svg(s) to png(s)
+                                # if a png is not found in the root of the filesystem, try somewhere else
+
+                                try_paths = [
+                                    extraction_folder.get_path() + f'/usr/share/icons/hicolor/scalable/apps/{desktop_entry_icon}.svg',
+                                    extraction_folder.get_path() + f'/usr/share/icons/hicolor/256x256/apps/{desktop_entry_icon}.png',
+                                    extraction_folder.get_path() + f'/usr/share/icons/hicolor/128x128/apps/{desktop_entry_icon}.png'
+                                ]
+
+                                for icon_xt in try_paths:
+                                    icon_xt_f = Gio.File.new_for_path(icon_xt)
+
+                                    if icon_xt_f.query_exists():
+                                        icon_file = icon_xt_f
+                                        break
+
 
         result = ExtractedAppImage()
         result.desktop_entry = desktop_entry
