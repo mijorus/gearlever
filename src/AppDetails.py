@@ -192,10 +192,10 @@ class AppDetails(Gtk.ScrolledWindow):
 
             self.provider.uninstall(self.app_list_element)
 
-        elif self.app_list_element.installed_status == InstalledStatus.UNINSTALLING:
-            pass
-
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
+            if self.provider.is_updatable(self.app_list_element):
+                pass
+
             self.app_list_element.set_installed_status(InstalledStatus.INSTALLING)
 
             if self.trust_app_check_button.get_active():
@@ -275,18 +275,6 @@ class AppDetails(Gtk.ScrolledWindow):
             self.app_list_element.installed_status = status
 
         self.update_installation_status()
-
-    # Load the boxed list with additional information
-    # def load_extra_details(self):
-    #     gtk_list = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
-
-    #     row = Adw.ActionRow(title=self.provider.name.capitalize(), subtitle='Package type')
-    #     logging.info(self.provider.icon)
-    #     row_img = Gtk.Image(resource=self.provider.icon, pixel_size=34)
-    #     row.add_prefix(row_img)
-    #     gtk_list.append(row)
-
-    #     self.extra_data.append(gtk_list)
 
     def show_row_spinner(self, status: bool):
         self.desc_row_spinner.set_visible(status)

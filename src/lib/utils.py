@@ -40,15 +40,8 @@ def add_page_to_adw_stack(stack: Adw.ViewStack, page: Gtk.Widget, name: str, tit
 
 
 # as per recommendation from @freylis, compile once only
-_html_clearner = None
-
-
+_html_clearner = re.compile('<.*?>')
 def cleanhtml(raw_html: str) -> str:
-    global _html_clearner
-
-    if not _html_clearner:
-        _html_clearner = re.compile('<.*?>')
-
     cleantext = re.sub(_html_clearner, '', raw_html)
     return cleantext
 
@@ -95,9 +88,12 @@ def gio_copy(file: Gio.File, destination: Gio.File):
     )
 
 
-def get_file_hash(file: Gio.File):
+def get_file_hash(file: Gio.File) -> str:
+    md5 = ''
     with open(file.get_path(), 'rb') as f:
-        return hashlib.md5(f.read()).hexdigest()
+        md5 = hashlib.md5(f.read()).hexdigest()
+
+    return md5
 
 
 def send_notification(notification=Gio.Notification, tag=None):

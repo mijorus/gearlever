@@ -10,7 +10,7 @@ from xdg import DesktopEntry
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async
-from ..lib.utils import log, cleanhtml, key_in_dict, gtk_image_from_url, qq, get_application_window, get_giofile_content_type, get_gsettings, create_dict, gio_copy, get_file_hash
+from ..lib.utils import log, cleanhtml, get_giofile_content_type, get_gsettings, create_dict, gio_copy, get_file_hash
 from ..components.CustomComponents import LabelStart
 from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalError
 from typing import List, Callable, Union, Dict, Optional, List, TypedDict
@@ -49,6 +49,7 @@ class AppImageProvider():
 
         self.modal_gfile: Optional[Gio.File] = None
         self.modal_gfile_createshortcut_check: Optional[Gtk.CheckButton] = None
+        self.extraction_folder = GLib.get_tmp_dir() + '/it.mijorus.boutique/appimages'
 
     def list_installed(self) -> List[AppImageListElement]:
         default_folder_path = self.get_appimages_default_destination_path()
@@ -178,8 +179,8 @@ class AppImageProvider():
     def can_install_file(self, file: Gio.File) -> bool:
         return get_giofile_content_type(file) in self.supported_mimes
 
-    def is_updatable(self, app_id: str) -> bool:
-        return False
+    def is_updatable(self, el: AppImageListElement) -> bool:
+        return any([(item.name is el.name) for item in self.list_installed()])
 
     def install_file(self, el: AppImageListElement):
         logging.info('Installing appimage: ' + el.file_path)
@@ -263,7 +264,8 @@ class AppImageProvider():
                         el.desktop_entry = DesktopEntry.DesktopEntry(filename=dest_destop_file_path)
                         el.installed_status = InstalledStatus.INSTALLED
             else:
-                logging.info('errore')
+                msg = 'Extraction folder does not exists'
+                logging.error(msg)
                 raise Exception('Extraction folder does not exists')
 
         except Exception as e:
@@ -272,7 +274,7 @@ class AppImageProvider():
         try:
             self.post_file_extraction_cleanup(extracted_appimage)
         except Exception as g:
-            pass
+            logging.error('Appimage cleanup error: ' + str(e))
 
         terminal.sh(['update-desktop-database'])
 
@@ -282,7 +284,7 @@ class AppImageProvider():
         el = AppImageListElement(
             name=re.sub('\.appimage$', '', app_name, 1, re.IGNORECASE),
             description='',
-            app_id='MD5: ' + hashlib.md5(open(file.get_path(), 'rb').read()).hexdigest(),
+            app_id='MD5: ' + get_file_hash(file.get_path()),
             provider=self.name,
             installed_status=InstalledStatus.NOT_INSTALLED,
             file_path=file.get_path(),
@@ -298,9 +300,9 @@ class AppImageProvider():
         return el
 
     def post_file_extraction_cleanup(self, extraction: ExtractedAppImage):
-        print(extraction.container_folder.get_path())
-        if extraction.container_folder.query_exists():
-            shutil.rmtree(extraction.container_folder.get_path())
+        if Gio.File.new_for_path(f'{self.extraction_folder}'):
+            logging.debug(f'Clearing {self.extraction_folder}')
+            shutil.rmtree(self.extraction_folder)
 
     def extract_appimage(self, el: AppImageListElement) -> ExtractedAppImage:
         if not el.trusted:
@@ -324,7 +326,7 @@ class AppImageProvider():
 
         # hash file
         temp_file = 'boutique_appimage_' + get_file_hash(file)
-        folder = Gio.File.new_for_path(GLib.get_tmp_dir() + f'/it.mijorus.boutique/appimages/{temp_file}')
+        folder = Gio.File.new_for_path(f'{self.extraction_folder}/{temp_file}')
 
         if folder.query_exists():
             shutil.rmtree(folder.get_path())
