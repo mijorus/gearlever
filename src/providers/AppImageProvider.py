@@ -25,6 +25,7 @@ class ExtractedAppImage():
     appimage_file: Gio.File
     desktop_file: Optional[Gio.File]
     icon_file: Optional[Gio.File]
+    md5: str
 
 class AppImageUpdateLogic(Enum):
     REPLACE = 'REPLACE'
@@ -261,6 +262,13 @@ class AppImageProvider():
                         if extracted_appimage.desktop_entry:
                             final_app_name = f"{extracted_appimage.desktop_entry.getName()}"
 
+                            if el.update_logic is AppImageUpdateLogic.KEEP:
+                                if extracted_appimage.desktop_entry.get('X-AppImage-Version'):
+                                    final_app_name += f' ({extracted_appimage.desktop_entry.get("X-AppImage-Version")})'
+                                else:
+                                    final_app_name += f' ({extracted_appimage.md5[0:6]})'
+
+                        final_app_name = final_app_name.strip()
                         desktop_file_content = re.sub(
                             r'Name=.*$',
                             f"Name={final_app_name}",
@@ -337,7 +345,8 @@ class AppImageProvider():
         temp_file = None
 
         # hash file
-        temp_file = 'boutique_appimage_' + get_file_hash(file)
+        md5_hash = get_file_hash(file)
+        temp_file = 'boutique_appimage_' + md5_hash
         folder = Gio.File.new_for_path(f'{self.extraction_folder}/{temp_file}')
 
         if folder.query_exists():
@@ -377,7 +386,7 @@ class AppImageProvider():
 
                         if desktop_entry.getIcon():
                             # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#the-filesystem-image
-                            for icon_xt in ['.png', '.svgz', '.svg']:
+                            for icon_xt in ['.svgz', '.svg', '.png']:
                                 icon_xt_f = Gio.File.new_for_path(extraction_folder.get_path() + f'/{desktop_entry.getIcon()}{icon_xt}')
 
                                 if icon_xt_f.query_exists():
@@ -391,6 +400,7 @@ class AppImageProvider():
         result.appimage_file = dest_file
         result.desktop_file = desktop_file
         result.icon_file = icon_file
+        result.md5 = md5_hash
 
         el.desktop_entry = desktop_entry
         el.extracted = result

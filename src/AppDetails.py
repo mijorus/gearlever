@@ -189,8 +189,9 @@ class AppDetails(Gtk.ScrolledWindow):
     def on_conflict_modal_close(self, widget, data: str):
         if data != 'cancel':
             self.app_list_element.update_logic = AppImageUpdateLogic[data]
+            self.on_primary_action_button_clicked()
 
-    def on_primary_action_button_clicked(self, button: Gtk.Button):
+    def on_primary_action_button_clicked(self, button: Optional[Gtk.Button]=None):
         if self.app_list_element.installed_status == InstalledStatus.INSTALLED:
             self.app_list_element.set_installed_status(InstalledStatus.UNINSTALLING)
             self.update_installation_status()
@@ -199,10 +200,10 @@ class AppDetails(Gtk.ScrolledWindow):
 
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
             if self.provider.is_updatable(self.app_list_element) and not self.app_list_element.update_logic:
-                confirm_modal = AppDetailsConflictModal()
+                confirm_modal = AppDetailsConflictModal(app_name=self.app_list_element.name)
 
-                confirm_modal.connect('response', self.on_conflict_modal_close)
-                confirm_modal.present()
+                confirm_modal.modal.connect('response', self.on_conflict_modal_close)
+                confirm_modal.modal.present()
                 return
 
             self.app_list_element.set_installed_status(InstalledStatus.INSTALLING)
