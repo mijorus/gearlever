@@ -2,8 +2,6 @@ import logging
 import re
 import os
 import shutil
-import hashlib
-import dbus
 import filecmp
 from xdg import DesktopEntry
 import subprocess
@@ -83,7 +81,7 @@ class AppImageProvider():
                                 description=entry.getComment(),
                                 icon=entry.getIcon(),
                                 app_id='',
-                                version=f"v. {entry.get('X-AppImage-Version')}",
+                                version=f"{entry.get('X-AppImage-Version')}",
                                 installed_status=InstalledStatus.INSTALLED,
                                 file_path=entry.getExec(),
                                 provider=self.name,
@@ -182,10 +180,9 @@ class AppImageProvider():
         return False
 
     def run(self, el: AppImageListElement):
-        os.chmod(el.file_path, 0o755)
-        # if not os.access(el.file_path, os.X_OK):
-
-        terminal.threaded_sh([f'{el.file_path}'])
+        if el.trusted:
+            os.chmod(el.file_path, 0o755)
+            terminal.threaded_sh([f'{el.file_path}'], return_stderr=True)
             
     def can_install_file(self, file: Gio.File) -> bool:
         return get_giofile_content_type(file) in self.supported_mimes
@@ -296,7 +293,7 @@ class AppImageProvider():
             logging.error('Appimage installation error: ' + str(e))
 
         try:
-            self.post_file_extraction_cleanup(extracted_appimage)
+            self.post_file_extraction_cleanup(extraction=extracted_appimage)
         except Exception as g:
             logging.error('Appimage cleanup error: ' + str(g))
 
@@ -368,7 +365,6 @@ class AppImageProvider():
 
         icon_file: Optional[Gio.File] = None
         desktop_file: Optional[Gio.File] = None
-
         desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
 
         # hash file
@@ -380,73 +376,69 @@ class AppImageProvider():
             shutil.rmtree(tmp_folder.get_path())
 
         if tmp_folder.make_directory_with_parents(None):
-            # tmp_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/{temp_file_name}')
-            # file_copy_success = file.copy(tmp_file, Gio.FileCopyFlags.OVERWRITE, None, None, None, None)
+            os.chmod(file.get_path(), 0o755)
 
-            if True:
-                os.chmod(file.get_path(), 0o755)
-                
-                mounted_appimage_path = self.mount_appimage(file.get_path())
-                extraction_folder = Gio.File.new_for_path(mounted_appimage_path)
+            mounted_appimage_path = self.mount_appimage(file.get_path())
+            extraction_folder = Gio.File.new_for_path(mounted_appimage_path)
 
-                try:
-                    if not extraction_folder.query_exists():
-                        raise InternalError('Missing mounted extraction folder')
+            try:
+                if not extraction_folder.query_exists():
+                    raise InternalError('Missing mounted extraction folder')
 
-                    for d in  os.listdir(f'{extraction_folder.get_path()}'):
-                        if not d.endswith('.desktop'):
-                            continue
+                for d in  os.listdir(f'{extraction_folder.get_path()}'):
+                    if not d.endswith('.desktop'):
+                        continue
 
-                        gdesk_file = Gio.File.new_for_path(f'{extraction_folder.get_path()}/{d}')
-                        if get_giofile_content_type(gdesk_file) == 'application/x-desktop':
-                            desktop_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/app.desktop')
-                            gdesk_file.copy(desktop_file, Gio.FileCopyFlags.OVERWRITE, None, None, None, None)
+                    gdesk_file = Gio.File.new_for_path(f'{extraction_folder.get_path()}/{d}')
+                    if get_giofile_content_type(gdesk_file) == 'application/x-desktop':
+                        desktop_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/app.desktop')
+                        gio_copy(file=gdesk_file, destination=desktop_file)
 
+                        break
+
+                desktop_entry_icon = None
+                if desktop_file:
+                    desktop_entry = DesktopEntry.DesktopEntry(desktop_file.get_path())
+                    desktop_entry_icon = desktop_entry.getIcon()
+
+                if desktop_entry_icon:
+                    # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#the-filesystem-image
+
+
+                    tmp_icon_file: Optional[Gio.File] = None
+                    for icon_xt in ['.svg', '.png']:
+                        icon_xt_f = Gio.File.new_for_path(extraction_folder.get_path() + f'/{desktop_entry_icon}{icon_xt}')
+
+                        if icon_xt_f.query_exists():
+                            tmp_icon_file = icon_xt_f
                             break
 
-                    desktop_entry_icon = None
-                    if desktop_file:
-                        desktop_entry = DesktopEntry.DesktopEntry(desktop_file.get_path())
-                        desktop_entry_icon = desktop_entry.getIcon()
+                    if icon_xt_f.get_path().endswith('.png'):
+                        # always prefer svg(s) to png(s)
+                        # if a png is not found in the root of the filesystem, try somewhere else
 
-                    if desktop_entry_icon:
-                        # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#the-filesystem-image
+                        try_paths = [
+                            extraction_folder.get_path() + f'/usr/share/icons/hicolor/scalable/apps/{desktop_entry_icon}.svg',
+                            extraction_folder.get_path() + f'/usr/share/icons/hicolor/256x256/apps/{desktop_entry_icon}.png',
+                            extraction_folder.get_path() + f'/usr/share/icons/hicolor/128x128/apps/{desktop_entry_icon}.png'
+                        ]
 
-
-                        tmp_icon_file: Optional[Gio.File] = None
-                        for icon_xt in ['.svg', '.png']:
-                            icon_xt_f = Gio.File.new_for_path(extraction_folder.get_path() + f'/{desktop_entry_icon}{icon_xt}')
+                        for icon_xt in try_paths:
+                            icon_xt_f = Gio.File.new_for_path(icon_xt)
 
                             if icon_xt_f.query_exists():
                                 tmp_icon_file = icon_xt_f
                                 break
 
-                        if icon_xt_f.get_path().endswith('.png'):
-                            # always prefer svg(s) to png(s)
-                            # if a png is not found in the root of the filesystem, try somewhere else
+                    if tmp_icon_file:
+                        icon_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/icon')
+                        gio_copy(file=tmp_icon_file, destination=icon_file)
 
-                            try_paths = [
-                                extraction_folder.get_path() + f'/usr/share/icons/hicolor/scalable/apps/{desktop_entry_icon}.svg',
-                                extraction_folder.get_path() + f'/usr/share/icons/hicolor/256x256/apps/{desktop_entry_icon}.png',
-                                extraction_folder.get_path() + f'/usr/share/icons/hicolor/128x128/apps/{desktop_entry_icon}.png'
-                            ]
+            except Exception as e:
+                logging.error(str(e))
 
-                            for icon_xt in try_paths:
-                                icon_xt_f = Gio.File.new_for_path(icon_xt)
-
-                                if icon_xt_f.query_exists():
-                                    tmp_icon_file = icon_xt_f
-                                    break
-
-                        if tmp_icon_file:
-                            icon_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/icon')
-                            tmp_icon_file.copy(icon_file, Gio.FileCopyFlags.OVERWRITE, None, None, None, None)
-
-                except Exception as e:
-                    logging.error(str(e))
-
-                finally:
-                    self.unmount_appimage()
+            finally:
+                self.unmount_appimage()
 
         result = ExtractedAppImage()
         result.desktop_entry = desktop_entry

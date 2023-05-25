@@ -229,6 +229,7 @@ class AppDetails(Gtk.ScrolledWindow):
             if self.trust_app_check_button.get_active():
                 try:
                     self.provider.run(self.app_list_element)
+
                 except Exception as e:
                     logging.error(str(e))
 
