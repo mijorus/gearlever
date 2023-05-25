@@ -6,6 +6,8 @@ import hashlib
 import dbus
 import filecmp
 from xdg import DesktopEntry
+import subprocess
+import signal
 
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
@@ -21,7 +23,6 @@ from enum import Enum
 class ExtractedAppImage():
     desktop_entry: Optional[DesktopEntry.DesktopEntry]
     extraction_folder: Optional[Gio.File]
-    container_folder: Gio.File
     appimage_file: Gio.File
     desktop_file: Optional[Gio.File]
     icon_file: Optional[Gio.File]
@@ -57,6 +58,7 @@ class AppImageProvider():
         self.modal_gfile: Optional[Gio.File] = None
         self.modal_gfile_createshortcut_check: Optional[Gtk.CheckButton] = None
         self.extraction_folder = GLib.get_tmp_dir() + '/it.mijorus.gearlever/appimages'
+        self.mount_appimage_process: Optional[subprocess.Popen]
 
     def list_installed(self) -> List[AppImageListElement]:
         default_folder_path = self.get_appimages_default_destination_path()
@@ -204,95 +206,90 @@ class AppImageProvider():
             extracted_appimage = self.extract_appimage(el)
             dest_file_info = extracted_appimage.appimage_file.query_info('*', Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS)
 
-            if extracted_appimage.extraction_folder.query_exists():
-                # Move .appimage to its default location
-                appimages_destination_path = self.get_appimages_default_destination_path()
+            # Move .appimage to its default location
+            appimages_destination_path = self.get_appimages_default_destination_path()
 
-                if not os.path.exists(f'{appimages_destination_path}'):
-                    os.mkdir(f'{appimages_destination_path}')
+            if not os.path.exists(f'{appimages_destination_path}'):
+                os.mkdir(f'{appimages_destination_path}')
 
-                # how the appimage will be called
-                safe_app_name = f'gearlever_{dest_file_info.get_name()}'
+            # how the appimage will be called
+            safe_app_name = f'gearlever_{dest_file_info.get_name()}'
+            if extracted_appimage.desktop_entry:
+                safe_app_name = f'{terminal.sanitize(extracted_appimage.desktop_entry.getName())}_{dest_file_info.get_name()}'
+
+            dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + safe_app_name + '.appimage')
+
+            if gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
+                log(f'file copied to {appimages_destination_path}')
+
+                os.chmod(dest_appimage_file.get_path(), 0o755)
+                el.file_path = dest_appimage_file.get_path()
+
+                # copy the icon file
+                icon_file = None
+                dest_appimage_icon_file = None
                 if extracted_appimage.desktop_entry:
-                    safe_app_name = f'{terminal.sanitize(extracted_appimage.desktop_entry.getName())}_{dest_file_info.get_name()}'
+                    icon_file = extracted_appimage.icon_file
 
-                dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + safe_app_name + '.appimage')
+                if icon_file and os.path.exists(icon_file.get_path()):
+                    if not os.path.exists(f'{appimages_destination_path}/.icons'):
+                        os.mkdir(f'{appimages_destination_path}/.icons')
 
-                if gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
-                    log(f'file copied to {appimages_destination_path}')
+                    dest_appimage_icon_file = Gio.File.new_for_path(f'{appimages_destination_path}/.icons/{safe_app_name}')
+                    gio_copy(icon_file, dest_appimage_icon_file)
 
-                    os.chmod(dest_appimage_file.get_path(), 0o755)
-                    el.file_path = dest_appimage_file.get_path()
+                # Move .desktop file to its default location
+                dest_destop_file_path = f'{GLib.get_user_data_dir()}/applications/{safe_app_name}.desktop'
+                dest_destop_file_path = dest_destop_file_path.replace(' ', '_')
 
-                    # copy the icon file
-                    icon_file = None
-                    dest_appimage_icon_file = None
+                with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
+                    desktop_file_content = dskt_file.read()
+
+                    # replace executable path
+                    desktop_file_content = re.sub(
+                        r'Exec=.*$',
+                        f"Exec={dest_appimage_file.get_path()}",
+                        desktop_file_content,
+                        flags=re.MULTILINE
+                    )
+
+                    # replace icon path
+                    desktop_file_content = re.sub(
+                        r'Icon=.*$',
+                        f"Icon={dest_appimage_icon_file.get_path() if dest_appimage_icon_file else 'applications-other'}",
+                        desktop_file_content,
+                        flags=re.MULTILINE
+                    )
+
+                    # generate a new app name
+                    final_app_name = extracted_appimage.appimage_file.get_basename()
                     if extracted_appimage.desktop_entry:
-                        icon_file = extracted_appimage.icon_file
+                        final_app_name = f"{extracted_appimage.desktop_entry.getName()}"
 
-                    if icon_file and os.path.exists(icon_file.get_path()):
-                        if not os.path.exists(f'{appimages_destination_path}/.icons'):
-                            os.mkdir(f'{appimages_destination_path}/.icons')
+                        version = extracted_appimage.desktop_entry.get('X-AppImage-Version') 
+                        
+                        if not version:
+                            version = extracted_appimage.md5[0:6]
+                            desktop_file_content += f'\nX-AppImage-Version={version}'
 
-                        dest_appimage_icon_file = Gio.File.new_for_path(f'{appimages_destination_path}/.icons/{safe_app_name}')
-                        gio_copy(icon_file, dest_appimage_icon_file)
+                        if el.update_logic is AppImageUpdateLogic.KEEP:
+                            final_app_name += f' ({version})'
 
-                    # Move .desktop file to its default location
-                    dest_destop_file_path = f'{GLib.get_user_data_dir()}/applications/{safe_app_name}.desktop'
-                    dest_destop_file_path = dest_destop_file_path.replace(' ', '_')
+                    final_app_name = final_app_name.strip()
+                    desktop_file_content = re.sub(
+                        r'Name=.*$',
+                        f"Name={final_app_name}",
+                        desktop_file_content,
+                        flags=re.MULTILINE
+                    )
 
-                    with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
-                        desktop_file_content = dskt_file.read()
+                    # finally, write the new .desktop file
+                    with open(dest_destop_file_path, 'w+') as desktop_file_python_dest:
+                        desktop_file_python_dest.write(desktop_file_content)
 
-                        # replace executable path
-                        desktop_file_content = re.sub(
-                            r'Exec=.*$',
-                            f"Exec={dest_appimage_file.get_path()}",
-                            desktop_file_content,
-                            flags=re.MULTILINE
-                        )
-
-                        # replace icon path
-                        desktop_file_content = re.sub(
-                            r'Icon=.*$',
-                            f"Icon={dest_appimage_icon_file.get_path() if dest_appimage_icon_file else 'applications-other'}",
-                            desktop_file_content,
-                            flags=re.MULTILINE
-                        )
-
-                        # generate a new app name
-                        final_app_name = extracted_appimage.appimage_file.get_basename()
-                        if extracted_appimage.desktop_entry:
-                            final_app_name = f"{extracted_appimage.desktop_entry.getName()}"
-
-                            version = extracted_appimage.desktop_entry.get('X-AppImage-Version') 
-                            
-                            if not version:
-                                version = extracted_appimage.md5[0:6]
-                                desktop_file_content += f'\nX-AppImage-Version={version}'
-
-                            if el.update_logic is AppImageUpdateLogic.KEEP:
-                                final_app_name += f' ({version})'
-
-                        final_app_name = final_app_name.strip()
-                        desktop_file_content = re.sub(
-                            r'Name=.*$',
-                            f"Name={final_app_name}",
-                            desktop_file_content,
-                            flags=re.MULTILINE
-                        )
-
-                        # finally, write the new .desktop file
-                        with open(dest_destop_file_path, 'w+') as desktop_file_python_dest:
-                            desktop_file_python_dest.write(desktop_file_content)
-
-                    if os.path.exists(dest_destop_file_path):
-                        el.desktop_entry = DesktopEntry.DesktopEntry(filename=dest_destop_file_path)
-                        el.installed_status = InstalledStatus.INSTALLED
-            else:
-                msg = 'Extraction folder does not exists'
-                logging.error(msg)
-                raise Exception('Extraction folder does not exists')
+                if os.path.exists(dest_destop_file_path):
+                    el.desktop_entry = DesktopEntry.DesktopEntry(filename=dest_destop_file_path)
+                    el.installed_status = InstalledStatus.INSTALLED
 
         except Exception as e:
             logging.error('Appimage installation error: ' + str(e))
@@ -331,6 +328,29 @@ class AppImageProvider():
             logging.debug(f'Clearing {self.extraction_folder}')
             shutil.rmtree(self.extraction_folder)
 
+    def mount_appimage(self, file_path: str) -> str:
+        # Start the process and redirect its standard output to a pipe
+        self.process = subprocess.Popen(['flatpak-spawn', '--host', file_path, '--appimage-mount'], stdout=subprocess.PIPE)
+
+        if self.process.stdout:
+            # Read the output of the process line by line
+            while True:
+                output = self.process.stdout.readline()
+                if output == '' and self.process.poll() is not None:
+                    break
+                if output:
+                    out = output.decode('utf-8').strip()
+                    logging.debug(f'Appimage, mounted {out}')
+
+                    return out
+        
+        raise InternalError('Failed to mount appimage')
+    
+    def unmount_appimage(self):
+        if self.process:
+            logging.debug(f'Appimage, unmounted')
+            self.process.send_signal(signal.SIGTERM)
+
     def extract_appimage(self, el: AppImageListElement) -> ExtractedAppImage:
         if not el.trusted:
             raise InternalError(message=_('Cannot load an untrusted AppImage'))
@@ -349,86 +369,89 @@ class AppImageProvider():
         desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
         extraction_folder = None
 
-        temp_file = None
-
         # hash file
         md5_hash = get_file_hash(file)
-        temp_file = 'gearlever_appimage_' + md5_hash
-        folder = Gio.File.new_for_path(f'{self.extraction_folder}/{temp_file}')
+        temp_file_name = 'gearlever_appimage_' + md5_hash
+        tmp_folder = Gio.File.new_for_path(f'{GLib.get_tmp_dir()}/{temp_file_name}')
 
-        if folder.query_exists():
-            shutil.rmtree(folder.get_path())
+        if tmp_folder.query_exists():
+            shutil.rmtree(tmp_folder.get_path())
 
-        if folder.make_directory_with_parents(None):
-            dest_file = Gio.File.new_for_path(folder.get_path() + f'/{temp_file}')
-            file_copy = file.copy(
-                dest_file,
-                Gio.FileCopyFlags.OVERWRITE,
-                None, None, None, None
-            )
+        if tmp_folder.make_directory_with_parents(None):
+            tmp_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/{temp_file_name}')
+            file_copy_success = file.copy(tmp_file, Gio.FileCopyFlags.OVERWRITE, None, None, None, None)
 
-            if file_copy:
-                squash_folder = Gio.File.new_for_path(f'{folder.get_path()}/squashfs-root')
+            if file_copy_success:
+                os.chmod(tmp_file.get_path(), 0o755)
+                
+                mounted_appimage_path = self.mount_appimage(tmp_file.get_path())
+                extraction_folder = Gio.File.new_for_path(mounted_appimage_path)
 
-                # set exec permission for dest_file
-                os.chmod(dest_file.get_path(), 0o755)
-                logging.info('Appimage, extracting ' + el.file_path)
-                terminal.sh(["bash", "-c", f"cd {folder.get_path()} && {dest_file.get_path()} --appimage-extract"])
+                try:
+                    if not extraction_folder.query_exists():
+                        raise InternalError('Missing mounted extraction folder')
 
-                if squash_folder.query_exists():
-                    extraction_folder = squash_folder
+                    desktop_file = None
+                    for d in  os.listdir(f'{extraction_folder.get_path()}'):
+                        if not d.endswith('.desktop'):
+                            continue
 
-                    desktop_files: list[str] = filter(lambda x: x.endswith('.desktop'), os.listdir(f'{folder.get_path()}/squashfs-root'))
-
-                    for d in desktop_files:
-                        gdesk_file = Gio.File.new_for_path(f'{folder.get_path()}/squashfs-root/{d}')
+                        gdesk_file = Gio.File.new_for_path(f'{extraction_folder.get_path()}/{d}')
                         if get_giofile_content_type(gdesk_file) == 'application/x-desktop':
                             desktop_file = gdesk_file
+                            # gdesk_file.copy(desktop_file, Gio.FileCopyFlags.OVERWRITE, None, None, None, None)
+
                             break
 
+                    desktop_entry_icon = None
                     if desktop_file:
                         desktop_entry = DesktopEntry.DesktopEntry(desktop_file.get_path())
                         desktop_entry_icon = desktop_entry.getIcon()
 
-                        if desktop_entry_icon:
-                            # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#the-filesystem-image
+                    if desktop_entry_icon:
+                        # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#the-filesystem-image
 
-                            for icon_xt in ['.svg', '.png']:
-                                icon_xt_f = Gio.File.new_for_path(extraction_folder.get_path() + f'/{desktop_entry_icon}{icon_xt}')
+                        for icon_xt in ['.svg', '.png']:
+                            icon_xt_f = Gio.File.new_for_path(extraction_folder.get_path() + f'/{desktop_entry_icon}{icon_xt}')
+
+                            if icon_xt_f.query_exists():
+                                icon_file = icon_xt_f
+                                break
+
+                        if icon_xt_f.get_path().endswith('.png'):
+                            # always prefer svg(s) to png(s)
+                            # if a png is not found in the root of the filesystem, try somewhere else
+
+                            try_paths = [
+                                extraction_folder.get_path() + f'/usr/share/icons/hicolor/scalable/apps/{desktop_entry_icon}.svg',
+                                extraction_folder.get_path() + f'/usr/share/icons/hicolor/256x256/apps/{desktop_entry_icon}.png',
+                                extraction_folder.get_path() + f'/usr/share/icons/hicolor/128x128/apps/{desktop_entry_icon}.png'
+                            ]
+
+                            for icon_xt in try_paths:
+                                icon_xt_f = Gio.File.new_for_path(icon_xt)
 
                                 if icon_xt_f.query_exists():
                                     icon_file = icon_xt_f
                                     break
 
-                            if icon_xt_f.get_path().endswith('.png'):
-                                # always prefer svg(s) to png(s)
-                                # if a png is not found in the root of the filesystem, try somewhere else
+                except Exception as e:
+                    logging.error(str(e))
 
-                                try_paths = [
-                                    extraction_folder.get_path() + f'/usr/share/icons/hicolor/scalable/apps/{desktop_entry_icon}.svg',
-                                    extraction_folder.get_path() + f'/usr/share/icons/hicolor/256x256/apps/{desktop_entry_icon}.png',
-                                    extraction_folder.get_path() + f'/usr/share/icons/hicolor/128x128/apps/{desktop_entry_icon}.png'
-                                ]
-
-                                for icon_xt in try_paths:
-                                    icon_xt_f = Gio.File.new_for_path(icon_xt)
-
-                                    if icon_xt_f.query_exists():
-                                        icon_file = icon_xt_f
-                                        break
-
+                finally:
+                    self.unmount_appimage()
 
         result = ExtractedAppImage()
         result.desktop_entry = desktop_entry
         result.extraction_folder = extraction_folder
-        result.container_folder = folder
-        result.appimage_file = dest_file
+        result.appimage_file = tmp_file
         result.desktop_file = desktop_file
         result.icon_file = icon_file
         result.md5 = md5_hash
 
         el.desktop_entry = desktop_entry
         el.extracted = result
+
 
         return result
 
