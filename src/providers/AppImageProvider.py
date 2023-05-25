@@ -21,8 +21,8 @@ from enum import Enum
 
 
 class ExtractedAppImage():
+    extraction_folder: str
     desktop_entry: Optional[DesktopEntry.DesktopEntry]
-    extraction_folder: Optional[Gio.File]
     appimage_file: Gio.File
     desktop_file: Optional[Gio.File]
     icon_file: Optional[Gio.File]
@@ -215,7 +215,8 @@ class AppImageProvider():
             # how the appimage will be called
             safe_app_name = f'gearlever_{dest_file_info.get_name()}'
             if extracted_appimage.desktop_entry:
-                safe_app_name = f'{terminal.sanitize(extracted_appimage.desktop_entry.getName())}_{dest_file_info.get_name()}'
+                safe_app_name = f'{extracted_appimage.desktop_entry.getName()}_{dest_file_info.get_name()}'
+                safe_app_name =  re.sub(r"[^a-zA-Z0-9]", "", safe_app_name)
 
             dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + safe_app_name + '.appimage')
 
@@ -324,12 +325,13 @@ class AppImageProvider():
         return el
 
     def post_file_extraction_cleanup(self, extraction: ExtractedAppImage):
-        if Gio.File.new_for_path(f'{self.extraction_folder}'):
+        if os.path.exists(self.extraction_folder):
             logging.debug(f'Clearing {self.extraction_folder}')
             shutil.rmtree(self.extraction_folder)
 
     def mount_appimage(self, file_path: str) -> str:
         # Start the process and redirect its standard output to a pipe
+        logging.debug('Running ' + ' '.join(['flatpak-spawn', '--host', file_path, '--appimage-mount']))
         self.process = subprocess.Popen(['flatpak-spawn', '--host', file_path, '--appimage-mount'], stdout=subprocess.PIPE)
 
         if self.process.stdout:
@@ -337,6 +339,7 @@ class AppImageProvider():
             while True:
                 output = self.process.stdout.readline()
                 if output == '' and self.process.poll() is not None:
+                    logging.debug('qwe')
                     break
                 if output:
                     out = output.decode('utf-8').strip()
@@ -367,39 +370,37 @@ class AppImageProvider():
         desktop_file: Optional[Gio.File] = None
 
         desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
-        extraction_folder = None
 
         # hash file
         md5_hash = get_file_hash(file)
         temp_file_name = 'gearlever_appimage_' + md5_hash
-        tmp_folder = Gio.File.new_for_path(f'{GLib.get_tmp_dir()}/{temp_file_name}')
+        tmp_folder = Gio.File.new_for_path(f'{self.extraction_folder}/{temp_file_name}')
 
         if tmp_folder.query_exists():
             shutil.rmtree(tmp_folder.get_path())
 
         if tmp_folder.make_directory_with_parents(None):
-            tmp_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/{temp_file_name}')
-            file_copy_success = file.copy(tmp_file, Gio.FileCopyFlags.OVERWRITE, None, None, None, None)
+            # tmp_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/{temp_file_name}')
+            # file_copy_success = file.copy(tmp_file, Gio.FileCopyFlags.OVERWRITE, None, None, None, None)
 
-            if file_copy_success:
-                os.chmod(tmp_file.get_path(), 0o755)
+            if True:
+                os.chmod(file.get_path(), 0o755)
                 
-                mounted_appimage_path = self.mount_appimage(tmp_file.get_path())
+                mounted_appimage_path = self.mount_appimage(file.get_path())
                 extraction_folder = Gio.File.new_for_path(mounted_appimage_path)
 
                 try:
                     if not extraction_folder.query_exists():
                         raise InternalError('Missing mounted extraction folder')
 
-                    desktop_file = None
                     for d in  os.listdir(f'{extraction_folder.get_path()}'):
                         if not d.endswith('.desktop'):
                             continue
 
                         gdesk_file = Gio.File.new_for_path(f'{extraction_folder.get_path()}/{d}')
                         if get_giofile_content_type(gdesk_file) == 'application/x-desktop':
-                            desktop_file = gdesk_file
-                            # gdesk_file.copy(desktop_file, Gio.FileCopyFlags.OVERWRITE, None, None, None, None)
+                            desktop_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/app.desktop')
+                            gdesk_file.copy(desktop_file, Gio.FileCopyFlags.OVERWRITE, None, None, None, None)
 
                             break
 
@@ -411,11 +412,13 @@ class AppImageProvider():
                     if desktop_entry_icon:
                         # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#the-filesystem-image
 
+
+                        tmp_icon_file: Optional[Gio.File] = None
                         for icon_xt in ['.svg', '.png']:
                             icon_xt_f = Gio.File.new_for_path(extraction_folder.get_path() + f'/{desktop_entry_icon}{icon_xt}')
 
                             if icon_xt_f.query_exists():
-                                icon_file = icon_xt_f
+                                tmp_icon_file = icon_xt_f
                                 break
 
                         if icon_xt_f.get_path().endswith('.png'):
@@ -432,8 +435,12 @@ class AppImageProvider():
                                 icon_xt_f = Gio.File.new_for_path(icon_xt)
 
                                 if icon_xt_f.query_exists():
-                                    icon_file = icon_xt_f
+                                    tmp_icon_file = icon_xt_f
                                     break
+
+                        if tmp_icon_file:
+                            icon_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/icon')
+                            tmp_icon_file.copy(icon_file, Gio.FileCopyFlags.OVERWRITE, None, None, None, None)
 
                 except Exception as e:
                     logging.error(str(e))
@@ -443,8 +450,8 @@ class AppImageProvider():
 
         result = ExtractedAppImage()
         result.desktop_entry = desktop_entry
-        result.extraction_folder = extraction_folder
-        result.appimage_file = tmp_file
+        result.extraction_folder = tmp_folder.get_path()
+        result.appimage_file = file
         result.desktop_file = desktop_file
         result.icon_file = icon_file
         result.md5 = md5_hash
