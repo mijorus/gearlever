@@ -60,41 +60,34 @@ class AppImageProvider():
 
     def list_installed(self) -> List[AppImageListElement]:
         default_folder_path = self.get_appimages_default_destination_path()
+        desktop_files_dir = f'{GLib.get_user_data_dir()}/applications/'
         output = []
 
-        try:
-            folder = Gio.File.new_for_path(default_folder_path)
-            desktop_files_dir = f'{GLib.get_user_data_dir()}/applications/'
+        for file_name in os.listdir(desktop_files_dir):
+            gfile = Gio.File.new_for_path(desktop_files_dir + f'/{file_name}')
 
-            for file_name in os.listdir(desktop_files_dir):
-                gfile = Gio.File.new_for_path(desktop_files_dir + f'/{file_name}')
+            try:
+                if get_giofile_content_type(gfile) == 'application/x-desktop':
 
-                try:
-                    if get_giofile_content_type(gfile) == 'application/x-desktop':
+                    entry = DesktopEntry.DesktopEntry(filename=gfile.get_path())
 
-                        entry = DesktopEntry.DesktopEntry(filename=gfile.get_path())
-                        version = entry.get('X-AppImage-Version')
+                    if entry.getExec().startswith(default_folder_path) and GLib.file_test(entry.getExec(), GLib.FileTest.EXISTS):
+                        list_element = AppImageListElement(
+                            name=entry.getName(),
+                            description=entry.getComment(),
+                            icon=entry.getIcon(),
+                            app_id='',
+                            version=f"{entry.get('X-AppImage-Version')}",
+                            installed_status=InstalledStatus.INSTALLED,
+                            file_path=entry.getExec(),
+                            provider=self.name,
+                            desktop_entry=entry,
+                        )
 
-                        if entry.getExec().startswith(default_folder_path) and GLib.file_test(entry.getExec(), GLib.FileTest.EXISTS):
-                            list_element = AppImageListElement(
-                                name=entry.getName(),
-                                description=entry.getComment(),
-                                icon=entry.getIcon(),
-                                app_id='',
-                                version=f"{entry.get('X-AppImage-Version')}",
-                                installed_status=InstalledStatus.INSTALLED,
-                                file_path=entry.getExec(),
-                                provider=self.name,
-                                desktop_entry=entry,
-                            )
+                        output.append(list_element)
 
-                            output.append(list_element)
-
-                except Exception as e:
-                    logging.warn(e)
-
-        except Exception as e:
-            logging.error(e)
+            except Exception as e:
+                logging.warn(e)
 
         return output
 
