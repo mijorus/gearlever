@@ -23,5 +23,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build-dir/*.flatpak
+          files: gearlever.flatpak
 
