@@ -16,6 +16,7 @@ from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalErr
 from typing import List, Callable, Union, Dict, Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, GdkPixbuf, Gio, GObject, Pango, Adw
 from enum import Enum
+from dataclasses import dataclass
 
 
 class ExtractedAppImage():
@@ -30,33 +31,41 @@ class AppImageUpdateLogic(Enum):
     REPLACE = 'REPLACE'
     KEEP = 'KEEP'
 
-class AppImageListElement(AppListElement):
-    def __init__(self, file_path: str, desktop_entry: Optional[DesktopEntry.DesktopEntry], icon: Optional[str], **kwargs):
-        super().__init__(**kwargs)
-        self.file_path = file_path
-        self.desktop_entry = desktop_entry
-        self.icon = icon
-        self.extracted: Optional[ExtractedAppImage] = None
-        self.trusted = (self.installed_status is InstalledStatus.INSTALLED)
-        self.update_logic: Optional[AppImageUpdateLogic] = None
-        self.local_file = kwargs['local_file'] if 'local_file' in kwargs else False
+@dataclass
+class AppImageListElement():
+    name: str 
+    description: str
+    app_id: str
+    provider: str
+    installed_status: InstalledStatus
+    file_path: str
+    generation: int
+    trusted: bool = False
+    desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
+    update_logic: Optional[AppImageUpdateLogic] = None
+    version: Optional[str] = None
+    icon: Optional[str] = None
+    extracted: Optional[ExtractedAppImage] = None
+    local_file: Optional[Gio.File] = None
+    size: Optional[float] = None
+
+    def set_installed_status(self, installed_status: InstalledStatus):
+        self.installed_status = installed_status
 
 
 class AppImageProvider():
     def __init__(self):
-        self.name = 'appimage'
+        self.name = 'AppImage'
         self.icon = "/it/mijorus/gearlever/assets/App-image-logo.png"
         logging.info(f'Activating {self.name} provider')
 
-        self.supported_mimes = ['application/vnd.appimage', 'application/x-iso9660-appimage']
+        self.supported_mimes = ['application/x-iso9660-appimage', 'application/vnd.appimage']
 
         self.general_messages = []
         self.update_messages = []
 
-        self.modal_gfile: Optional[Gio.File] = None
-        self.modal_gfile_createshortcut_check: Optional[Gtk.CheckButton] = None
         self.extraction_folder = GLib.get_tmp_dir() + '/it.mijorus.gearlever/appimages'
-        self.mount_appimage_process: Optional[subprocess.Popen]
+        self.mount_appimage_process: Optional[subprocess.Popen] = None
 
     def list_installed(self) -> List[AppImageListElement]:
         default_folder_path = self.get_appimages_default_destination_path()
@@ -82,6 +91,8 @@ class AppImageProvider():
                             file_path=entry.getExec(),
                             provider=self.name,
                             desktop_entry=entry,
+                            trusted=True,
+                            generation=self.get_appimage_generation(Gio.File.new_for_path(entry.getExec()))
                         )
 
                         output.append(list_element)
@@ -152,7 +163,7 @@ class AppImageProvider():
         el.set_installed_status(InstalledStatus.NOT_INSTALLED)
 
     def install(self, el: AppListElement):
-        print('qwe')
+        pass
 
     def search(self, query: str) -> List[AppListElement]:
         return []
@@ -176,7 +187,7 @@ class AppImageProvider():
         if el.trusted:
             os.chmod(el.file_path, 0o755)
             terminal.threaded_sh([f'{el.file_path}'], return_stderr=True)
-            
+
     def can_install_file(self, file: Gio.File) -> bool:
         return get_giofile_content_type(file) in self.supported_mimes
 
@@ -257,7 +268,7 @@ class AppImageProvider():
                     if extracted_appimage.desktop_entry:
                         final_app_name = f"{extracted_appimage.desktop_entry.getName()}"
 
-                        version = extracted_appimage.desktop_entry.get('X-AppImage-Version') 
+                        version = extracted_appimage.desktop_entry.get('X-AppImage-Version')
                         
                         if not version:
                             version = extracted_appimage.md5[0:6]
@@ -266,9 +277,16 @@ class AppImageProvider():
                         if el.update_logic is AppImageUpdateLogic.KEEP:
                             final_app_name += f' ({version})'
 
+                            desktop_file_content = re.sub(
+                                r'^Name\[(.*?)\]=.*$',
+                                '',
+                                desktop_file_content,
+                                flags=re.MULTILINE
+                            )
+
                     final_app_name = final_app_name.strip()
                     desktop_file_content = re.sub(
-                        r'Name=.*$',
+                        r'^Name=.*$',
                         f"Name={final_app_name}",
                         desktop_file_content,
                         flags=re.MULTILINE
@@ -292,7 +310,13 @@ class AppImageProvider():
 
         terminal.sh(['update-desktop-database', '-q'])
 
+    def get_appimage_generation(self, file: Gio.File) -> int:
+        return self.supported_mimes.index(get_giofile_content_type(file)) + 1
+
     def create_list_element_from_file(self, file: Gio.File) -> AppImageListElement:
+        if not self.can_install_file(file):
+            raise InternalError(message='This file type is not supported')
+        
         app_name: str = file.get_parse_name().split('/')[-1]
 
         el = AppImageListElement(
@@ -304,7 +328,8 @@ class AppImageProvider():
             file_path=file.get_path(),
             desktop_entry=None,
             icon=None,
-            local_file=True
+            local_file=True,
+            generation=self.get_appimage_generation(file)
         )
 
         if self.is_installed(el):
@@ -329,7 +354,6 @@ class AppImageProvider():
             while True:
                 output = self.process.stdout.readline()
                 if output == '' and self.process.poll() is not None:
-                    logging.debug('qwe')
                     break
                 if output:
                     out = output.decode('utf-8').strip()
@@ -353,7 +377,7 @@ class AppImageProvider():
 
         file = Gio.File.new_for_path(el.file_path)
 
-        if get_giofile_content_type(file) in ['application/x-iso9660-appimage']:
+        if el.generation < 2:
             raise Exception('This file format cannot be extracted!')
 
         icon_file: Optional[Gio.File] = None

@@ -130,7 +130,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.title.set_label(cleanhtml(self.app_list_element.name))
 
-        version_label = key_in_dict(self.app_list_element.extra_data, 'version')
+        version_label = self.app_list_element.version
         version_label = '' if not version_label else f'<small>{version_label}</small>'
 
         self.version.set_markup(version_label)
@@ -153,8 +153,7 @@ class AppDetails(Gtk.ScrolledWindow):
         # Load the boxed list with additional information
         gtk_list = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
 
-        row = Adw.ActionRow(title=self.provider.name.capitalize(), subtitle='Package type')
-        logging.info(self.provider.icon)
+        row = Adw.ActionRow(title=f'{self.provider.name.capitalize()} Gen. {self.app_list_element.generation}', subtitle='Package type')
         row_img = Gtk.Image(resource=self.provider.icon, pixel_size=34)
         row.add_prefix(row_img)
         gtk_list.append(row)

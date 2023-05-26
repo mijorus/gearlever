@@ -6,6 +6,7 @@ from typing import Dict, List, Optional
 import re
 
 from .providers.providers_list import appimage_provider
+from .providers.AppImageProvider import AppImageListElement
 from .models.AppListElement import AppListElement, InstalledStatus
 from .models.Models import AppUpdateElement
 from .components.FilterEntry import FilterEntry
@@ -80,11 +81,11 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.installed_apps_list= Gtk.ListBox(css_classes=["boxed-list"])
         self.installed_apps_list_rows = []
 
-        installed: List[AppListElement] = appimage_provider.list_installed()
+        installed: List[AppImageListElement] = appimage_provider.list_installed()
 
         for i in installed:
             list_row = AppListBoxItem(i, activatable=True, selectable=True, hexpand=True)
-            list_row.set_update_version(key_in_dict(i.extra_data, 'version'))
+            list_row.set_update_version(i.version)
 
             list_row.load_icon()
             self.installed_apps_list_rows.append(list_row)
