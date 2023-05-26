@@ -227,15 +227,21 @@ class AppDetails(Gtk.ScrolledWindow):
         if self.app_list_element.installed_status in [InstalledStatus.INSTALLED, InstalledStatus.NOT_INSTALLED]:
             if self.trust_app_check_button.get_active():
                 try:
+                    pre_launch_label = self.secondary_action_button.get_label()
+                    GLib.idle_add(lambda: self.secondary_action_button.set_label(_('Launching...')))
                     self.provider.run(self.app_list_element)
+                    self.post_launch_animation(restore_as=pre_launch_label)
 
                 except Exception as e:
                     logging.error(str(e))
 
-        elif self.app_list_element.installed_status == InstalledStatus.UPDATE_AVAILABLE:
-            self.app_list_element.set_installed_status(InstalledStatus.UPDATING)
-            self.update_installation_status()
-            self.provider.update(self.app_list_element)
+    @_async
+    def post_launch_animation(self, restore_as):
+        GLib.idle_add(lambda: self.secondary_action_button.set_sensitive(False))
+        time.sleep(3)
+
+        GLib.idle_add(lambda: self.secondary_action_button.set_label(restore_as))
+        GLib.idle_add(lambda: self.secondary_action_button.set_sensitive(True))
 
     def update_status_callback(self, status: bool):
         if not status:
