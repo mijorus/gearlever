@@ -18,6 +18,7 @@
 import logging
 from .InstalledAppsList import InstalledAppsList
 from .AppDetails import AppDetails
+from .providers.providers_list import appimage_provider
 from .models.AppListElement import AppListElement
 from .State import state
 from .lib import utils
@@ -89,6 +90,8 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         self.container_stack.add_controller(self.drop_target_controller)
         self.container_stack.add_child(self.drag_drop_ui)
+
+        self.connect('close-request', self.on_close_request)
 
         self.set_child(self.container_stack)
 
@@ -172,3 +175,6 @@ class GearleverWindow(Gtk.ApplicationWindow):
             return self.close()
 
         self.on_show_installed_list(widget, data)
+
+    def on_close_request(self, widget):
+        appimage_provider.extraction_folder_cleanup()

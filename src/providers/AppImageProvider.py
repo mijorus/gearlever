@@ -5,6 +5,7 @@ import shutil
 import filecmp
 from xdg import DesktopEntry
 import subprocess
+import random
 import signal
 
 from ..lib import terminal
@@ -304,7 +305,7 @@ class AppImageProvider():
             logging.error('Appimage installation error: ' + str(e))
 
         try:
-            self.post_file_extraction_cleanup(extraction=extracted_appimage)
+            self.extraction_folder_cleanup()
         except Exception as g:
             logging.error('Appimage cleanup error: ' + str(g))
 
@@ -339,34 +340,36 @@ class AppImageProvider():
 
         return el
 
-    def post_file_extraction_cleanup(self, extraction: ExtractedAppImage):
+    def extraction_folder_cleanup(self):
+        logging.debug(f'Clearing {self.extraction_folder}')
         if os.path.exists(self.extraction_folder):
-            logging.debug(f'Clearing {self.extraction_folder}')
             shutil.rmtree(self.extraction_folder)
 
     def mount_appimage(self, file_path: str) -> str:
-        # Start the process and redirect its standard output to a pipe
-        logging.debug('Running ' + ' '.join(['flatpak-spawn', '--host', file_path, '--appimage-mount']))
-        self.process = subprocess.Popen(['flatpak-spawn', '--host', file_path, '--appimage-mount'], stdout=subprocess.PIPE)
+        random_str = ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))
+        dest_path = f'{self.extraction_folder}/gearlever_{random_str}'
 
-        if self.process.stdout:
-            # Read the output of the process line by line
-            while True:
-                output = self.process.stdout.readline()
-                if output == '' and self.process.poll() is not None:
-                    break
-                if output:
-                    out = output.decode('utf-8').strip()
-                    logging.debug(f'Appimage, mounted {out}')
+        file = Gio.File.new_for_path(file_path)
+        dest = Gio.File.new_for_path(f'{dest_path}/tmp.appimage')
 
-                    return out
-        
-        raise InternalError('Failed to mount appimage')
-    
+        if not os.path.exists(f'{dest_path}'):
+            os.mkdir(f'{dest_path}')
+
+        gio_copy(file, dest)
+
+        os.chmod(dest.get_path(), 0o755)
+
+        prefix = ['flatpak-spawn', '--host', dest.get_path(), '--appimage-extract']
+        for match in ['*.desktop', 'usr/share/icons/*', '*.svg', '*.png']:
+            run = [*prefix, match]
+
+            logging.debug('Running ' + ' '.join(run))
+            subprocess.run(run, cwd=dest_path, stdout=subprocess.PIPE)
+
+        return f'{dest_path}/squashfs-root'
+
     def unmount_appimage(self):
-        if self.process:
-            logging.debug(f'Appimage, unmounted')
-            self.process.send_signal(signal.SIGTERM)
+        return
 
     def extract_appimage(self, el: AppImageListElement) -> ExtractedAppImage:
         if not el.trusted:
