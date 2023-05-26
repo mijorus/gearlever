@@ -250,7 +250,7 @@ class AppImageProvider():
 
                     # replace executable path
                     desktop_file_content = re.sub(
-                        r'Exec=.*$',
+                        r'^Exec=.*$',
                         f"Exec={dest_appimage_file.get_path()}",
                         desktop_file_content,
                         flags=re.MULTILINE
@@ -258,7 +258,7 @@ class AppImageProvider():
 
                     # replace icon path
                     desktop_file_content = re.sub(
-                        r'Icon=.*$',
+                        r'^Icon=.*$',
                         f"Icon={dest_appimage_icon_file.get_path() if dest_appimage_icon_file else 'applications-other'}",
                         desktop_file_content,
                         flags=re.MULTILINE
@@ -359,12 +359,22 @@ class AppImageProvider():
 
         os.chmod(dest.get_path(), 0o755)
 
-        prefix = ['flatpak-spawn', '--host', dest.get_path(), '--appimage-extract']
-        for match in ['*.desktop', 'usr/share/icons/*', '*.svg', '*.png']:
-            run = [*prefix, match]
+        prefix = [dest.get_path(), '--appimage-extract']
 
-            logging.debug('Running ' + ' '.join(run))
-            subprocess.run(run, cwd=dest_path, stdout=subprocess.PIPE)
+        extraction_output = ''
+
+        # check if the appimage supports partial extraction 
+        appimage_help = terminal.sh([dest.get_path(), '--appimage-help'], cwd=dest_path)
+        if '--appimage-extract [<pattern>]' in appimage_help:
+            for match in ['*.desktop', 'usr/share/icons/*', '*.svg', '*.png']:
+                run = [*prefix, match]
+
+                extraction_output = terminal.sh(run, cwd=dest_path)
+        else:
+            logging.debug('This AppImage does not support partial extraction, running ' + ' '.join(prefix))
+            extraction_output = terminal.sh([*prefix], cwd=dest_path)
+
+        logging.debug(f'Extracted appimage {file.get_path()} with log:\n\n======\n\n{extraction_output}\n\n======\n\n')
 
         return f'{dest_path}/squashfs-root'
 
@@ -439,11 +449,14 @@ class AppImageProvider():
 
                         try_paths = [
                             extraction_folder.get_path() + f'/usr/share/icons/hicolor/scalable/apps/{desktop_entry_icon}.svg',
+                            extraction_folder.get_path() + f'/usr/share/icons/hicolor/512x512/apps/{desktop_entry_icon}.png',
                             extraction_folder.get_path() + f'/usr/share/icons/hicolor/256x256/apps/{desktop_entry_icon}.png',
-                            extraction_folder.get_path() + f'/usr/share/icons/hicolor/128x128/apps/{desktop_entry_icon}.png'
+                            extraction_folder.get_path() + f'/usr/share/icons/hicolor/128x128/apps/{desktop_entry_icon}.png',
+                            extraction_folder.get_path() + f'/usr/share/icons/hicolor/96x96apps/{desktop_entry_icon}.png'
                         ]
 
                         for icon_xt in try_paths:
+                            logging.debug('Looking for icon in: ' + icon_xt)
                             icon_xt_f = Gio.File.new_for_path(icon_xt)
 
                             if icon_xt_f.query_exists():
