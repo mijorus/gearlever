@@ -8,17 +8,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-44
+      options: --privileged
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Flatpak environment
-        uses: flathub/actions/setup-flatpak@v1
-
-      - name: Build Flatpak
-        run: flatpak-builder build-dir it.mijorus.gearlever.Devel.json
-
+    steps:    
+      - uses: actions/checkout@v3
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6.1
+        with:
+          bundle: gearlever.flatpak
+          manifest-path: it.mijorus.gearlever.Devel.json
       - name: Publish pre-release package
         uses: softprops/action-gh-release@v1
         env:
