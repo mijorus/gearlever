@@ -1,0 +1,27 @@
+name: Flatpak Build
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Flatpak environment
+        uses: flathub/actions/setup-flatpak@v1
+
+      - name: Build Flatpak
+        run: flatpak-builder build-dir it.mijorus.gearlever.Devel.json
+
+      - name: Publish pre-release package
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build-dir/*.flatpak
+
