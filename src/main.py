@@ -21,6 +21,7 @@ from .lib.costants import APP_ID, APP_NAME
 from .providers.providers_list import appimage_provider
 from .AboutDialog import AboutDialog
 from .GearleverWindow import GearleverWindow
+from .preferences import Preferences
 import sys
 import gi
 import logging
@@ -78,6 +79,9 @@ class GearleverApplication(Adw.Application):
     def on_preferences_action(self, widget, _):
         """Callback for the app.preferences action."""
         print('app.preferences action activated')
+        pref = Preferences(transient_for=self.win)
+        pref.present()
+
 
     def create_action(self, name, callback, shortcuts=None):
         """Add an application action.
@@ -94,7 +98,7 @@ class GearleverApplication(Adw.Application):
         if shortcuts:
             self.set_accels_for_action(f"app.{name}", shortcuts)
 
-    def on_open_file_chooser_reponse(self, dialog, result):
+    def on_open_file_chooser_response(self, dialog, result):
         selected_file = dialog.open_finish(result)
 
         if selected_file and isinstance(self.props.active_window, GearleverWindow):
