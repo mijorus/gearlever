@@ -79,7 +79,7 @@ class GearleverApplication(Adw.Application):
     def on_preferences_action(self, widget, _):
         """Callback for the app.preferences action."""
         print('app.preferences action activated')
-        pref = Preferences(transient_for=self.win)
+        pref = Preferences()
         pref.present()
 
     def create_action(self, name, callback, shortcuts=None):
@@ -116,7 +116,7 @@ class GearleverApplication(Adw.Application):
         dialog.open(
             parent=self.win,
             cancellable=None,
-            callback=self.on_open_file_chooser_reponse
+            callback=self.on_open_file_chooser_response
         )
 
     def on_open_log_file(self, widget, _):

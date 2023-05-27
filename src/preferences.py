@@ -4,6 +4,7 @@ import logging
 
 from .models.Models import InternalError
 from .lib.costants import APP_ID
+from .State import state
 
 gi.require_version('Gtk', '4.0')
 
@@ -12,6 +13,7 @@ from gi.repository import Adw, Gtk, Gio, GLib  # noqa
 class Preferences(Adw.PreferencesWindow):
     def __init__(self, **kwargs) :
         super().__init__(**kwargs)
+        self.application_id = APP_ID
 
         self.settings = Gio.Settings.new(APP_ID)
  
@@ -46,6 +48,7 @@ class Preferences(Adw.PreferencesWindow):
         if selected_file.query_exists() and selected_file.get_path().startswith(GLib.get_home_dir()):
             self.settings.set_string('appimages-default-folder', selected_file.get_path())
             self.default_localtion_row.set_subtitle(selected_file.get_path())
+            state.set__('appimages-default-folder', selected_file.get_path())
         else:
             raise InternalError(_('The folder must be in your home directory'))
 

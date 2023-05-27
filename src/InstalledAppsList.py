@@ -1,6 +1,7 @@
 from gi.repository import Gtk, Adw, GObject, Gio
 from typing import Dict, List, Optional
 
+from .State import state
 from .lib.costants import APP_ID
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageListElement
@@ -18,6 +19,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
     def __init__(self):
         super().__init__()
+
         self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -65,6 +67,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         clamp = Adw.Clamp(child=self.main_box, maximum_size=600, margin_top=20, margin_bottom=20)
 
         self.set_child(clamp)
+        state.connect__('appimages-default-folder', lambda k: self.refresh_list())
 
     # Emit and event that changes the active page of the Stack in the parent widget
     def on_activated_row(self, listbox, row: Gtk.ListBoxRow):
