@@ -17,6 +17,7 @@
 
 from .lib.terminal import sh
 from .lib.utils import log
+from .lib.costants import APP_ID, APP_NAME
 from .providers.providers_list import appimage_provider
 from .AboutDialog import AboutDialog
 from .GearleverWindow import GearleverWindow
@@ -24,7 +25,6 @@ import sys
 import gi
 import logging
 import os
-import subprocess
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
@@ -37,7 +37,7 @@ class GearleverApplication(Adw.Application):
     """The main application singleton class."""
 
     def __init__(self, version):
-        super().__init__(application_id='it.mijorus.gearlever', flags=Gio.ApplicationFlags.HANDLES_OPEN)
+        super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.HANDLES_OPEN)
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action)
         self.create_action('open_file', self.on_open_file_chooser)
@@ -50,7 +50,7 @@ class GearleverApplication(Adw.Application):
         Adw.Application.do_startup(self)
 
         css_provider = Gtk.CssProvider()
-        css_provider.load_from_resource('/it/mijorus/gearlever/assets/style.css')
+        css_provider.load_from_resource(f'/it/mijorus/{APP_NAME}/assets/style.css')
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
     def do_activate(self, from_file=False):
@@ -124,7 +124,7 @@ class GearleverApplication(Adw.Application):
 def main(version):
     """The application's entry point."""
 
-    log_file = GLib.get_user_cache_dir() + '/logs/gearlever.log'
+    log_file = GLib.get_user_cache_dir() + f'/logs/{APP_NAME}.log'
 
     if not os.path.exists(GLib.get_user_cache_dir() + '/logs'):
          os.makedirs(GLib.get_user_cache_dir() + '/logs')
