@@ -15,11 +15,11 @@ class Preferences(Adw.PreferencesWindow):
         page1 = Adw.PreferencesPage()
         general_preference_group = Adw.PreferencesGroup(name=_( 'General'))
 
-        toggle_cats_row = Adw.ActionRow(title=_('Use images of cats'))
+        default_localtion_row = Adw.ActionRow(title=_('AppImage location'))
         toggle_cat = Gtk.Switch(valign=Gtk.Align.CENTER)
 
-        toggle_cats_row.add_suffix(toggle_cat)
-        general_preference_group.add(toggle_cats_row)
+        default_localtion_row.add_suffix(toggle_cat)
+        general_preference_group.add(default_localtion_row)
         page1.add(general_preference_group)
 
         self.add(page1)

@@ -31,7 +31,7 @@ gi.require_version('Adw', '1')
 
 LOG_FILE_MAX_N_LINES = 2000
 
-from gi.repository import Gtk, Gio, Adw, Gdk, GLib # noqa
+from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GObject # noqa
 
 class GearleverApplication(Adw.Application):
     """The main application singleton class."""
@@ -94,24 +94,23 @@ class GearleverApplication(Adw.Application):
         if shortcuts:
             self.set_accels_for_action(f"app.{name}", shortcuts)
 
+    def on_open_file_chooser_reponse(self, dialog, result):
+        selected_file = dialog.open_finish(result)
+
+        if selected_file and isinstance(self.props.active_window, GearleverWindow):
+            self.props.active_window.on_selected_local_file(selected_file)
+
     def on_open_file_chooser(self, widget, _):
         if not self.win:
             return
 
-        def on_open_file_chooser_reponse(widget, id):
-            selected_file = widget.get_file()
+        dialog = Gtk.FileDialog(title='Open a file',modal=True)
 
-            if selected_file and isinstance(self.props.active_window, GearleverWindow):
-                self.props.active_window.on_selected_local_file(selected_file)
-
-        self.file_chooser_dialog = Gtk.FileChooserNative(
-            title='Open a file',
-            action=Gtk.FileChooserAction.OPEN,
-            transient_for=self.win
+        dialog.open(
+            parent=self.win,
+            cancellable=None,
+            callback=self.on_open_file_chooser_reponse
         )
-
-        self.file_chooser_dialog.connect('response', on_open_file_chooser_reponse)
-        self.file_chooser_dialog.show()
 
     def on_open_log_file(self, widget, _):
         if not self.win:
