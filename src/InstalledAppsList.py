@@ -1,10 +1,7 @@
-import threading
-import asyncio
-from urllib import request
-from gi.repository import Gtk, Adw, Gdk, GObject, Pango
+from gi.repository import Gtk, Adw, GObject, Gio
 from typing import Dict, List, Optional
-import re
 
+from .lib.costants import APP_ID
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageListElement
 from .models.AppListElement import AppListElement, InstalledStatus

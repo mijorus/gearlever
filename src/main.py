@@ -82,7 +82,6 @@ class GearleverApplication(Adw.Application):
         pref = Preferences(transient_for=self.win)
         pref.present()
 
-
     def create_action(self, name, callback, shortcuts=None):
         """Add an application action.
 
@@ -99,7 +98,11 @@ class GearleverApplication(Adw.Application):
             self.set_accels_for_action(f"app.{name}", shortcuts)
 
     def on_open_file_chooser_response(self, dialog, result):
-        selected_file = dialog.open_finish(result)
+        try:
+            selected_file = dialog.open_finish(result)
+        except Exception as e:
+            logging.error(str(e))
+            return
 
         if selected_file and isinstance(self.props.active_window, GearleverWindow):
             self.props.active_window.on_selected_local_file(selected_file)

@@ -16,6 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+
+from .lib.costants import APP_ID
 from .InstalledAppsList import InstalledAppsList
 from .AppDetails import AppDetails
 from .providers.providers_list import appimage_provider
@@ -94,6 +96,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.connect('close-request', self.on_close_request)
 
         self.set_child(self.container_stack)
+
 
     # Show app details
     def on_selected_installed_app(self, source: Gtk.Widget, list_element: AppListElement):

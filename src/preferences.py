@@ -1,5 +1,6 @@
 import gi
 import dbus
+import logging
 
 from .models.Models import InternalError
 from .lib.costants import APP_ID
@@ -36,7 +37,11 @@ class Preferences(Adw.PreferencesWindow):
         self.add(page1)
 
     def on_select_default_location_response(self, dialog, result):
-        selected_file = dialog.select_folder_finish(result)
+        try:
+            selected_file = dialog.select_folder_finish(result)
+        except Exception as e:
+            logging.error(str(e))
+            return
 
         if selected_file.query_exists() and selected_file.get_path().startswith(GLib.get_home_dir()):
             self.settings.set_string('appimages-default-folder', selected_file.get_path())

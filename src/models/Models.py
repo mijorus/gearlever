@@ -1,3 +1,4 @@
+import logging
 
 from .AppListElement import AppListElement
 from typing import Optional
@@ -33,3 +34,5 @@ class InternalError(Exception):
     def __init__(self, message: str, *args) -> None:
         super().__init__(*args)
         self.message = message
+
+        logging.error(message)
