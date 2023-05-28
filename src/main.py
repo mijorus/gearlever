@@ -15,24 +15,26 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .lib.terminal import sh
-from .lib.utils import log
-from .lib.costants import APP_ID, APP_NAME
-from .providers.providers_list import appimage_provider
-from .AboutDialog import AboutDialog
-from .GearleverWindow import GearleverWindow
-from .preferences import Preferences
 import sys
 import gi
 import logging
 import os
 
+from .lib.terminal import sh
+from .lib.utils import log, portal
+from .lib.costants import APP_ID, APP_NAME
+from .providers.providers_list import appimage_provider
+from .AboutDialog import AboutDialog
+from .GearleverWindow import GearleverWindow
+from .preferences import Preferences
+
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
-LOG_FILE_MAX_N_LINES = 2000
-
 from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GObject # noqa
+
+LOG_FILE_MAX_N_LINES = 2000
+LOG_FOLDER = GLib.get_user_cache_dir() + '/logs'
 
 class GearleverApplication(Adw.Application):
     """The main application singleton class."""
@@ -78,7 +80,6 @@ class GearleverApplication(Adw.Application):
 
     def on_preferences_action(self, widget, _):
         """Callback for the app.preferences action."""
-        print('app.preferences action activated')
         pref = Preferences()
         pref.present()
 
@@ -107,7 +108,7 @@ class GearleverApplication(Adw.Application):
         if selected_file and isinstance(self.props.active_window, GearleverWindow):
             self.props.active_window.on_selected_local_file(selected_file)
 
-    def on_open_file_chooser(self, widget, _):
+    def on_open_file_chooser(self, widget, event):
         if not self.win:
             return
 
@@ -119,21 +120,20 @@ class GearleverApplication(Adw.Application):
             callback=self.on_open_file_chooser_response
         )
 
-    def on_open_log_file(self, widget, _):
+    def on_open_log_file(self, widget, event):
         if not self.win:
             return
 
         #!TODO: replace with a portal call
         sh(['xdg-open',  GLib.get_user_cache_dir() + '/logs'])
 
-
 def main(version):
     """The application's entry point."""
 
-    log_file = GLib.get_user_cache_dir() + f'/logs/{APP_NAME}.log'
+    log_file = f'{LOG_FOLDER}/{APP_NAME}.log'
 
-    if not os.path.exists(GLib.get_user_cache_dir() + '/logs'):
-         os.makedirs(GLib.get_user_cache_dir() + '/logs')
+    if not os.path.exists(LOG_FOLDER):
+         os.makedirs(LOG_FOLDER)
 
     print('Logging to file ' + log_file)
 

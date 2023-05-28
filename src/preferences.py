@@ -1,9 +1,8 @@
 import gi
-import dbus
 import logging
 
 from .models.Models import InternalError
-from .lib.costants import APP_ID
+from .lib.utils import get_gsettings
 from .State import state
 
 gi.require_version('Gtk', '4.0')
@@ -13,9 +12,8 @@ from gi.repository import Adw, Gtk, Gio, GLib  # noqa
 class Preferences(Adw.PreferencesWindow):
     def __init__(self, **kwargs) :
         super().__init__(**kwargs)
-        self.application_id = APP_ID
 
-        self.settings = Gio.Settings.new(APP_ID)
+        self.settings = get_gsettings()
  
         # page 1
         page1 = Adw.PreferencesPage()

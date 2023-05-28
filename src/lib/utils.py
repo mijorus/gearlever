@@ -1,10 +1,12 @@
+import dbus
 import re
 import os
 import time
 import logging
 import gi
-import requests
 import hashlib
+
+from .costants import APP_ID
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
@@ -103,8 +105,16 @@ def send_notification(notification=Gio.Notification, tag=None):
 
 
 def get_gsettings() -> Gio.Settings:
-    return Gio.Settings.new('it.mijorus.gearlever')
+    return Gio.Settings.new(APP_ID)
 
 
 def create_dict(*args: str):
     return dict({i: eval(i) for i in args})
+
+
+def portal(interface: str, bus_name: str='org.freedesktop.portal.Desktop', object_path: str='/org/freedesktop/portal/desktop') -> dbus.Interface:
+    bus = dbus.SessionBus()
+    obj = bus.get_object(bus_name, object_path)
+    inter = dbus.Interface(obj, interface)
+
+    return inter

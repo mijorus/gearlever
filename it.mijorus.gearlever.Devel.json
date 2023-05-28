@@ -16,6 +16,8 @@
 
         "--talk-name=org.freedesktop.FileManager1",
         "--talk-name=org.freedesktop.Flatpak",
+        "--talk-name=org.freedesktop.portal.OpenURI",
+        "--talk-name=org.freedesktop.portal.OpenFile",
 
         "--filesystem=/tmp:rw"
     ],

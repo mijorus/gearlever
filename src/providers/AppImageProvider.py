@@ -11,7 +11,7 @@ import signal
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async
-from ..lib.utils import log, cleanhtml, get_giofile_content_type, get_gsettings, create_dict, gio_copy, get_file_hash
+from ..lib.utils import log, cleanhtml, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash
 from ..components.CustomComponents import LabelStart
 from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalError
 from typing import List, Callable, Union, Dict, Optional, List, TypedDict
