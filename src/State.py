@@ -14,6 +14,9 @@ class State():
             for cb in self.propscb[key]:
                 cb(value)
 
+    def get__(self, key: str):
+        return self.props[key]
+
     def connect__(self, key: str, cb: Callable):
         if not key in self.propscb:
             self.propscb[key] = []
