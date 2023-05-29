@@ -222,92 +222,101 @@ class AppImageProvider():
 
             dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + safe_app_name + '.appimage')
 
-            if gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
-                log(f'file copied to {appimages_destination_path}')
+            if not gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
+                raise InternalError('Error while moving appimage file to the destination folder')
 
-                os.chmod(dest_appimage_file.get_path(), 0o755)
-                el.file_path = dest_appimage_file.get_path()
+            log(f'file copied to {appimages_destination_path}')
 
-                # copy the icon file
-                icon_file = None
-                dest_appimage_icon_file = None
+            os.chmod(dest_appimage_file.get_path(), 0o755)
+            el.file_path = dest_appimage_file.get_path()
+
+            # copy the icon file
+            icon_file = None
+            dest_appimage_icon_file = None
+            if extracted_appimage.desktop_entry:
+                icon_file = extracted_appimage.icon_file
+
+            if icon_file and os.path.exists(icon_file.get_path()):
+                if not os.path.exists(f'{appimages_destination_path}/.icons'):
+                    os.mkdir(f'{appimages_destination_path}/.icons')
+
+                dest_appimage_icon_file = Gio.File.new_for_path(f'{appimages_destination_path}/.icons/{safe_app_name}')
+                gio_copy(icon_file, dest_appimage_icon_file)
+
+            # Move .desktop file to its default location
+            dest_destop_file_path = f'{GLib.get_user_data_dir()}/applications/{safe_app_name}.desktop'
+            dest_destop_file_path = dest_destop_file_path.replace(' ', '_')
+
+            with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
+                desktop_file_content = dskt_file.read()
+
+                # replace executable path
+                desktop_file_content = re.sub(
+                    r'^Exec=.*$',
+                    f"Exec={dest_appimage_file.get_path()}",
+                    desktop_file_content,
+                    flags=re.MULTILINE
+                )
+
+                # replace icon path
+                desktop_file_content = re.sub(
+                    r'^Icon=.*$',
+                    f"Icon={dest_appimage_icon_file.get_path() if dest_appimage_icon_file else 'applications-other'}",
+                    desktop_file_content,
+                    flags=re.MULTILINE
+                )
+
+                # generate a new app name
+                final_app_name = extracted_appimage.appimage_file.get_basename()
                 if extracted_appimage.desktop_entry:
-                    icon_file = extracted_appimage.icon_file
+                    final_app_name = f"{extracted_appimage.desktop_entry.getName()}"
 
-                if icon_file and os.path.exists(icon_file.get_path()):
-                    if not os.path.exists(f'{appimages_destination_path}/.icons'):
-                        os.mkdir(f'{appimages_destination_path}/.icons')
+                    version = extracted_appimage.desktop_entry.get('X-AppImage-Version')
+                    
+                    if not version:
+                        version = extracted_appimage.md5[0:6]
+                        desktop_file_content += f'\nX-AppImage-Version={version}'
 
-                    dest_appimage_icon_file = Gio.File.new_for_path(f'{appimages_destination_path}/.icons/{safe_app_name}')
-                    gio_copy(icon_file, dest_appimage_icon_file)
+                    if el.update_logic is AppImageUpdateLogic.KEEP:
+                        final_app_name += f' ({version})'
 
-                # Move .desktop file to its default location
-                dest_destop_file_path = f'{GLib.get_user_data_dir()}/applications/{safe_app_name}.desktop'
-                dest_destop_file_path = dest_destop_file_path.replace(' ', '_')
+                        desktop_file_content = re.sub(
+                            r'^Name\[(.*?)\]=.*$',
+                            '',
+                            desktop_file_content,
+                            flags=re.MULTILINE
+                        )
 
-                with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
-                    desktop_file_content = dskt_file.read()
+                final_app_name = final_app_name.strip()
+                desktop_file_content = re.sub(
+                    r'^Name=.*$',
+                    f"Name={final_app_name}",
+                    desktop_file_content,
+                    flags=re.MULTILINE
+                )
 
-                    # replace executable path
-                    desktop_file_content = re.sub(
-                        r'^Exec=.*$',
-                        f"Exec={dest_appimage_file.get_path()}",
-                        desktop_file_content,
-                        flags=re.MULTILINE
-                    )
+                # finally, write the new .desktop file
+                with open(dest_destop_file_path, 'w+') as desktop_file_python_dest:
+                    desktop_file_python_dest.write(desktop_file_content)
 
-                    # replace icon path
-                    desktop_file_content = re.sub(
-                        r'^Icon=.*$',
-                        f"Icon={dest_appimage_icon_file.get_path() if dest_appimage_icon_file else 'applications-other'}",
-                        desktop_file_content,
-                        flags=re.MULTILINE
-                    )
-
-                    # generate a new app name
-                    final_app_name = extracted_appimage.appimage_file.get_basename()
-                    if extracted_appimage.desktop_entry:
-                        final_app_name = f"{extracted_appimage.desktop_entry.getName()}"
-
-                        version = extracted_appimage.desktop_entry.get('X-AppImage-Version')
-                        
-                        if not version:
-                            version = extracted_appimage.md5[0:6]
-                            desktop_file_content += f'\nX-AppImage-Version={version}'
-
-                        if el.update_logic is AppImageUpdateLogic.KEEP:
-                            final_app_name += f' ({version})'
-
-                            desktop_file_content = re.sub(
-                                r'^Name\[(.*?)\]=.*$',
-                                '',
-                                desktop_file_content,
-                                flags=re.MULTILINE
-                            )
-
-                    final_app_name = final_app_name.strip()
-                    desktop_file_content = re.sub(
-                        r'^Name=.*$',
-                        f"Name={final_app_name}",
-                        desktop_file_content,
-                        flags=re.MULTILINE
-                    )
-
-                    # finally, write the new .desktop file
-                    with open(dest_destop_file_path, 'w+') as desktop_file_python_dest:
-                        desktop_file_python_dest.write(desktop_file_content)
-
-                if os.path.exists(dest_destop_file_path):
-                    el.desktop_entry = DesktopEntry.DesktopEntry(filename=dest_destop_file_path)
-                    el.installed_status = InstalledStatus.INSTALLED
+            if os.path.exists(dest_destop_file_path):
+                el.desktop_entry = DesktopEntry.DesktopEntry(filename=dest_destop_file_path)
+                el.installed_status = InstalledStatus.INSTALLED
 
         except Exception as e:
             logging.error('Appimage installation error: ' + str(e))
+            raise e
 
         try:
             self.extraction_folder_cleanup()
         except Exception as g:
             logging.error('Appimage cleanup error: ' + str(g))
+            raise g
+
+        if get_gsettings().get_boolean('move-appimage-on-integration'):
+            logging.debug('Deleting original appimage file from: '  + extracted_appimage.appimage_file.get_path())
+            if not extracted_appimage.appimage_file.delete(None):
+                raise InternalError('Cannot delete original file')
 
         terminal.sh(['update-desktop-database', '-q'])
 

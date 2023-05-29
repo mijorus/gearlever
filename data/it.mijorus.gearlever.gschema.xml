@@ -4,5 +4,8 @@
         <key name="appimages-default-folder" type="s">
             <default>"~/AppImages"</default>
         </key>
+         <key name="move-appimage-on-integration" type="b">
+            <default>true</default>
+        </key>
 	</schema>
 </schemalist>
