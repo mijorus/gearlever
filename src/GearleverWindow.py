@@ -61,6 +61,8 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.app_details.connect('uninstalled-app', self.on_uninstalled_app)
 
         self.installed_apps_list = InstalledAppsList()
+        self.installed_apps_list.refresh_list()
+
         self.installed_stack.add_child(self.installed_apps_list)
 
         self.installed_stack.set_visible_child(self.installed_apps_list)

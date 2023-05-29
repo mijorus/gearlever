@@ -20,6 +20,9 @@ class InstalledAppsList(Gtk.ScrolledWindow):
     def __init__(self):
         super().__init__()
 
+        self.container_stack = Gtk.Stack()
+        self.container_stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+
         self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -34,8 +37,6 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.filter_entry = FilterEntry('Filter installed applications', capture=self, margin_bottom=20)
         self.filter_entry.connect('search-changed', self.trigger_filter_list)
 
-        self.refresh_list()
-
         # updates row
         self.updates_fetched = False
         self.updates_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, visible=True)
@@ -45,6 +46,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.updates_row_list_spinner = Gtk.ListBoxRow(child=Gtk.Spinner(spinning=True, margin_top=5, margin_bottom=5), visible=False)
         self.updates_row_list.append(self.updates_row_list_spinner)
         self.updates_row_list.connect('row-activated', self.on_activated_row)
+
         ## an array containing all the updatable apps, used for some custom login
         self.updates_row_list_items: list = []
         self.updates_revealter = Gtk.Revealer(child=self.updates_row, transition_type=Gtk.RevealerTransitionType.SLIDE_DOWN, reveal_child=False)
@@ -64,9 +66,16 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         for el in [self.filter_entry, self.updates_revealter, title_row, self.installed_apps_list_slot]:
             self.main_box.append(el)
 
-        clamp = Adw.Clamp(child=self.main_box, maximum_size=600, margin_top=20, margin_bottom=20)
+        self.clamp = Adw.Clamp(child=self.main_box, maximum_size=600, margin_top=20, margin_bottom=20)
 
-        self.set_child(clamp)
+        # empty list placeholder
+        builder = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/empty-list-placeholder.ui')
+        self.placeholder = builder.get_object('target')
+
+        self.container_stack.add_child(self.clamp)
+        self.container_stack.add_child(self.placeholder)
+
+        self.set_child(self.container_stack)
         state.connect__('appimages-default-folder', lambda k: self.refresh_list())
 
     # Emit and event that changes the active page of the Stack in the parent widget
@@ -90,6 +99,11 @@ class InstalledAppsList(Gtk.ScrolledWindow):
             list_row.load_icon()
             self.installed_apps_list_rows.append(list_row)
             self.installed_apps_list.append(list_row)
+
+        if installed:
+            self.container_stack.set_visible_child(self.clamp)
+        else:
+            self.container_stack.set_visible_child(self.placeholder)
 
         self.installed_apps_list.append(self.no_apps_found_row)
         self.no_apps_found_row.set_visible(False)

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <object class="GtkBox" id="target">
+    <property name="orientation">1</property>
+    <property name="valign">3</property>
+    <property name="halign">3</property>
+    <child>
+      <object class="GtkImage">
+        <property name="name">logo</property>
+        <property name="icon-name">lightbulb-symbolic</property>
+        <property name="pixel-size">120</property>
+        <property name="margin-bottom">30</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel">
+        <property name="label" translatable="yes">Get started</property>
+        <property name="margin-bottom">30</property>
+        <style><class name="title-1" /></style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel">
+        <style><class name="title-" /></style>
+        <property name="label" translatable="yes">Drag and drop an AppImage here or select "Open file" in the menu.</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel">
+        <property name="label" translatable="yes"> If you don't see your apps, check in the Preferences if the selected location is correct.</property>
+        <property name="margin-bottom">30</property>
+      </object>
+    </child>
+  </object>
+</interface>

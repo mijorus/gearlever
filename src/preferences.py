@@ -79,7 +79,7 @@ class Preferences(Adw.PreferencesWindow):
 
         if selected_file.query_exists() and selected_file.get_path().startswith(GLib.get_home_dir()):
             self.settings.set_string('appimages-default-folder', selected_file.get_path())
-            self.default_localtion_row.set_subtitle(selected_file.get_path())
+            self.default_location_row.set_subtitle(selected_file.get_path())
             state.set__('appimages-default-folder', selected_file.get_path())
         else:
             raise InternalError(_('The folder must be in your home directory'))
