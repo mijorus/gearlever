@@ -248,7 +248,7 @@ class AppDetails(Gtk.ScrolledWindow):
             self.app_list_element.set_installed_status(InstalledStatus.ERROR)
 
         self.update_installation_status()
-
+    
     def update_installation_status(self):
         self.primary_action_button.set_css_classes(self.common_btn_css_classes)
         self.secondary_action_button.set_visible(False)
