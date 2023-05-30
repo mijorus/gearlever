@@ -35,6 +35,30 @@
     "modules" : [
         "./python3-requirements.json",
         {
+            "name": "p7zip",
+            "no-autogen": true,
+            "make-args": [
+                "7z"
+            ],
+            "cleanup": [
+                "/man",
+                "/share"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/p7zip-project/p7zip/archive/v17.04.tar.gz",
+                    "sha256": "ea029a2e21d2d6ad0a156f6679bd66836204aa78148a4c5e498fe682e77127ef"
+                },
+                {
+                    "type": "shell",
+                    "commands": [
+                        "sed -i 's|/usr/local|/app|g' makefile.common"
+                    ]
+                }
+            ]
+        },
+        {
             "name" : "gearlever",
             "builddir" : true,
             "buildsystem" : "meson",
