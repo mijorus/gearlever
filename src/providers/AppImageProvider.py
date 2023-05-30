@@ -12,7 +12,6 @@ from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async
 from ..lib.utils import log, cleanhtml, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash
-from ..components.CustomComponents import LabelStart
 from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalError
 from typing import List, Callable, Union, Dict, Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, GdkPixbuf, Gio, GObject, Pango, Adw
@@ -66,10 +65,9 @@ class AppImageProvider():
         self.update_messages = []
 
         self.extraction_folder = GLib.get_tmp_dir() + '/it.mijorus.gearlever/appimages'
-        self.mount_appimage_process: Optional[subprocess.Popen] = None
 
     def list_installed(self) -> List[AppImageListElement]:
-        default_folder_path = self.get_appimages_default_destination_path()
+        default_folder_path = self._get_appimages_default_destination_path()
         desktop_files_dir = f'{GLib.get_user_data_dir()}/applications/'
         output = []
 
@@ -104,9 +102,9 @@ class AppImageProvider():
         return output
 
     def is_installed(self, el: AppImageListElement) -> bool:
-        if el.file_path and os.path.exists(self.get_appimages_default_destination_path()):
-            for file_name in os.listdir(self.get_appimages_default_destination_path()):
-                installed_gfile = Gio.File.new_for_path(self.get_appimages_default_destination_path() + '/' + file_name)
+        if el.file_path and os.path.exists(self._get_appimages_default_destination_path()):
+            for file_name in os.listdir(self._get_appimages_default_destination_path()):
+                installed_gfile = Gio.File.new_for_path(self._get_appimages_default_destination_path() + '/' + file_name)
                 loaded_gfile = Gio.File.new_for_path(el.file_path)
 
                 if get_giofile_content_type(installed_gfile) in self.supported_mimes:
@@ -131,7 +129,7 @@ class AppImageProvider():
                 return Gtk.Image.new_from_icon_name(el.desktop_entry.getIcon())
 
             if el.trusted:
-                extracted = self.extract_appimage(el)
+                extracted = self._load_appimage_metadata(el)
 
                 if extracted.icon_file and os.path.exists(extracted.icon_file.get_path()):
                     return Gtk.Image.new_from_file(extracted.icon_file.get_path())
@@ -149,7 +147,7 @@ class AppImageProvider():
             el.name = el.desktop_entry.getName()
         
         if el.trusted:
-            extracted = self.extract_appimage(el)
+            extracted = self._load_appimage_metadata(el)
             if extracted.desktop_entry:
                 el.name = extracted.desktop_entry.getName()
         
@@ -188,7 +186,7 @@ class AppImageProvider():
 
     def run(self, el: AppImageListElement):
         if el.trusted:
-            os.chmod(el.file_path, 0o755)
+            self._make_file_executable(el, el.file_path)
             terminal.threaded_sh([f'{el.file_path}'], return_stderr=True)
 
     def can_install_file(self, file: Gio.File) -> bool:
@@ -207,11 +205,11 @@ class AppImageProvider():
         extracted_appimage: Optional[ExtractedAppImage] = None
 
         try:
-            extracted_appimage = self.extract_appimage(el)
+            extracted_appimage = self._load_appimage_metadata(el)
             dest_file_info = extracted_appimage.appimage_file.query_info('*', Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS)
 
             # Move .appimage to its default location
-            appimages_destination_path = self.get_appimages_default_destination_path()
+            appimages_destination_path = self._get_appimages_default_destination_path()
 
             if not os.path.exists(f'{appimages_destination_path}'):
                 os.mkdir(f'{appimages_destination_path}')
@@ -229,7 +227,7 @@ class AppImageProvider():
 
             log(f'file copied to {appimages_destination_path}')
 
-            os.chmod(dest_appimage_file.get_path(), 0o755)
+            self._make_file_executable(el, dest_appimage_file.get_path())
             el.file_path = dest_appimage_file.get_path()
 
             # copy the icon file
@@ -356,11 +354,12 @@ class AppImageProvider():
         if os.path.exists(self.extraction_folder):
             shutil.rmtree(self.extraction_folder)
 
-    def mount_appimage(self, file_path: str) -> str:
+
+    def _extract_appimage(self, el: AppImageListElement) -> str:
         random_str = ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))
         dest_path = f'{self.extraction_folder}/gearlever_{random_str}'
 
-        file = Gio.File.new_for_path(file_path)
+        file = Gio.File.new_for_path(el.file_path)
         dest = Gio.File.new_for_path(f'{dest_path}/tmp.appimage')
 
         if not os.path.exists(f'{dest_path}'):
@@ -370,8 +369,7 @@ class AppImageProvider():
 
         gio_copy(file, dest)
 
-        logging.debug(f'Chmod file {dest.get_path()}')
-        os.chmod(dest.get_path(), 0o755)
+        self._make_file_executable(el, dest.get_path())
 
         appimage_extract_support = False
 
@@ -412,10 +410,7 @@ class AppImageProvider():
 
         return f'{dest_path}/squashfs-root'
 
-    def unmount_appimage(self):
-        return
-
-    def extract_appimage(self, el: AppImageListElement) -> ExtractedAppImage:
+    def _load_appimage_metadata(self, el: AppImageListElement) -> ExtractedAppImage:
         if not el.trusted:
             raise InternalError(message=_('Cannot load an untrusted AppImage'))
         
@@ -440,9 +435,7 @@ class AppImageProvider():
             shutil.rmtree(tmp_folder.get_path())
 
         if tmp_folder.make_directory_with_parents(None):
-            os.chmod(file.get_path(), 0o755)
-
-            mounted_appimage_path = self.mount_appimage(file.get_path())
+            mounted_appimage_path = self._extract_appimage(el)
             extraction_folder = Gio.File.new_for_path(mounted_appimage_path)
 
             try:
@@ -504,9 +497,6 @@ class AppImageProvider():
             except Exception as e:
                 logging.error(str(e))
 
-            finally:
-                self.unmount_appimage()
-
         result = ExtractedAppImage()
         result.desktop_entry = desktop_entry
         result.extraction_folder = tmp_folder.get_path()
@@ -521,5 +511,12 @@ class AppImageProvider():
 
         return result
 
-    def get_appimages_default_destination_path(self) -> str:
+    def _get_appimages_default_destination_path(self) -> str:
         return get_gsettings().get_string('appimages-default-folder').replace('~', GLib.get_home_dir())
+    
+    def _make_file_executable(self, el: AppImageListElement, file_path: str):
+        if el.trusted:
+            logging.debug('Chmod file ' + file_path)
+            os.chmod(el.file_path, 0o755)
+        else:
+            raise InternalError(message=_('Cannot load an untrusted AppImage'))
