@@ -8,3 +8,4 @@ install.sh
 .flatpak/*
 
 build-aux/patches
+venv
