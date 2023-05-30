@@ -7,9 +7,26 @@ import logging
 
 def sh(command: List[str], return_stderr=False, **kwargs) -> str:
     try:
-        log(f'Running {command}')
-
         cmd = ['flatpak-spawn', '--host', *command]
+        
+        log(f'Running {command}')
+        output = subprocess.run(cmd, encoding='utf-8', shell=False, check=True, capture_output=True, **kwargs)
+        output.check_returncode()
+    except subprocess.CalledProcessError as e:
+        print(e.stderr)
+
+        if return_stderr:
+            return e.output
+
+        raise e
+
+    return re.sub(r'\n$', '', output.stdout)
+
+def sandbox_sh(command: List[str], return_stderr=False, **kwargs) -> str:
+    try:
+        cmd = [*command]
+        
+        log(f'Running {command}')
         output = subprocess.run(cmd, encoding='utf-8', shell=False, check=True, capture_output=True, **kwargs)
         output.check_returncode()
     except subprocess.CalledProcessError as e:
