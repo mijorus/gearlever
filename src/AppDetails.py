@@ -254,10 +254,16 @@ class AppDetails(Gtk.ScrolledWindow):
         self.secondary_action_button.set_visible(False)
         self.secondary_action_button.set_css_classes(self.common_btn_css_classes)
         self.source_selector.set_visible(False)
+        self.secondary_action_button.set_sensitive(True)
 
         if self.app_list_element.installed_status == InstalledStatus.INSTALLED:
-            self.secondary_action_button.set_label(_('Launch'))
-            self.secondary_action_button.set_visible(True)
+            if self.app_list_element.desktop_entry and self.app_list_element.desktop_entry.getTerminal():
+                self.secondary_action_button.set_label(_('This app runs in the terminal'))
+                self.secondary_action_button.set_visible(True)
+                self.secondary_action_button.set_sensitive(False)
+            else:
+                self.secondary_action_button.set_label(_('Launch'))
+                self.secondary_action_button.set_visible(True)
 
             self.primary_action_button.set_label(_('Remove'))
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
