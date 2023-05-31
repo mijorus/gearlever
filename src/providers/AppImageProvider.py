@@ -217,9 +217,9 @@ class AppImageProvider():
             # how the appimage will be called
             safe_app_name = f'gearlever_{dest_file_info.get_name()}'
             if extracted_appimage.desktop_entry:
-                safe_app_name = f'{extracted_appimage.desktop_entry.getName()}_{dest_file_info.get_name()}'
-                safe_app_name =  re.sub(r"[^a-zA-Z0-9]", "", safe_app_name)
-
+                safe_app_name = extracted_appimage.desktop_entry.getName()
+            
+            safe_app_name = re.sub(r"[^A-Za-z0-9]+", "", safe_app_name).lower() + '_' + extracted_appimage.md5[0:6]
             dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + safe_app_name + '.appimage')
 
             if not gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
@@ -331,8 +331,9 @@ class AppImageProvider():
 
         el = AppImageListElement(
             name=re.sub('\.appimage$', '', app_name, 1, re.IGNORECASE),
+            app_id='',
             description='',
-            app_id='MD5: ' + get_file_hash(file),
+            version='md5: ' + get_file_hash(file),
             provider=self.name,
             installed_status=InstalledStatus.NOT_INSTALLED,
             file_path=file.get_path(),
