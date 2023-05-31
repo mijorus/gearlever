@@ -131,6 +131,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.app_subtitle.set_text(self.app_list_element.version)
         self.app_subtitle.set_visible(len(self.app_list_element.version))
+        self.app_subtitle.set_selectable(self.app_list_element.installed_status is not InstalledStatus.INSTALLED)
 
         self.description.set_label(
             self.provider.get_description(self.app_list_element)
