@@ -33,17 +33,16 @@ class AppDetails(Gtk.ScrolledWindow):
 
         title_col = CenteringBox(orientation=Gtk.Orientation.VERTICAL, hexpand=True, spacing=2)
         self.title = Gtk.Label(label='', css_classes=['title-1'], hexpand=True, halign=Gtk.Align.CENTER)
-        self.version = Gtk.Label(label='', halign=Gtk.Align.CENTER, css_classes=['dim-label'])
-        self.app_id = Gtk.Label(
+        self.app_subtitle = Gtk.Label(
             label='',
             halign=Gtk.Align.CENTER,
-            css_classes=['dim-label'],
+            css_classes=['dim-label', 'subtitle'],
             ellipsize=Pango.EllipsizeMode.END,
             max_width_chars=100,
+            selectable=True,
         )
 
-        for el in [self.title, self.app_id, self.version]:
-            title_col.append(el)
+        [title_col.append(el) for el in [self.title, self.app_subtitle]]
 
         self.source_selector_hdlr = None
         self.source_selector = Gtk.ComboBoxText()
@@ -128,16 +127,10 @@ class AppDetails(Gtk.ScrolledWindow):
         icon.set_pixel_size(128)
         self.details_row.prepend(self.icon_slot)
 
-        self.title.set_label(cleanhtml(self.app_list_element.name))
+        self.title.set_label(self.app_list_element.name)
 
-        version_label = self.app_list_element.version
-        version_label = '' if not version_label else f'<small>{version_label}</small>'
-
-        self.version.set_markup(version_label)
-        self.app_id.set_markup(f'<small>{self.app_list_element.app_id}</small>')
-
-        self.app_id.set_visible(len(self.app_list_element.app_id) > 0)
-        self.version.set_visible(len(version_label) > 0)
+        self.app_subtitle.set_text(self.app_list_element.version)
+        self.app_subtitle.set_visible(len(self.app_list_element.version))
 
         self.description.set_label(
             self.provider.get_description(self.app_list_element)
@@ -155,6 +148,11 @@ class AppDetails(Gtk.ScrolledWindow):
 
         row = Adw.ActionRow(title=f'{self.provider.name.capitalize()} Type. {self.app_list_element.generation}', subtitle='Package type')
         row_img = Gtk.Image(resource=self.provider.icon, pixel_size=34)
+        row.add_prefix(row_img)
+        gtk_list.append(row)
+
+        row = Adw.ActionRow(title=_('Path'), subtitle=self.app_list_element.file_path, subtitle_selectable=True)
+        row_img = Gtk.Image(icon_name='gearlever-terminal-symbolic', pixel_size=34)
         row.add_prefix(row_img)
         gtk_list.append(row)
 
