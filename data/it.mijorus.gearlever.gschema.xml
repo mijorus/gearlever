@@ -7,5 +7,8 @@
          <key name="move-appimage-on-integration" type="b">
             <default>true</default>
         </key>
+        <key name="exec-as-name-for-terminal-apps" type="b">
+            <default>false</default>
+        </key>
 	</schema>
 </schemalist>

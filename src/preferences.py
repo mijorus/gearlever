@@ -31,7 +31,15 @@ class Preferences(Adw.PreferencesWindow):
         pick_default_localtion_btn = Gtk.Button(icon_name='gearlever-file-manager-symbolic', valign=Gtk.Align.CENTER)
         pick_default_localtion_btn.connect('clicked', self.on_default_localtion_btn_clicked)
         self.default_location_row.add_suffix(pick_default_localtion_btn)
+
+        exec_as_name_switch = self.create_boolean_settings_entry(
+            'Use executable name for integrated terminal apps',
+            'exec-as-name-for-terminal-apps',
+            'If enabled, apps that run in the terminal are renamed as their executable.\nYou would need to add the aforementioned folder to your $PATH manually.\n\nFor example, "golang_x86_64.appimage" will be saved as "go"'
+        )
+
         general_preference_group.add(self.default_location_row)
+        general_preference_group.add(exec_as_name_switch)
 
         # move appimage on integration
         move_appimages_group = Adw.PreferencesGroup(name=_('File management'), title=_('File management'))
@@ -95,3 +103,12 @@ class Preferences(Adw.PreferencesWindow):
 
     def on_move_appimages_setting_changed(self, widget):
         self.settings.set_boolean('move-appimage-on-integration', self.move_to_destination_check.get_active())
+
+    def create_boolean_settings_entry(self, label: str, key: str, subtitle: str = None) -> Adw.ActionRow:
+        row = Adw.ActionRow(title=label, subtitle=subtitle)
+
+        switch = Gtk.Switch(valign=Gtk.Align.CENTER)
+        self.settings.bind(key, switch, 'active', Gio.SettingsBindFlags.DEFAULT)
+
+        row.add_suffix(switch)
+        return row
