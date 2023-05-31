@@ -90,13 +90,14 @@ def gio_copy(file: Gio.File, destination: Gio.File):
     )
 
 
-def get_file_hash(file: Gio.File) -> str:
-    md5 = ''
+def get_file_hash(file: Gio.File, alg='md5') -> str:
     with open(file.get_path(), 'rb') as f:
-        md5 = hashlib.md5(f.read()).hexdigest()
+        if alg == 'md5':
+            return hashlib.md5(f.read()).hexdigest()
+        elif alg == 'sha1':
+            return hashlib.sha1(f.read()).hexdigest()
 
-    return md5
-
+    raise Exception('Invalid hash requested')
 
 def send_notification(notification=Gio.Notification, tag=None):
     if not tag:
