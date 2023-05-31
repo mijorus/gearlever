@@ -37,12 +37,12 @@ class Preferences(Adw.PreferencesWindow):
         move_appimages_group = Adw.PreferencesGroup(name=_('File management'), title=_('File management'))
         move_appimages_row = Adw.ActionRow(
             title=_('Move AppImages into the destination folder'),
-            subtitle=(_('Default behaviour'))
+            subtitle=(_('Reduce disk usage'))
         )
 
         copy_appimages_row = Adw.ActionRow(
             title=_('Clone AppImages into the destination folder'),
-            subtitle=(_('This option keeps the original file but doubles the disk usage'))
+            subtitle=(_('Keep the original file and create a copy in the destination folder'))
         )
 
 
