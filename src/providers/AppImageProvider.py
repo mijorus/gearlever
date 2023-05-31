@@ -217,10 +217,24 @@ class AppImageProvider():
             # how the appimage will be called
             safe_app_name = f'gearlever_{dest_file_info.get_name()}'
             if extracted_appimage.desktop_entry:
-                safe_app_name = extracted_appimage.desktop_entry.getName()
+                safe_app_name = 'gearlever_' + extracted_appimage.desktop_entry.getName()
             
-            safe_app_name = re.sub(r"[^A-Za-z0-9]+", "", safe_app_name).lower() + '_' + extracted_appimage.md5[0:6]
-            dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + safe_app_name + '.appimage')
+            safe_app_name = re.sub(r"[^A-Za-z0-9_]+", "", safe_app_name).lower() + '_' + extracted_appimage.md5[0:6] + '.appimage'
+            
+            append_file_ext = True
+            if extracted_appimage.desktop_entry and get_gsettings().get_boolean('exec-as-name-for-terminal-apps') and extracted_appimage.desktop_entry.getTerminal():
+                safe_app_name = extracted_appimage.desktop_entry.getExec()
+                append_file_ext = False
+
+            # if there is already an app with the same name, 
+            # we try not to overwrite
+
+            i = 1
+            while safe_app_name in os.listdir(self._get_appimages_default_destination_path()):
+                safe_app_name =  re.sub(r'(_\d+)?\.appimage', '', safe_app_name) + f'_{i}' + ('.appimage' if append_file_ext else '')
+                i += 1
+
+            dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + safe_app_name)
 
             if not gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
                 raise InternalError('Error while moving appimage file to the destination folder')
