@@ -373,15 +373,16 @@ class AppImageProvider():
 
         appimage_extract_support = False
 
-        try:
-            appimage_help = subprocess.run([dest.get_path(), '--appimage-help'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).stderr.decode()
+        if el.generation == 2:
+            try:
+                appimage_help = subprocess.run([dest.get_path(), '--appimage-help'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).stderr.decode()
 
-            appimage_extract_support = ('-appimage-extract' in appimage_help)
-            if not appimage_extract_support:
-                raise InternalError('This appimage does not support appimage-extract')
+                appimage_extract_support = ('-appimage-extract' in appimage_help)
+                if not appimage_extract_support:
+                    raise InternalError('This appimage does not support appimage-extract')
 
-        except Exception as e:
-            logging.error(str(e))
+            except Exception as e:
+                logging.error(str(e))
 
         if appimage_extract_support:
             prefix = [dest.get_path(), '--appimage-extract']
@@ -392,10 +393,10 @@ class AppImageProvider():
                 for match in ['*.desktop', 'usr/share/icons/*', '*.svg', '*.png']:
                     run = [*prefix, match]
 
-                    extraction_output = terminal.sandbox_sh(run, cwd=dest_path)
+                    extraction_output += terminal.sandbox_sh(run, cwd=dest_path)
             else:
                 logging.debug('This AppImage does not support partial extraction, running ' + ' '.join(prefix))
-                extraction_output = terminal.sandbox_sh([*prefix], cwd=dest_path)
+                extraction_output += terminal.sandbox_sh([*prefix], cwd=dest_path)
 
             logging.debug(f'Extracted appimage {file.get_path()} with log:\n\n======\n\n{extraction_output}\n\n======\n\n')
         
@@ -418,9 +419,6 @@ class AppImageProvider():
             return el.extracted
 
         file = Gio.File.new_for_path(el.file_path)
-
-        if el.generation < 2:
-            raise Exception('This file format cannot be extracted!')
 
         icon_file: Optional[Gio.File] = None
         desktop_file: Optional[Gio.File] = None
