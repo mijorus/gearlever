@@ -1,20 +1,18 @@
 from urllib import request
-from gi.repository import Gtk, Adw, Gdk, GObject, Pango, GLib
+from gi.repository import Gtk, Pango
 from typing import Dict, List, Optional
 from ..lib.utils import cleanhtml
 from ..lib.async_utils import idle, _async
-import re
 
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..providers.providers_list import appimage_provider
 
 
 class AppListBoxItem(Gtk.ListBoxRow):
-    def __init__(self, list_element: AppListElement, load_icon_from_network=False, alt_sources: List[AppListElement] = [], **kwargs):
+    def __init__(self, list_element: AppListElement, **kwargs):
         super().__init__(**kwargs)
 
         self._app: AppListElement = list_element
-        self._alt_sources: List[AppListElement] = alt_sources
 
         col = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
         col.set_css_classes(['app-listbox-item'])
@@ -25,9 +23,10 @@ class AppListBoxItem(Gtk.ListBoxRow):
         app_details_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, valign=Gtk.Align.CENTER)
         app_details_box.append(
             Gtk.Label(
-                label=f'<b>{cleanhtml(list_element.name).replace("&", "")}</b>',
+                label=list_element.name,
                 halign=Gtk.Align.START,
-                use_markup=True,
+                # use_markup=True,
+                css_classes=['heading'],
                 max_width_chars=70,
                 ellipsize=Pango.EllipsizeMode.END
             )
@@ -36,7 +35,7 @@ class AppListBoxItem(Gtk.ListBoxRow):
         desc = list_element.description if len(list_element.description) else ''
         app_details_box.append(
             Gtk.Label(
-                label=cleanhtml(desc), 
+                label=desc, 
                 halign=Gtk.Align.START,
                 lines=1,
                 max_width_chars=100, 

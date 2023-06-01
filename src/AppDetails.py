@@ -147,7 +147,7 @@ class AppDetails(Gtk.ScrolledWindow):
         # Load the boxed list with additional information
         gtk_list = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
 
-        row = Adw.ActionRow(title=f'{self.provider.name.capitalize()} Type. {self.app_list_element.generation}', subtitle='Package type')
+        row = Adw.ActionRow(subtitle=f'{self.provider.name.capitalize()} Type. {self.app_list_element.generation}', title='Package type')
         row_img = Gtk.Image(resource=self.provider.icon, pixel_size=34)
         row.add_prefix(row_img)
         gtk_list.append(row)
