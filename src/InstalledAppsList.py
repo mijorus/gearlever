@@ -10,6 +10,7 @@ from .models.Models import AppUpdateElement
 from .components.FilterEntry import FilterEntry
 from .components.CustomComponents import NoAppsFoundRow
 from .components.AppListBoxItem import AppListBoxItem
+from .preferences import Preferences
 from .lib.utils import set_window_cursor, get_application_window
 
 class InstalledAppsList(Gtk.ScrolledWindow):
@@ -49,6 +50,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         # empty list placeholder
         builder = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/empty-list-placeholder.ui')
         self.placeholder = builder.get_object('target')
+        builder.get_object('open-preferences').connect('clicked', self.open_preferences)
 
         self.container_stack.add_child(self.clamp_container)
         self.container_stack.add_child(self.placeholder)
@@ -128,3 +130,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
             return -1
 
         return 1
+
+    def open_preferences(self, widget):
+        pref = Preferences()
+        pref.present()
