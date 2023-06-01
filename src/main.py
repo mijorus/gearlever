@@ -24,7 +24,6 @@ from .lib.terminal import sh
 from .lib.utils import log, get_gsettings
 from .lib.costants import APP_ID, APP_NAME
 from .providers.providers_list import appimage_provider
-from .AboutDialog import AboutDialog
 from .GearleverWindow import GearleverWindow
 from .preferences import Preferences
 
@@ -74,8 +73,16 @@ class GearleverApplication(Adw.Application):
             self.do_activate(from_file=True)
             self.win.on_selected_local_file(files[0])
 
-    def on_about_action(self, widget, _):
-        about = AboutDialog(self.props.active_window, self.version)
+    def on_about_action(self, widget, data):
+        about = Adw.AboutWindow(
+            application_name='Gear lever',
+            version=self.version,
+            developers=['Lorenzo Paderi'],
+            copyright='2023 Lorenzo Paderi',
+            application_icon='it.mijorus.gearlever',
+            issue_url='https://github.com/mijorus/gearlever',
+        )
+
         about.present()
 
     def on_preferences_action(self, widget, _):
