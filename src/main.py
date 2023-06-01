@@ -21,7 +21,7 @@ import logging
 import os
 
 from .lib.terminal import sh
-from .lib.utils import log, portal
+from .lib.utils import log, get_gsettings
 from .lib.costants import APP_ID, APP_NAME
 from .providers.providers_list import appimage_provider
 from .AboutDialog import AboutDialog
@@ -33,7 +33,7 @@ gi.require_version('Adw', '1')
 
 from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GObject # noqa
 
-LOG_FILE_MAX_N_LINES = 2000
+LOG_FILE_MAX_N_LINES = 5000
 LOG_FOLDER = GLib.get_user_cache_dir() + '/logs'
 
 class GearleverApplication(Adw.Application):
@@ -152,7 +152,7 @@ def main(version):
         filename=log_file,
         filemode='a',
         encoding='utf-8',
-        level=logging.DEBUG,
+        level= logging.DEBUG if get_gsettings().get_boolean('debug-logs') else logging.INFO,
         force=True
     )
 

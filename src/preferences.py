@@ -33,9 +33,9 @@ class Preferences(Adw.PreferencesWindow):
         self.default_location_row.add_suffix(pick_default_localtion_btn)
 
         exec_as_name_switch = self.create_boolean_settings_entry(
-            'Use executable name for integrated terminal apps',
+            _('Use executable name for integrated terminal apps'),
             'exec-as-name-for-terminal-apps',
-            'If enabled, apps that run in the terminal are renamed as their executable.\nYou would need to add the aforementioned folder to your $PATH manually.\n\nFor example, "golang_x86_64.appimage" will be saved as "go"'
+            _('If enabled, apps that run in the terminal are renamed as their executable.\nYou would need to add the aforementioned folder to your $PATH manually.\n\nFor example, "golang_x86_64.appimage" will be saved as "go"')
         )
 
         general_preference_group.add(self.default_location_row)
@@ -73,9 +73,21 @@ class Preferences(Adw.PreferencesWindow):
 
         self.move_to_destination_check.connect('toggled', self.on_move_appimages_setting_changed)
         self.copy_to_destination_check.connect('toggled', self.on_move_appimages_setting_changed)
+
+        # debugging group
+        debug_group = Adw.PreferencesGroup(name=_('Debugging'), title=_('Debugging'))
+        debug_row = self.create_boolean_settings_entry(
+            _('Enable debug logs'),
+            'debug-logs',
+            _('Increases log verbosity, occupying more disk space and potentially impacting performance.\nRequires a restart.')
+        )
+
+        debug_group.add(debug_row)
+
         
         page1.add(general_preference_group)
         page1.add(move_appimages_group)
+        page1.add(debug_group)
         self.add(page1)
 
     def on_select_default_location_response(self, dialog, result):
