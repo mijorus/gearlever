@@ -384,10 +384,6 @@ class AppImageProvider():
 
         gio_copy(file, dest)
 
-        self._make_file_executable(el, dest.get_path())
-
-        appimage_extract_support = False
-
         ###############################################################################
 
         # The following code has been commented because uses appimage's built in extract method, 
@@ -396,6 +392,10 @@ class AppImageProvider():
         # Instead, we use p7zip to extract the contect of the appimage bundle
 
         ###############################################################################
+        
+        # self._make_file_executable(el, dest.get_path())
+        # appimage_extract_support = False
+
 
         # if el.generation == 2:
         #     try:
