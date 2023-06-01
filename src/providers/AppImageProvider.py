@@ -388,41 +388,51 @@ class AppImageProvider():
 
         appimage_extract_support = False
 
-        if el.generation == 2:
-            try:
-                appimage_help = subprocess.run([dest.get_path(), '--appimage-help'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).stderr.decode()
+        ###############################################################################
 
-                appimage_extract_support = ('-appimage-extract' in appimage_help)
-                if not appimage_extract_support:
-                    raise InternalError('This appimage does not support appimage-extract')
+        # The following code has been commented because uses appimage's built in extract method, 
+        # however not all the appimages support it.
+        #
+        # Instead, we use p7zip to extract the contect of the appimage bundle
 
-            except Exception as e:
-                logging.error(str(e))
+        ###############################################################################
 
-        if appimage_extract_support:
-            prefix = [dest.get_path(), '--appimage-extract']
-            extraction_output = ''
+        # if el.generation == 2:
+        #     try:
+        #         appimage_help = subprocess.run([dest.get_path(), '--appimage-help'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).stderr.decode()
 
-            # check if the appimage supports partial extraction 
-            if '--appimage-extract [<pattern>]' in appimage_help:
-                for match in ['*.desktop', 'usr/share/icons/*', '*.svg', '*.png']:
-                    run = [*prefix, match]
+        #         appimage_extract_support = ('-appimage-extract' in appimage_help)
+        #         if not appimage_extract_support:
+        #             raise InternalError('This appimage does not support appimage-extract')
 
-                    extraction_output += terminal.sandbox_sh(run, cwd=dest_path)
-            else:
-                logging.debug('This AppImage does not support partial extraction, running ' + ' '.join(prefix))
-                extraction_output += terminal.sandbox_sh([*prefix], cwd=dest_path)
+        #     except Exception as e:
+        #         logging.error(str(e))
 
-            logging.debug(f'Extracted appimage {file.get_path()} with log:\n\n======\n\n{extraction_output}\n\n======\n\n')
+        # if appimage_extract_support:
+        #     prefix = [dest.get_path(), '--appimage-extract']
+        #     extraction_output = ''
+
+        #     # check if the appimage supports partial extraction 
+        #     if '--appimage-extract [<pattern>]' in appimage_help:
+        #         for match in ['*.desktop', 'usr/share/icons/*', '*.svg', '*.png']:
+        #             run = [*prefix, match]
+
+        #             extraction_output += terminal.sandbox_sh(run, cwd=dest_path)
+        #     else:
+        #         logging.debug('This AppImage does not support partial extraction, running ' + ' '.join(prefix))
+        #         extraction_output += terminal.sandbox_sh([*prefix], cwd=dest_path)
+
+        #     logging.debug(f'Extracted appimage {file.get_path()} with log:\n\n======\n\n{extraction_output}\n\n======\n\n')
         
-        else:
-            logging.info('This appiamge does not support appimage-extract, trying with 7z')
-            z7zoutput = '=== 7z log ==='
-            z7zoutput = '\n\n' + terminal.sandbox_sh(['7z', 'x', dest.get_path(), '-r', '*.png', '-osquashfs-root', '-y'], cwd=dest_path)
-            z7zoutput += '\n\n' + terminal.sandbox_sh(['7z', 'x', dest.get_path(), '-r', '*.desktop', '-osquashfs-root', '-y'], cwd=dest_path)
-            z7zoutput += '\n\n' + terminal.sandbox_sh(['7z', 'x', dest.get_path(), '-r', '*.svg', '-osquashfs-root', '-y'], cwd=dest_path)
+        # else:
+        # logging.info('This appiamge does not support appimage-extract, trying with 7z')
+        logging.info('Exctracting with p7zip')
+        z7zoutput = '=== 7z log ==='
+        z7zoutput = '\n\n' + terminal.sandbox_sh(['7z', 'x', dest.get_path(), '-r', '*.png', '-osquashfs-root', '-y'], cwd=dest_path)
+        z7zoutput += '\n\n' + terminal.sandbox_sh(['7z', 'x', dest.get_path(), '-r', '*.desktop', '-osquashfs-root', '-y'], cwd=dest_path)
+        z7zoutput += '\n\n' + terminal.sandbox_sh(['7z', 'x', dest.get_path(), '-r', '*.svg', '-osquashfs-root', '-y'], cwd=dest_path)
 
-            logging.debug(z7zoutput)
+        logging.debug(z7zoutput)
 
         return f'{dest_path}/squashfs-root'
 
