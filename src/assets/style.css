@@ -18,3 +18,13 @@
     padding-right: 12px;
     border-radius: 40px;
 }
+
+.transparent-bg {
+    background-color: transparent;
+    border-color: transparent;
+    outline: transparent;
+}
+
+.bold {
+    font-weight: bold;
+}

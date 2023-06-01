@@ -10,7 +10,7 @@ from .models.Models import AppUpdateElement
 from .components.FilterEntry import FilterEntry
 from .components.CustomComponents import NoAppsFoundRow
 from .components.AppListBoxItem import AppListBoxItem
-from .lib.utils import set_window_cursor, key_in_dict, log
+from .lib.utils import set_window_cursor, get_application_window
 
 class InstalledAppsList(Gtk.ScrolledWindow):
     __gsignals__ = {
@@ -19,12 +19,10 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
     def __init__(self):
         super().__init__()
-
-        self.container_stack = Gtk.Stack()
-        self.container_stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
-
         self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        clamp_size = 600
 
+        self.container_stack = Gtk.Stack(transition_type=Gtk.StackTransitionType.CROSSFADE)
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
         self.installed_apps_list_slot = Gtk.Box()
@@ -34,45 +32,25 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
         # Create the filter search bar
         self.filter_query: str = ''
-        self.filter_entry = FilterEntry('Filter installed applications', capture=self, margin_bottom=20)
-        self.filter_entry.connect('search-changed', self.trigger_filter_list)
-
-        # updates row
-        self.updates_fetched = False
-        self.updates_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, visible=True)
-
-        ## the list box containing all the updatable apps
-        self.updates_row_list = Gtk.ListBox(css_classes=["boxed-list"], margin_bottom=25)
-        self.updates_row_list_spinner = Gtk.ListBoxRow(child=Gtk.Spinner(spinning=True, margin_top=5, margin_bottom=5), visible=False)
-        self.updates_row_list.append(self.updates_row_list_spinner)
-        self.updates_row_list.connect('row-activated', self.on_activated_row)
-
-        ## an array containing all the updatable apps, used for some custom login
-        self.updates_row_list_items: list = []
-        self.updates_revealter = Gtk.Revealer(child=self.updates_row, transition_type=Gtk.RevealerTransitionType.SLIDE_DOWN, reveal_child=False)
-
-        updates_title_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, valign=Gtk.Align.CENTER, margin_bottom=5)
-
-        self.updates_title_label = Gtk.Label(label='', css_classes=['title-4'], hexpand=True, halign=Gtk.Align.START)
-        updates_title_row.append( self.updates_title_label )
-        
-        self.updates_row.append(updates_title_row)
-        self.updates_row.append(self.updates_row_list)
+        self.filter_entry = FilterEntry('Filter installed applications', capture=get_application_window(), maximum_size=clamp_size)
+        self.filter_entry.search_entry.connect('search-changed', self.trigger_filter_list)
 
         # title row
         title_row = Gtk.Box(margin_bottom=5)
         title_row.append( Gtk.Label(label='Installed applications', css_classes=['title-2']) )
 
-        for el in [self.filter_entry, self.updates_revealter, title_row, self.installed_apps_list_slot]:
-            self.main_box.append(el)
+        [self.main_box.append(el) for el in [title_row, self.installed_apps_list_slot]]
 
-        self.clamp = Adw.Clamp(child=self.main_box, maximum_size=600, margin_top=20, margin_bottom=20)
+        clamp = Adw.Clamp(child=self.main_box, maximum_size=clamp_size, margin_top=20, margin_bottom=20)
+
+        self.clamp_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        [self.clamp_container.append(el) for el in [self.filter_entry, clamp]]
 
         # empty list placeholder
         builder = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/empty-list-placeholder.ui')
         self.placeholder = builder.get_object('target')
 
-        self.container_stack.add_child(self.clamp)
+        self.container_stack.add_child(self.clamp_container)
         self.container_stack.add_child(self.placeholder)
 
         self.set_child(self.container_stack)
@@ -80,6 +58,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
     # Emit and event that changes the active page of the Stack in the parent widget
     def on_activated_row(self, listbox, row: Gtk.ListBoxRow):
+        self.filter_entry.set_search_mode(False)
         self.emit('selected-app', row._app)
 
     def refresh_list(self):
@@ -93,7 +72,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         installed: List[AppImageListElement] = appimage_provider.list_installed()
 
         for i in installed:
-            list_row = AppListBoxItem(i, activatable=True, selectable=True, hexpand=True)
+            list_row = AppListBoxItem(i, activatable=True, selectable=False, hexpand=True)
             list_row.set_update_version(i.version)
 
             list_row.load_icon()
@@ -101,7 +80,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
             self.installed_apps_list.append(list_row)
 
         if installed:
-            self.container_stack.set_visible_child(self.clamp)
+            self.container_stack.set_visible_child(self.clamp_container)
         else:
             self.container_stack.set_visible_child(self.placeholder)
 
