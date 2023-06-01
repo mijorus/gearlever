@@ -65,14 +65,14 @@ class AppImageProvider():
         self.update_messages = []
 
         self.extraction_folder = GLib.get_tmp_dir() + '/it.mijorus.gearlever/appimages'
+        self.user_desktop_files_path = f'{GLib.get_home_dir()}/.local/share/applications/'
 
     def list_installed(self) -> List[AppImageListElement]:
         default_folder_path = self._get_appimages_default_destination_path()
-        desktop_files_dir = f'{GLib.get_user_data_dir()}/applications/'
         output = []
 
-        for file_name in os.listdir(desktop_files_dir):
-            gfile = Gio.File.new_for_path(desktop_files_dir + f'/{file_name}')
+        for file_name in os.listdir(self.user_desktop_files_path):
+            gfile = Gio.File.new_for_path(self.user_desktop_files_path + f'/{file_name}')
 
             try:
                 if get_giofile_content_type(gfile) == 'application/x-desktop':
@@ -258,7 +258,7 @@ class AppImageProvider():
                 gio_copy(icon_file, dest_appimage_icon_file)
 
             # Move .desktop file to its default location
-            dest_destop_file_path = f'{GLib.get_user_data_dir()}/applications/{safe_app_name}.desktop'
+            dest_destop_file_path = f'{self.user_desktop_files_path}/{safe_app_name}.desktop'
             dest_destop_file_path = dest_destop_file_path.replace(' ', '_')
 
             with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
@@ -332,7 +332,8 @@ class AppImageProvider():
             if not extracted_appimage.appimage_file.delete(None):
                 raise InternalError('Cannot delete original file')
 
-        terminal.sh(['update-desktop-database', '-q'])
+        update_dkt_db = terminal.sh(['update-desktop-database', self.user_desktop_files_path, '-v'], return_stderr=True)
+        logging.debug(update_dkt_db)
 
     def get_appimage_generation(self, file: Gio.File) -> int:
         return self.supported_mimes.index(get_giofile_content_type(file)) + 1
