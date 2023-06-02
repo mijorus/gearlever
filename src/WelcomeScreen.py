@@ -4,14 +4,14 @@ from typing import Dict, List, Optional
 from .State import state
 from .lib.costants import APP_ID
 from .providers.providers_list import appimage_provider
-from .providers.AppImageProvider import AppImageListElement
+from .providers.AppImageProvider import AppImageProvider
 from .models.AppListElement import AppListElement, InstalledStatus
 from .models.Models import AppUpdateElement
 from .components.FilterEntry import FilterEntry
 from .components.CustomComponents import NoAppsFoundRow
 from .components.AppListBoxItem import AppListBoxItem
 from .preferences import Preferences
-from .lib.utils import get_element_without_overscroll
+from .lib.utils import get_element_without_overscroll, get_gsettings
 
 class WelcomeScreen(Gtk.Window):
 
@@ -40,6 +40,10 @@ class WelcomeScreen(Gtk.Window):
 
         pages = [el.get_object('target') for el in [first_page, second_page, last_page]]
         [self.carousel.append(el) for el in pages]
+
+        location_label = second_page.get_object('location-label')
+        location_label.set_label(location_label.get_label().replace('{location}', get_gsettings().get_string('appimages-default-folder')))
+        last_page.get_object('close-window').connect('clicked', lambda w: self.close())
 
         self.left_button.connect('clicked', lambda w: self.carousel.scroll_to(get_element_without_overscroll(pages, int(self.carousel.get_position()) - 1), True))
         self.right_button.connect('clicked', lambda w: self.carousel.scroll_to(get_element_without_overscroll(pages, int(self.carousel.get_position()) + 1), True))
