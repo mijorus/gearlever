@@ -43,7 +43,6 @@ class GearleverApplication(Adw.Application):
         super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.HANDLES_OPEN)
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action)
-        self.create_action('open_file', self.on_open_file_chooser)
         self.create_action('open_log_file', self.on_open_log_file)
         self.win = None
         self.version = version
@@ -67,7 +66,7 @@ class GearleverApplication(Adw.Application):
         if not self.win:
             self.win = GearleverWindow(application=self, from_file=from_file)
 
-            if get_gsettings().get_boolean('first-run'):
+            if not get_gsettings().get_boolean('first-run'):
                 # get_gsettings().set_boolean('first-run', False)
                 tutorial = WelcomeScreen()
                 tutorial.present()
@@ -110,28 +109,6 @@ class GearleverApplication(Adw.Application):
         self.add_action(action)
         if shortcuts:
             self.set_accels_for_action(f"app.{name}", shortcuts)
-
-    def on_open_file_chooser_response(self, dialog, result):
-        try:
-            selected_file = dialog.open_finish(result)
-        except Exception as e:
-            logging.error(str(e))
-            return
-
-        if selected_file and isinstance(self.props.active_window, GearleverWindow):
-            self.props.active_window.on_selected_local_file(selected_file)
-
-    def on_open_file_chooser(self, widget, event):
-        if not self.win:
-            return
-
-        dialog = Gtk.FileDialog(title='Open a file',modal=True)
-
-        dialog.open(
-            parent=self.win,
-            cancellable=None,
-            callback=self.on_open_file_chooser_response
-        )
 
     def on_open_log_file(self, widget, event):
         if not self.win:

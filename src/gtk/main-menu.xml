@@ -7,10 +7,6 @@
                 <attribute name="action">app.preferences</attribute>
             </item>
             <item>
-                <attribute name="label" translatable="yes">_Open Appimage File</attribute>
-                <attribute name="action">app.open_file</attribute>
-            </item>
-            <item>
                 <attribute name="label" translatable="yes">_Open Log File</attribute>
                 <attribute name="action">app.open_log_file</attribute>
             </item>
