@@ -1,4 +1,4 @@
-# Gear lever
+# Gear lever - manage AppImages
 
 This project is in development...
 
