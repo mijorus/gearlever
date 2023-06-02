@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <requires lib="gtk" version="4.0" />
+    <object class="GtkBox" id="target">
+        <property name="orientation">1</property>
+        <property name="valign">3</property>
+        <property name="halign">3</property>
+        <child>
+            <object class="GtkLabel">
+                <property name="label" translatable="no">👋</property>
+                <property name="margin-bottom">30</property>
+                <style>
+                    <class name="title-xl">
+                    </class>
+                </style>
+            </object>
+        </child>
+        <child>
+            <object class="GtkLabel">
+                <property name="label" translatable="yes">Hi, welcome to Gear lever</property>
+                <property name="margin-bottom">30</property>
+                <style>
+                    <class name="title-1" />
+                </style>
+            </object>
+        </child>
+        <child>
+            <object class="GtkLabel">
+                <property name="label" translatable="yes">An app that helps you integrating AppImages into you system.</property>
+                <property name="margin-bottom">30</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkLabel">
+                <property name="label" translatable="yes">Click "Next" to follow this tutorial.</property>
+                <property name="margin-bottom">30</property>
+            </object>
+        </child>
+    </object>
+</interface>

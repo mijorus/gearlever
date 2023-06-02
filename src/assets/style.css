@@ -28,3 +28,7 @@
 .bold {
     font-weight: bold;
 }
+
+.title-xl {
+    font-size: 100px;
+}

@@ -25,6 +25,7 @@ from .lib.utils import log, get_gsettings
 from .lib.costants import APP_ID, APP_NAME
 from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
+from  .WelcomeScreen import WelcomeScreen
 from .preferences import Preferences
 
 gi.require_version('Gtk', '4.0')
@@ -65,6 +66,9 @@ class GearleverApplication(Adw.Application):
 
         if not self.win:
             self.win = GearleverWindow(application=self, from_file=from_file)
+            tutorial = WelcomeScreen()
+
+            tutorial.present()
 
         self.win.present()
 

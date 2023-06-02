@@ -11,5 +11,6 @@
         <file>assets/Flatpak-Logo-showcase.png</file>
         <file>assets/appimage-showcase.png</file>
         <file>assets/style.css</file>
+        <file>gtk/tutorial/1.ui</file>
     </gresource>
 </gresources>
