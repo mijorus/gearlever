@@ -103,13 +103,11 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_list_element = el
         self.provider = appimage_provider
 
-        self.load()
+        self.load(load_completed_callback=lambda: self.set_trust_button(trusted=(el.installed_status is InstalledStatus.INSTALLED)))
 
     def set_from_local_file(self, file: Gio.File):
         if appimage_provider.can_install_file(file):
             list_element = appimage_provider.create_list_element_from_file(file)
-
-            self.set_trust_button(trusted=(list_element.installed_status is InstalledStatus.INSTALLED))
 
             self.set_app_list_element(list_element)
             return True
@@ -274,9 +272,6 @@ class AppDetails(Gtk.ScrolledWindow):
             self.primary_action_button.set_label(_('Installing...'))
 
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
-            # self.secondary_action_button.set_sensitive(False)
-            # self.primary_action_button.set_sensitive(False)
-
             self.secondary_action_button.set_visible(True)
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'suggested-action'])
 
