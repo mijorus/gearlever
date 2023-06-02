@@ -119,3 +119,17 @@ def portal(interface: str, bus_name: str='org.freedesktop.portal.Desktop', objec
     inter = dbus.Interface(obj, interface)
 
     return inter
+
+def get_element_without_overscroll(arr: list, index: int):
+    """
+    Returns the element at the given index in the array.
+    If the index is out of bounds, the index is wrapped around
+    to the range of valid indices for the array.
+    """
+    if index < 0:
+        index = 0
+
+    if len(arr) == 0:
+        raise ValueError("Array must not be empty")
+    wrapped_index = index % len(arr)
+    return arr[wrapped_index]

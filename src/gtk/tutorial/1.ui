@@ -5,6 +5,7 @@
         <property name="orientation">1</property>
         <property name="valign">3</property>
         <property name="halign">3</property>
+        <property name="hexpand">1</property>
         <child>
             <object class="GtkLabel">
                 <property name="label" translatable="no">👋</property>
