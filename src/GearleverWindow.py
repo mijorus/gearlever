@@ -32,6 +32,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
     def __init__(self, from_file=False, **kwargs):
         super().__init__(**kwargs)
         self.from_file = from_file
+        self.open_appimage_tooltip = _('Open a new AppImage')
 
         # Create a container stack 
         self.container_stack = Gtk.Stack()
@@ -41,7 +42,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         self.titlebar = Adw.HeaderBar()
         self.view_title_widget = Adw.ViewSwitcherTitle(stack=self.app_lists_stack)
-        self.left_button = Gtk.Button(icon_name='plus-symbolic')
+        self.left_button = Gtk.Button(icon_name='plus-symbolic', tooltip_text=self.open_appimage_tooltip)
 
         menu_obj = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/main-menu.xml')
         self.menu_button = Gtk.MenuButton(icon_name='open-menu', menu_model=menu_obj.get_object('primary_menu'))
@@ -154,6 +155,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
     def on_container_stack_change(self, widget, data):
         in_app_details = self.container_stack.get_visible_child() is self.app_details
         self.left_button.set_icon_name('go-previous' if in_app_details else 'plus-symbolic')
+        self.left_button.set_tooltip_text(None if in_app_details else self.open_appimage_tooltip)
         self.view_title_widget.set_visible(not in_app_details)
 
     def on_drop_event(self, widget, value, x, y):
