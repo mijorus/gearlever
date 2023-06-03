@@ -9,7 +9,7 @@ from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle
-from .lib.utils import cleanhtml, key_in_dict, set_window_cursor, get_application_window
+from .lib.utils import key_in_dict, set_window_cursor, get_application_window
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
 
