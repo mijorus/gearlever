@@ -66,8 +66,9 @@ class GearleverApplication(Adw.Application):
         if not self.win:
             self.win = GearleverWindow(application=self, from_file=from_file)
 
+            # if True:
             if not get_gsettings().get_boolean('first-run'):
-                # get_gsettings().set_boolean('first-run', False)
+                get_gsettings().set_boolean('first-run', True)
                 tutorial = WelcomeScreen()
                 tutorial.present()
 
