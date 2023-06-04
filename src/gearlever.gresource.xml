@@ -13,6 +13,7 @@
         <file>assets/style.css</file>
         <file>gtk/tutorial/1.ui</file>
         <file>gtk/tutorial/2.ui</file>
+        <file>gtk/tutorial/3.ui</file>
         <file>gtk/tutorial/last.ui</file>
     </gresource>
 </gresources>

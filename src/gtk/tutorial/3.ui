@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <requires lib="gtk" version="4.0" />
+    <object class="GtkBox" id="target">
+        <property name="orientation">1</property>
+        <property name="valign">3</property>
+        <property name="halign">3</property>
+        <property name="hexpand">1</property>
+        <child>
+            <object class="GtkImage">
+                <property name="name">logo</property>
+                <property name="icon-name">star-large</property>
+                <property name="pixel-size">120</property>
+                <property name="margin-bottom">30</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkLabel">
+                <property name="label" translatable="yes">Set Gear lever as default</property>
+                <property name="margin-bottom">30</property>
+                <style>
+                    <class name="title-1" />
+                </style>
+            </object>
+        </child>
+        <child>
+            <object class="GtkLabel">
+                <property name="label" translatable="yes">Click on the button below to open a demo folder with your default file manager, containing a sample AppImage.</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkLabel">
+                <property name="label" translatable="yes">Use the right-click menu to set Gear lever as the default app for ".appimage" files</property>
+                <property name="margin-bottom">30</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkBox">
+                <property name="orientation">1</property>
+                <property name="valign">3</property>
+                <property name="halign">3</property>
+                <child>
+                    <object class="GtkButton" id="open-preferences">
+                        <property name="label" translatable="yes">Open demo folder</property>
+                        <property name="margin-bottom">10</property>
+                        <property name="vexpand">0</property>
+                        <style>
+                            <class name="pill" />
+                        </style>
+                    </object>
+                </child>
+            </object>
+        </child>
+        <child>
+            <object class="GtkLabel">
+                <property name="label" translatable="yes">This step is optional</property>
+                <property name="margin-bottom">30</property>
+                <style>
+                    <class name="dim-label" />
+                </style>
+            </object>
+        </child>
+    </object>
+</interface>

@@ -36,9 +36,10 @@ class WelcomeScreen(Gtk.Window):
 
         first_page = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/tutorial/1.ui')
         second_page = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/tutorial/2.ui')
+        third_page = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/tutorial/3.ui')
         last_page = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/tutorial/last.ui')
 
-        pages = [el.get_object('target') for el in [first_page, second_page, last_page]]
+        pages = [el.get_object('target') for el in [first_page, second_page, third_page, last_page]]
         [self.carousel.append(el) for el in pages]
 
         self.left_button.connect('clicked', lambda w: self.carousel.scroll_to(get_element_without_overscroll(pages, int(self.carousel.get_position()) - 1), True))
