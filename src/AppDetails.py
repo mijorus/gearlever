@@ -1,17 +1,16 @@
-import threading
 import time
 import logging
 import base64
 from typing import Optional, Callable
-from .lib.utils import qq
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
+
 from .State import state
 from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
-from .lib.async_utils import _async, idle
+from .lib.async_utils import _async, idle, debounce
 from .lib.json_config import read_json_config, set_json_config
-from .lib.utils import key_in_dict, set_window_cursor, get_application_window
+from .lib.utils import url_is_valid
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
 
@@ -145,34 +144,40 @@ class AppDetails(Gtk.ScrolledWindow):
         # Load the boxed list with additional information
         gtk_list = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
 
+        # Package info
         row = Adw.ActionRow(
             subtitle=f'{self.provider.name.capitalize()} Type. {self.app_list_element.generation}', 
             title='Package type',
             selectable=False
         )
+
         row_img = Gtk.Image(resource=self.provider.icon, pixel_size=34)
         row.add_prefix(row_img)
         gtk_list.append(row)
 
+        # The path of the executable
         row = Adw.ActionRow(title=_('Path'), subtitle=self.app_list_element.file_path, subtitle_selectable=True, selectable=False)
         row_img = Gtk.Image(icon_name='gearlever-terminal-symbolic', pixel_size=34)
         row.add_prefix(row_img)
         gtk_list.append(row)
 
+        # A custom link to a website
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
-            b64name = base64.b64encode(self.app_list_element.name.encode('ascii')).decode('ascii')
-            config = read_json_config('apps')
+            app_config = self.get_config_for_app()
             
             row = Adw.EntryRow(
-                title=_('Website'),
+                title=(_('Website') if 'website' in app_config else _('Add a website')),
                 selectable=False,
-                tooltip_text=_('Link to the web page of the app'),
-                text=(config[b64name]['website'] if key_in_dict(config, f'{b64name}.website') else '')
+                text=(app_config['website'] if 'website' in app_config else '')
             )
 
-            row_img = Gtk.Image(icon_name='web-browser', pixel_size=34)
+            row_img = Gtk.Image(icon_name='earth', pixel_size=34)
+            row_btn = Gtk.Button(icon_name='arrow2-top-right-symbolic', valign=Gtk.Align.CENTER, tooltip_text=_('Open URL'),)
+            row_btn.connect('clicked', self.on_web_browser_open_btn_clicked)
+
             row.connect('changed', self.on_web_browser_input_apply)
             row.add_prefix(row_img)
+            row.add_suffix(row_btn)
             gtk_list.append(row)
 
         self.extra_data.append(gtk_list)
@@ -180,7 +185,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_installation_status()
         self.show_row_spinner(False)
 
-        if load_completed_callback is not None:
+        if load_completed_callback:
             load_completed_callback()
 
     @_async
@@ -346,13 +351,34 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.primary_action_button.set_sensitive(True)
             ])
 
+    @debounce(0.5)
     def on_web_browser_input_apply(self, widget):
+        conf = read_json_config('apps')
+        b64name = self.get_config_for_app()['b64name']
+
+        text = widget.get_text().strip()
+
+        widget.remove_css_class('error')
+        if not url_is_valid(text):
+            return widget.add_css_class('error')
+
+        conf[b64name]['website'] = text
+        set_json_config('apps', conf)
+
+    # Returns the configuration from the json for this specific app
+    def get_config_for_app(self) -> dict:
         conf = read_json_config('apps')
         b64name = base64.b64encode(self.app_list_element.name.encode('ascii')).decode('ascii')
 
-        if not b64name in conf:
-            conf[b64name] = {}
-            
-        conf[b64name]['website'] = widget.get_text()
+        app_config = conf[b64name] if b64name in conf else {}
+        app_config['b64name'] = b64name
 
-        set_json_config('apps', conf)
+        return app_config
+        
+
+    def on_web_browser_open_btn_clicked(self, widget):
+        app_config = self.get_config_for_app()
+
+        if ('website' in app_config) and url_is_valid(app_config['website']):
+            launcher = Gtk.UriLauncher.new(app_config['website'])
+            launcher.launch()
