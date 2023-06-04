@@ -116,8 +116,9 @@ class GearleverApplication(Adw.Application):
         if not self.win:
             return
 
-        #!TODO: replace with a portal call
-        sh(['xdg-open',  GLib.get_user_cache_dir() + '/logs'])
+        log_gfile = Gio.File.new_for_path(f'{GLib.get_user_cache_dir()}/logs')
+        launcher = Gtk.FileLauncher.new()
+        launcher.launch()
 
     def on_open_welcome_screen(self, widget, event):
         tutorial = WelcomeScreen()
