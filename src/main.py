@@ -39,7 +39,7 @@ LOG_FOLDER = GLib.get_user_cache_dir() + '/logs'
 class GearleverApplication(Adw.Application):
     """The main application singleton class."""
 
-    def __init__(self, version):
+    def __init__(self, version, pkgdatadir):
         super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.HANDLES_OPEN)
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action)
@@ -47,6 +47,7 @@ class GearleverApplication(Adw.Application):
         self.create_action('open_welcome_screen', self.on_open_welcome_screen)
         self.win = None
         self.version = version
+        self.pkgdatadir = pkgdatadir
 
     def do_startup(self):
         log('\n\n---- Application startup')
@@ -70,7 +71,7 @@ class GearleverApplication(Adw.Application):
             # if True:
             if not get_gsettings().get_boolean('first-run'):
                 get_gsettings().set_boolean('first-run', True)
-                tutorial = WelcomeScreen()
+                tutorial = WelcomeScreen(self.pkgdatadir)
                 tutorial.present()
 
         self.win.present()
@@ -117,14 +118,14 @@ class GearleverApplication(Adw.Application):
             return
 
         log_gfile = Gio.File.new_for_path(f'{GLib.get_user_cache_dir()}/logs')
-        launcher = Gtk.FileLauncher.new()
+        launcher = Gtk.FileLauncher.new(log_gfile)
         launcher.launch()
 
     def on_open_welcome_screen(self, widget, event):
-        tutorial = WelcomeScreen()
+        tutorial = WelcomeScreen(self.pkgdatadir)
         tutorial.present()
 
-def main(version):
+def main(version, pkgdatadir):
     """The application's entry point."""
 
     log_file = f'{LOG_FOLDER}/{APP_NAME}.log'
@@ -144,7 +145,7 @@ def main(version):
             with open(log_file, 'w+') as f:
                 f.write('')
 
-    app = GearleverApplication(version)
+    app = GearleverApplication(version, pkgdatadir)
     logging.basicConfig(
         filename=log_file,
         filemode='a',
