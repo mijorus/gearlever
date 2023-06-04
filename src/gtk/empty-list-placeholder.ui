@@ -27,7 +27,7 @@
         <style>
           <class name="title-" />
         </style>
-        <property name="label" translatable="yes">Drag and drop an AppImage here or select "Open file" in the menu.</property>
+        <property name="label" translatable="yes">Drag and drop an AppImage here or click on the "+" icon.</property>
       </object>
     </child>
     <child>

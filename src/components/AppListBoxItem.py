@@ -1,7 +1,6 @@
 from urllib import request
 from gi.repository import Gtk, Pango
 from typing import Dict, List, Optional
-from ..lib.utils import cleanhtml
 from ..lib.async_utils import idle, _async
 
 from ..models.AppListElement import AppListElement, InstalledStatus

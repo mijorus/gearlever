@@ -13,6 +13,8 @@
         <key name="debug-logs" type="b">
             <default>false</default>
         </key>
-
+        <key name="first-run" type="b">
+            <default>true</default>
+        </key>
 	</schema>
 </schemalist>

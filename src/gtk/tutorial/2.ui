@@ -29,7 +29,7 @@
             </object>
         </child>
         <child>
-            <object class="GtkLabel">
+            <object class="GtkLabel" id="location-label">
                 <property name="label" translatable="yes">By default, AppImages are saved at: {location}</property>
                 <style>
                     <class name="heading" />

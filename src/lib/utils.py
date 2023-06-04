@@ -41,13 +41,6 @@ def add_page_to_adw_stack(stack: Adw.ViewStack, page: Gtk.Widget, name: str, tit
     stack.get_page(page).set_icon_name(icon)
 
 
-# as per recommendation from @freylis, compile once only
-_html_clearner = re.compile('<.*?>')
-def cleanhtml(raw_html: str) -> str:
-    cleantext = re.sub(_html_clearner, '', raw_html)
-    return cleantext
-
-
 def gtk_image_from_url(url: str, image: Gtk.Image) -> Gtk.Image:
     response = requests.get(url, timeout=10)
     response.raise_for_status()
@@ -119,6 +112,7 @@ def portal(interface: str, bus_name: str='org.freedesktop.portal.Desktop', objec
     inter = dbus.Interface(obj, interface)
 
     return inter
+
 
 def get_element_without_overscroll(arr: list, index: int):
     """

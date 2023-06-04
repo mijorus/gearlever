@@ -32,6 +32,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
     def __init__(self, from_file=False, **kwargs):
         super().__init__(**kwargs)
         self.from_file = from_file
+        self.open_appimage_tooltip = _('Open a new AppImage')
 
         # Create a container stack 
         self.container_stack = Gtk.Stack()
@@ -41,7 +42,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         self.titlebar = Adw.HeaderBar()
         self.view_title_widget = Adw.ViewSwitcherTitle(stack=self.app_lists_stack)
-        self.left_button = Gtk.Button(icon_name='go-previous', visible=False)
+        self.left_button = Gtk.Button(icon_name='plus-symbolic', tooltip_text=self.open_appimage_tooltip)
 
         menu_obj = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/main-menu.xml')
         self.menu_button = Gtk.MenuButton(icon_name='open-menu', menu_model=menu_obj.get_object('primary_menu'))
@@ -132,23 +133,28 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
     def on_show_installed_list(self, source: Gtk.Widget=None, data=None):
         self.container_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT)
-        self.left_button.set_visible(False)
 
         self.installed_apps_list.refresh_list()
         self.container_stack.set_visible_child(self.app_lists_stack)
 
     def on_left_button_clicked(self, widget):
         if self.app_lists_stack.get_visible_child() == self.installed_stack:
-            if self.container_stack.get_visible_child() == self.app_details:
+            container_visible = self.container_stack.get_visible_child()
+
+            if container_visible == self.app_details:
                 self.titlebar.set_title_widget(self.view_title_widget)
                 self.on_show_installed_list()
+
+            elif container_visible == self.app_lists_stack:
+                self.on_open_file_chooser()
 
     def on_app_lists_stack_change(self, widget, data):
         pass
 
     def on_container_stack_change(self, widget, data):
         in_app_details = self.container_stack.get_visible_child() is self.app_details
-        self.left_button.set_visible(in_app_details)
+        self.left_button.set_icon_name('go-previous' if in_app_details else 'plus-symbolic')
+        self.left_button.set_tooltip_text(None if in_app_details else self.open_appimage_tooltip)
         self.view_title_widget.set_visible(not in_app_details)
 
     def on_drop_event(self, widget, value, x, y):
@@ -180,6 +186,25 @@ class GearleverWindow(Gtk.ApplicationWindow):
             return self.close()
 
         self.on_show_installed_list(widget, data)
+
+    def on_open_file_chooser_response(self, dialog, result):
+        try:
+            selected_file = dialog.open_finish(result)
+        except Exception as e:
+            logging.error(str(e))
+            return
+
+        if selected_file:
+            self.on_selected_local_file(selected_file)
+
+    def on_open_file_chooser(self):
+        dialog = Gtk.FileDialog(title=_('Open a file'),modal=True)
+
+        dialog.open(
+            parent=self,
+            cancellable=None,
+            callback=self.on_open_file_chooser_response
+        )
 
     def on_close_request(self, widget):
         appimage_provider.extraction_folder_cleanup()
