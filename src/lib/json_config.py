@@ -10,6 +10,7 @@ from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GdkPixbuf  # noqa
 
 
 def read_json_config(name: str):
+    logging.debug(f'Reading config from {path}')
     path = f'{GLib.get_user_config_dir()}/{name}.json'
 
     if not os.path.isfile(path):
@@ -23,4 +24,4 @@ def set_json_config(name: str, data):
 
     with open(path, 'w+') as file:
         file.write(json.dumps(data))
-        logging.debug(f'Saving config to {path}')
+        logging.info(f'Saving config to {path}')
