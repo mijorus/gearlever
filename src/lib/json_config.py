@@ -1,3 +1,4 @@
+import logging
 import json
 import gi
 import os
@@ -10,7 +11,8 @@ from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GdkPixbuf  # noqa
 
 def read_json_config(name: str):
     path = f'{GLib.get_user_config_dir()}/{name}.json'
-    if not os.path.exists(path):
+
+    if not os.path.isfile(path):
         return {}
 
     with open(path, 'r') as file:
@@ -21,3 +23,4 @@ def set_json_config(name: str, data):
 
     with open(path, 'w+') as file:
         file.write(json.dumps(data))
+        logging.debug(f'Saving config to {path}')
