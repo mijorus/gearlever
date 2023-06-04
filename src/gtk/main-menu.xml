@@ -11,7 +11,11 @@
                 <attribute name="action">app.open_log_file</attribute>
             </item>
             <item>
-                <attribute name="label" translatable="yes">_About</attribute>
+                <attribute name="label" translatable="yes">_Welcome screen</attribute>
+                <attribute name="action">app.open_welcome_screen</attribute>
+            </item>
+            <item>
+                <attribute name="label" translatable="yes">_About Gear lever</attribute>
                 <attribute name="action">app.about</attribute>
             </item>
         </section>

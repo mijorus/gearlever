@@ -44,6 +44,7 @@ class GearleverApplication(Adw.Application):
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action)
         self.create_action('open_log_file', self.on_open_log_file)
+        self.create_action('open_welcome_screen', self.on_open_welcome_screen)
         self.win = None
         self.version = version
 
@@ -117,6 +118,10 @@ class GearleverApplication(Adw.Application):
 
         #!TODO: replace with a portal call
         sh(['xdg-open',  GLib.get_user_cache_dir() + '/logs'])
+
+    def on_open_welcome_screen(self, widget, event):
+        tutorial = WelcomeScreen()
+        tutorial.present()
 
 def main(version):
     """The application's entry point."""
