@@ -1,16 +1,6 @@
 from gi.repository import Gtk, Adw, GObject, Gio
 from typing import Dict, List, Optional
 
-from .State import state
-from .lib.costants import APP_ID
-from .providers.providers_list import appimage_provider
-from .providers.AppImageProvider import AppImageProvider
-from .models.AppListElement import AppListElement, InstalledStatus
-from .models.Models import AppUpdateElement
-from .components.FilterEntry import FilterEntry
-from .components.CustomComponents import NoAppsFoundRow
-from .components.AppListBoxItem import AppListBoxItem
-from .preferences import Preferences
 from .lib.utils import get_element_without_overscroll, get_gsettings
 
 class WelcomeScreen(Gtk.Window):
@@ -22,7 +12,7 @@ class WelcomeScreen(Gtk.Window):
 
         container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, valign=Gtk.Align.CENTER)
         self.carousel = Adw.Carousel()
-        self.carousel.connect('page-changed', self.on_page_chaged)
+        self.carousel.connect('page-changed', self.on_page_changed)
 
         self.titlebar = Adw.HeaderBar(show_end_title_buttons=False)
         self.left_button = Gtk.Button(icon_name='go-previous', visible=True, sensitive=False)
@@ -53,7 +43,7 @@ class WelcomeScreen(Gtk.Window):
         
         self.set_child(container)
 
-    def on_page_chaged(self, widget, index):
+    def on_page_changed(self, widget, index):
         self.left_button.set_sensitive(True)
         self.right_button.set_sensitive(True)
 
