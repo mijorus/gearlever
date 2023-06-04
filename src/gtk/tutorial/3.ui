@@ -40,7 +40,7 @@
                 <property name="valign">3</property>
                 <property name="halign">3</property>
                 <child>
-                    <object class="GtkButton" id="open-preferences">
+                    <object class="GtkButton" id="open-demo-folder">
                         <property name="label" translatable="yes">Open demo folder</property>
                         <property name="margin-bottom">10</property>
                         <property name="vexpand">0</property>

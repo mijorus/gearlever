@@ -10,8 +10,8 @@ from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GdkPixbuf  # noqa
 
 
 def read_json_config(name: str):
-    logging.debug(f'Reading config from {path}')
     path = f'{GLib.get_user_config_dir()}/{name}.json'
+    logging.debug(f'Reading config from {path}')
 
     if not os.path.isfile(path):
         return {}
