@@ -140,7 +140,6 @@ class GearleverWindow(Gtk.ApplicationWindow):
     def on_left_button_clicked(self, widget):
         if self.app_lists_stack.get_visible_child() == self.installed_stack:
             container_visible = self.container_stack.get_visible_child()
-            print(container_visible)
 
             if container_visible == self.app_details:
                 self.titlebar.set_title_widget(self.view_title_widget)
@@ -199,7 +198,6 @@ class GearleverWindow(Gtk.ApplicationWindow):
             self.on_selected_local_file(selected_file)
 
     def on_open_file_chooser(self):
-        print('qe')
         dialog = Gtk.FileDialog(title=_('Open a file'),modal=True)
 
         dialog.open(
