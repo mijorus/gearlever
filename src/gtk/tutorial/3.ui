@@ -25,7 +25,7 @@
         </child>
         <child>
             <object class="GtkLabel">
-                <property name="label" translatable="yes">Click on the button below to open a demo folder with your default file manager, containing a sample AppImage.</property>
+                <property name="label" translatable="yes">Click on the button to open a demo folder, containing a sample AppImage.</property>
             </object>
         </child>
         <child>
