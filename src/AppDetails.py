@@ -1,6 +1,7 @@
 import threading
 import time
 import logging
+import base64
 from typing import Optional, Callable
 from .lib.utils import qq
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
@@ -9,6 +10,7 @@ from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle
+from .lib.json_config import read_json_config, set_json_config
 from .lib.utils import key_in_dict, set_window_cursor, get_application_window
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
@@ -53,7 +55,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.trust_app_check_button.connect('toggled', self.after_trust_buttons_interaction)
 
         self.trust_app_check_button_revealer = Gtk.Revealer(
-            child=self.trust_app_check_button, 
+            child=self.trust_app_check_button,
         )
 
         # Action buttons
@@ -95,7 +97,7 @@ class AppDetails(Gtk.ScrolledWindow):
             self.main_box.append(el)
 
         clamp = Adw.Clamp(child=self.main_box, maximum_size=600, margin_top=10, margin_bottom=20)
-        
+
         self.set_trust_button(trusted=True)
         self.set_child(clamp)
 
@@ -114,7 +116,6 @@ class AppDetails(Gtk.ScrolledWindow):
 
         logging.warn('Trying to open an unsupported file')
         return False
-
 
     @idle
     def complete_load(self, icon: Gtk.Image, load_completed_callback: Optional[Callable]):
@@ -141,19 +142,38 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.install_button_label_info = None
 
-
         # Load the boxed list with additional information
         gtk_list = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
 
-        row = Adw.ActionRow(subtitle=f'{self.provider.name.capitalize()} Type. {self.app_list_element.generation}', title='Package type')
+        row = Adw.ActionRow(
+            subtitle=f'{self.provider.name.capitalize()} Type. {self.app_list_element.generation}', 
+            title='Package type',
+            selectable=False
+        )
         row_img = Gtk.Image(resource=self.provider.icon, pixel_size=34)
         row.add_prefix(row_img)
         gtk_list.append(row)
 
-        row = Adw.ActionRow(title=_('Path'), subtitle=self.app_list_element.file_path, subtitle_selectable=True)
+        row = Adw.ActionRow(title=_('Path'), subtitle=self.app_list_element.file_path, subtitle_selectable=True, selectable=False)
         row_img = Gtk.Image(icon_name='gearlever-terminal-symbolic', pixel_size=34)
         row.add_prefix(row_img)
         gtk_list.append(row)
+
+        if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
+            b64name = base64.b64encode(self.app_list_element.name.encode('ascii')).decode('ascii')
+            config = read_json_config('apps')
+            
+            row = Adw.EntryRow(
+                title=_('Website'),
+                selectable=False,
+                tooltip_text=_('Link to the web page of the app'),
+                text=(config[b64name]['website'] if key_in_dict(config, f'{b64name}.website') else '')
+            )
+
+            row_img = Gtk.Image(icon_name='web-browser', pixel_size=34)
+            row.connect('changed', self.on_web_browser_input_apply)
+            row.add_prefix(row_img)
+            gtk_list.append(row)
 
         self.extra_data.append(gtk_list)
 
@@ -164,7 +184,7 @@ class AppDetails(Gtk.ScrolledWindow):
             load_completed_callback()
 
     @_async
-    def load(self, load_completed_callback: Optional[Callable]=None):
+    def load(self, load_completed_callback: Optional[Callable] = None):
         self.show_row_spinner(True)
         icon = Gtk.Image(icon_name='application-x-executable-symbolic')
 
@@ -193,7 +213,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_list_element.update_logic = AppImageUpdateLogic[data]
         self.on_primary_action_button_clicked()
 
-    def on_primary_action_button_clicked(self, button: Optional[Gtk.Button]=None):
+    def on_primary_action_button_clicked(self, button: Optional[Gtk.Button] = None):
         if self.app_list_element.installed_status == InstalledStatus.INSTALLED:
             self.app_list_element.set_installed_status(InstalledStatus.UNINSTALLING)
             self.update_installation_status()
@@ -245,7 +265,7 @@ class AppDetails(Gtk.ScrolledWindow):
             self.app_list_element.set_installed_status(InstalledStatus.ERROR)
 
         self.update_installation_status()
-    
+
     def update_installation_status(self):
         self.primary_action_button.set_css_classes(self.common_btn_css_classes)
         self.secondary_action_button.set_visible(False)
@@ -325,3 +345,14 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.secondary_action_button.set_sensitive(True),
                 self.primary_action_button.set_sensitive(True)
             ])
+
+    def on_web_browser_input_apply(self, widget):
+        conf = read_json_config('apps')
+        b64name = base64.b64encode(self.app_list_element.name.encode('ascii')).decode('ascii')
+
+        if not b64name in conf:
+            conf[b64name] = {}
+            
+        conf[b64name]['website'] = widget.get_text()
+
+        set_json_config('apps', conf)
