@@ -127,3 +127,14 @@ def get_element_without_overscroll(arr: list, index: int):
         raise ValueError("Array must not be empty")
     wrapped_index = index % len(arr)
     return arr[wrapped_index]
+
+
+def url_is_valid(url: str) -> bool:
+    url_regex = re.compile(
+        r'^(?:http|https)://'  # http:// or https://
+        r'[a-z0-9]+(?:-[a-z0-9]+)*'  # domain name
+        r'(?:\.[a-z]{2,})+'  # .com, .net, etc.
+        r'(?:/?|[/?]\S+)$'  # /, /path, or /path?query=string
+    , re.IGNORECASE)
+
+    return True if url_regex.match(url) else False
