@@ -1,11 +1,13 @@
-from gi.repository import Gtk, Adw, GObject, Gio
+import logging
+import os
+from gi.repository import Gtk, Adw, GObject, Gio, GLib
 from typing import Dict, List, Optional
 
-from .lib.utils import get_element_without_overscroll, get_gsettings
+from .lib.utils import get_element_without_overscroll, get_gsettings, gio_copy
 
 class WelcomeScreen(Gtk.Window):
 
-    def __init__(self):
+    def __init__(self, pkgdatadir):
         super().__init__()
         self.set_default_size(700, 700)
         self.set_resizable(False)
@@ -40,8 +42,20 @@ class WelcomeScreen(Gtk.Window):
         self.right_button.connect('clicked', lambda w: self.carousel.scroll_to(get_element_without_overscroll(pages, int(self.carousel.get_position()) + 1), True))
 
         container.append(self.carousel)
-        
+
+        self.demo_folder = GLib.get_tmp_dir() + '/it.mijorus.gearlever/demo'
+        if not os.path.exists(self.demo_folder):
+            os.makedirs(self.demo_folder)
+
+        # move the demo appimage into a temp folder
+        demo_app = Gio.File.new_for_path(f'{pkgdatadir}/gearlever/assets/demo.AppImage')
+        gio_copy(demo_app, Gio.File.new_for_path(f'{self.demo_folder}/demo.AppImage'))
+
+        logging.debug(f'Copied demo app into {self.demo_folder}')
+        third_page.get_object('open-demo-folder').connect('clicked', self.on_open_demo_folder_clicked)
+
         self.set_child(container)
+
 
     def on_page_changed(self, widget, index):
         self.left_button.set_sensitive(True)
@@ -52,3 +66,8 @@ class WelcomeScreen(Gtk.Window):
 
         if index == (self.carousel.get_n_pages() - 1):
             self.right_button.set_sensitive(False)
+
+    def on_open_demo_folder_clicked(self, widget):
+        gfile = Gio.File.new_for_path(self.demo_folder)
+        launcher = Gtk.FileLauncher.new(gfile)
+        launcher.launch()
