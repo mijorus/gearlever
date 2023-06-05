@@ -166,7 +166,7 @@ class AppDetails(Gtk.ScrolledWindow):
             app_config = self.get_config_for_app()
             
             row = Adw.EntryRow(
-                title=(_('Website') if 'website' in app_config else _('Add a website')),
+                title=(_('Website') if ('website' in app_config and app_config['website']) else _('Add a website')),
                 selectable=False,
                 text=(app_config['website'] if 'website' in app_config else '')
             )
@@ -370,15 +370,16 @@ class AppDetails(Gtk.ScrolledWindow):
     @debounce(0.5)
     def on_web_browser_input_apply(self, widget):
         conf = read_json_config('apps')
-        b64name = self.get_config_for_app()['b64name']
+        app_conf = self.get_config_for_app()
 
         text = widget.get_text().strip()
 
         widget.remove_css_class('error')
-        if not url_is_valid(text):
+        if text and (not url_is_valid(text)):
             return widget.add_css_class('error')
 
-        conf[b64name]['website'] = text
+        app_conf['website'] = text
+        conf[app_conf['b64name']] = app_conf
         set_json_config('apps', conf)
 
     # Returns the configuration from the json for this specific app
