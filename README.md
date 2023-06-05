@@ -18,12 +18,6 @@ Manage AppImages with ease.
 ## Download
 *Coming soon...*
 
-## Screenshot
-<p align="center">
-  <img width="950" src="https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever3.png">
-</p>
-
-
 ## Building and running
 - Option #1 (suggested)
 
