@@ -1,9 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-	<id>it.mijorus.gearlever.desktop</id>
-	<metadata_license>CC0-1.0</metadata_license>
-	<project_license>GPL-3.0-or-later</project_license>
-	<description>
-	  <p>No description</p>
-	</description>
+    <id>it.mijorus.gearlever.desktop</id>
+    <name>Gear lever</name>
+    <summary>Manage AppImages</summary>
+    <url type="homepage">https://gearlever.mijorus.it</url>
+    <url type="bugtracker">https://github.com/mijorus/gearlever/issues</url>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-3.0-or-later</project_license>
+    <developer_name>Lorenzo Paderi</developer_name>
+    <description>
+        <p>An utility to manage AppImages with ease! Gear lever will organize and manage AppImage files for you, generate desktop entries and app metadata, update apps in-place or keep multiple versions side-by-side.</p>
+    </description>
+    <releases>
+        <release type="stable" version="1.0.0" date="2022-06-05T00:00:00Z">
+            <description>
+                <p>First release on Flathub</p>
+            </description>
+        </release>
+    </releases>
+    <screenshots>
+        <screenshot type="default">
+            <caption>Application showcase</caption>
+            <image type="source">
+                https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever3.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Application showcase</caption>
+            <image type="source">
+                https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever1.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Application showcase</caption>
+            <image type="source">
+                https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever4.png</image>
+        </screenshot>
+        <screenshot>
+            <caption>Application showcase</caption>
+            <image type="source">
+                https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever2.png</image>
+        </screenshot>
+    </screenshots>
+    <content_rating type="oars-1.0" />
 </component>
