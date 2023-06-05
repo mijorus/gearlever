@@ -11,7 +11,7 @@ Manage AppImages with ease.
 - **Drag and drop** files directly from your file manager
 - Keep all the AppImages organized in a custom folder
 - Open new AppImages directly with Gear lever
-- **Manage updates**: keep older versions installed or replace them with the lastest release
+- **Manage updates**: keep older versions installed or replace them with the latest release
 - Save CLI apps directly with their executable name
 - Modern and Fresh UI
 
