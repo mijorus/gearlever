@@ -413,7 +413,7 @@ class AppImageProvider():
         # The following code has been commented because uses appimage's built in extract method, 
         # however not all the appimages support it.
         #
-        # Instead, we use p7zip to extract the contect of the appimage bundle
+        # Instead, we use p7zip to extract the content of the appimage bundle
 
         ###############################################################################
         
