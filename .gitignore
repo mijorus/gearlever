@@ -9,3 +9,4 @@ install.sh
 
 build-aux/patches
 venv
+.DS_Store
