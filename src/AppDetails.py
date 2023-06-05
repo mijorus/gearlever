@@ -117,7 +117,7 @@ class AppDetails(Gtk.ScrolledWindow):
         return False
 
     @idle
-    def complete_load(self, icon: Gtk.Image, load_completed_callback: Optional[Callable]):
+    def complete_load(self, icon: Gtk.Image, load_completed_callback: Optional[Callable] = None):
         self.show_row_spinner(True)
 
         self.details_row.remove(self.icon_slot)
@@ -161,8 +161,8 @@ class AppDetails(Gtk.ScrolledWindow):
         row.add_prefix(row_img)
         gtk_list.append(row)
 
-        # A custom link to a website
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
+            # A custom link to a website
             app_config = self.get_config_for_app()
             
             row = Adw.EntryRow(
@@ -179,6 +179,21 @@ class AppDetails(Gtk.ScrolledWindow):
             row.add_prefix(row_img)
             row.add_suffix(row_btn)
             gtk_list.append(row)
+
+            # Reload metadata row
+            row = Adw.ActionRow(selectable=False, activatable=True,
+                title=(_('Reload metadata')), 
+                subtitle=_('Update information like icon, version and description.\nUseful if the app updated itself.')
+            )
+
+            row_img = Gtk.Image(icon_name='refresh', pixel_size=34)
+
+            reload_data_listbox = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
+            reload_data_listbox.append(row)
+            row.add_prefix(row_img)
+
+            row.connect('activated', self.on_refresh_metadata_btn_clicked)
+            self.extra_data.prepend(reload_data_listbox)
 
         self.extra_data.append(gtk_list)
 
@@ -324,6 +339,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.update_installation_status()
 
+    @idle
     def show_row_spinner(self, status: bool):
         self.desc_row_spinner.set_visible(status)
         self.desc_row_spinner.set_spinning(status)
@@ -374,7 +390,6 @@ class AppDetails(Gtk.ScrolledWindow):
         app_config['b64name'] = b64name
 
         return app_config
-        
 
     def on_web_browser_open_btn_clicked(self, widget):
         app_config = self.get_config_for_app()
@@ -382,3 +397,15 @@ class AppDetails(Gtk.ScrolledWindow):
         if ('website' in app_config) and url_is_valid(app_config['website']):
             launcher = Gtk.UriLauncher.new(app_config['website'])
             launcher.launch()
+
+    @_async
+    def on_refresh_metadata_btn_clicked(self, widget):
+        self.show_row_spinner(True)
+        GLib.idle_add(lambda: widget.set_sensitive(False))
+
+        self.provider.reload_metadata(self.app_list_element)
+
+        icon = self.provider.get_icon(self.app_list_element)
+        self.provider.refresh_title(self.app_list_element)
+
+        self.complete_load(icon)

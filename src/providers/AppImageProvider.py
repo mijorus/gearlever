@@ -335,6 +335,29 @@ class AppImageProvider():
         update_dkt_db = terminal.sh(['update-desktop-database', self.user_desktop_files_path, '-v'], return_stderr=True)
         logging.debug(update_dkt_db)
 
+    def reload_metadata(self, el: AppImageListElement):
+        if not (el.installed_status is InstalledStatus.INSTALLED):
+            return
+        
+        logging.info(f'Reloading metadata for {el.file_path}')
+        random_str = ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))
+        dest_path = f'{self.extraction_folder}/gearlever_{random_str}'
+
+        if not os.path.exists(dest_path):
+            os.makedirs(dest_path)
+
+        outdated_file = Gio.File.new_for_path(el.file_path)
+        new_file = Gio.File.new_for_path(f'{dest_path}/tmp.appimage')
+
+        gio_copy(outdated_file, new_file)
+
+        self.uninstall(el)
+
+        el.file_path = f'{dest_path}/tmp.appimage'
+        el.extracted = None
+
+        self.install_file(el)
+
     def get_appimage_generation(self, file: Gio.File) -> int:
         return self.supported_mimes.index(get_giofile_content_type(file)) + 1
 
@@ -379,7 +402,7 @@ class AppImageProvider():
         dest = Gio.File.new_for_path(f'{dest_path}/tmp.appimage')
 
         if not os.path.exists(f'{dest_path}'):
-            os.mkdir(f'{dest_path}')
+            os.makedirs(f'{dest_path}')
 
         logging.debug(f'Created temporary folder at {dest_path}')
 

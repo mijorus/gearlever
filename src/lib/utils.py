@@ -76,6 +76,7 @@ def get_giofile_content_type(file: Gio.File):
 
 
 def gio_copy(file: Gio.File, destination: Gio.File):
+    logging.debug(f'Copying {file.get_path()} to {destination.get_path()}')
     return file.copy(
         destination,
         Gio.FileCopyFlags.OVERWRITE,
