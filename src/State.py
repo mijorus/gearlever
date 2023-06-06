@@ -15,7 +15,7 @@ class State():
                 cb(value)
 
     def get__(self, key: str):
-        return self.props[key]
+        return self.props[key] if key in self.props else None
 
     def connect__(self, key: str, cb: Callable):
         if not key in self.propscb:
