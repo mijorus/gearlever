@@ -4,6 +4,7 @@ from gi.repository import Gtk, Adw, GObject, Gio, GLib
 from typing import Dict, List, Optional
 
 from .lib.utils import get_element_without_overscroll, get_gsettings, gio_copy
+from .lib.costants import APP_ID, APP_NAME
 
 class WelcomeScreen(Gtk.Window):
 
@@ -26,10 +27,10 @@ class WelcomeScreen(Gtk.Window):
         
         self.set_titlebar(self.titlebar)
 
-        first_page = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/tutorial/1.ui')
-        second_page = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/tutorial/2.ui')
-        third_page = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/tutorial/3.ui')
-        last_page = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/tutorial/last.ui')
+        first_page = Gtk.Builder.new_from_resource(f'/it/mijorus/{APP_NAME}/gtk/tutorial/1.ui')
+        second_page = Gtk.Builder.new_from_resource(f'/it/mijorus/{APP_NAME}/gtk/tutorial/2.ui')
+        third_page = Gtk.Builder.new_from_resource(f'/it/mijorus/{APP_NAME}/gtk/tutorial/3.ui')
+        last_page = Gtk.Builder.new_from_resource(f'/it/mijorus/{APP_NAME}/gtk/tutorial/last.ui')
 
         pages = [el.get_object('target') for el in [first_page, second_page, third_page, last_page]]
         [self.carousel.append(el) for el in pages]
@@ -43,12 +44,12 @@ class WelcomeScreen(Gtk.Window):
 
         container.append(self.carousel)
 
-        self.demo_folder = GLib.get_tmp_dir() + '/it.mijorus.gearlever/demo'
+        self.demo_folder = GLib.get_tmp_dir() + f'/{APP_ID}/demo'
         if not os.path.exists(self.demo_folder):
             os.makedirs(self.demo_folder)
 
         # move the demo appimage into a temp folder
-        demo_app = Gio.File.new_for_path(f'{pkgdatadir}/gearlever/assets/demo.AppImage')
+        demo_app = Gio.File.new_for_path(f'{pkgdatadir}/{APP_NAME}/assets/demo.AppImage')
         gio_copy(demo_app, Gio.File.new_for_path(f'{self.demo_folder}/demo.AppImage'))
 
         logging.debug(f'Copied demo app into {self.demo_folder}')
