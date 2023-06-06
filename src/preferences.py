@@ -24,7 +24,7 @@ class Preferences(Adw.PreferencesWindow):
 
         # default_location
         self.default_location_row = Adw.ActionRow(
-            title=_('AppImage location'),
+            title=_('AppImage default location'),
             subtitle=self.settings.get_string('appimages-default-folder')
         )
 
@@ -38,8 +38,15 @@ class Preferences(Adw.PreferencesWindow):
             _('If enabled, apps that run in the terminal are renamed as their executable.\nYou would need to add the aforementioned folder to your $PATH manually.\n\nFor example, "golang_x86_64.appimage" will be saved as "go"')
         )
 
+        files_outside_folder_switch = self.create_boolean_settings_entry(
+            _('Show integrated AppImages outside the default folder'),
+            'manage-files-outside-default-folder',
+            _('List AppImages that have been integrated into the system menu but are located outside the default folder')
+        )
+
         general_preference_group.add(self.default_location_row)
         general_preference_group.add(exec_as_name_switch)
+        general_preference_group.add(files_outside_folder_switch)
 
         # move appimage on integration
         move_appimages_group = Adw.PreferencesGroup(name=_('File management'), title=_('File management'))
