@@ -20,7 +20,6 @@ import gi
 import logging
 import os
 
-from .lib.terminal import sh
 from .lib.utils import log, get_gsettings
 from .lib.costants import APP_ID, APP_NAME
 from .providers.providers_list import appimage_provider
