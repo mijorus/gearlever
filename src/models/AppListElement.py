@@ -14,10 +14,9 @@ class InstalledStatus(Enum):
     UPDATING = 8
 
 class AppListElement():
-    def __init__(self, name: str, description: str, app_id: str, provider: str, installed_status: InstalledStatus, size: float=0):
+    def __init__(self, name: str, description: str, provider: str, installed_status: InstalledStatus, size: float=0):
         self.name: str = name
         self.description: str = description if description.strip() else _('No description provided')
-        self.app_id = app_id
         self.provider: str = provider
         self.installed_status: InstalledStatus = installed_status
         self.size: Optional[float] = size
