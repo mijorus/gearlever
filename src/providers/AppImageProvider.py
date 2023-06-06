@@ -35,7 +35,6 @@ class AppImageUpdateLogic(Enum):
 class AppImageListElement():
     name: str 
     description: str
-    app_id: str
     provider: str
     installed_status: InstalledStatus
     file_path: str
@@ -44,7 +43,6 @@ class AppImageListElement():
     desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
     update_logic: Optional[AppImageUpdateLogic] = None
     version: Optional[str] = None
-    icon: Optional[str] = None
     extracted: Optional[ExtractedAppImage] = None
     local_file: Optional[Gio.File] = None
     size: Optional[float] = None
@@ -69,32 +67,37 @@ class AppImageProvider():
 
     def list_installed(self) -> List[AppImageListElement]:
         default_folder_path = self._get_appimages_default_destination_path()
+        manage_from_outside = get_gsettings().get_boolean('manage-files-outside-default-folder')
         output = []
+
+        if not os.path.exists(self.user_desktop_files_path):
+            return output
 
         for file_name in os.listdir(self.user_desktop_files_path):
             gfile = Gio.File.new_for_path(self.user_desktop_files_path + f'/{file_name}')
 
             try:
-                if get_giofile_content_type(gfile) == 'application/x-desktop':
-
+                if os.path.isfile(gfile.get_path()) and get_giofile_content_type(gfile) == 'application/x-desktop':
                     entry = DesktopEntry.DesktopEntry(filename=gfile.get_path())
 
-                    if entry.getExec().startswith(default_folder_path) and GLib.file_test(entry.getExec(), GLib.FileTest.EXISTS):
-                        list_element = AppImageListElement(
-                            name=entry.getName(),
-                            description=entry.getComment(),
-                            icon=entry.getIcon(),
-                            app_id='',
-                            version=f"{entry.get('X-AppImage-Version')}",
-                            installed_status=InstalledStatus.INSTALLED,
-                            file_path=entry.getExec(),
-                            provider=self.name,
-                            desktop_entry=entry,
-                            trusted=True,
-                            generation=self.get_appimage_generation(Gio.File.new_for_path(entry.getExec()))
-                        )
+                    if os.path.isfile(entry.getExec()):
+                        exec_gfile = Gio.File.new_for_path(entry.getExec())
+                        exec_in_folder = True if manage_from_outside else os.path.isfile(f'{default_folder_path}/{exec_gfile.get_basename()}')
 
-                        output.append(list_element)
+                        if exec_in_folder and self.can_install_file(exec_gfile):
+                            list_element = AppImageListElement(
+                                name=entry.getName(),
+                                description=entry.getComment(),
+                                version=entry.get('X-AppImage-Version'),
+                                installed_status=InstalledStatus.INSTALLED,
+                                file_path=entry.getExec(),
+                                provider=self.name,
+                                desktop_entry=entry,
+                                trusted=True,
+                                generation=self.get_appimage_generation(exec_gfile)
+                            )
+
+                            output.append(list_element)
 
             except Exception as e:
                 logging.warn(e)
@@ -120,7 +123,7 @@ class AppImageProvider():
         if el.desktop_entry:
             icon_path = el.desktop_entry.getIcon()
 
-        if icon_path and os.path.exists(icon_path):
+        if icon_path and os.path.isfile(icon_path):
             return Gtk.Image.new_from_file(icon_path)
         else:
             icon_theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
