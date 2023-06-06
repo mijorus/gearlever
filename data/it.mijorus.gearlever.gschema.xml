@@ -17,7 +17,7 @@
             <default>true</default>
         </key>
          <key name="last-run-version" type="s">
-            <default>1.0.0</default>
+            <default>"1.0.0"</default>
         </key>
          <key name="manage-files-outside-default-folder" type="b">
             <default>true</default>
