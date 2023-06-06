@@ -46,6 +46,7 @@ class AppImageListElement():
     extracted: Optional[ExtractedAppImage] = None
     local_file: Optional[Gio.File] = None
     size: Optional[float] = None
+    external_folder: bool = False
 
     def set_installed_status(self, installed_status: InstalledStatus):
         self.installed_status = installed_status
@@ -82,7 +83,8 @@ class AppImageProvider():
 
                     if os.path.isfile(entry.getExec()):
                         exec_gfile = Gio.File.new_for_path(entry.getExec())
-                        exec_in_folder = True if manage_from_outside else os.path.isfile(f'{default_folder_path}/{exec_gfile.get_basename()}')
+                        exec_in_defalut_folder = os.path.isfile(f'{default_folder_path}/{exec_gfile.get_basename()}')
+                        exec_in_folder = True if manage_from_outside else exec_in_defalut_folder
 
                         if exec_in_folder and self.can_install_file(exec_gfile):
                             list_element = AppImageListElement(
@@ -94,7 +96,8 @@ class AppImageProvider():
                                 provider=self.name,
                                 desktop_entry=entry,
                                 trusted=True,
-                                generation=self.get_appimage_generation(exec_gfile)
+                                generation=self.get_appimage_generation(exec_gfile),
+                                external_folder=(not exec_in_defalut_folder)
                             )
 
                             output.append(list_element)

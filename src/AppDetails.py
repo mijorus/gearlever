@@ -26,7 +26,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_list_element: AppImageListElement = None
         self.common_btn_css_classes = ['pill', 'text-button']
 
-        self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin_top=10, margin_bottom=10, margin_start=20, margin_end=20,)
+        self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin_top=10, margin_bottom=10, margin_start=20, margin_end=20)
 
         # 1st row
         self.details_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
@@ -53,9 +53,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.trust_app_check_button = Gtk.CheckButton(label=_('I have verified the source of this app'))
         self.trust_app_check_button.connect('toggled', self.after_trust_buttons_interaction)
 
-        self.trust_app_check_button_revealer = Gtk.Revealer(
-            child=self.trust_app_check_button,
-        )
+        self.trust_app_check_button_revealer = Gtk.Revealer(child=self.trust_app_check_button)
 
         # Action buttons
         self.primary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, css_classes=self.common_btn_css_classes)
@@ -65,11 +63,8 @@ class AppDetails(Gtk.ScrolledWindow):
         self.primary_action_button.connect('clicked', self.on_primary_action_button_clicked)
         self.secondary_action_button.connect('clicked', self.on_secondary_action_button_clicked)
 
-        for el in [self.trust_app_check_button_revealer, self.secondary_action_button, self.primary_action_button]:
-            action_buttons_row.append(el)
-
-        for el in [self.icon_slot, title_col, action_buttons_row]:
-            self.details_row.append(el)
+        [action_buttons_row.append(el) for el in [self.trust_app_check_button_revealer, self.secondary_action_button, self.primary_action_button]]
+        [self.details_row.append(el) for el in [self.icon_slot, title_col, action_buttons_row]]
 
         # preview row
         self.previews_row = Gtk.Box(
@@ -83,22 +78,26 @@ class AppDetails(Gtk.ScrolledWindow):
         self.description = Gtk.Label(label='', halign=Gtk.Align.START, wrap=True, selectable=True)
 
         self.desc_row_spinner = Gtk.Spinner(spinning=True, visible=True)
-        self.desc_row.append(self.desc_row_spinner)
-
-        self.desc_row.append(self.description)
+        [self.desc_row.append(el) for el in [self.desc_row_spinner, self.description]]
 
         # row
         self.third_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.extra_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.third_row.append(self.extra_data)
 
-        for el in [self.details_row, self.previews_row, self.desc_row, self.third_row]:
-            self.main_box.append(el)
+        [self.main_box.append(el) for el in [self.details_row, self.previews_row, self.desc_row, self.third_row]]
 
         clamp = Adw.Clamp(child=self.main_box, maximum_size=600, margin_top=10, margin_bottom=20)
 
+        # Window top banner
+        self.window_banner = Adw.Banner(use_markup=True)
+
         self.set_trust_button(trusted=True)
-        self.set_child(clamp)
+
+        container_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        [container_box.append(el) for el in [self.window_banner, clamp]]
+    
+        self.set_child(container_box)
 
     def set_app_list_element(self, el: AppImageListElement):
         self.app_list_element = el
@@ -194,6 +193,11 @@ class AppDetails(Gtk.ScrolledWindow):
 
             row.connect('activated', self.on_refresh_metadata_btn_clicked)
             self.extra_data.prepend(reload_data_listbox)
+
+            # Show or hide window banner
+            self.window_banner.set_revealed(self.app_list_element.external_folder)
+            if self.app_list_element.external_folder:
+                self.window_banner.set_title(_('This app is located outside the default folder\n<small>You can hide external apps in the settings</small>'))
 
         self.extra_data.append(gtk_list)
 
