@@ -50,6 +50,10 @@ class AppImageListElement():
 
     def set_installed_status(self, installed_status: InstalledStatus):
         self.installed_status = installed_status
+        
+    def set_trusted(self):
+        os.chmod(self.file_path, 0o755)
+        self.trusted = True
 
 
 class AppImageProvider():
@@ -192,8 +196,7 @@ class AppImageProvider():
 
     def run(self, el: AppImageListElement):
         if el.trusted:
-            self._make_file_executable(el, el.file_path)
-            terminal.threaded_sh([f'{el.file_path}'], return_stderr=True)
+            terminal.host_threaded_sh([f'{el.file_path}'], return_stderr=True)
 
     def can_install_file(self, file: Gio.File) -> bool:
         return get_giofile_content_type(file) in self.supported_mimes
@@ -339,7 +342,7 @@ class AppImageProvider():
             raise g
 
 
-        update_dkt_db = terminal.sh(['update-desktop-database', self.user_desktop_files_path, '-v'], return_stderr=True)
+        update_dkt_db = terminal.host_sh(['update-desktop-database', self.user_desktop_files_path, '-v'], return_stderr=True)
         logging.debug(update_dkt_db)
 
     def reload_metadata(self, el: AppImageListElement):

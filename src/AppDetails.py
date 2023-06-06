@@ -270,6 +270,8 @@ class AppDetails(Gtk.ScrolledWindow):
         if self.app_list_element.installed_status in [InstalledStatus.INSTALLED, InstalledStatus.NOT_INSTALLED]:
             if self.trust_app_check_button.get_active():
                 try:
+                    self.app_list_element.set_trusted()
+                    
                     pre_launch_label = self.secondary_action_button.get_label()
                     GLib.idle_add(lambda: self.secondary_action_button.set_label(_('Launching...')))
                     self.provider.run(self.app_list_element)

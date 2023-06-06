@@ -5,7 +5,7 @@ from typing import Callable, List, Union, Optional
 from .utils import log
 import logging
 
-def sh(command: List[str], return_stderr=False, **kwargs) -> str:
+def host_sh(command: List[str], return_stderr=False, **kwargs) -> str:
     try:
         cmd = ['flatpak-spawn', '--host', *command]
         
@@ -35,10 +35,10 @@ def sandbox_sh(command: List[str], return_stderr=False, **kwargs) -> str:
 
     return re.sub(r'\n$', '', output.stdout.decode() + (output.stderr.decode() if return_stderr else ''))
 
-def threaded_sh(command: List[str], callback: Optional[Callable[[str], None]]=None, return_stderr=False):
+def host_threaded_sh(command: List[str], callback: Optional[Callable[[str], None]]=None, return_stderr=False):
     def run_command(command: List[str], callback: Optional[Callable[[str], None]]=None):
         try:
-            output = sh(command, return_stderr)
+            output = host_sh(command, return_stderr)
 
             if callback:
                 callback(re.sub(r'\n$', '', output))
