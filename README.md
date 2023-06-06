@@ -15,7 +15,9 @@
 - Modern and Fresh UI
 
 ## Download
-*Coming soon...*
+Get a [pre-Release build](https://github.com/mijorus/gearlever/releases)
+
+*Flathub coming soon...*
 
 ## Preview
 <p align="center">
