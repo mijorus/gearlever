@@ -96,6 +96,7 @@ class GearleverApplication(Adw.Application):
     def on_preferences_action(self, widget, _):
         """Callback for the app.preferences action."""
         pref = Preferences()
+        pref.connect('close-request', lambda w: self.win.on_show_installed_list() if self.win else None)
         pref.present()
 
     def create_action(self, name, callback, shortcuts=None):
