@@ -1,6 +1,5 @@
 # Gear lever
 
-Manage AppImages with ease.
 
 <p align="center">
   <img width="150" src="data/icons/hicolor/scalable/apps/it.mijorus.gearlever.svg">
