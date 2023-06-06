@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-05 18:40+0200\n"
+"POT-Creation-Date: 2023-06-06 16:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,34 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
+#: data/it.mijorus.gearlever.appdata.xml.in:4
 msgid "Gear lever"
 msgstr ""
 
-#: data/it.mijorus.gearlever.appdata.xml.in:7
-msgid "No description"
+#: data/it.mijorus.gearlever.appdata.xml.in:5
+msgid "Manage AppImages"
+msgstr ""
+
+#: data/it.mijorus.gearlever.appdata.xml.in:10
+msgid "Lorenzo Paderi"
+msgstr ""
+
+#: data/it.mijorus.gearlever.appdata.xml.in:12
+msgid ""
+"An utility to manage AppImages with ease! Gear lever will organize and "
+"manage AppImage files for you, generate desktop entries and app metadata, "
+"update apps in-place or keep multiple versions side-by-side."
+msgstr ""
+
+#: data/it.mijorus.gearlever.appdata.xml.in:17
+msgid "First release on Flathub"
+msgstr ""
+
+#: data/it.mijorus.gearlever.appdata.xml.in:23
+#: data/it.mijorus.gearlever.appdata.xml.in:28
+#: data/it.mijorus.gearlever.appdata.xml.in:33
+#: data/it.mijorus.gearlever.appdata.xml.in:38
+msgid "Application showcase"
 msgstr ""
 
 #: src/window.ui:31
@@ -41,69 +64,75 @@ msgstr ""
 msgid "I have verified the source of this app"
 msgstr ""
 
-#: src/AppDetails.py:159
+#: src/AppDetails.py:158
 msgid "Path"
 msgstr ""
 
-#: src/AppDetails.py:169
+#: src/AppDetails.py:168
 msgid "Website"
 msgstr ""
 
-#: src/AppDetails.py:169
+#: src/AppDetails.py:168
 msgid "Add a website"
 msgstr ""
 
-#: src/AppDetails.py:175
+#: src/AppDetails.py:174
 msgid "Open URL"
 msgstr ""
 
-#: src/AppDetails.py:185
+#: src/AppDetails.py:184
 msgid "Reload metadata"
 msgstr ""
 
-#: src/AppDetails.py:186
+#: src/AppDetails.py:185
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
 msgstr ""
 
-#: src/AppDetails.py:270
+#: src/AppDetails.py:200
+msgid ""
+"This app is located outside the default folder\n"
+"<small>You can hide external apps in the settings</small>"
+msgstr ""
+
+#: src/AppDetails.py:274
 msgid "Launching..."
 msgstr ""
 
-#: src/AppDetails.py:300
+#: src/AppDetails.py:304
 msgid "This app runs in the terminal"
 msgstr ""
 
-#: src/AppDetails.py:304 src/AppDetails.py:321
+#: src/AppDetails.py:308 src/AppDetails.py:325
 msgid "Launch"
 msgstr ""
 
-#: src/AppDetails.py:307 src/AppDetails.py:328
+#: src/AppDetails.py:311 src/AppDetails.py:332
 msgid "Remove"
 msgstr ""
 
-#: src/AppDetails.py:311
+#: src/AppDetails.py:315
 msgid "Uninstalling..."
 msgstr ""
 
-#: src/AppDetails.py:314
+#: src/AppDetails.py:318
 msgid "Installing..."
 msgstr ""
 
-#: src/AppDetails.py:320
+#: src/AppDetails.py:324
 msgid "Move to the app menu"
 msgstr ""
 
-#: src/AppDetails.py:324
+#: src/AppDetails.py:328
 msgid "Update"
 msgstr ""
 
-#: src/AppDetails.py:332
+#: src/AppDetails.py:336
 msgid "Updating"
 msgstr ""
 
-#: src/AppDetails.py:335
+#: src/AppDetails.py:339
 msgid "Error"
 msgstr ""
 
@@ -120,7 +149,7 @@ msgid "General"
 msgstr ""
 
 #: src/preferences.py:27
-msgid "AppImage location"
+msgid "AppImage default location"
 msgstr ""
 
 #: src/preferences.py:36
@@ -135,46 +164,56 @@ msgid ""
 "For example, \"golang_x86_64.appimage\" will be saved as \"go\""
 msgstr ""
 
-#: src/preferences.py:45
-msgid "File management"
+#: src/preferences.py:42
+msgid "Show integrated AppImages outside the default folder"
 msgstr ""
 
-#: src/preferences.py:47
-msgid "Move AppImages into the destination folder"
-msgstr ""
-
-#: src/preferences.py:48
-msgid "Reduce disk usage"
+#: src/preferences.py:44
+msgid ""
+"List AppImages that have been integrated into the system menu but are "
+"located outside the default folder"
 msgstr ""
 
 #: src/preferences.py:52
+msgid "File management"
+msgstr ""
+
+#: src/preferences.py:54
+msgid "Move AppImages into the destination folder"
+msgstr ""
+
+#: src/preferences.py:55
+msgid "Reduce disk usage"
+msgstr ""
+
+#: src/preferences.py:59
 msgid "Clone AppImages into the destination folder"
 msgstr ""
 
-#: src/preferences.py:53
+#: src/preferences.py:60
 msgid "Keep the original file and create a copy in the destination folder"
 msgstr ""
 
-#: src/preferences.py:78
+#: src/preferences.py:85
 msgid "Debugging"
 msgstr ""
 
-#: src/preferences.py:80
+#: src/preferences.py:87
 msgid "Enable debug logs"
 msgstr ""
 
-#: src/preferences.py:82
+#: src/preferences.py:89
 msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
 "Requires a restart."
 msgstr ""
 
-#: src/preferences.py:105
+#: src/preferences.py:112
 msgid "The folder must be in your home directory"
 msgstr ""
 
-#: src/preferences.py:108
+#: src/preferences.py:115
 msgid "Select a folder"
 msgstr ""
 
@@ -304,6 +343,6 @@ msgstr ""
 msgid "No description provided"
 msgstr ""
 
-#: src/providers/AppImageProvider.py:465 src/providers/AppImageProvider.py:569
+#: src/providers/AppImageProvider.py:472 src/providers/AppImageProvider.py:576
 msgid "Cannot load an untrusted AppImage"
 msgstr ""
