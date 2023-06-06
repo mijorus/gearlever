@@ -41,17 +41,17 @@ def add_page_to_adw_stack(stack: Adw.ViewStack, page: Gtk.Widget, name: str, tit
     stack.get_page(page).set_icon_name(icon)
 
 
-def gtk_image_from_url(url: str, image: Gtk.Image) -> Gtk.Image:
-    response = requests.get(url, timeout=10)
-    response.raise_for_status()
+# def gtk_image_from_url(url: str, image: Gtk.Image) -> Gtk.Image:
+#     response = requests.get(url, timeout=10)
+#     response.raise_for_status()
 
-    loader = GdkPixbuf.PixbufLoader()
-    loader.write_bytes(GLib.Bytes.new(response.content))
-    loader.close()
+#     loader = GdkPixbuf.PixbufLoader()
+#     loader.write_bytes(GLib.Bytes.new(response.content))
+#     loader.close()
 
-    image.clear()
-    image.set_from_pixbuf(loader.get_pixbuf())
-    return image
+#     image.clear()
+#     image.set_from_pixbuf(loader.get_pixbuf())
+#     return image
 
 
 def set_window_cursor(cursor: str):
