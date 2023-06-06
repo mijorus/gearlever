@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-    <id>it.mijorus.gearlever.desktop</id>
+    <id>it.mijorus.gearlever</id>
     <name>Gear lever</name>
     <summary>Manage AppImages</summary>
     <url type="homepage">https://gearlever.mijorus.it</url>
