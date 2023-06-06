@@ -16,5 +16,11 @@
         <key name="first-run" type="b">
             <default>true</default>
         </key>
+         <key name="last-run-version" type="s">
+            <default>1.0.0</default>
+        </key>
+         <key name="manage-files-outside-default-folder" type="b">
+            <default>true</default>
+        </key>
 	</schema>
 </schemalist>
