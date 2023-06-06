@@ -52,6 +52,7 @@ class AppImageListElement():
         self.installed_status = installed_status
         
     def set_trusted(self):
+        logging.debug('Chmod file ' + self.file_path)
         os.chmod(self.file_path, 0o755)
         self.trusted = True
 
@@ -250,8 +251,8 @@ class AppImageProvider():
 
             log(f'file copied to {appimages_destination_path}')
 
-            self._make_file_executable(el, dest_appimage_file.get_path())
             el.file_path = dest_appimage_file.get_path()
+            el.set_trusted()
 
             # copy the icon file
             icon_file = None
@@ -568,10 +569,3 @@ class AppImageProvider():
 
     def _get_appimages_default_destination_path(self) -> str:
         return get_gsettings().get_string('appimages-default-folder').replace('~', GLib.get_home_dir())
-    
-    def _make_file_executable(self, el: AppImageListElement, file_path: str):
-        if el.trusted:
-            logging.debug('Chmod file ' + file_path)
-            os.chmod(el.file_path, 0o755)
-        else:
-            raise InternalError(message=_('Cannot load an untrusted AppImage'))
