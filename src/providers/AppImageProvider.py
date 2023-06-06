@@ -324,16 +324,17 @@ class AppImageProvider():
             logging.error('Appimage installation error: ' + str(e))
             raise e
 
+        if get_gsettings().get_boolean('move-appimage-on-integration'):
+            logging.info('Deleting original appimage file from: '  + extracted_appimage.appimage_file.get_path())
+            if not extracted_appimage.appimage_file.delete(None):
+                raise InternalError('Cannot delete original file')
+
         try:
             self.extraction_folder_cleanup()
         except Exception as g:
             logging.error('Appimage cleanup error: ' + str(g))
             raise g
 
-        if get_gsettings().get_boolean('move-appimage-on-integration'):
-            logging.debug('Deleting original appimage file from: '  + extracted_appimage.appimage_file.get_path())
-            if not extracted_appimage.appimage_file.delete(None):
-                raise InternalError('Cannot delete original file')
 
         update_dkt_db = terminal.sh(['update-desktop-database', self.user_desktop_files_path, '-v'], return_stderr=True)
         logging.debug(update_dkt_db)
