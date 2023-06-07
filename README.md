@@ -16,6 +16,10 @@
 
 ## Download
 Get a [pre-Release build](https://github.com/mijorus/gearlever/releases)
+```sh
+# From you Downloads folder
+flatpak install --bundle --user gearlever.flatpak
+```
 
 *Flathub coming soon...*
 
@@ -30,9 +34,8 @@ Get a [pre-Release build](https://github.com/mijorus/gearlever/releases)
   **Open this project with Gnome Builder and press RUN (the play icon on top)**
 
 - Option #2
-  ```
-  # Run in a terminal window
-
+  ```sh
+  # Run the app
   flatpak-builder build/ it.mijorus.gearlever.Devel.json --user --force-clean
   flatpak-builder --run build/ it.mijorus.gearlever.Devel.json gearlever
 
