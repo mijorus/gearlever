@@ -17,7 +17,7 @@
 ## Download
 Get a [pre-Release build](https://github.com/mijorus/gearlever/releases)
 ```sh
-# From you Downloads folder
+# From your Downloads folder
 flatpak install --bundle --user gearlever.flatpak
 ```
 
