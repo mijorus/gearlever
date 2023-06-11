@@ -11,11 +11,11 @@ jobs:
       options: --privileged
 
     steps:
+      - uses: actions/checkout@v3
       - name: Generate release tag
         id: tag
         run: |
-          echo "::set-output name=release_tag::gearlever_nightly_$(cat meson.build | grep "\sversion.*" | grep -oE "'([^']+)'" | sed "s/'//g")"
-      - uses: actions/checkout@v3
+          echo "::set-output name=release_tag::$(cat meson.build | grep "\sversion.*" | grep -oE "'([^']+)'" | sed "s/'//g")"
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6.1
         with:
           bundle: gearlever-${{ steps.tag.outputs.release_tag }}.flatpak
