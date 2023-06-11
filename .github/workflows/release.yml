@@ -1,0 +1,29 @@
+name: Flatpak Build
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-44
+      options: --privileged
+
+    steps:
+      - name: Generate release tag
+        id: tag
+        run: |
+          echo "::set-output name=release_tag::gearlever_nightly_$(cat meson.build | grep "\sversion.*" | grep -oE "'([^']+)'" | sed "s/'//g")"
+      - uses: actions/checkout@v3
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6.1
+        with:
+          bundle: gearlever-${{ steps.tag.outputs.release_tag }}.flatpak
+          manifest-path: it.mijorus.gearlever.Devel.json
+      - name: Publish release package
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.release_tag }}
+          files: gearlever-${{ steps.tag.outputs.release_tag }}.flatpak
