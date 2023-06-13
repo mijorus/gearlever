@@ -3,6 +3,8 @@ import os
 from gi.repository import Gtk, Adw, GObject, Gio, GLib
 from typing import Dict, List, Optional
 
+
+from .State import state
 from .lib.utils import get_element_without_overscroll, get_gsettings, gio_copy
 from .lib.costants import APP_ID, APP_NAME
 
@@ -36,7 +38,7 @@ class WelcomeScreen(Gtk.Window):
         [self.carousel.append(el) for el in pages]
 
         location_label = second_page.get_object('location-label')
-        location_label.set_label(location_label.get_label().replace('{location}', get_gsettings().get_string('appimages-default-folder')))
+        location_label.set_label(location_label.get_label().replace('{location}', '~/AppImages'))
         last_page.get_object('close-window').connect('clicked', lambda w: self.close())
 
         self.left_button.connect('clicked', lambda w: self.carousel.scroll_to(get_element_without_overscroll(pages, int(self.carousel.get_position()) - 1), True))
@@ -44,7 +46,7 @@ class WelcomeScreen(Gtk.Window):
 
         container.append(self.carousel)
 
-        self.demo_folder = GLib.get_tmp_dir() + f'/{APP_ID}/demo'
+        self.demo_folder = GLib.get_user_cache_dir() + f'/{APP_ID}/demo'
         if not os.path.exists(self.demo_folder):
             os.makedirs(self.demo_folder)
 
@@ -54,6 +56,7 @@ class WelcomeScreen(Gtk.Window):
 
         logging.debug(f'Copied demo app into {self.demo_folder}')
         third_page.get_object('open-demo-folder').connect('clicked', self.on_open_demo_folder_clicked)
+        second_page.get_object('open-preferences').connect('clicked', self.on_default_localtion_btn_clicked)
 
         self.set_child(container)
 
@@ -72,3 +75,25 @@ class WelcomeScreen(Gtk.Window):
         gfile = Gio.File.new_for_path(self.demo_folder)
         launcher = Gtk.FileLauncher.new(gfile)
         launcher.launch()
+
+    def on_select_default_location_response(self, dialog, result):
+        try:
+            selected_file = dialog.select_folder_finish(result)
+        except Exception as e:
+            logging.error(str(e))
+            return
+
+        if selected_file.query_exists() and selected_file.get_path().startswith(GLib.get_home_dir()):
+            get_gsettings().set_string('appimages-default-folder', selected_file.get_path())
+            state.set__('appimages-default-folder', selected_file.get_path())
+        else:
+            raise InternalError(_('The folder must be in your home directory'))
+
+    def on_default_localtion_btn_clicked(self, widget):
+        dialog = Gtk.FileDialog(title=_('Select a folder'), modal=True)
+
+        dialog.select_folder(
+            parent=self,
+            cancellable=None,
+            callback=self.on_select_default_location_response
+        )
