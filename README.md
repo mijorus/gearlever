@@ -19,7 +19,7 @@
   <img width="200" src="https://flathub.org/assets/badges/flathub-badge-i-en.png">
 </a>
 
-== OR ==
+___
 
 Get a [pre-Release build](https://github.com/mijorus/gearlever/releases)
 ```sh
