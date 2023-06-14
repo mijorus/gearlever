@@ -90,6 +90,7 @@ class GearleverApplication(Adw.Application):
             issue_url='https://github.com/mijorus/gearlever',
         )
 
+        about.set_translator_credits(_("translator_credits"))
         about.present()
 
     def on_preferences_action(self, widget, _):
