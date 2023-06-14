@@ -1,14 +1,14 @@
-# SOME DESCRIPTIVE TITLE.
+# Spanish translation for gearlever
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# FIRST AUTHOR <racsufkoficial@gmail.com>, 2023.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-14 10:12+0200\n"
-"PO-Revision-Date: 2023-06-14 18:54+0300\n"
+"POT-Creation-Date: 2023-06-14 16:26-300"
+"PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
