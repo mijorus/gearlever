@@ -15,13 +15,17 @@
 - Modern and Fresh UI
 
 ## Download
+<a href="https://flathub.org/apps/details/it.mijorus.gearlever" align="center">
+  <img width="200" src="https://flathub.org/assets/badges/flathub-badge-i-en.png">
+</a>
+
+___
+
 Get a [pre-Release build](https://github.com/mijorus/gearlever/releases)
 ```sh
 # From your Downloads folder
 flatpak install --bundle --user gearlever.flatpak
 ```
-
-*Flathub coming soon...*
 
 ## Preview
 <p align="center">

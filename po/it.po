@@ -3,19 +3,19 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-14 10:12+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2023-06-14 13:01+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.3.1\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 #: data/it.mijorus.gearlever.appdata.xml.in:4
@@ -24,7 +24,7 @@ msgstr ""
 
 #: data/it.mijorus.gearlever.appdata.xml.in:5
 msgid "Manage AppImages"
-msgstr ""
+msgstr "Gestisci i file AppImages"
 
 #: data/it.mijorus.gearlever.appdata.xml.in:10
 msgid "Lorenzo Paderi"
@@ -62,37 +62,39 @@ msgstr ""
 
 #: src/main.py:93
 msgid "translator_credits"
-msgstr ""
+msgstr "Lorenzo Paderi"
 
 #: src/AppDetails.py:53
 msgid "I have verified the source of this app"
-msgstr ""
+msgstr "Ho verificato la provenienza di questa applicazione"
 
 #: src/AppDetails.py:158
 msgid "Path"
-msgstr ""
+msgstr "Posizione"
 
 #: src/AppDetails.py:168
 msgid "Website"
-msgstr ""
+msgstr "Sito web"
 
 #: src/AppDetails.py:168
 msgid "Add a website"
-msgstr ""
+msgstr "Aggiungi un sito web"
 
 #: src/AppDetails.py:174
 msgid "Open URL"
-msgstr ""
+msgstr "Apri URL"
 
 #: src/AppDetails.py:184
 msgid "Reload metadata"
-msgstr ""
+msgstr "Ricarica i metadati"
 
 #: src/AppDetails.py:185
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
 msgstr ""
+"Aggiornare le informazioni come l'icona, la versione e la descrizione.\n"
+"Utile se l'applicazione si è aggiornata automaticamente."
 
 #: src/AppDetails.py:200
 msgid ""
@@ -102,63 +104,64 @@ msgstr ""
 
 #: src/AppDetails.py:276
 msgid "Launching..."
-msgstr ""
+msgstr "Apro..."
 
 #: src/AppDetails.py:306
 msgid "This app runs in the terminal"
-msgstr ""
+msgstr "Questa app esegue nel terminale"
 
 #: src/AppDetails.py:310 src/AppDetails.py:327
 msgid "Launch"
-msgstr ""
+msgstr "Lancia"
 
 #: src/AppDetails.py:313 src/AppDetails.py:334
 msgid "Remove"
-msgstr ""
+msgstr "Rimuovi"
 
 #: src/AppDetails.py:317
 msgid "Uninstalling..."
-msgstr ""
+msgstr "Disinstallo..."
 
 #: src/AppDetails.py:320
 msgid "Installing..."
-msgstr ""
+msgstr "Installo..."
 
 #: src/AppDetails.py:326
 msgid "Move to the app menu"
-msgstr ""
+msgstr "Aggiungi al menu delle app"
 
 #: src/AppDetails.py:330
 msgid "Update"
-msgstr ""
+msgstr "Aggiorna"
 
 #: src/AppDetails.py:338
 msgid "Updating"
-msgstr ""
+msgstr "Aggiorno"
 
 #: src/AppDetails.py:341
 msgid "Error"
-msgstr ""
+msgstr "Errore"
 
 #: src/GearleverWindow.py:35
 msgid "Open a new AppImage"
-msgstr ""
+msgstr "Apri una nuova AppImage"
 
 #: src/GearleverWindow.py:201
 msgid "Open a file"
-msgstr ""
+msgstr "Apri un file"
 
 #: src/preferences.py:22
 msgid "General"
-msgstr ""
+msgstr "Generale"
 
 #: src/preferences.py:27
 msgid "AppImage default location"
-msgstr ""
+msgstr "Posizione predefinita delle AppImage"
 
 #: src/preferences.py:36
 msgid "Use executable name for integrated terminal apps"
 msgstr ""
+"Usa il nome dell'eseguibile per le applicazioni che eseguono nel terminale"
 
 #: src/preferences.py:38
 msgid ""
@@ -167,20 +170,27 @@ msgid ""
 "\n"
 "For example, \"golang_x86_64.appimage\" will be saved as \"go\""
 msgstr ""
+"Se abilitato, le applicazioni eseguite nel terminale vengono rinominate come "
+"il loro eseguibile.\n"
+"È necessario aggiungere manualmente la cartella sopracitata al proprio "
+"$PATH.\n"
+"Ad esempio, \"golang_x86_64.appimage\" verrà salvato come \"go\"."
 
 #: src/preferences.py:42
 msgid "Show integrated AppImages outside the default folder"
-msgstr ""
+msgstr "Mostra le AppImage integrate fuori dalla cartella predefinita"
 
 #: src/preferences.py:44
 msgid ""
 "List AppImages that have been integrated into the system menu but are "
 "located outside the default folder"
 msgstr ""
+"Elenca le AppImage che sono state integrate nel menu di sistema ma che si "
+"trovano al di fuori della cartella predefinita"
 
 #: src/preferences.py:52
 msgid "File management"
-msgstr ""
+msgstr "Gestione file"
 
 #: src/preferences.py:54
 msgid "Move AppImages into the destination folder"
@@ -192,19 +202,20 @@ msgstr ""
 
 #: src/preferences.py:59
 msgid "Clone AppImages into the destination folder"
-msgstr ""
+msgstr "Clona le AppImage nella cartella di destinazione"
 
 #: src/preferences.py:60
 msgid "Keep the original file and create a copy in the destination folder"
 msgstr ""
+"Conserva il file originale e creare una copia nella cartella di destinazione"
 
 #: src/preferences.py:85
 msgid "Debugging"
-msgstr ""
+msgstr "Debugging"
 
 #: src/preferences.py:87
 msgid "Enable debug logs"
-msgstr ""
+msgstr "Attiva log di debug"
 
 #: src/preferences.py:89
 msgid ""
@@ -212,141 +223,152 @@ msgid ""
 "performance.\n"
 "Requires a restart."
 msgstr ""
+"Aumenta la verbosità dei log, occupando più spazio sul disco e "
+"potenzialmente impattando le prestazioni.\n"
+"Richiede il riavvio dell'app."
 
 #: src/preferences.py:112 src/WelcomeScreen.py:90
 msgid "The folder must be in your home directory"
-msgstr ""
+msgstr "La cartella deve essere nella tua home"
 
 #: src/preferences.py:115 src/WelcomeScreen.py:93
 msgid "Select a folder"
-msgstr ""
+msgstr "Seleziona una cartella"
 
 #: src/components/AppDetailsConflictModal.py:10
 #, python-brace-format
 msgid "Conflict with \"{app_name}\""
-msgstr ""
+msgstr "Conflitto con \"{app_name}\""
 
 #: src/components/AppDetailsConflictModal.py:11
 msgid "There is already an app with the same name, how do you want to proceed?"
-msgstr ""
+msgstr "Esiste già un'applicazione con lo stesso nome, come vuoi procedere?"
 
 #: src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
-msgstr ""
+msgstr "Cancella"
 
 #: src/components/AppDetailsConflictModal.py:17
 msgid "Keep both"
-msgstr ""
+msgstr "Mantieni entrambi"
 
 #: src/components/AppDetailsConflictModal.py:19
 msgid "Replace"
-msgstr ""
+msgstr "Sostituisci"
 
 #: src/gtk/drag-drop.ui:18
 msgid "Drop your file here"
-msgstr ""
+msgstr "Rilascia il file qui"
 
 #: src/gtk/empty-list-placeholder.ui:18
 msgid "Get started"
-msgstr ""
+msgstr "Iniziamo"
 
 #: src/gtk/empty-list-placeholder.ui:30
 msgid "Drag and drop an AppImage here or click on the \"+\" icon."
-msgstr ""
+msgstr "Trascina qui una AppImage clicca sull'icona \"+\"."
 
 #: src/gtk/empty-list-placeholder.ui:35
 msgid " If you don't see your apps, check if the selected folder is correct."
 msgstr ""
+" Se non vedi le tue applicazioni, controlla che la cartella selezionata sia "
+"quella corretta."
 
 #: src/gtk/empty-list-placeholder.ui:46
 msgid "Open Preferences"
-msgstr ""
+msgstr "Apri le preferenze"
 
 #: src/gtk/help-overlay.ui:11
 msgctxt "shortcut window"
 msgid "General"
-msgstr ""
+msgstr "Generale"
 
 #: src/gtk/help-overlay.ui:14
 msgctxt "shortcut window"
 msgid "Show Shortcuts"
-msgstr ""
+msgstr "Mostra scorciatoie"
 
 #: src/gtk/help-overlay.ui:20
 msgctxt "shortcut window"
 msgid "Quit"
-msgstr ""
+msgstr "Esci"
 
 #: src/gtk/tutorial/1.ui:21
 msgid "Hi, welcome to Gear lever"
-msgstr ""
+msgstr "Ciao, benvenuto su Gear lever"
 
 #: src/gtk/tutorial/1.ui:30
 msgid "An app that helps you integrating AppImages into you system."
-msgstr ""
+msgstr "Un'applicazione che aiuta a integrare le AppImages nel sistema."
 
 #: src/gtk/tutorial/1.ui:36
 msgid "Click \"Next\" to follow this tutorial."
-msgstr ""
+msgstr "Fai clic su \"Avanti\" per seguire il tutorial."
 
 #: src/gtk/tutorial/2.ui:19
 msgid "Set the AppImage location"
-msgstr ""
+msgstr "Imposta una posizione per le AppImages"
 
 #: src/gtk/tutorial/2.ui:28
 msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
 msgstr ""
+"Gear lever raggruppa tutte le tue AppImages dentro una cartella per "
+"mantenerle organizzate."
 
 #: src/gtk/tutorial/2.ui:33
 #, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
-msgstr ""
+msgstr "Di default, le AppImages sono salvate in: {location}"
 
 #: src/gtk/tutorial/2.ui:47
 msgid "Change AppImage location"
-msgstr ""
+msgstr "Cambia la posizione"
 
 #: src/gtk/tutorial/2.ui:59
 msgid "You can customize it later in the preferences."
-msgstr ""
+msgstr "Puoi personalizzarlo in seguito nelle preferenze."
 
 #: src/gtk/tutorial/3.ui:19
 msgid "Set Gear lever as default"
-msgstr ""
+msgstr "Imposta Gear lever come predefinito"
 
 #: src/gtk/tutorial/3.ui:28
 msgid ""
 "Click on the button to open a demo folder, containing a sample AppImage."
 msgstr ""
+"Fai clic sul pulsante per aprire una cartella demo, contenente una AppImage "
+"di esempio."
 
 #: src/gtk/tutorial/3.ui:33
 msgid ""
 "Use the right-click menu to set Gear lever as the default app for \"."
 "appimage\" files"
 msgstr ""
+"Usa il tasto destro del mouse per impostare Gear lever come applicazione "
+"predefinita per i file \".appimage\""
 
 #: src/gtk/tutorial/3.ui:44
 msgid "Open demo folder"
-msgstr ""
+msgstr "Apri cartella demo"
 
 #: src/gtk/tutorial/3.ui:56
 msgid "This step is optional"
-msgstr ""
+msgstr "Questo step è facoltativo"
 
 #: src/gtk/tutorial/last.ui:21
 msgid "All done, let's go!"
-msgstr ""
+msgstr "Tutto fatto, andiamo!"
 
 #: src/gtk/tutorial/last.ui:35
 msgid "Close tutorial"
-msgstr ""
+msgstr "Chiudi tutorial"
 
 #: src/models/AppListElement.py:19
 msgid "No description provided"
-msgstr ""
+msgstr "Nessuna descrizione fornita"
 
 #: src/providers/AppImageProvider.py:474
 msgid "Cannot load an untrusted AppImage"
-msgstr ""
+msgstr "Impossibile caricare una AppImage non verificata"
