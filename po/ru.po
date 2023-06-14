@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-06 16:30+0200\n"
-"PO-Revision-Date: 2023-06-13 01:51+0300\n"
-"Last-Translator: Сергей Ворон <voron@duck.com>\n"
+"POT-Creation-Date: 2023-06-14 10:12+0200\n"
+"PO-Revision-Date: 2023-06-14 18:54+0300\n"
+"Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
@@ -64,6 +64,10 @@ msgstr "_Комбинации клавиш"
 msgid "_About Gear lever"
 msgstr "_О Gear lever"
 
+#: src/main.py:93
+msgid "translator_credits"
+msgstr "Сергей Ворон"
+
 #: src/AppDetails.py:53
 msgid "I have verified the source of this app"
 msgstr "Я проверил источник этого приложения"
@@ -104,43 +108,43 @@ msgstr ""
 "Это приложение находится вне папки по умолчанию.\n"
 "<small>Вы можете скрыть внешние приложения в настройках</small>"
 
-#: src/AppDetails.py:274
+#: src/AppDetails.py:276
 msgid "Launching..."
 msgstr "Запуск..."
 
-#: src/AppDetails.py:304
+#: src/AppDetails.py:306
 msgid "This app runs in the terminal"
 msgstr "Это приложение запускается в терминале"
 
-#: src/AppDetails.py:308 src/AppDetails.py:325
+#: src/AppDetails.py:310 src/AppDetails.py:327
 msgid "Launch"
 msgstr "Запустить"
 
-#: src/AppDetails.py:311 src/AppDetails.py:332
+#: src/AppDetails.py:313 src/AppDetails.py:334
 msgid "Remove"
 msgstr "Удалить"
 
-#: src/AppDetails.py:315
+#: src/AppDetails.py:317
 msgid "Uninstalling..."
 msgstr "Удаление..."
 
-#: src/AppDetails.py:318
+#: src/AppDetails.py:320
 msgid "Installing..."
 msgstr "Установка..."
 
-#: src/AppDetails.py:324
+#: src/AppDetails.py:326
 msgid "Move to the app menu"
 msgstr "Добавить в меню приложений"
 
-#: src/AppDetails.py:328
+#: src/AppDetails.py:330
 msgid "Update"
 msgstr "Обновить"
 
-#: src/AppDetails.py:336
+#: src/AppDetails.py:338
 msgid "Updating"
 msgstr "Обновление"
 
-#: src/AppDetails.py:339
+#: src/AppDetails.py:341
 msgid "Error"
 msgstr "Ошибка"
 
@@ -228,11 +232,11 @@ msgstr ""
 "потенциально снижает производительность.\n"
 "Требуется перезагрузка."
 
-#: src/preferences.py:112
+#: src/preferences.py:112 src/WelcomeScreen.py:90
 msgid "The folder must be in your home directory"
 msgstr "Папка должна находиться в вашем домашнем каталоге"
 
-#: src/preferences.py:115
+#: src/preferences.py:115 src/WelcomeScreen.py:93
 msgid "Select a folder"
 msgstr "Выбрать папку"
 
@@ -370,6 +374,6 @@ msgstr "Закрыть руководство"
 msgid "No description provided"
 msgstr "Описание не предоставлено"
 
-#: src/providers/AppImageProvider.py:472 src/providers/AppImageProvider.py:576
+#: src/providers/AppImageProvider.py:474
 msgid "Cannot load an untrusted AppImage"
 msgstr "Не удается загрузить ненадежный AppImage"
