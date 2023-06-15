@@ -28,7 +28,7 @@ flatpak install --bundle --user gearlever.flatpak
 ```
 
 ## Changelog
-https://gearlever.mijorus.it/changelog
+[Open changelog](https://gearlever.mijorus.it/changelog)
 
 ## Preview
 <p align="center">
