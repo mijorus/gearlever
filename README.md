@@ -21,7 +21,7 @@
 
 ___
 
-Get a [build from github](https://github.com/mijorus/gearlever/releases)
+Get the [bundle from github](https://github.com/mijorus/gearlever/releases) (no auto-updates)
 ```sh
 # From your Downloads folder
 flatpak install --bundle --user gearlever.flatpak
