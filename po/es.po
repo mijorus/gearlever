@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-14 16:26-300"
-"PO-Revision-Date: \n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2023-06-15 11:53-300\n"
+"Last-Translator: @Racsuu\n"
 "Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -49,7 +49,7 @@ msgstr "Primer lanzamiento en Flathub"
 #: data/it.mijorus.gearlever.appdata.xml.in:33
 #: data/it.mijorus.gearlever.appdata.xml.in:38
 msgid "Application showcase"
-msgstr "Демонстрация приложения"
+msgstr "Aplicaciones"
 
 #: src/window.ui:31
 msgid "_Preferences"
@@ -226,9 +226,9 @@ msgid ""
 "performance.\n"
 "Requires a restart."
 msgstr ""
-"Увеличивает уровень детализации журнала, занимает больше места на диске и "
-"потенциально снижает производительность.\n"
-"Требуется перезагрузка."
+"Aumenta la verbosidad del registro, ocupando más espacio en disco y afectando potencialmente a "
+"el rendimiento.\n"
+"Requiere un reinicio."
 
 #: src/preferences.py:112 src/WelcomeScreen.py:90
 msgid "The folder must be in your home directory"
@@ -305,7 +305,7 @@ msgstr "Una app que te ayudara a integrar AppImages en tu sistema."
 
 #: src/gtk/tutorial/1.ui:36
 msgid "Click \"Next\" to follow this tutorial."
-msgstr "CLick en \"Siguiente\" para continuar con el tutorial."
+msgstr "Click en \"Next\" para continuar con el tutorial."
 
 #: src/gtk/tutorial/2.ui:19
 msgid "Set the AppImage location"
@@ -361,7 +361,7 @@ msgstr "Este paso es opcional"
 
 #: src/gtk/tutorial/last.ui:21
 msgid "All done, let's go!"
-msgstr "Todo listo, buena suerte!"
+msgstr "Todo listo, ¡buena suerte!"
 
 #: src/gtk/tutorial/last.ui:35
 msgid "Close tutorial"
