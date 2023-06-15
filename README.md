@@ -27,6 +27,9 @@ Get the [bundle from github](https://github.com/mijorus/gearlever/releases) (no 
 flatpak install --bundle --user gearlever.flatpak
 ```
 
+## Changelog
+https://gearlever.mijorus.it/changelog
+
 ## Preview
 <p align="center">
   <img width="850" src="https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever3.png">
