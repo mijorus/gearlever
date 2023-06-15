@@ -133,7 +133,7 @@ msgstr "Instalando..."
 
 #: src/AppDetails.py:326
 msgid "Move to the app menu"
-msgstr "Pasar al menu de la aplicación"
+msgstr "Mover al menu de aplicaciones"
 
 #: src/AppDetails.py:330
 msgid "Update"
