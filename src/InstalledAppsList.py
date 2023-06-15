@@ -33,12 +33,12 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
         # Create the filter search bar
         self.filter_query: str = ''
-        self.filter_entry = FilterEntry('Filter installed applications', capture=get_application_window(), maximum_size=clamp_size)
+        self.filter_entry = FilterEntry(_('Filter installed applications'), capture=get_application_window(), maximum_size=clamp_size)
         self.filter_entry.search_entry.connect('search-changed', self.trigger_filter_list)
 
         # title row
         title_row = Gtk.Box(margin_bottom=5)
-        title_row.append( Gtk.Label(label='Installed applications', css_classes=['title-2']) )
+        title_row.append( Gtk.Label(label=_('Installed applications'), css_classes=['title-2']) )
 
         [self.main_box.append(el) for el in [title_row, self.installed_apps_list_slot]]
 

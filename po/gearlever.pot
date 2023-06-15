@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-14 10:12+0200\n"
+"POT-Creation-Date: 2023-06-15 22:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,14 +37,10 @@ msgid ""
 "update apps in-place or keep multiple versions side-by-side."
 msgstr ""
 
-#: data/it.mijorus.gearlever.appdata.xml.in:17
-msgid "First release on Flathub"
-msgstr ""
-
-#: data/it.mijorus.gearlever.appdata.xml.in:23
-#: data/it.mijorus.gearlever.appdata.xml.in:28
-#: data/it.mijorus.gearlever.appdata.xml.in:33
-#: data/it.mijorus.gearlever.appdata.xml.in:38
+#: data/it.mijorus.gearlever.appdata.xml.in:35
+#: data/it.mijorus.gearlever.appdata.xml.in:40
+#: data/it.mijorus.gearlever.appdata.xml.in:45
+#: data/it.mijorus.gearlever.appdata.xml.in:50
 msgid "Application showcase"
 msgstr ""
 
@@ -146,6 +142,14 @@ msgstr ""
 
 #: src/GearleverWindow.py:201
 msgid "Open a file"
+msgstr ""
+
+#: src/InstalledAppsList.py:36
+msgid "Filter installed applications"
+msgstr ""
+
+#: src/InstalledAppsList.py:41
+msgid "Installed applications"
 msgstr ""
 
 #: src/preferences.py:22
@@ -300,7 +304,6 @@ msgid ""
 msgstr ""
 
 #: src/gtk/tutorial/2.ui:33
-#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
 msgstr ""
 
@@ -347,6 +350,6 @@ msgstr ""
 msgid "No description provided"
 msgstr ""
 
-#: src/providers/AppImageProvider.py:474
+#: src/providers/AppImageProvider.py:482
 msgid "Cannot load an untrusted AppImage"
 msgstr ""
