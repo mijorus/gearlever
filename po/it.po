@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-14 10:12+0200\n"
-"PO-Revision-Date: 2023-06-14 13:01+0200\n"
+"POT-Creation-Date: 2023-06-15 22:17+0200\n"
+"PO-Revision-Date: 2023-06-16 09:22+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it\n"
@@ -37,14 +37,10 @@ msgid ""
 "update apps in-place or keep multiple versions side-by-side."
 msgstr ""
 
-#: data/it.mijorus.gearlever.appdata.xml.in:17
-msgid "First release on Flathub"
-msgstr ""
-
-#: data/it.mijorus.gearlever.appdata.xml.in:23
-#: data/it.mijorus.gearlever.appdata.xml.in:28
-#: data/it.mijorus.gearlever.appdata.xml.in:33
-#: data/it.mijorus.gearlever.appdata.xml.in:38
+#: data/it.mijorus.gearlever.appdata.xml.in:35
+#: data/it.mijorus.gearlever.appdata.xml.in:40
+#: data/it.mijorus.gearlever.appdata.xml.in:45
+#: data/it.mijorus.gearlever.appdata.xml.in:50
 msgid "Application showcase"
 msgstr ""
 
@@ -101,6 +97,8 @@ msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
 msgstr ""
+"Questa si trova fuori dalla cartella predefinita\n"
+"<small>Puoi nascondere le app esterne nelle preferenze</small>"
 
 #: src/AppDetails.py:276
 msgid "Launching..."
@@ -150,6 +148,14 @@ msgstr "Apri una nuova AppImage"
 msgid "Open a file"
 msgstr "Apri un file"
 
+#: src/InstalledAppsList.py:36
+msgid "Filter installed applications"
+msgstr "Filtra applicazioni installate"
+
+#: src/InstalledAppsList.py:41
+msgid "Installed applications"
+msgstr "Applicazioni installate"
+
 #: src/preferences.py:22
 msgid "General"
 msgstr "Generale"
@@ -194,11 +200,11 @@ msgstr "Gestione file"
 
 #: src/preferences.py:54
 msgid "Move AppImages into the destination folder"
-msgstr ""
+msgstr "Sposta le AppImage nella cartella di destinazione"
 
 #: src/preferences.py:55
 msgid "Reduce disk usage"
-msgstr ""
+msgstr "Riduce lo spazio su disco"
 
 #: src/preferences.py:59
 msgid "Clone AppImages into the destination folder"
@@ -318,7 +324,6 @@ msgstr ""
 "mantenerle organizzate."
 
 #: src/gtk/tutorial/2.ui:33
-#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
 msgstr "Di default, le AppImages sono salvate in: {location}"
 
@@ -369,6 +374,6 @@ msgstr "Chiudi tutorial"
 msgid "No description provided"
 msgstr "Nessuna descrizione fornita"
 
-#: src/providers/AppImageProvider.py:474
+#: src/providers/AppImageProvider.py:482
 msgid "Cannot load an untrusted AppImage"
 msgstr "Impossibile caricare una AppImage non verificata"
