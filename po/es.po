@@ -1,21 +1,21 @@
-# Spanish translation for gearlever
+# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <racsufkoficial@gmail.com>, 2023.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-14 16:26-300"
-"PO-Revision-Date: \n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2023-06-14 16:26-300\n"
+"PO-Revision-Date: 2023-06-15 16:35-0200\n"
+"Last-Translator: Racsu <racsufkoficial@gmail.com>\n"
 "Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.3.1\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 #: data/it.mijorus.gearlever.appdata.xml.in:4
@@ -40,16 +40,12 @@ msgstr ""
 "gestionara archivos AppImage por ti, generara accesos directos y metadatos de las apps, "
 "actualiza tus aplicaciones o manten distintas versiones al mismo tiempo."
 
-#: data/it.mijorus.gearlever.appdata.xml.in:17
-msgid "First release on Flathub"
-msgstr "Primer lanzamiento en Flathub"
-
-#: data/it.mijorus.gearlever.appdata.xml.in:23
-#: data/it.mijorus.gearlever.appdata.xml.in:28
-#: data/it.mijorus.gearlever.appdata.xml.in:33
-#: data/it.mijorus.gearlever.appdata.xml.in:38
+#: data/it.mijorus.gearlever.appdata.xml.in:35
+#: data/it.mijorus.gearlever.appdata.xml.in:40
+#: data/it.mijorus.gearlever.appdata.xml.in:45
+#: data/it.mijorus.gearlever.appdata.xml.in:50
 msgid "Application showcase"
-msgstr "Демонстрация приложения"
+msgstr "Aplicaciones"
 
 #: src/window.ui:31
 msgid "_Preferences"
@@ -61,12 +57,11 @@ msgstr "_Atajos de teclado"
 
 #: src/window.ui:39
 msgid "_About Gear lever"
-msgstr "_Sobre Gear lever"
+msgstr "_Atajos de teclado"
 
 #: src/main.py:93
 msgid "translator_credits"
-msgstr "Racsu <@racsu@mastodon.social>"
-
+msgstr "Racsu <racsufkoficial@gmail.com>"
 #: src/AppDetails.py:53
 msgid "I have verified the source of this app"
 msgstr "He verificado la fuente de esta aplicación"
@@ -104,7 +99,7 @@ msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
 msgstr ""
-"Esta aplicacion se encuentra fuera de la carpeta por defecto\n"
+"Esta aplicacion se encuentra fuera del directorio predeterminado\n"
 "<small>Puedes esconder aplicaciones externas en los ajustes</small>"
 
 #: src/AppDetails.py:276
@@ -117,7 +112,7 @@ msgstr "Esta app corre via terminal"
 
 #: src/AppDetails.py:310 src/AppDetails.py:327
 msgid "Launch"
-msgstr "Ejecutar"
+msgstr "Lanzar"
 
 #: src/AppDetails.py:313 src/AppDetails.py:334
 msgid "Remove"
@@ -133,7 +128,7 @@ msgstr "Instalando..."
 
 #: src/AppDetails.py:326
 msgid "Move to the app menu"
-msgstr "Pasar al menu de la aplicación"
+msgstr "Mover al menu de aplicaciones"
 
 #: src/AppDetails.py:330
 msgid "Update"
@@ -154,6 +149,14 @@ msgstr "Abrir una nueva AppImage"
 #: src/GearleverWindow.py:201
 msgid "Open a file"
 msgstr "Abrir un archivo"
+
+#: src/InstalledAppsList.py:36
+msgid "Filter installed applications"
+msgstr "Filtrar aplicaciones instaladas"
+
+#: src/InstalledAppsList.py:41
+msgid "Installed applications"
+msgstr "Aplicaciones instaladas"
 
 #: src/preferences.py:22
 msgid "General"
@@ -226,9 +229,9 @@ msgid ""
 "performance.\n"
 "Requires a restart."
 msgstr ""
-"Увеличивает уровень детализации журнала, занимает больше места на диске и "
-"потенциально снижает производительность.\n"
-"Требуется перезагрузка."
+"Aumenta la verbosidad del registro, ocupando más espacio en disco y afectando potencialmente a "
+"el rendimiento.\n"
+"Requiere un reinicio."
 
 #: src/preferences.py:112 src/WelcomeScreen.py:90
 msgid "The folder must be in your home directory"
@@ -305,7 +308,7 @@ msgstr "Una app que te ayudara a integrar AppImages en tu sistema."
 
 #: src/gtk/tutorial/1.ui:36
 msgid "Click \"Next\" to follow this tutorial."
-msgstr "CLick en \"Siguiente\" para continuar con el tutorial."
+msgstr "Click en \"Next\" para continuar con el tutorial."
 
 #: src/gtk/tutorial/2.ui:19
 msgid "Set the AppImage location"
@@ -361,7 +364,7 @@ msgstr "Este paso es opcional"
 
 #: src/gtk/tutorial/last.ui:21
 msgid "All done, let's go!"
-msgstr "Todo listo, buena suerte!"
+msgstr "Todo listo, ¡buena suerte!"
 
 #: src/gtk/tutorial/last.ui:35
 msgid "Close tutorial"
