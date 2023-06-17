@@ -30,6 +30,10 @@ flatpak install --bundle --user gearlever.flatpak
 ## Changelog
 [Open changelog](https://gearlever.mijorus.it/changelog)
 
+## Permissions
+
+- `--talk-name=org.freedesktop.Flatpak`: This permission is required in order to open apps (when you click on the "Launch" button) and refresh the system menu when a new app is installed; if the user disables this permission manually (eg. with Flatseal), Gear lever should countinue to work normally, except you would not be able to open apps directly.
+
 ## Preview
 <p align="center">
   <img width="850" src="https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever3.png">
