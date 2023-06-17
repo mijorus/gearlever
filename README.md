@@ -5,6 +5,8 @@
   <img width="150" src="data/icons/hicolor/scalable/apps/it.mijorus.gearlever.svg">
 </p>
 
+<p align="center"><a href="https://flatstat.mijorus.it/app/it.mijorus.gearlever"  align="center"><img width="150" src="https://img.shields.io/endpoint?url=https://flathub-stats-backend.vercel.app/badges/it.mijorus.gearlever/shields.io.json"></a></p>
+
 ## Features
 - Integrate AppImages into your app menu with **just click**
 - **Drag and drop** files directly from your file manager
