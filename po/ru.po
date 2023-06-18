@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-14 10:12+0200\n"
-"PO-Revision-Date: 2023-06-14 18:54+0300\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2023-06-15 22:17+0200\n"
+"PO-Revision-Date: 2023-06-16 22:16+0300\n"
+"Last-Translator: Сергей Ворон <voron@duck.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
@@ -41,14 +41,10 @@ msgstr ""
 "и метаданные приложений, обновляет непосредственно приложения или хранит "
 "несколько версий рядом друг с другом."
 
-#: data/it.mijorus.gearlever.appdata.xml.in:17
-msgid "First release on Flathub"
-msgstr "Первый релиз на Flathub"
-
-#: data/it.mijorus.gearlever.appdata.xml.in:23
-#: data/it.mijorus.gearlever.appdata.xml.in:28
-#: data/it.mijorus.gearlever.appdata.xml.in:33
-#: data/it.mijorus.gearlever.appdata.xml.in:38
+#: data/it.mijorus.gearlever.appdata.xml.in:35
+#: data/it.mijorus.gearlever.appdata.xml.in:40
+#: data/it.mijorus.gearlever.appdata.xml.in:45
+#: data/it.mijorus.gearlever.appdata.xml.in:50
 msgid "Application showcase"
 msgstr "Демонстрация приложения"
 
@@ -66,7 +62,7 @@ msgstr "_О Gear lever"
 
 #: src/main.py:93
 msgid "translator_credits"
-msgstr "Сергей Ворон"
+msgstr "Сергей Ворон <voron@duck.com>"
 
 #: src/AppDetails.py:53
 msgid "I have verified the source of this app"
@@ -155,6 +151,14 @@ msgstr "Открыть новый AppImage"
 #: src/GearleverWindow.py:201
 msgid "Open a file"
 msgstr "Открыть файл"
+
+#: src/InstalledAppsList.py:36
+msgid "Filter installed applications"
+msgstr "Фильтр установленных приложений"
+
+#: src/InstalledAppsList.py:41
+msgid "Installed applications"
+msgstr "Установленные приложения"
 
 #: src/preferences.py:22
 msgid "General"
@@ -324,7 +328,6 @@ msgstr ""
 "их."
 
 #: src/gtk/tutorial/2.ui:33
-#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
 msgstr "По умолчанию AppImage сохраняются по адресу: {location}"
 
@@ -374,6 +377,9 @@ msgstr "Закрыть руководство"
 msgid "No description provided"
 msgstr "Описание не предоставлено"
 
-#: src/providers/AppImageProvider.py:474
+#: src/providers/AppImageProvider.py:482
 msgid "Cannot load an untrusted AppImage"
 msgstr "Не удается загрузить ненадежный AppImage"
+
+#~ msgid "First release on Flathub"
+#~ msgstr "Первый релиз на Flathub"
