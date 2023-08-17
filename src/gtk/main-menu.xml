@@ -11,7 +11,7 @@
                 <attribute name="action">app.open_log_file</attribute>
             </item>
             <item>
-                <attribute name="label" translatable="yes">_Welcome screen</attribute>
+                <attribute name="label" translatable="yes">_Show tutorial</attribute>
                 <attribute name="action">app.open_welcome_screen</attribute>
             </item>
             <item>
