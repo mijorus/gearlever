@@ -153,7 +153,7 @@ class AppImageProvider():
         
         return ''
 
-    def refresh_title(self, el: AppImageListElement) -> str:
+    def refresh_title(self, el: AppImageListElement):
         if el.desktop_entry:
             el.name = el.desktop_entry.getName()
         
@@ -161,8 +161,7 @@ class AppImageProvider():
             extracted = self._load_appimage_metadata(el)
             if extracted.desktop_entry:
                 el.name = extracted.desktop_entry.getName()
-        
-        return el.name
+                el.version = el.desktop_entry.get('X-AppImage-Version')
 
     def uninstall(self, el: AppImageListElement):
         logging.info(f'Removing {el.file_path}')
