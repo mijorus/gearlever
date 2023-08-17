@@ -1,5 +1,4 @@
 data/it.mijorus.gearlever.desktop.in
-data/it.mijorus.gearlever.appdata.xml.in
 data/it.mijorus.gearlever.gschema.xml
 src/main.py
 src/AppDetails.py
@@ -7,6 +6,7 @@ src/GearleverWindow.py
 src/InstalledAppsList.py
 src/preferences.py
 src/WelcomeScreen.py
+src/gtk/main-menu.ui
 
 src/components/AppDetailsConflictModal.py
 src/components/AppListBoxItem.py

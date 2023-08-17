@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-15 22:17+0200\n"
-"PO-Revision-Date: 2023-06-16 09:22+0200\n"
+"POT-Creation-Date: 2023-08-17 12:36+0200\n"
+"PO-Revision-Date: 2023-08-17 12:37+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it\n"
@@ -18,42 +18,7 @@ msgstr ""
 "X-Generator: Poedit 3.3.1\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
-#: data/it.mijorus.gearlever.appdata.xml.in:4
 msgid "Gear lever"
-msgstr ""
-
-#: data/it.mijorus.gearlever.appdata.xml.in:5
-msgid "Manage AppImages"
-msgstr "Gestisci i file AppImages"
-
-#: data/it.mijorus.gearlever.appdata.xml.in:10
-msgid "Lorenzo Paderi"
-msgstr ""
-
-#: data/it.mijorus.gearlever.appdata.xml.in:12
-msgid ""
-"An utility to manage AppImages with ease! Gear lever will organize and "
-"manage AppImage files for you, generate desktop entries and app metadata, "
-"update apps in-place or keep multiple versions side-by-side."
-msgstr ""
-
-#: data/it.mijorus.gearlever.appdata.xml.in:35
-#: data/it.mijorus.gearlever.appdata.xml.in:40
-#: data/it.mijorus.gearlever.appdata.xml.in:45
-#: data/it.mijorus.gearlever.appdata.xml.in:50
-msgid "Application showcase"
-msgstr ""
-
-#: src/window.ui:31
-msgid "_Preferences"
-msgstr ""
-
-#: src/window.ui:35
-msgid "_Keyboard Shortcuts"
-msgstr ""
-
-#: src/window.ui:39
-msgid "_About Gear lever"
 msgstr ""
 
 #: src/main.py:93
@@ -241,6 +206,22 @@ msgstr "La cartella deve essere nella tua home"
 msgid "Select a folder"
 msgstr "Seleziona una cartella"
 
+#: src/gtk/main-menu.ui:6
+msgid "_Preferences"
+msgstr "Preferenze"
+
+#: src/gtk/main-menu.ui:10
+msgid "_Open Log File"
+msgstr "Apri file di log"
+
+#: src/gtk/main-menu.ui:14
+msgid "_Show tutorial"
+msgstr "Apri tutorial"
+
+#: src/gtk/main-menu.ui:18
+msgid "_About Gear lever"
+msgstr "Informazioni su Gear lever"
+
 #: src/components/AppDetailsConflictModal.py:10
 #, python-brace-format
 msgid "Conflict with \"{app_name}\""
@@ -324,6 +305,7 @@ msgstr ""
 "mantenerle organizzate."
 
 #: src/gtk/tutorial/2.ui:33
+#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
 msgstr "Di default, le AppImages sono salvate in: {location}"
 
@@ -374,6 +356,9 @@ msgstr "Chiudi tutorial"
 msgid "No description provided"
 msgstr "Nessuna descrizione fornita"
 
-#: src/providers/AppImageProvider.py:482
+#: src/providers/AppImageProvider.py:481
 msgid "Cannot load an untrusted AppImage"
 msgstr "Impossibile caricare una AppImage non verificata"
+
+#~ msgid "Manage AppImages"
+#~ msgstr "Gestisci i file AppImages"

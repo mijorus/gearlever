@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
     <gresource prefix="/it/mijorus/gearlever">
-        <file>gtk/main-menu.xml</file>
+        <file>gtk/main-menu.ui</file>
         <file>gtk/drag-drop.ui</file>
         <file>gtk/empty-list-placeholder.ui</file>
         <file>assets/flathub-badge-logo.svg</file>

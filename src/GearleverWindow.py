@@ -44,7 +44,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.view_title_widget = Adw.ViewSwitcherTitle(stack=self.app_lists_stack)
         self.left_button = Gtk.Button(icon_name='plus-symbolic', tooltip_text=self.open_appimage_tooltip)
 
-        menu_obj = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/main-menu.xml')
+        menu_obj = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/main-menu.ui')
         self.menu_button = Gtk.MenuButton(icon_name='open-menu', menu_model=menu_obj.get_object('primary_menu'))
 
         self.titlebar.pack_start(self.left_button)
