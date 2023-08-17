@@ -35,7 +35,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.open_appimage_tooltip = _('Open a new AppImage')
 
         # Create a container stack 
-        self.container_stack = Gtk.Stack()
+        self.container_stack = Adw.Leaflet(can_unfold=False, can_navigate_back=True, can_navigate_forward=False)
 
         # Create the "main_stack" widget we will be using in the Window
         self.app_lists_stack = Adw.ViewStack()
@@ -71,8 +71,8 @@ class GearleverWindow(Gtk.ApplicationWindow):
         # Add content to the main_stack
         utils.add_page_to_adw_stack(self.app_lists_stack, self.installed_stack, 'installed', 'Installed', 'computer-symbolic' )
 
-        self.container_stack.add_child(self.app_lists_stack)
-        self.container_stack.add_child(self.app_details)
+        self.container_stack.append(self.app_lists_stack)
+        self.container_stack.append(self.app_details)
         
         # Show details of an installed app
         self.installed_apps_list.connect('selected-app', self.on_selected_installed_app)
@@ -94,7 +94,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.visible_before_dragdrop_start = None
 
         self.container_stack.add_controller(self.drop_target_controller)
-        self.container_stack.add_child(self.drag_drop_ui)
+        self.container_stack.append(self.drag_drop_ui)
 
         self.connect('close-request', self.on_close_request)
 
@@ -104,13 +104,13 @@ class GearleverWindow(Gtk.ApplicationWindow):
     # Show app details
     def on_selected_installed_app(self, source: Gtk.Widget, list_element: AppListElement):
         self.app_details.set_app_list_element(list_element)
-        self.container_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
+        self.container_stack.set_transition_type(Adw.LeafletTransitionType.OVER)
         self.container_stack.set_visible_child(self.app_details)
 
     def on_selected_local_file(self, file: Gio.File) -> bool:
         if self.app_details.set_from_local_file(file):
             self.container_stack.set_transition_type(
-                Gtk.StackTransitionType.NONE if self.from_file else Gtk.StackTransitionType.SLIDE_LEFT
+                Adw.LeafletTransitionType.UNDER if self.from_file else Adw.LeafletTransitionType.OVER
             )
 
             self.container_stack.set_visible_child(self.app_details)
@@ -132,7 +132,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
         return False
 
     def on_show_installed_list(self, source: Gtk.Widget=None, data=None):
-        self.container_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_RIGHT)
+        self.container_stack.set_transition_type(Adw.LeafletTransitionType.OVER)
 
         self.installed_apps_list.refresh_list()
         self.container_stack.set_visible_child(self.app_lists_stack)
@@ -165,14 +165,14 @@ class GearleverWindow(Gtk.ApplicationWindow):
         return False
     
     def on_drop_enter(self, widget, x, y):
-        self.container_stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+        self.container_stack.set_transition_type(Adw.LeafletTransitionType.UNDER)
         self.visible_before_dragdrop_start = self.container_stack.get_visible_child()
         self.container_stack.set_visible_child(self.drag_drop_ui)
 
         return Gdk.DragAction.COPY
     
     def on_drop_leave(self, widget):
-        self.container_stack.set_transition_type(Gtk.StackTransitionType.CROSSFADE)
+        self.container_stack.set_transition_type(Adw.LeafletTransitionType.UNDER)
 
         if self.visible_before_dragdrop_start:
             self.container_stack.set_visible_child(self.visible_before_dragdrop_start)

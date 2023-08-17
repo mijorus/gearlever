@@ -31,16 +31,16 @@ class AppListBoxItem(Gtk.ListBoxRow):
             )
         )
 
-        desc = list_element.description if len(list_element.description) else ''
-        app_details_box.append(
-            Gtk.Label(
-                label=desc, 
-                halign=Gtk.Align.START,
-                lines=1,
-                max_width_chars=100, 
-                ellipsize=Pango.EllipsizeMode.END,
+        if list_element.description:
+            app_details_box.append(
+                Gtk.Label(
+                    label=list_element.description, 
+                    halign=Gtk.Align.START,
+                    lines=1,
+                    max_width_chars=100, 
+                    ellipsize=Pango.EllipsizeMode.END,
+                )
             )
-        )
 
         self.update_version = Gtk.Label(
             label='',
