@@ -103,7 +103,9 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_list_element = el
         self.provider = appimage_provider
 
-        self.load(load_completed_callback=lambda: self.set_trust_button(trusted=(el.installed_status is InstalledStatus.INSTALLED)))
+        self.load(load_completed_callback=lambda: (
+            self.set_trust_button(trusted=(el.installed_status is InstalledStatus.INSTALLED))
+        ))
 
     def set_from_local_file(self, file: Gio.File):
         if appimage_provider.can_install_file(file):
@@ -268,7 +270,8 @@ class AppDetails(Gtk.ScrolledWindow):
 
     def on_secondary_action_button_clicked(self, button: Gtk.Button):
         if self.app_list_element.installed_status in [InstalledStatus.INSTALLED, InstalledStatus.NOT_INSTALLED]:
-            if self.trust_app_check_button.get_active():
+            is_terminal = self.app_list_element.desktop_entry and self.app_list_element.desktop_entry.getTerminal()
+            if self.trust_app_check_button.get_active() and (not is_terminal):
                 try:
                     self.app_list_element.set_trusted()
                     
@@ -298,8 +301,8 @@ class AppDetails(Gtk.ScrolledWindow):
         self.primary_action_button.set_css_classes(self.common_btn_css_classes)
         self.secondary_action_button.set_visible(False)
         self.secondary_action_button.set_css_classes(self.common_btn_css_classes)
-        self.source_selector.set_visible(False)
         self.secondary_action_button.set_sensitive(True)
+        self.source_selector.set_visible(False)
 
         if self.app_list_element.installed_status == InstalledStatus.INSTALLED:
             if self.app_list_element.desktop_entry and self.app_list_element.desktop_entry.getTerminal():
@@ -354,9 +357,11 @@ class AppDetails(Gtk.ScrolledWindow):
 
     def set_trust_button(self, trusted=False):
         if trusted:
+            app_is_terminal = self.app_list_element and self.app_list_element.desktop_entry and self.app_list_element.desktop_entry.getTerminal()
+
             self.trust_app_check_button_revealer.set_reveal_child(False)
             self.trust_app_check_button.set_active(True)
-            self.secondary_action_button.set_sensitive(True),
+            self.secondary_action_button.set_sensitive(not app_is_terminal)
             self.primary_action_button.set_sensitive(True)
         else:
             self.trust_app_check_button_revealer.set_reveal_child(True)

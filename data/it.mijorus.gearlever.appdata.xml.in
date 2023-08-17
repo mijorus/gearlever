@@ -17,6 +17,7 @@
                 <p>- Use native widgets for navitagion, allowing go-back gestures with swipes and mouse buttons</p>
                 <p>- Fixed an error for which the app version was not being updated when reloading metadata</p>
                 <p>- Fixed empty space when an app does not have a description</p>
+                <p>- Fixed "Launch" button for terminal apps being show clickable</p>
             </description>
         </release>
         <release type="stable" version="1.0.8" date="2023-06-18T00:00:00Z">
