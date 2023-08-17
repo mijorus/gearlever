@@ -1,34 +1,34 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# FIRST AUTHOR <racsufkoficial@gmail.com>, 2023.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-15 22:17+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2023-06-14 16:26-300\n"
+"PO-Revision-Date: 2023-06-15 16:35-0200\n"
+"Last-Translator: Racsu <racsufkoficial@gmail.com>\n"
+"Language-Team: \n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 #: data/it.mijorus.gearlever.appdata.xml.in:4
 msgid "Gear lever"
-msgstr ""
+msgstr "Gear lever"
 
 #: data/it.mijorus.gearlever.appdata.xml.in:5
 msgid "Manage AppImages"
-msgstr ""
+msgstr "Gestionar AppImages"
 
 #: data/it.mijorus.gearlever.appdata.xml.in:10
 msgid "Lorenzo Paderi"
-msgstr ""
+msgstr "Lorenzo Paderi"
 
 #: data/it.mijorus.gearlever.appdata.xml.in:12
 msgid ""
@@ -36,133 +36,140 @@ msgid ""
 "manage AppImage files for you, generate desktop entries and app metadata, "
 "update apps in-place or keep multiple versions side-by-side."
 msgstr ""
+"¡Una utilidad para gestionar AppImages con facilidad! Gear lever organizará y  "
+"gestionara archivos AppImage por ti, generara accesos directos y metadatos de las apps, "
+"actualiza tus aplicaciones o manten distintas versiones al mismo tiempo."
 
 #: data/it.mijorus.gearlever.appdata.xml.in:35
 #: data/it.mijorus.gearlever.appdata.xml.in:40
 #: data/it.mijorus.gearlever.appdata.xml.in:45
 #: data/it.mijorus.gearlever.appdata.xml.in:50
 msgid "Application showcase"
-msgstr ""
+msgstr "Aplicaciones"
 
 #: src/window.ui:31
 msgid "_Preferences"
-msgstr ""
+msgstr "_Preferencias"
 
 #: src/window.ui:35
 msgid "_Keyboard Shortcuts"
-msgstr ""
+msgstr "_Atajos de teclado"
 
 #: src/window.ui:39
 msgid "_About Gear lever"
-msgstr ""
+msgstr "_Atajos de teclado"
 
 #: src/main.py:93
 msgid "translator_credits"
-msgstr ""
-
+msgstr "Racsu <racsufkoficial@gmail.com>"
 #: src/AppDetails.py:53
 msgid "I have verified the source of this app"
-msgstr ""
+msgstr "He verificado la fuente de esta aplicación"
 
 #: src/AppDetails.py:158
 msgid "Path"
-msgstr ""
+msgstr "Directorio"
 
 #: src/AppDetails.py:168
 msgid "Website"
-msgstr ""
+msgstr "Sitio Web"
 
 #: src/AppDetails.py:168
 msgid "Add a website"
-msgstr ""
+msgstr "Agregar un sitio web"
 
 #: src/AppDetails.py:174
 msgid "Open URL"
-msgstr ""
+msgstr "Abrir enlace"
 
 #: src/AppDetails.py:184
 msgid "Reload metadata"
-msgstr ""
+msgstr "Recargar metada"
 
 #: src/AppDetails.py:185
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
 msgstr ""
+"Actualizar información como icono, versión y descripción.\n"
+"Útil si la aplicación se actualizó sola."
 
 #: src/AppDetails.py:200
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
 msgstr ""
+"Esta aplicacion se encuentra fuera del directorio predeterminado\n"
+"<small>Puedes esconder aplicaciones externas en los ajustes</small>"
 
 #: src/AppDetails.py:276
 msgid "Launching..."
-msgstr ""
+msgstr "Lanzando..."
 
 #: src/AppDetails.py:306
 msgid "This app runs in the terminal"
-msgstr ""
+msgstr "Esta app corre via terminal"
 
 #: src/AppDetails.py:310 src/AppDetails.py:327
 msgid "Launch"
-msgstr ""
+msgstr "Lanzar"
 
 #: src/AppDetails.py:313 src/AppDetails.py:334
 msgid "Remove"
-msgstr ""
+msgstr "Eliminar"
 
 #: src/AppDetails.py:317
 msgid "Uninstalling..."
-msgstr ""
+msgstr "Desinstalando..."
 
 #: src/AppDetails.py:320
 msgid "Installing..."
-msgstr ""
+msgstr "Instalando..."
 
 #: src/AppDetails.py:326
 msgid "Move to the app menu"
-msgstr ""
+msgstr "Mover al menu de aplicaciones"
 
 #: src/AppDetails.py:330
 msgid "Update"
-msgstr ""
+msgstr "Actualizar"
 
 #: src/AppDetails.py:338
 msgid "Updating"
-msgstr ""
+msgstr "Actualizando"
 
 #: src/AppDetails.py:341
 msgid "Error"
-msgstr ""
+msgstr "Error"
 
 #: src/GearleverWindow.py:35
 msgid "Open a new AppImage"
-msgstr ""
+msgstr "Abrir una nueva AppImage"
 
 #: src/GearleverWindow.py:201
 msgid "Open a file"
-msgstr ""
+msgstr "Abrir un archivo"
 
 #: src/InstalledAppsList.py:36
 msgid "Filter installed applications"
-msgstr ""
+msgstr "Filtrar aplicaciones instaladas"
 
 #: src/InstalledAppsList.py:41
 msgid "Installed applications"
-msgstr ""
+msgstr "Aplicaciones instaladas"
 
 #: src/preferences.py:22
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: src/preferences.py:27
 msgid "AppImage default location"
-msgstr ""
+msgstr "Ubicación por defecto de la AppImage"
 
 #: src/preferences.py:36
 msgid "Use executable name for integrated terminal apps"
 msgstr ""
+"Utilizar nombre ejecutable para aplicaciones de terminal integradas"
 
 #: src/preferences.py:38
 msgid ""
@@ -171,44 +178,50 @@ msgid ""
 "\n"
 "For example, \"golang_x86_64.appimage\" will be saved as \"go\""
 msgstr ""
+"Si se activa, las aplicaciones que se ejecutan en el terminal se renombran como su ejecutable.\n"
+"Tendrás que añadir manualmente la carpeta mencionada a tu $PATH.\n"
+"\n"
+"Por ejemplo, \"golang_x86_64.appimage\" sera guardo como \"go\""
 
 #: src/preferences.py:42
 msgid "Show integrated AppImages outside the default folder"
-msgstr ""
+msgstr "Muestra las AppImages integradas fuera de la carpeta por defecto"
 
 #: src/preferences.py:44
 msgid ""
 "List AppImages that have been integrated into the system menu but are "
 "located outside the default folder"
 msgstr ""
+"Lista de AppImages que han sido integradas en el menu del sistema, pero estan "
+"fuera de la carpeta por defecto"
 
 #: src/preferences.py:52
 msgid "File management"
-msgstr ""
+msgstr "Gestión de archivos"
 
 #: src/preferences.py:54
 msgid "Move AppImages into the destination folder"
-msgstr ""
+msgstr "Mueve las AppImages a la carpeta destinada"
 
 #: src/preferences.py:55
 msgid "Reduce disk usage"
-msgstr ""
+msgstr "Reducir uso del disco"
 
 #: src/preferences.py:59
 msgid "Clone AppImages into the destination folder"
-msgstr ""
+msgstr "Clonar AppImages hacia la carpeta destinada"
 
 #: src/preferences.py:60
 msgid "Keep the original file and create a copy in the destination folder"
-msgstr ""
+msgstr "Mantiene el archivo original y crea una copia en la otra carpeta"
 
 #: src/preferences.py:85
 msgid "Debugging"
-msgstr ""
+msgstr "Depuración"
 
 #: src/preferences.py:87
 msgid "Enable debug logs"
-msgstr ""
+msgstr "Habilitar registros de depuración"
 
 #: src/preferences.py:89
 msgid ""
@@ -216,140 +229,151 @@ msgid ""
 "performance.\n"
 "Requires a restart."
 msgstr ""
+"Aumenta la verbosidad del registro, ocupando más espacio en disco y afectando potencialmente a "
+"el rendimiento.\n"
+"Requiere un reinicio."
 
 #: src/preferences.py:112 src/WelcomeScreen.py:90
 msgid "The folder must be in your home directory"
-msgstr ""
+msgstr "La carpeta debe estar en tu diretorio home"
 
 #: src/preferences.py:115 src/WelcomeScreen.py:93
 msgid "Select a folder"
-msgstr ""
+msgstr "Selecciona una carpeta"
 
 #: src/components/AppDetailsConflictModal.py:10
 #, python-brace-format
 msgid "Conflict with \"{app_name}\""
-msgstr ""
+msgstr "Conflicto con \"{app_name}\""
 
 #: src/components/AppDetailsConflictModal.py:11
 msgid "There is already an app with the same name, how do you want to proceed?"
-msgstr ""
+msgstr "Tienes una app con el mismo nombre ¿Como quieres proceder?"
 
 #: src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #: src/components/AppDetailsConflictModal.py:17
 msgid "Keep both"
-msgstr ""
+msgstr "Mantener ambas"
 
 #: src/components/AppDetailsConflictModal.py:19
 msgid "Replace"
-msgstr ""
+msgstr "Remplazar"
 
 #: src/gtk/drag-drop.ui:18
 msgid "Drop your file here"
-msgstr ""
+msgstr "Suelta tu archivo aqui"
 
 #: src/gtk/empty-list-placeholder.ui:18
 msgid "Get started"
-msgstr ""
+msgstr "Empezar"
 
 #: src/gtk/empty-list-placeholder.ui:30
 msgid "Drag and drop an AppImage here or click on the \"+\" icon."
-msgstr ""
+msgstr "Arrastra y suelta una AppImage aqui o da click al icono \"+\" "
 
 #: src/gtk/empty-list-placeholder.ui:35
 msgid " If you don't see your apps, check if the selected folder is correct."
 msgstr ""
+"Si es que no ves tus aplicaciones, revisa que la carpeta seleccionada es correcta."
 
 #: src/gtk/empty-list-placeholder.ui:46
 msgid "Open Preferences"
-msgstr ""
+msgstr "Abrir Preferencias"
 
 #: src/gtk/help-overlay.ui:11
 msgctxt "shortcut window"
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: src/gtk/help-overlay.ui:14
 msgctxt "shortcut window"
 msgid "Show Shortcuts"
-msgstr ""
+msgstr "Mostrar Atajos"
 
 #: src/gtk/help-overlay.ui:20
 msgctxt "shortcut window"
 msgid "Quit"
-msgstr ""
+msgstr "Salir"
 
 #: src/gtk/tutorial/1.ui:21
 msgid "Hi, welcome to Gear lever"
-msgstr ""
+msgstr "Hola, bienvenid@ a Gear lever"
 
 #: src/gtk/tutorial/1.ui:30
 msgid "An app that helps you integrating AppImages into you system."
-msgstr ""
+msgstr "Una app que te ayudara a integrar AppImages en tu sistema."
 
 #: src/gtk/tutorial/1.ui:36
 msgid "Click \"Next\" to follow this tutorial."
-msgstr ""
+msgstr "Click en \"Next\" para continuar con el tutorial."
 
 #: src/gtk/tutorial/2.ui:19
 msgid "Set the AppImage location"
-msgstr ""
+msgstr "Selecciona la ubicación de la AppImage"
 
 #: src/gtk/tutorial/2.ui:28
 msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
 msgstr ""
+"Gear lever mueve todas tus AppImages a una carpeta especifica que las mantiene "
+"organizadas."
 
 #: src/gtk/tutorial/2.ui:33
+#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
-msgstr ""
+msgstr "Por defecto, AppImages se guardan en: {location}"
 
 #: src/gtk/tutorial/2.ui:47
 msgid "Change AppImage location"
-msgstr ""
+msgstr "Mueve la ubicación de la AppImage"
+
 
 #: src/gtk/tutorial/2.ui:59
 msgid "You can customize it later in the preferences."
-msgstr ""
+msgstr "Puedes customizarlo despues en preferencias."
 
 #: src/gtk/tutorial/3.ui:19
 msgid "Set Gear lever as default"
-msgstr ""
+msgstr "Configura Gear lever como por defecto"
 
 #: src/gtk/tutorial/3.ui:28
 msgid ""
 "Click on the button to open a demo folder, containing a sample AppImage."
 msgstr ""
+"Da click al boton para abrir una carpeta demo, que contiene una AppImage de ejemplo."
 
 #: src/gtk/tutorial/3.ui:33
 msgid ""
 "Use the right-click menu to set Gear lever as the default app for \"."
 "appimage\" files"
 msgstr ""
+"Da click derecho para configurar Gear lever como la app por defecto para "
+"abrir archivos \".appimage\""
 
 #: src/gtk/tutorial/3.ui:44
 msgid "Open demo folder"
-msgstr ""
+msgstr "Abrir carpeta demo"
 
 #: src/gtk/tutorial/3.ui:56
 msgid "This step is optional"
-msgstr ""
+msgstr "Este paso es opcional"
 
 #: src/gtk/tutorial/last.ui:21
 msgid "All done, let's go!"
-msgstr ""
+msgstr "Todo listo, ¡buena suerte!"
 
 #: src/gtk/tutorial/last.ui:35
 msgid "Close tutorial"
-msgstr ""
+msgstr "Cerrar tutorial"
 
 #: src/models/AppListElement.py:19
 msgid "No description provided"
-msgstr ""
+msgstr "Sin descripción"
 
-#: src/providers/AppImageProvider.py:482
+#: src/providers/AppImageProvider.py:474
 msgid "Cannot load an untrusted AppImage"
-msgstr ""
+msgstr "No se puede cargar una AppImage no fiable"

@@ -5,6 +5,8 @@
   <img width="150" src="data/icons/hicolor/scalable/apps/it.mijorus.gearlever.svg">
 </p>
 
+<p align="center"><a href="https://flatstat.mijorus.it/app/it.mijorus.gearlever"  align="center"><img width="150" src="https://img.shields.io/endpoint?url=https://flathub-stats-backend.vercel.app/badges/it.mijorus.gearlever/shields.io.json"></a></p>
+
 ## Features
 - Integrate AppImages into your app menu with **just click**
 - **Drag and drop** files directly from your file manager
@@ -15,9 +17,26 @@
 - Modern and Fresh UI
 
 ## Download
-Get a [pre-Release build](https://github.com/mijorus/gearlever/releases)
+<a href="https://flathub.org/apps/details/it.mijorus.gearlever" align="center">
+  <img width="200" src="https://flathub.org/assets/badges/flathub-badge-i-en.png">
+</a>
 
-*Flathub coming soon...*
+___
+
+Get the [bundle from github](https://github.com/mijorus/gearlever/releases) (no auto-updates)
+```sh
+# From your Downloads folder
+flatpak install --bundle --user gearlever.flatpak
+```
+
+## Changelog
+[Open changelog](https://gearlever.mijorus.it/changelog)
+
+## Permissions
+
+- `--talk-name=org.freedesktop.Flatpak`: This permission is required in order to open apps and refresh the system menu when a new app is installed; if the user disables this permission manually (eg. with Flatseal), Gear lever should countinue to work normally, except you would not be able to open apps directly.
+
+  [Click here to check where and how is used](https://github.com/search?q=repo%3Amijorus%2Fgearlever%20host_sh%20host_threaded_sh&type=code)
 
 ## Preview
 <p align="center">
@@ -30,9 +49,8 @@ Get a [pre-Release build](https://github.com/mijorus/gearlever/releases)
   **Open this project with Gnome Builder and press RUN (the play icon on top)**
 
 - Option #2
-  ```
-  # Run in a terminal window
-
+  ```sh
+  # Run the app
   flatpak-builder build/ it.mijorus.gearlever.Devel.json --user --force-clean
   flatpak-builder --run build/ it.mijorus.gearlever.Devel.json gearlever
 

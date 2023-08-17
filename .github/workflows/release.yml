@@ -1,4 +1,4 @@
-name: Flatpak Build
+name: Flatpak Release
 
 on: 
   workflow_dispatch:
@@ -11,21 +11,19 @@ jobs:
       options: --privileged
 
     steps:
+      - uses: actions/checkout@v3
       - name: Generate release tag
         id: tag
         run: |
-          echo "::set-output name=release_tag::gearlever_nightly_$(date +"%Y.%m.%d_%H-%M")"
-      - uses: actions/checkout@v3
+          echo "::set-output name=release_tag::$(cat meson.build | grep "\sversion.*" | grep -oE "'([^']+)'" | sed "s/'//g")"
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6.1
         with:
-          bundle: gearlever.flatpak
+          bundle: gearlever-${{ steps.tag.outputs.release_tag }}.flatpak
           manifest-path: it.mijorus.gearlever.Devel.json
-      - name: Publish pre-release package
+      - name: Publish release package
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
-          prerelease: true
-          files: gearlever.flatpak
-
+          files: gearlever-${{ steps.tag.outputs.release_tag }}-x86_64.flatpak

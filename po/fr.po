@@ -3,32 +3,32 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-15 22:17+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2023-06-14 10:12+0200\n"
+"PO-Revision-Date: 2023-06-14 15:25+0200\n"
+"Last-Translator: Irénée Thirion <irenee.thirion@e.email>\n"
+"Language-Team: \n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.3.1\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 #: data/it.mijorus.gearlever.appdata.xml.in:4
 msgid "Gear lever"
-msgstr ""
+msgstr "Levier de vitesse"
 
 #: data/it.mijorus.gearlever.appdata.xml.in:5
 msgid "Manage AppImages"
-msgstr ""
+msgstr "Gérez vos AppImages"
 
 #: data/it.mijorus.gearlever.appdata.xml.in:10
 msgid "Lorenzo Paderi"
-msgstr ""
+msgstr "Lorenzo Paderi"
 
 #: data/it.mijorus.gearlever.appdata.xml.in:12
 msgid ""
@@ -36,133 +36,140 @@ msgid ""
 "manage AppImage files for you, generate desktop entries and app metadata, "
 "update apps in-place or keep multiple versions side-by-side."
 msgstr ""
+"Un outil pour gérer facilement vos applications AppImages ! Levier de "
+"vitesse organise et gère les fichiers AppImage pour vous, génère des entrées "
+"de bureau et des métadonnées d’application, met à jour les applications sur "
+"place ou conserve plusieurs versions parallèlement."
 
-#: data/it.mijorus.gearlever.appdata.xml.in:35
-#: data/it.mijorus.gearlever.appdata.xml.in:40
-#: data/it.mijorus.gearlever.appdata.xml.in:45
-#: data/it.mijorus.gearlever.appdata.xml.in:50
+#: data/it.mijorus.gearlever.appdata.xml.in:17
+msgid "First release on Flathub"
+msgstr "Première version sur Flathub"
+
+#: data/it.mijorus.gearlever.appdata.xml.in:23
+#: data/it.mijorus.gearlever.appdata.xml.in:28
+#: data/it.mijorus.gearlever.appdata.xml.in:33
+#: data/it.mijorus.gearlever.appdata.xml.in:38
 msgid "Application showcase"
-msgstr ""
+msgstr "Présentation de l’application"
 
 #: src/window.ui:31
 msgid "_Preferences"
-msgstr ""
+msgstr "_Préférences"
 
 #: src/window.ui:35
 msgid "_Keyboard Shortcuts"
-msgstr ""
+msgstr "_Raccourcis clavier"
 
 #: src/window.ui:39
 msgid "_About Gear lever"
-msgstr ""
+msgstr "À _propos de Levier de vitesse"
 
 #: src/main.py:93
 msgid "translator_credits"
-msgstr ""
+msgstr "Irénée Thirion <irenee.thirion@e.email>"
 
 #: src/AppDetails.py:53
 msgid "I have verified the source of this app"
-msgstr ""
+msgstr "J’ai vérifié la source de cette application"
 
 #: src/AppDetails.py:158
 msgid "Path"
-msgstr ""
+msgstr "Chemin d’accès"
 
 #: src/AppDetails.py:168
 msgid "Website"
-msgstr ""
+msgstr "Site web"
 
 #: src/AppDetails.py:168
 msgid "Add a website"
-msgstr ""
+msgstr "Ajouter un site web"
 
 #: src/AppDetails.py:174
 msgid "Open URL"
-msgstr ""
+msgstr "Ouvrir l’URL"
 
 #: src/AppDetails.py:184
 msgid "Reload metadata"
-msgstr ""
+msgstr "Recharger les métadonnées"
 
 #: src/AppDetails.py:185
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
 msgstr ""
+"Mettre à jour des informations comme l’icône, la version et la description.\n"
+"Utile si l’application se met à jour elle-même."
 
 #: src/AppDetails.py:200
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
 msgstr ""
+"Cette application se trouve en dehors du dossier par défaut\n"
+"<small>Vous pouvez masquer les applications externes dans les paramètres</"
+"small>"
 
 #: src/AppDetails.py:276
 msgid "Launching..."
-msgstr ""
+msgstr "Lancement…"
 
 #: src/AppDetails.py:306
 msgid "This app runs in the terminal"
-msgstr ""
+msgstr "Cette application s’exécute dans le terminal"
 
 #: src/AppDetails.py:310 src/AppDetails.py:327
 msgid "Launch"
-msgstr ""
+msgstr "Lancer"
 
 #: src/AppDetails.py:313 src/AppDetails.py:334
 msgid "Remove"
-msgstr ""
+msgstr "Désinstaller"
 
 #: src/AppDetails.py:317
 msgid "Uninstalling..."
-msgstr ""
+msgstr "Désinstallation…"
 
 #: src/AppDetails.py:320
 msgid "Installing..."
-msgstr ""
+msgstr "Installation…"
 
 #: src/AppDetails.py:326
 msgid "Move to the app menu"
-msgstr ""
+msgstr "Déplacer vers le menu des applications"
 
 #: src/AppDetails.py:330
 msgid "Update"
-msgstr ""
+msgstr "Mettre à jour"
 
 #: src/AppDetails.py:338
 msgid "Updating"
-msgstr ""
+msgstr "Mise à jour"
 
 #: src/AppDetails.py:341
 msgid "Error"
-msgstr ""
+msgstr "Erreur"
 
 #: src/GearleverWindow.py:35
 msgid "Open a new AppImage"
-msgstr ""
+msgstr "Ouvrir une nouvelle AppImage"
 
 #: src/GearleverWindow.py:201
 msgid "Open a file"
-msgstr ""
-
-#: src/InstalledAppsList.py:36
-msgid "Filter installed applications"
-msgstr ""
-
-#: src/InstalledAppsList.py:41
-msgid "Installed applications"
-msgstr ""
+msgstr "Ouvrir un fichier"
 
 #: src/preferences.py:22
 msgid "General"
-msgstr ""
+msgstr "Général"
 
 #: src/preferences.py:27
 msgid "AppImage default location"
-msgstr ""
+msgstr "Emplacement par défaut des AppImages"
 
 #: src/preferences.py:36
 msgid "Use executable name for integrated terminal apps"
 msgstr ""
+"Utiliser le nom de l’exécutable pour les applications intégrées dans le "
+"terminal"
 
 #: src/preferences.py:38
 msgid ""
@@ -171,44 +178,53 @@ msgid ""
 "\n"
 "For example, \"golang_x86_64.appimage\" will be saved as \"go\""
 msgstr ""
+"Si cette option est activée, les applications s’exécutant dans un terminal "
+"seront nommées comme leur exécutable. Vous devrez ajouter le dossier "
+"précédemment mentionné dans votre $CHEMIN D’ACCÈS manuellement.\n"
+"\n"
+"Par exemple, « golang_x86_64.appimage » sera enregistré comme « go »"
 
 #: src/preferences.py:42
 msgid "Show integrated AppImages outside the default folder"
-msgstr ""
+msgstr "Afficher les AppImages intégrées en dehors du dossier par défaut"
 
 #: src/preferences.py:44
 msgid ""
 "List AppImages that have been integrated into the system menu but are "
 "located outside the default folder"
 msgstr ""
+"Liste les AppImages qui ont été intégrées dans le menu système mais qui se "
+"trouvent en dehors du dossier par défaut"
 
 #: src/preferences.py:52
 msgid "File management"
-msgstr ""
+msgstr "Gestion des fichiers"
 
 #: src/preferences.py:54
 msgid "Move AppImages into the destination folder"
-msgstr ""
+msgstr "Déplacer les AppImages dans le dossier de destination"
 
 #: src/preferences.py:55
 msgid "Reduce disk usage"
-msgstr ""
+msgstr "Réduit l’utilisation de l’espace de stockage"
 
 #: src/preferences.py:59
 msgid "Clone AppImages into the destination folder"
-msgstr ""
+msgstr "Cloner les AppImages dans le dossier de destination"
 
 #: src/preferences.py:60
 msgid "Keep the original file and create a copy in the destination folder"
 msgstr ""
+"Conserve le fichier original et créer une copie dans le dossier de "
+"destination"
 
 #: src/preferences.py:85
 msgid "Debugging"
-msgstr ""
+msgstr "Débogage"
 
 #: src/preferences.py:87
 msgid "Enable debug logs"
-msgstr ""
+msgstr "Activer le journal de débogage"
 
 #: src/preferences.py:89
 msgid ""
@@ -216,140 +232,155 @@ msgid ""
 "performance.\n"
 "Requires a restart."
 msgstr ""
+"Augmente la verbosité du journal, occupant plus d’espace disque et impactant "
+"potentiellement les performances.\n"
+"Nécessite un redémarrage."
 
 #: src/preferences.py:112 src/WelcomeScreen.py:90
 msgid "The folder must be in your home directory"
-msgstr ""
+msgstr "Le dossier doit être dans votre dossier personnel"
 
 #: src/preferences.py:115 src/WelcomeScreen.py:93
 msgid "Select a folder"
-msgstr ""
+msgstr "Sélectionnez un dossier"
 
 #: src/components/AppDetailsConflictModal.py:10
 #, python-brace-format
 msgid "Conflict with \"{app_name}\""
-msgstr ""
+msgstr "Conflit avec « {app_name} »"
 
 #: src/components/AppDetailsConflictModal.py:11
 msgid "There is already an app with the same name, how do you want to proceed?"
 msgstr ""
+"Il y a déjà une application avec le même nom, comment souhaitez-vous "
+"procéder ?"
 
 #: src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: src/components/AppDetailsConflictModal.py:17
 msgid "Keep both"
-msgstr ""
+msgstr "Conserver les deux"
 
 #: src/components/AppDetailsConflictModal.py:19
 msgid "Replace"
-msgstr ""
+msgstr "Remplacer"
 
 #: src/gtk/drag-drop.ui:18
 msgid "Drop your file here"
-msgstr ""
+msgstr "Déposez votre fichier ici"
 
 #: src/gtk/empty-list-placeholder.ui:18
 msgid "Get started"
-msgstr ""
+msgstr "Commencer"
 
 #: src/gtk/empty-list-placeholder.ui:30
 msgid "Drag and drop an AppImage here or click on the \"+\" icon."
-msgstr ""
+msgstr "Glissez et déposez une AppImage ici ou cliquez sur l’icône « + »."
 
 #: src/gtk/empty-list-placeholder.ui:35
 msgid " If you don't see your apps, check if the selected folder is correct."
 msgstr ""
+"Si vous ne voyez pas vos applications, vérifiez que le dossier sélectionné "
+"est correct."
 
 #: src/gtk/empty-list-placeholder.ui:46
 msgid "Open Preferences"
-msgstr ""
+msgstr "Ouvrir les Préférences"
 
 #: src/gtk/help-overlay.ui:11
 msgctxt "shortcut window"
 msgid "General"
-msgstr ""
+msgstr "Général"
 
 #: src/gtk/help-overlay.ui:14
 msgctxt "shortcut window"
 msgid "Show Shortcuts"
-msgstr ""
+msgstr "Afficher les raccourcis"
 
 #: src/gtk/help-overlay.ui:20
 msgctxt "shortcut window"
 msgid "Quit"
-msgstr ""
+msgstr "Quitter"
 
 #: src/gtk/tutorial/1.ui:21
 msgid "Hi, welcome to Gear lever"
-msgstr ""
+msgstr "Bonjour, bienvenue dans Levier de vitesse"
 
 #: src/gtk/tutorial/1.ui:30
 msgid "An app that helps you integrating AppImages into you system."
 msgstr ""
+"Une application qui vous aide à intégrer les AppImages dans votre système."
 
 #: src/gtk/tutorial/1.ui:36
 msgid "Click \"Next\" to follow this tutorial."
-msgstr ""
+msgstr "Cliquez sur « Suivant » pour suivre ce tutoriel."
 
 #: src/gtk/tutorial/2.ui:19
 msgid "Set the AppImage location"
-msgstr ""
+msgstr "Sélectionnez l’emplacement de l’AppImage"
 
 #: src/gtk/tutorial/2.ui:28
 msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
 msgstr ""
+"Levier de vitesse regroupe toutes vos AppImages dans un dossier spécifique "
+"en les gardant organisées."
 
 #: src/gtk/tutorial/2.ui:33
+#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
-msgstr ""
+msgstr "Par défaut, les AppImages sont enregistrées dans : {location}"
 
 #: src/gtk/tutorial/2.ui:47
 msgid "Change AppImage location"
-msgstr ""
+msgstr "Changer l’emplacement des AppImages"
 
 #: src/gtk/tutorial/2.ui:59
 msgid "You can customize it later in the preferences."
-msgstr ""
+msgstr "Vous pouvez modifier cela plus tard dans les préférences."
 
 #: src/gtk/tutorial/3.ui:19
 msgid "Set Gear lever as default"
-msgstr ""
+msgstr "Définir Levier de vitesse comme application par défaut"
 
 #: src/gtk/tutorial/3.ui:28
 msgid ""
 "Click on the button to open a demo folder, containing a sample AppImage."
 msgstr ""
+"Cliquez sur le bouton pour ouvrir un dossier de démonstration, contenant un "
+"échantillon AppImage."
 
 #: src/gtk/tutorial/3.ui:33
 msgid ""
 "Use the right-click menu to set Gear lever as the default app for \"."
 "appimage\" files"
 msgstr ""
+"Utilisez le menu du clic droit pour définir Levier de vitesse comme "
+"application par défaut pour les fichiers « .appimage »"
 
 #: src/gtk/tutorial/3.ui:44
 msgid "Open demo folder"
-msgstr ""
+msgstr "Ouvrir le dossier de démonstration"
 
 #: src/gtk/tutorial/3.ui:56
 msgid "This step is optional"
-msgstr ""
+msgstr "Cette étape est facultative"
 
 #: src/gtk/tutorial/last.ui:21
 msgid "All done, let's go!"
-msgstr ""
+msgstr "Tout est prêt, allons-y !"
 
 #: src/gtk/tutorial/last.ui:35
 msgid "Close tutorial"
-msgstr ""
+msgstr "Fermer le tutoriel"
 
 #: src/models/AppListElement.py:19
 msgid "No description provided"
-msgstr ""
+msgstr "Aucune description fournie"
 
-#: src/providers/AppImageProvider.py:482
+#: src/providers/AppImageProvider.py:474
 msgid "Cannot load an untrusted AppImage"
-msgstr ""
+msgstr "Impossible de charger une AppImage non fiable"

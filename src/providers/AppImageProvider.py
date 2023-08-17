@@ -69,7 +69,7 @@ class AppImageProvider():
         self.update_messages = []
 
         self.extraction_folder = GLib.get_tmp_dir() + '/it.mijorus.gearlever/appimages'
-        self.user_desktop_files_path = f'{GLib.get_home_dir()}/.local/share/applications/'
+        self.user_desktop_files_path = f'{GLib.get_home_dir()}/.local/share/applications'
 
     def list_installed(self) -> List[AppImageListElement]:
         default_folder_path = self._get_appimages_default_destination_path()
@@ -278,6 +278,14 @@ class AppImageProvider():
                 desktop_file_content = re.sub(
                     r'^Exec=.*$',
                     f"Exec={dest_appimage_file.get_path()}",
+                    desktop_file_content,
+                    flags=re.MULTILINE
+                )
+
+                # replace try exec executable path
+                desktop_file_content = re.sub(
+                    r'^TryExec=.*$',
+                    f"TryExec={dest_appimage_file.get_path()}",
                     desktop_file_content,
                     flags=re.MULTILINE
                 )
