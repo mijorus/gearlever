@@ -145,7 +145,7 @@ class AppImageProvider():
                 if extracted.icon_file and os.path.exists(extracted.icon_file.get_path()):
                     return Gtk.Image.new_from_file(extracted.icon_file.get_path())
 
-        return Gtk.Image(icon_name='application-x-executable-symbolic')
+        return Gtk.Image(icon_name='gl-application-x-executable-symbolic')
 
     def get_description(self, el: AppImageListElement) -> str:
         if el.desktop_entry:

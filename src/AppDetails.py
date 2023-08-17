@@ -170,8 +170,8 @@ class AppDetails(Gtk.ScrolledWindow):
                 text=(app_config['website'] if 'website' in app_config else '')
             )
 
-            row_img = Gtk.Image(icon_name='earth', pixel_size=34)
-            row_btn = Gtk.Button(icon_name='arrow2-top-right-symbolic', valign=Gtk.Align.CENTER, tooltip_text=_('Open URL'),)
+            row_img = Gtk.Image(icon_name='gl-earth', pixel_size=34)
+            row_btn = Gtk.Button(icon_name='gl-arrow2-top-right-symbolic', valign=Gtk.Align.CENTER, tooltip_text=_('Open URL'),)
             row_btn.connect('clicked', self.on_web_browser_open_btn_clicked)
 
             row.connect('changed', self.on_web_browser_input_apply)
