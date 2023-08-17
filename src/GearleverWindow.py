@@ -16,16 +16,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from time import sleep
 
 from .lib.costants import APP_ID
 from .InstalledAppsList import InstalledAppsList
 from .AppDetails import AppDetails
 from .providers.providers_list import appimage_provider
 from .models.AppListElement import AppListElement
-from .State import state
 from .lib import utils
 
-from gi.repository import Gtk, Adw, Gio, Gdk, GObject
+from gi.repository import Gtk, Adw, Gio, Gdk, GLib
 
 
 class GearleverWindow(Gtk.ApplicationWindow):
@@ -172,12 +172,14 @@ class GearleverWindow(Gtk.ApplicationWindow):
         return Gdk.DragAction.COPY
     
     def on_drop_leave(self, widget):
-        self.container_stack.set_transition_type(Adw.LeafletTransitionType.UNDER)
+        if not isinstance(self.container_stack.get_visible_child() , AppDetails):
+            self.container_stack.set_transition_type(Adw.LeafletTransitionType.UNDER)
 
-        if self.visible_before_dragdrop_start:
-            self.container_stack.set_visible_child(self.visible_before_dragdrop_start)
-        else:
-            self.container_stack.set_visible_child(self.app_lists_stack)
+            if self.visible_before_dragdrop_start:
+                GLib.idle_add(lambda: self.container_stack.set_visible_child(self.visible_before_dragdrop_start))
+                
+            else:
+                GLib.idle_add(lambda: self.container_stack.set_visible_child(self.app_lists_stack))
 
         return Gdk.DragAction.COPY
     
