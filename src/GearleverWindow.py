@@ -172,14 +172,12 @@ class GearleverWindow(Gtk.ApplicationWindow):
         return Gdk.DragAction.COPY
     
     def on_drop_leave(self, widget):
-        if not isinstance(self.container_stack.get_visible_child() , AppDetails):
-            self.container_stack.set_transition_type(Adw.LeafletTransitionType.UNDER)
+        self.container_stack.set_transition_type(Adw.LeafletTransitionType.UNDER)
 
-            if self.visible_before_dragdrop_start:
-                GLib.idle_add(lambda: self.container_stack.set_visible_child(self.visible_before_dragdrop_start))
-                
-            else:
-                GLib.idle_add(lambda: self.container_stack.set_visible_child(self.app_lists_stack))
+        if self.visible_before_dragdrop_start:
+            self.container_stack.set_visible_child(self.visible_before_dragdrop_start)
+        else:
+            self.container_stack.set_visible_child(self.app_lists_stack)
 
         return Gdk.DragAction.COPY
     
