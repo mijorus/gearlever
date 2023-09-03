@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Gear lever
+Name=Gear Lever
 Exec=gearlever %U
 Icon=it.mijorus.gearlever
 Terminal=false

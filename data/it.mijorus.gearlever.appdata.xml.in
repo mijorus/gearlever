@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
     <id>it.mijorus.gearlever</id>
-    <name>Gear lever</name>
+    <name>Gear Lever</name>
     <summary>Manage AppImages</summary>
     <url type="homepage">https://gearlever.mijorus.it</url>
     <url type="donation">https://ko-fi.com/mijorus</url>
