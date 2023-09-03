@@ -70,6 +70,8 @@ class AppImageProvider():
 
         self.extraction_folder = GLib.get_tmp_dir() + '/it.mijorus.gearlever/appimages'
         self.user_desktop_files_path = f'{GLib.get_home_dir()}/.local/share/applications'
+        self.user_local_share_path = f'{GLib.get_home_dir()}/.local/share/'
+
 
     def list_installed(self) -> List[AppImageListElement]:
         default_folder_path = self._get_appimages_default_destination_path()
@@ -229,6 +231,7 @@ class AppImageProvider():
                 safe_app_name = 'gearlever_' + extracted_appimage.desktop_entry.getName()
             
             safe_app_name = re.sub(r"[^A-Za-z0-9_]+", "", safe_app_name).lower() + '_' + extracted_appimage.md5[0:6] + '.appimage'
+            app_name_without_ext = re.sub(r'(_\d+)?\.appimage', '', safe_app_name)
             
             append_file_ext = True
             if extracted_appimage.desktop_entry and get_gsettings().get_boolean('exec-as-name-for-terminal-apps') and extracted_appimage.desktop_entry.getTerminal():
@@ -240,7 +243,7 @@ class AppImageProvider():
 
             i = 1
             while safe_app_name in os.listdir(self._get_appimages_default_destination_path()):
-                safe_app_name =  re.sub(r'(_\d+)?\.appimage', '', safe_app_name) + f'_{i}' + ('.appimage' if append_file_ext else '')
+                safe_app_name =  app_name_without_ext + f'_{i}' + ('.appimage' if append_file_ext else '')
                 i += 1
 
             dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + safe_app_name)
@@ -263,11 +266,11 @@ class AppImageProvider():
                 if not os.path.exists(f'{appimages_destination_path}/.icons'):
                     os.mkdir(f'{appimages_destination_path}/.icons')
 
-                dest_appimage_icon_file = Gio.File.new_for_path(f'{appimages_destination_path}/.icons/{safe_app_name}')
+                dest_appimage_icon_file = Gio.File.new_for_path(f'{appimages_destination_path}/.icons/{app_name_without_ext}')
                 gio_copy(icon_file, dest_appimage_icon_file)
 
             # Move .desktop file to its default location
-            dest_destop_file_path = f'{self.user_desktop_files_path}/{safe_app_name}.desktop'
+            dest_destop_file_path = f'{self.user_desktop_files_path}/{app_name_without_ext}.desktop'
             dest_destop_file_path = dest_destop_file_path.replace(' ', '_')
 
             with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
@@ -327,6 +330,9 @@ class AppImageProvider():
                 )
 
                 # finally, write the new .desktop file
+                if (not os.path.exists(self.user_desktop_files_path)) and os.path.exists(self.user_local_share_path):
+                    os.mkdir(self.user_desktop_files_path)
+
                 with open(dest_destop_file_path, 'w+') as desktop_file_python_dest:
                     desktop_file_python_dest.write(desktop_file_content)
 
