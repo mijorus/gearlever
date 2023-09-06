@@ -1,0 +1,358 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-17 12:36+0200\n"
+"PO-Revision-Date: 2023-09-06 14:33+0200\n"
+"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
+"Language-Team: \n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.3.2\n"
+
+#: data/it.mijorus.gearlever.desktop.in:3
+msgid "Gear lever"
+msgstr "Versnellingspook"
+
+#: src/main.py:93
+msgid "translator_credits"
+msgstr "Heimen Stoffels <vistausss@fastmail.com>"
+
+#: src/AppDetails.py:53
+msgid "I have verified the source of this app"
+msgstr "Ik heb de bron van deze toepassing gecontroleerd"
+
+#: src/AppDetails.py:158
+msgid "Path"
+msgstr "Locatie"
+
+#: src/AppDetails.py:168
+msgid "Website"
+msgstr "Website"
+
+#: src/AppDetails.py:168
+msgid "Add a website"
+msgstr "Website toevoegen"
+
+#: src/AppDetails.py:174
+msgid "Open URL"
+msgstr "Url openen"
+
+#: src/AppDetails.py:184
+msgid "Reload metadata"
+msgstr "Metagegevens herladen"
+
+#: src/AppDetails.py:185
+msgid ""
+"Update information like icon, version and description.\n"
+"Useful if the app updated itself."
+msgstr ""
+"Werk de metagegevens bĳ, zoals pictogram, versienummer en beschrĳving.\n"
+"Dit is nuttig na het installeren van een nieuwe versie."
+
+#: src/AppDetails.py:200
+msgid ""
+"This app is located outside the default folder\n"
+"<small>You can hide external apps in the settings</small>"
+msgstr ""
+"Deze toepassing is niet geïnstalleerd in de standaardmap.\n"
+"<small>U kunt in de voorkeuren kiezen om externe toepassingen te verbergen.</"
+"small>"
+
+#: src/AppDetails.py:276
+msgid "Launching..."
+msgstr "Bezig met starten…"
+
+#: src/AppDetails.py:306
+msgid "This app runs in the terminal"
+msgstr "Deze toepassing draait in een terminalvenster"
+
+#: src/AppDetails.py:310 src/AppDetails.py:327
+msgid "Launch"
+msgstr "Starten"
+
+#: src/AppDetails.py:313 src/AppDetails.py:334
+msgid "Remove"
+msgstr "Verwijderen"
+
+#: src/AppDetails.py:317
+msgid "Uninstalling..."
+msgstr "Bezig met verwijderen…"
+
+#: src/AppDetails.py:320
+msgid "Installing..."
+msgstr "Bezig met installeren…"
+
+#: src/AppDetails.py:326
+msgid "Move to the app menu"
+msgstr "Verplaatsen naar toepassingsmenu"
+
+#: src/AppDetails.py:330
+msgid "Update"
+msgstr "Bĳwerken"
+
+#: src/AppDetails.py:338
+msgid "Updating"
+msgstr "Bezig met bĳwerken…"
+
+#: src/AppDetails.py:341
+msgid "Error"
+msgstr "Foutmelding"
+
+#: src/GearleverWindow.py:35
+msgid "Open a new AppImage"
+msgstr "AppImage openen"
+
+#: src/GearleverWindow.py:201
+msgid "Open a file"
+msgstr "Bestand openen"
+
+#: src/InstalledAppsList.py:36
+msgid "Filter installed applications"
+msgstr "Geïnstalleerde toepassingen filteren"
+
+#: src/InstalledAppsList.py:41
+msgid "Installed applications"
+msgstr "Geïnstalleerde toepassingen"
+
+#: src/preferences.py:22
+msgid "General"
+msgstr "Algemeen"
+
+#: src/preferences.py:27
+msgid "AppImage default location"
+msgstr "Standaard AppImagelocatie"
+
+#: src/preferences.py:36
+msgid "Use executable name for integrated terminal apps"
+msgstr "Naam van uitvoerbaar bestand gebruiken bĳ terminaltoepassingen"
+
+#: src/preferences.py:38
+msgid ""
+"If enabled, apps that run in the terminal are renamed as their executable.\n"
+"You would need to add the aforementioned folder to your $PATH manually.\n"
+"\n"
+"For example, \"golang_x86_64.appimage\" will be saved as \"go\""
+msgstr ""
+"Schakel in om toepassingen die in de terminal worden uitgevoerd de naam van "
+"het uitvoerbare bestand te geven.\n"
+"Hiervoor is het noodzakelĳk om de bĳbehorende map op te nemen in $PATH.\n"
+"\n"
+"Voorbeeld: ‘golang_x86_64.appimage’ wordt opgeslagen als ‘go’."
+
+#: src/preferences.py:42
+msgid "Show integrated AppImages outside the default folder"
+msgstr "AppImages uit andere mappen tonen"
+
+#: src/preferences.py:44
+msgid ""
+"List AppImages that have been integrated into the system menu but are "
+"located outside the default folder"
+msgstr ""
+"Toon AppImages die zĳn opgenomen in het systeemmenu, maar niet geïnstalleerd "
+"zĳn in de standaardmap."
+
+#: src/preferences.py:52
+msgid "File management"
+msgstr "Bestandsbeheer"
+
+#: src/preferences.py:54
+msgid "Move AppImages into the destination folder"
+msgstr "AppImages verplaatsen naar bestemming"
+
+#: src/preferences.py:55
+msgid "Reduce disk usage"
+msgstr "Beperk het schĳfgebruik"
+
+#: src/preferences.py:59
+msgid "Clone AppImages into the destination folder"
+msgstr "AppImages klonen naar bestemming"
+
+#: src/preferences.py:60
+msgid "Keep the original file and create a copy in the destination folder"
+msgstr "Bewaar het oorspronkelĳke bestand en maak een kopie op de bestemming"
+
+#: src/preferences.py:85
+msgid "Debugging"
+msgstr "Foutopsporing"
+
+#: src/preferences.py:87
+msgid "Enable debug logs"
+msgstr "Foutopsporing inschakelen"
+
+#: src/preferences.py:89
+msgid ""
+"Increases log verbosity, occupying more disk space and potentially impacting "
+"performance.\n"
+"Requires a restart."
+msgstr ""
+"Legt meer logboeken aan, wat extra schĳfruimte kost en ten koste van de "
+"prestaties kan gaan.\n"
+"Herstart vereist."
+
+#: src/preferences.py:112 src/WelcomeScreen.py:90
+msgid "The folder must be in your home directory"
+msgstr "De map dient in uw persoonlĳke map te staan"
+
+#: src/preferences.py:115 src/WelcomeScreen.py:93
+msgid "Select a folder"
+msgstr "Kies een map"
+
+#: src/gtk/main-menu.ui:6
+msgid "_Preferences"
+msgstr "_Voorkeuren"
+
+#: src/gtk/main-menu.ui:10
+msgid "_Open Log File"
+msgstr "Logboek _openen"
+
+#: src/gtk/main-menu.ui:14
+msgid "_Show tutorial"
+msgstr "In_stelhulp openen"
+
+#: src/gtk/main-menu.ui:18
+msgid "_About Gear lever"
+msgstr "Over _Versnellingspook"
+
+#: src/components/AppDetailsConflictModal.py:10
+#, python-brace-format
+msgid "Conflict with \"{app_name}\""
+msgstr "Conflict met ‘{app_name}’"
+
+#: src/components/AppDetailsConflictModal.py:11
+msgid "There is already an app with the same name, how do you want to proceed?"
+msgstr "Er is al een toepassing met deze naam. Wat wilt u doen?"
+
+#: src/components/AppDetailsConflictModal.py:14
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: src/components/AppDetailsConflictModal.py:17
+msgid "Keep both"
+msgstr "Beide behouden"
+
+#: src/components/AppDetailsConflictModal.py:19
+msgid "Replace"
+msgstr "Vervangen"
+
+#: src/gtk/drag-drop.ui:18
+msgid "Drop your file here"
+msgstr "Sleep een bestand hierheen"
+
+#: src/gtk/empty-list-placeholder.ui:18
+msgid "Get started"
+msgstr "Aan de slag"
+
+#: src/gtk/empty-list-placeholder.ui:30
+msgid "Drag and drop an AppImage here or click on the \"+\" icon."
+msgstr "Sleep een AppImage hierheen of klik op het ‘+’-pictogram."
+
+#: src/gtk/empty-list-placeholder.ui:35
+msgid " If you don't see your apps, check if the selected folder is correct."
+msgstr ""
+" Als u geen toepassingen ziet, controleer dan of u de juiste map hebt "
+"gekozen."
+
+#: src/gtk/empty-list-placeholder.ui:46
+msgid "Open Preferences"
+msgstr "Voorkeuren openen"
+
+#: src/gtk/help-overlay.ui:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "Algemeen"
+
+#: src/gtk/help-overlay.ui:14
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "Sneltoetsen tonen"
+
+#: src/gtk/help-overlay.ui:20
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "Afsluiten"
+
+#: src/gtk/tutorial/1.ui:21
+msgid "Hi, welcome to Gear lever"
+msgstr "Hallo, welkom in Versnellingspook"
+
+#: src/gtk/tutorial/1.ui:30
+msgid "An app that helps you integrating AppImages into you system."
+msgstr "Deze toepassing helpt u om AppImages te integreren in het systeem."
+
+#: src/gtk/tutorial/1.ui:36
+msgid "Click \"Next\" to follow this tutorial."
+msgstr "Klik op ‘Volgende’ om de instelhulp te starten."
+
+#: src/gtk/tutorial/2.ui:19
+msgid "Set the AppImage location"
+msgstr "AppImage-locatie instellen"
+
+#: src/gtk/tutorial/2.ui:28
+msgid ""
+"Gear lever groups all your AppImages into a specific folder and keeps them "
+"organized."
+msgstr ""
+"Versnellingspook plaatst alle AppImages in een bepaalde map en houdt ze "
+"geordend."
+
+#: src/gtk/tutorial/2.ui:33
+#, python-brace-format
+msgid "By default, AppImages are saved at: {location}"
+msgstr "Standaard worden AppImages opgeslagen in {location}"
+
+#: src/gtk/tutorial/2.ui:47
+msgid "Change AppImage location"
+msgstr "AppImage-locatie wĳzigen"
+
+#: src/gtk/tutorial/2.ui:59
+msgid "You can customize it later in the preferences."
+msgstr "U kunt dit te allen tĳde aanpassen in de voorkeuren."
+
+#: src/gtk/tutorial/3.ui:19
+msgid "Set Gear lever as default"
+msgstr "Versnellingspook instellen als standaard"
+
+#: src/gtk/tutorial/3.ui:28
+msgid ""
+"Click on the button to open a demo folder, containing a sample AppImage."
+msgstr "Klik op de knop om een voorbeeldmap met daarin een AppImage te openen."
+
+#: src/gtk/tutorial/3.ui:33
+msgid ""
+"Use the right-click menu to set Gear lever as the default app for \"."
+"appimage\" files"
+msgstr ""
+"Open het rechtermuisknopmenu om Versnellingspook in te stellen als "
+"standaardtoepassing van alle .appimage-bestanden."
+
+#: src/gtk/tutorial/3.ui:44
+msgid "Open demo folder"
+msgstr "Voorbeeldmap openen"
+
+#: src/gtk/tutorial/3.ui:56
+msgid "This step is optional"
+msgstr "Deze stap is optioneel"
+
+#: src/gtk/tutorial/last.ui:21
+msgid "All done, let's go!"
+msgstr "U kunt aan de slag!"
+
+#: src/gtk/tutorial/last.ui:35
+msgid "Close tutorial"
+msgstr "Instelhulp sluiten"
+
+#: src/models/AppListElement.py:19
+msgid "No description provided"
+msgstr "Er is geen beschrĳving beschikbaar"
+
+#: src/providers/AppImageProvider.py:481
+msgid "Cannot load an untrusted AppImage"
+msgstr "Onvertrouwde AppImages kunnen niet worden gestart"
