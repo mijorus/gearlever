@@ -10,11 +10,11 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-17 12:36+0200\n"
 "PO-Revision-Date: 2023-09-09 04:34+0200\n"
-"Last-Translator:  Racsu <racsufkoficial@gmail.com>\n"
+"Last-Translator: Racsu <racsufkoficial@gmail.com>\n"
 "Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
@@ -188,6 +188,10 @@ msgstr "Habilitar registros de depuración"
 
 #: src/preferences.py:89
 msgid ""
+"Increases log verbosity, occupying more disk space and potentially impacting "
+"performance.\n"
+"Requires a restart."
+msgstr ""
 "Aumenta la verbosidad del registro, ocupando más espacio en disco y afectando potencialmente a "
 "el rendimiento.\n"
 "Requiere un reinicio."
@@ -338,7 +342,7 @@ msgstr "Este paso es opcional"
 
 #: src/gtk/tutorial/last.ui:21
 msgid "All done, let's go!"
-msgstr Todo listo, ¡buena suerte!"
+msgstr "Todo listo, ¡buena suerte!"
 
 #: src/gtk/tutorial/last.ui:35
 msgid "Close tutorial"
