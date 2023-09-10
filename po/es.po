@@ -1,15 +1,15 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <racsufkoficial@gmail.com>, 2023.
+# Racsu <racsu.com>, 2023.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-14 16:26-300\n"
-"PO-Revision-Date: 2023-06-15 16:35-0200\n"
+"POT-Creation-Date: 2023-08-17 12:36+0200\n"
+"PO-Revision-Date: 2023-09-09 04:34+0200\n"
 "Last-Translator: Racsu <racsufkoficial@gmail.com>\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -18,50 +18,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
-#: data/it.mijorus.gearlever.appdata.xml.in:4
 msgid "Gear lever"
 msgstr "Gear lever"
 
-#: data/it.mijorus.gearlever.appdata.xml.in:5
-msgid "Manage AppImages"
-msgstr "Gestionar AppImages"
-
-#: data/it.mijorus.gearlever.appdata.xml.in:10
-msgid "Lorenzo Paderi"
-msgstr "Lorenzo Paderi"
-
-#: data/it.mijorus.gearlever.appdata.xml.in:12
-msgid ""
-"An utility to manage AppImages with ease! Gear lever will organize and "
-"manage AppImage files for you, generate desktop entries and app metadata, "
-"update apps in-place or keep multiple versions side-by-side."
-msgstr ""
-"¡Una utilidad para gestionar AppImages con facilidad! Gear lever organizará y  "
-"gestionara archivos AppImage por ti, generara accesos directos y metadatos de las apps, "
-"actualiza tus aplicaciones o manten distintas versiones al mismo tiempo."
-
-#: data/it.mijorus.gearlever.appdata.xml.in:35
-#: data/it.mijorus.gearlever.appdata.xml.in:40
-#: data/it.mijorus.gearlever.appdata.xml.in:45
-#: data/it.mijorus.gearlever.appdata.xml.in:50
-msgid "Application showcase"
-msgstr "Aplicaciones"
-
-#: src/window.ui:31
-msgid "_Preferences"
-msgstr "_Preferencias"
-
-#: src/window.ui:35
-msgid "_Keyboard Shortcuts"
-msgstr "_Atajos de teclado"
-
-#: src/window.ui:39
-msgid "_About Gear lever"
-msgstr "_Atajos de teclado"
-
 #: src/main.py:93
 msgid "translator_credits"
-msgstr "Racsu <racsufkoficial@gmail.com>"
+msgstr "Racsu <racsu.com>"
+
 #: src/AppDetails.py:53
 msgid "I have verified the source of this app"
 msgstr "He verificado la fuente de esta aplicación"
@@ -80,7 +43,7 @@ msgstr "Agregar un sitio web"
 
 #: src/AppDetails.py:174
 msgid "Open URL"
-msgstr "Abrir enlace"
+msgstr "Abrir URL"
 
 #: src/AppDetails.py:184
 msgid "Reload metadata"
@@ -92,7 +55,7 @@ msgid ""
 "Useful if the app updated itself."
 msgstr ""
 "Actualizar información como icono, versión y descripción.\n"
-"Útil si la aplicación se actualizó sola."
+"Útil si la aplicación se actualizó por si misma."
 
 #: src/AppDetails.py:200
 msgid ""
@@ -217,7 +180,7 @@ msgstr "Mantiene el archivo original y crea una copia en la otra carpeta"
 
 #: src/preferences.py:85
 msgid "Debugging"
-msgstr "Depuración"
+msgstr "Depurando"
 
 #: src/preferences.py:87
 msgid "Enable debug logs"
@@ -235,11 +198,27 @@ msgstr ""
 
 #: src/preferences.py:112 src/WelcomeScreen.py:90
 msgid "The folder must be in your home directory"
-msgstr "La carpeta debe estar en tu diretorio home"
+msgstr "La carpeta debe estar en tu directorio home"
 
 #: src/preferences.py:115 src/WelcomeScreen.py:93
 msgid "Select a folder"
 msgstr "Selecciona una carpeta"
+
+#: src/gtk/main-menu.ui:6
+msgid "_Preferences"
+msgstr "_Preferencias"
+
+#: src/gtk/main-menu.ui:10
+msgid "_Open Log File"
+msgstr "_Abrir archivo Log"
+
+#: src/gtk/main-menu.ui:14
+msgid "_Show tutorial"
+msgstr "_Mostrar tutorial"
+
+#: src/gtk/main-menu.ui:18
+msgid "_About Gear lever"
+msgstr "_Sobre Gear lever"
 
 #: src/components/AppDetailsConflictModal.py:10
 #, python-brace-format
@@ -331,14 +310,13 @@ msgstr "Por defecto, AppImages se guardan en: {location}"
 msgid "Change AppImage location"
 msgstr "Mueve la ubicación de la AppImage"
 
-
 #: src/gtk/tutorial/2.ui:59
 msgid "You can customize it later in the preferences."
 msgstr "Puedes customizarlo despues en preferencias."
 
 #: src/gtk/tutorial/3.ui:19
 msgid "Set Gear lever as default"
-msgstr "Configura Gear lever como por defecto"
+msgstr "Selecciona Gear lever por defecto"
 
 #: src/gtk/tutorial/3.ui:28
 msgid ""
@@ -373,7 +351,6 @@ msgstr "Cerrar tutorial"
 #: src/models/AppListElement.py:19
 msgid "No description provided"
 msgstr "Sin descripción"
-
-#: src/providers/AppImageProvider.py:474
+#: src/providers/AppImageProvider.py:481
 msgid "Cannot load an untrusted AppImage"
 msgstr "No se puede cargar una AppImage no fiable"
