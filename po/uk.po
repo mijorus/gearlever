@@ -1,6 +1,6 @@
-# Ukrainian translation for Gear Level.
-# Copyright (C) 2023 THE Gear Level'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the Gear Level package.
+# Ukrainian translation for Gear Lever.
+# Copyright (C) 2023 THE Gear Lever'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Gear Lever package.
 # volkov <volkovissocool@gmail.com>, 2023.
 #
 msgid ""
