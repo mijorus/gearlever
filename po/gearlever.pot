@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-17 12:36+0200\n"
+"POT-Creation-Date: 2023-10-04 15:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
-msgid "Gear lever"
+msgid "Gear Lever"
 msgstr ""
 
 #: src/main.py:93
@@ -29,75 +29,75 @@ msgstr ""
 msgid "I have verified the source of this app"
 msgstr ""
 
-#: src/AppDetails.py:158
+#: src/AppDetails.py:160
 msgid "Path"
 msgstr ""
 
-#: src/AppDetails.py:168
+#: src/AppDetails.py:170
 msgid "Website"
 msgstr ""
 
-#: src/AppDetails.py:168
+#: src/AppDetails.py:170
 msgid "Add a website"
 msgstr ""
 
-#: src/AppDetails.py:174
+#: src/AppDetails.py:176
 msgid "Open URL"
 msgstr ""
 
-#: src/AppDetails.py:184
+#: src/AppDetails.py:186
 msgid "Reload metadata"
 msgstr ""
 
-#: src/AppDetails.py:185
+#: src/AppDetails.py:187
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
 msgstr ""
 
-#: src/AppDetails.py:200
+#: src/AppDetails.py:202
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
 msgstr ""
 
-#: src/AppDetails.py:276
+#: src/AppDetails.py:279
 msgid "Launching..."
 msgstr ""
 
-#: src/AppDetails.py:306
+#: src/AppDetails.py:309
 msgid "This app runs in the terminal"
 msgstr ""
 
-#: src/AppDetails.py:310 src/AppDetails.py:327
+#: src/AppDetails.py:313 src/AppDetails.py:330
 msgid "Launch"
 msgstr ""
 
-#: src/AppDetails.py:313 src/AppDetails.py:334
+#: src/AppDetails.py:316 src/AppDetails.py:337
 msgid "Remove"
 msgstr ""
 
-#: src/AppDetails.py:317
+#: src/AppDetails.py:320
 msgid "Uninstalling..."
 msgstr ""
 
-#: src/AppDetails.py:320
+#: src/AppDetails.py:323
 msgid "Installing..."
 msgstr ""
 
-#: src/AppDetails.py:326
+#: src/AppDetails.py:329
 msgid "Move to the app menu"
 msgstr ""
 
-#: src/AppDetails.py:330
+#: src/AppDetails.py:333
 msgid "Update"
 msgstr ""
 
-#: src/AppDetails.py:338
+#: src/AppDetails.py:341
 msgid "Updating"
 msgstr ""
 
-#: src/AppDetails.py:341
+#: src/AppDetails.py:344
 msgid "Error"
 msgstr ""
 
@@ -105,7 +105,11 @@ msgstr ""
 msgid "Open a new AppImage"
 msgstr ""
 
-#: src/GearleverWindow.py:201
+#: src/GearleverWindow.py:45
+msgid "Open"
+msgstr ""
+
+#: src/GearleverWindow.py:209
 msgid "Open a file"
 msgstr ""
 
@@ -332,6 +336,6 @@ msgstr ""
 msgid "No description provided"
 msgstr ""
 
-#: src/providers/AppImageProvider.py:481
+#: src/providers/AppImageProvider.py:487
 msgid "Cannot load an untrusted AppImage"
 msgstr ""
