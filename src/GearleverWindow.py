@@ -42,7 +42,10 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         self.titlebar = Adw.HeaderBar()
         self.view_title_widget = Adw.ViewSwitcherTitle(stack=self.app_lists_stack)
-        self.left_button = Gtk.Button(icon_name='gl-plus-symbolic', tooltip_text=self.open_appimage_tooltip)
+        self.open_appimage_button_child = Adw.ButtonContent(icon_name='gl-plus-symbolic', tooltip_text=self.open_appimage_tooltip, label=_('Open'))
+        self.left_button = Gtk.Button(
+            child=self.open_appimage_button_child
+        )
 
         menu_obj = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/main-menu.ui')
         self.menu_button = Gtk.MenuButton(icon_name='open-menu', menu_model=menu_obj.get_object('primary_menu'))
@@ -153,8 +156,13 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
     def on_container_stack_change(self, widget, data):
         in_app_details = self.container_stack.get_visible_child() is self.app_details
-        self.left_button.set_icon_name('gl-left-symbolic' if in_app_details else 'gl-plus-symbolic')
-        self.left_button.set_tooltip_text(None if in_app_details else self.open_appimage_tooltip)
+
+        if in_app_details:
+            self.left_button.set_icon_name('gl-left-symbolic')
+            self.left_button.set_tooltip_text(None)
+        else:
+            self.left_button.set_child(self.open_appimage_button_child)
+
         self.view_title_widget.set_visible(not in_app_details)
 
     def on_drop_event(self, widget, value, x, y):
