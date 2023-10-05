@@ -6,4 +6,4 @@ Terminal=false
 Type=Application
 Categories=GTK; Utility;
 StartupNotify=true
-MimeType=application/vnd.flatpak.ref;application/vnd.appimage;
+MimeType=application/vnd.appimage;
