@@ -7,3 +7,4 @@ Type=Application
 Categories=GTK; Utility;
 StartupNotify=true
 MimeType=application/vnd.appimage;
+Keywords=appimage;
