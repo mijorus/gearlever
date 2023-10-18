@@ -120,7 +120,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
             if self.from_file:
                 # open the app with a minimal UI when opening a single file
-                self.set_default_size(500, 550)
+                self.set_default_size(500, 700)
                 self.left_button.set_visible(False)
                 self.menu_button.set_visible(False)
                 self.set_resizable(False)
