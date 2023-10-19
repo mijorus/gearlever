@@ -2,26 +2,67 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# Irénée THIRION <irenee.thirion@e.email>, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: unnamed project\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-04 15:35+0200\n"
-"PO-Revision-Date: 2023-10-19 22:12+0200\n"
-"Last-Translator: Irénée THIRION <irenee.thirion@e.email>\n"
-"Language-Team: French <gnomefr@traduc.org>\n"
+"POT-Creation-Date: 2023-06-14 10:12+0200\n"
+"PO-Revision-Date: 2023-06-14 15:25+0200\n"
+"Last-Translator: Irénée Thirion <irenee.thirion@e.email>\n"
+"Language-Team: \n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Gtranslator 45.2\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"X-Generator: Poedit 3.3.1\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
-msgid "Gear Lever"
+#: data/it.mijorus.gearlever.appdata.xml.in:4
+msgid "Gear lever"
 msgstr "Levier de vitesse"
+
+#: data/it.mijorus.gearlever.appdata.xml.in:5
+msgid "Manage AppImages"
+msgstr "Gérez vos AppImages"
+
+#: data/it.mijorus.gearlever.appdata.xml.in:10
+msgid "Lorenzo Paderi"
+msgstr "Lorenzo Paderi"
+
+#: data/it.mijorus.gearlever.appdata.xml.in:12
+msgid ""
+"An utility to manage AppImages with ease! Gear lever will organize and "
+"manage AppImage files for you, generate desktop entries and app metadata, "
+"update apps in-place or keep multiple versions side-by-side."
+msgstr ""
+"Un outil pour gérer facilement vos applications AppImages ! Levier de "
+"vitesse organise et gère les fichiers AppImage pour vous, génère des entrées "
+"de bureau et des métadonnées d’application, met à jour les applications sur "
+"place ou conserve plusieurs versions parallèlement."
+
+#: data/it.mijorus.gearlever.appdata.xml.in:17
+msgid "First release on Flathub"
+msgstr "Première version sur Flathub"
+
+#: data/it.mijorus.gearlever.appdata.xml.in:23
+#: data/it.mijorus.gearlever.appdata.xml.in:28
+#: data/it.mijorus.gearlever.appdata.xml.in:33
+#: data/it.mijorus.gearlever.appdata.xml.in:38
+msgid "Application showcase"
+msgstr "Présentation de l’application"
+
+#: src/window.ui:31
+msgid "_Preferences"
+msgstr "_Préférences"
+
+#: src/window.ui:35
+msgid "_Keyboard Shortcuts"
+msgstr "_Raccourcis clavier"
+
+#: src/window.ui:39
+msgid "_About Gear lever"
+msgstr "À _propos de Levier de vitesse"
 
 #: src/main.py:93
 msgid "translator_credits"
@@ -31,27 +72,27 @@ msgstr "Irénée Thirion <irenee.thirion@e.email>"
 msgid "I have verified the source of this app"
 msgstr "J’ai vérifié la source de cette application"
 
-#: src/AppDetails.py:160
+#: src/AppDetails.py:158
 msgid "Path"
 msgstr "Chemin d’accès"
 
-#: src/AppDetails.py:170
+#: src/AppDetails.py:168
 msgid "Website"
 msgstr "Site web"
 
-#: src/AppDetails.py:170
+#: src/AppDetails.py:168
 msgid "Add a website"
 msgstr "Ajouter un site web"
 
-#: src/AppDetails.py:176
+#: src/AppDetails.py:174
 msgid "Open URL"
 msgstr "Ouvrir l’URL"
 
-#: src/AppDetails.py:186
+#: src/AppDetails.py:184
 msgid "Reload metadata"
 msgstr "Recharger les métadonnées"
 
-#: src/AppDetails.py:187
+#: src/AppDetails.py:185
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -59,7 +100,7 @@ msgstr ""
 "Mettre à jour des informations comme l’icône, la version et la description.\n"
 "Utile si l’application se met à jour elle-même."
 
-#: src/AppDetails.py:202
+#: src/AppDetails.py:200
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -68,43 +109,43 @@ msgstr ""
 "<small>Vous pouvez masquer les applications externes dans les paramètres</"
 "small>"
 
-#: src/AppDetails.py:279
+#: src/AppDetails.py:276
 msgid "Launching..."
 msgstr "Lancement…"
 
-#: src/AppDetails.py:309
+#: src/AppDetails.py:306
 msgid "This app runs in the terminal"
 msgstr "Cette application s’exécute dans le terminal"
 
-#: src/AppDetails.py:313 src/AppDetails.py:330
+#: src/AppDetails.py:310 src/AppDetails.py:327
 msgid "Launch"
 msgstr "Lancer"
 
-#: src/AppDetails.py:316 src/AppDetails.py:337
+#: src/AppDetails.py:313 src/AppDetails.py:334
 msgid "Remove"
 msgstr "Désinstaller"
 
-#: src/AppDetails.py:320
+#: src/AppDetails.py:317
 msgid "Uninstalling..."
 msgstr "Désinstallation…"
 
-#: src/AppDetails.py:323
+#: src/AppDetails.py:320
 msgid "Installing..."
 msgstr "Installation…"
 
-#: src/AppDetails.py:329
+#: src/AppDetails.py:326
 msgid "Move to the app menu"
 msgstr "Déplacer vers le menu des applications"
 
-#: src/AppDetails.py:333
+#: src/AppDetails.py:330
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: src/AppDetails.py:341
+#: src/AppDetails.py:338
 msgid "Updating"
 msgstr "Mise à jour"
 
-#: src/AppDetails.py:344
+#: src/AppDetails.py:341
 msgid "Error"
 msgstr "Erreur"
 
@@ -112,21 +153,9 @@ msgstr "Erreur"
 msgid "Open a new AppImage"
 msgstr "Ouvrir une nouvelle AppImage"
 
-#: src/GearleverWindow.py:45
-msgid "Open"
-msgstr "Ouvrir"
-
-#: src/GearleverWindow.py:209
+#: src/GearleverWindow.py:201
 msgid "Open a file"
 msgstr "Ouvrir un fichier"
-
-#: src/InstalledAppsList.py:36
-msgid "Filter installed applications"
-msgstr "Filtrer les applications installées"
-
-#: src/InstalledAppsList.py:41
-msgid "Installed applications"
-msgstr "Applications installées"
 
 #: src/preferences.py:22
 msgid "General"
@@ -214,22 +243,6 @@ msgstr "Le dossier doit être dans votre dossier personnel"
 #: src/preferences.py:115 src/WelcomeScreen.py:93
 msgid "Select a folder"
 msgstr "Sélectionnez un dossier"
-
-#: src/gtk/main-menu.ui:6
-msgid "_Preferences"
-msgstr "_Préférences"
-
-#: src/gtk/main-menu.ui:10
-msgid "_Open Log File"
-msgstr "_Ouvrir le journal"
-
-#: src/gtk/main-menu.ui:14
-msgid "_Show tutorial"
-msgstr "_Afficher le tutoriel"
-
-#: src/gtk/main-menu.ui:18
-msgid "_About Gear lever"
-msgstr "À _propos de Levier de vitesse"
 
 #: src/components/AppDetailsConflictModal.py:10
 #, python-brace-format
@@ -368,31 +381,6 @@ msgstr "Fermer le tutoriel"
 msgid "No description provided"
 msgstr "Aucune description fournie"
 
-#: src/providers/AppImageProvider.py:487
+#: src/providers/AppImageProvider.py:474
 msgid "Cannot load an untrusted AppImage"
 msgstr "Impossible de charger une AppImage non fiable"
-
-#~ msgid "Manage AppImages"
-#~ msgstr "Gérez vos AppImages"
-
-#~ msgid "Lorenzo Paderi"
-#~ msgstr "Lorenzo Paderi"
-
-#~ msgid ""
-#~ "An utility to manage AppImages with ease! Gear lever will organize and "
-#~ "manage AppImage files for you, generate desktop entries and app metadata, "
-#~ "update apps in-place or keep multiple versions side-by-side."
-#~ msgstr ""
-#~ "Un outil pour gérer facilement vos applications AppImages ! Levier de "
-#~ "vitesse organise et gère les fichiers AppImage pour vous, génère des "
-#~ "entrées de bureau et des métadonnées d’application, met à jour les "
-#~ "applications sur place ou conserve plusieurs versions parallèlement."
-
-#~ msgid "First release on Flathub"
-#~ msgstr "Première version sur Flathub"
-
-#~ msgid "Application showcase"
-#~ msgstr "Présentation de l’application"
-
-#~ msgid "_Keyboard Shortcuts"
-#~ msgstr "_Raccourcis clavier"
