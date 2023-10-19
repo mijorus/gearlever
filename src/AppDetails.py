@@ -1,6 +1,7 @@
 import time
 import logging
 import base64
+import os
 from typing import Optional, Callable
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
 
@@ -158,8 +159,11 @@ class AppDetails(Gtk.ScrolledWindow):
 
         # The path of the executable
         row = Adw.ActionRow(title=_('Path'), subtitle=self.app_list_element.file_path, subtitle_selectable=True, selectable=False)
-        row_img = Gtk.Image(icon_name='gearlever-terminal-symbolic', pixel_size=34)
+        row_img = Gtk.Image(icon_name='gearlever-file-manager-symbolic', pixel_size=34)
+        row_btn = Gtk.Button(icon_name='gl-arrow2-top-right-symbolic', valign=Gtk.Align.CENTER, tooltip_text=_('Open Folder'))
+        row_btn.connect('clicked', self.on_open_folder_clicked)
         row.add_prefix(row_img)
+        row.add_suffix(row_btn)
         gtk_list.append(row)
 
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
@@ -423,3 +427,8 @@ class AppDetails(Gtk.ScrolledWindow):
         self.provider.refresh_title(self.app_list_element)
 
         self.complete_load(icon)
+
+    def on_open_folder_clicked(self, widget):
+        path = Gio.File.new_for_path(os.path.dirname(self.app_list_element.file_path))
+        launcher = Gtk.FileLauncher.new(path)
+        launcher.launch()
