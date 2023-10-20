@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-04 15:35+0200\n"
-"PO-Revision-Date: 2023-10-19 14:15+0200\n"
+"PO-Revision-Date: 2023-10-21 00:22+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pl_PL\n"
@@ -28,6 +28,10 @@ msgstr "zasługi_tłumacza"
 #: src/AppDetails.py:53
 msgid "I have verified the source of this app"
 msgstr "Zweryfikowałem źródło tej aplikacji"
+
+#: src/AppDetails.py:152
+msgid "Package type"
+msgstr "Typ pakietu"
 
 #: src/AppDetails.py:160
 msgid "Path"
@@ -144,7 +148,8 @@ msgid ""
 "\n"
 "For example, \"golang_x86_64.appimage\" will be saved as \"go\""
 msgstr ""
-"Jeśli jest włączone, aplikacje działające w terminalu są przemianowane na swoje pliki wykonywalne.\n"
+"Jeśli jest włączone, aplikacje działające w terminalu są przemianowane na "
+"swoje pliki wykonywalne.\n"
 "Musiałbyś ręcznie dodać wspomniany folder do swojego $PATH.\n"
 "\n"
 "Na przykład, \"golang_x86_64.appimage\" zostanie zapisane jako \"go\""
@@ -155,11 +160,11 @@ msgstr "Pokaż zintegrowane AppImages poza domyślnym folderem"
 
 #: src/preferences.py:44
 msgid ""
-"List AppImages that have been integrated into the system menu but are located outside the default "
-"folder"
+"List AppImages that have been integrated into the system menu but are "
+"located outside the default folder"
 msgstr ""
-"Wyświetl AppImages, które zostały zintegrowane z menu systemowym, ale są położone poza domyślnym "
-"folderem"
+"Wyświetl AppImages, które zostały zintegrowane z menu systemowym, ale są "
+"położone poza domyślnym folderem"
 
 #: src/preferences.py:52
 msgid "File management"
@@ -191,10 +196,12 @@ msgstr "Włącz logi debugowania"
 
 #: src/preferences.py:89
 msgid ""
-"Increases log verbosity, occupying more disk space and potentially impacting performance.\n"
+"Increases log verbosity, occupying more disk space and potentially impacting "
+"performance.\n"
 "Requires a restart."
 msgstr ""
-"Zwiększa szczegółowość logów, zajmując więcej miejsca na dysku i potencjalnie wpływając na wydajność.\n"
+"Zwiększa szczegółowość logów, zajmując więcej miejsca na dysku i "
+"potencjalnie wpływając na wydajność.\n"
 "Wymaga ponownego uruchomienia."
 
 #: src/preferences.py:112 src/WelcomeScreen.py:90
@@ -219,7 +226,7 @@ msgstr "_Pokaż samouczek"
 
 #: src/gtk/main-menu.ui:18
 msgid "_About Gear lever"
-msgstr "_O Dźwigni zmiany biegów"
+msgstr "_O Przerzutce"
 
 #: src/components/AppDetailsConflictModal.py:10
 #, python-brace-format
@@ -256,7 +263,9 @@ msgstr "Przeciągnij i upuść tutaj AppImage lub kliknij na ikonę \"+\"."
 
 #: src/gtk/empty-list-placeholder.ui:35
 msgid " If you don't see your apps, check if the selected folder is correct."
-msgstr " Jeśli nie widzisz swoich aplikacji, sprawdź, czy wybrany folder jest poprawny."
+msgstr ""
+" Jeśli nie widzisz swoich aplikacji, sprawdź, czy wybrany folder jest "
+"poprawny."
 
 #: src/gtk/empty-list-placeholder.ui:46
 msgid "Open Preferences"
@@ -279,7 +288,7 @@ msgstr "Zakończ"
 
 #: src/gtk/tutorial/1.ui:21
 msgid "Hi, welcome to Gear lever"
-msgstr "Cześć, witaj w Dźwigni zmiany biegów"
+msgstr "Cześć, witaj w Przerzutce"
 
 #: src/gtk/tutorial/1.ui:30
 msgid "An app that helps you integrating AppImages into you system."
@@ -294,10 +303,12 @@ msgid "Set the AppImage location"
 msgstr "Ustaw lokalizację AppImage"
 
 #: src/gtk/tutorial/2.ui:28
-msgid "Gear lever groups all your AppImages into a specific folder and keeps them organized."
+msgid ""
+"Gear lever groups all your AppImages into a specific folder and keeps them "
+"organized."
 msgstr ""
-"Dźwignia zmiany biegów grupuje wszystkie Twoje AppImages w określonym folderze i utrzymuje je "
-"zorganizowane."
+"Przerzutka grupuje wszystkie Twoje AppImages w określonym "
+"folderze i utrzymuje je zorganizowane."
 
 #: src/gtk/tutorial/2.ui:33
 #, python-brace-format
@@ -314,17 +325,21 @@ msgstr "Możesz dostosować to później w preferencjach."
 
 #: src/gtk/tutorial/3.ui:19
 msgid "Set Gear lever as default"
-msgstr "Ustaw Dźwignię zmiany biegów jako domyślną"
+msgstr "Ustaw Przerzutkę jako domyślną"
 
 #: src/gtk/tutorial/3.ui:28
-msgid "Click on the button to open a demo folder, containing a sample AppImage."
-msgstr "Kliknij przycisk, aby otworzyć folder demo, zawierający przykładowy AppImage."
+msgid ""
+"Click on the button to open a demo folder, containing a sample AppImage."
+msgstr ""
+"Kliknij przycisk, aby otworzyć folder demo, zawierający przykładowy AppImage."
 
 #: src/gtk/tutorial/3.ui:33
-msgid "Use the right-click menu to set Gear lever as the default app for \".appimage\" files"
+msgid ""
+"Use the right-click menu to set Gear lever as the default app for \"."
+"appimage\" files"
 msgstr ""
-"Użyj menu prawego kliknięcia, aby ustawić Dźwignię zmiany biegów jako domyślną aplikację dla plików \"."
-"appimage\""
+"Użyj menu prawego kliknięcia, aby ustawić Przerzutkę jako "
+"domyślną aplikację dla plików \".appimage\""
 
 #: src/gtk/tutorial/3.ui:44
 msgid "Open demo folder"
