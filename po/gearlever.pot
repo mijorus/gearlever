@@ -29,6 +29,11 @@ msgstr ""
 msgid "I have verified the source of this app"
 msgstr ""
 
+#: src/AppDetails.py:152
+msgid "Package type"
+msgstr ""
+
+
 #: src/AppDetails.py:160
 msgid "Path"
 msgstr ""
