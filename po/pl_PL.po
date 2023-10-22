@@ -17,13 +17,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4\n"
 
-#: data/it.mijorus.gearlever.desktop.in:3
+#: data/it.mijorus.gearlever.desktop.in:2
 msgid "Gear Lever"
 msgstr "Przerzutka"
 
+#: data/it.mijorus.gearlever.desktop.in:3
+msgid "An utility to manage AppImages with ease!"
+msgstr "Narzędzie do zarządzania AppImages bez wysiłku!"
+
 #: src/main.py:93
 msgid "translator_credits"
-msgstr "zasługi_tłumacza"
+msgstr "Kacper Paczos <kacper-paczos@linux.pl>"
 
 #: src/AppDetails.py:53
 msgid "I have verified the source of this app"
