@@ -1,10 +1,11 @@
 [Desktop Entry]
 Name=Gear Lever
+Comment=An utility to manage AppImages with ease!
 Exec=gearlever %U
 Icon=it.mijorus.gearlever
 Terminal=false
 Type=Application
-Categories=GTK; Utility;
+Categories=GTK;Utility;
 StartupNotify=true
 MimeType=application/vnd.appimage;
-Keywords=appimage;
+Keywords=AppImage;
