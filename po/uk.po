@@ -7,53 +7,65 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-17 12:36+0200\n"
-"PO-Revision-Date: 2023-09-22 17:51+0300\n"
+"POT-Creation-Date: 2023-10-25 14:53+0200\n"
+"PO-Revision-Date: 2023-10-25 16:32+0300\n"
 "Last-Translator: volkov <volkovissocool@gmail.com>\n"
 "Language-Team: \n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.3.1\n"
-
-#: data/it.mijorus.gearlever.desktop.in:2
-msgid "Gear lever"
-msgstr "Gear lever"
+"X-Generator: Poedit 3.4\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
+msgid "Gear Lever"
+msgstr "Gear Lever"
+
+#: data/it.mijorus.gearlever.desktop.in:4
 msgid "An utility to manage AppImages with ease!"
-msgstr ""
+msgstr "Інструмент для легкого керування додатками AppImage!"
+
+#: data/it.mijorus.gearlever.desktop.in:12
+msgid "AppImage;"
+msgstr "AppImage;аппімадже;додаток;застосунок;програма;"
 
 #: src/main.py:93
 msgid "translator_credits"
 msgstr "volkov <volkovissocool@gmail.com>"
 
-#: src/AppDetails.py:53
-msgid "I have verified the source of this app"
-msgstr "Я перевірив джерело цього додатку"
+#: src/AppDetails.py:142
+msgid "Package type"
+msgstr "Тип пакунку"
 
-#: src/AppDetails.py:158
+#: src/AppDetails.py:151
 msgid "Path"
 msgstr "Шлях"
 
-#: src/AppDetails.py:168
+#: src/AppDetails.py:153
+msgid "Open Folder"
+msgstr "Відкрити теку"
+
+#: src/AppDetails.py:165
+msgid "Hash"
+msgstr "Хеш-сума"
+
+#: src/AppDetails.py:178
 msgid "Website"
 msgstr "Веб-сайт"
 
-#: src/AppDetails.py:168
+#: src/AppDetails.py:178
 msgid "Add a website"
 msgstr "Додати веб-сайт"
 
-#: src/AppDetails.py:174
+#: src/AppDetails.py:184
 msgid "Open URL"
 msgstr "Відкрити URL-посилання"
 
-#: src/AppDetails.py:184
+#: src/AppDetails.py:194
 msgid "Reload metadata"
 msgstr "Перезавантажити метадані"
 
-#: src/AppDetails.py:185
+#: src/AppDetails.py:195
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -61,7 +73,7 @@ msgstr ""
 "Оновити інформацію, таку як: піктограму, версію і опис.\n"
 "Корисно, якщо додаток оновився самостійно."
 
-#: src/AppDetails.py:200
+#: src/AppDetails.py:211
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -69,43 +81,51 @@ msgstr ""
 "Цей додаток знаходиться за межами стандартної теки\n"
 "<small>Ви можете сховати додатки за межами теки у налаштуваннях</small>"
 
-#: src/AppDetails.py:276
+#: src/AppDetails.py:214
+msgid "Please, verify the source of this app before opening it"
+msgstr "Будь ласка, перевірте джерело цього додатку перш ніж відкривати його"
+
+#: src/AppDetails.py:215
+msgid "Unlock"
+msgstr "Розблокувати"
+
+#: src/AppDetails.py:296
 msgid "Launching..."
 msgstr "Запускаємо..."
 
-#: src/AppDetails.py:306
+#: src/AppDetails.py:326
 msgid "This app runs in the terminal"
 msgstr "Цей додаток запущено у терміналі"
 
-#: src/AppDetails.py:310 src/AppDetails.py:327
+#: src/AppDetails.py:330 src/AppDetails.py:347
 msgid "Launch"
 msgstr "Запустити"
 
-#: src/AppDetails.py:313 src/AppDetails.py:334
+#: src/AppDetails.py:333 src/AppDetails.py:354
 msgid "Remove"
 msgstr "Видалити"
 
-#: src/AppDetails.py:317
+#: src/AppDetails.py:337
 msgid "Uninstalling..."
 msgstr "Видаляємо..."
 
-#: src/AppDetails.py:320
+#: src/AppDetails.py:340
 msgid "Installing..."
 msgstr "Встановлюємо..."
 
-#: src/AppDetails.py:326
+#: src/AppDetails.py:346
 msgid "Move to the app menu"
 msgstr "Пересунути у меню додатків"
 
-#: src/AppDetails.py:330
+#: src/AppDetails.py:350
 msgid "Update"
 msgstr "Оновити"
 
-#: src/AppDetails.py:338
+#: src/AppDetails.py:358
 msgid "Updating"
 msgstr "Оновлюємо"
 
-#: src/AppDetails.py:341
+#: src/AppDetails.py:361
 msgid "Error"
 msgstr "Помилка"
 
@@ -113,7 +133,11 @@ msgstr "Помилка"
 msgid "Open a new AppImage"
 msgstr "Відкрити новий AppImage"
 
-#: src/GearleverWindow.py:201
+#: src/GearleverWindow.py:45
+msgid "Open"
+msgstr "Відкрити"
+
+#: src/GearleverWindow.py:209
 msgid "Open a file"
 msgstr "Відкрити файл"
 
@@ -309,7 +333,6 @@ msgstr ""
 "їх там."
 
 #: src/gtk/tutorial/2.ui:33
-#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
 msgstr "За замовченням, AppImage зберігаються у: {location}"
 
@@ -360,6 +383,6 @@ msgstr "Закрити інструкції"
 msgid "No description provided"
 msgstr "Опис не надано"
 
-#: src/providers/AppImageProvider.py:481
+#: src/providers/AppImageProvider.py:487
 msgid "Cannot load an untrusted AppImage"
 msgstr "Неможливо завантажити ненадійний AppImage"
