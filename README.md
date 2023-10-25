@@ -1,4 +1,4 @@
-# Gear lever
+# Gear Lever
 
 
 <p align="center">
