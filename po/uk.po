@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-25 14:53+0200\n"
-"PO-Revision-Date: 2023-10-25 16:32+0300\n"
+"PO-Revision-Date: 2023-10-25 16:47+0300\n"
 "Last-Translator: volkov <volkovissocool@gmail.com>\n"
 "Language-Team: \n"
 "Language: uk\n"
@@ -27,7 +27,7 @@ msgstr "Інструмент для легкого керування додат
 
 #: data/it.mijorus.gearlever.desktop.in:12
 msgid "AppImage;"
-msgstr "AppImage;аппімадже;додаток;застосунок;програма;"
+msgstr "AppImage;аппімадже;додаток;застосунок;програма;встановити;видалити;"
 
 #: src/main.py:93
 msgid "translator_credits"
@@ -286,7 +286,7 @@ msgstr "Перетягніть AppImage додаток сюди або нати�
 #: src/gtk/empty-list-placeholder.ui:35
 msgid " If you don't see your apps, check if the selected folder is correct."
 msgstr ""
-" Якщо ви не бачите ващі додатки, перевірте, чи правильну теку ви обрали."
+" Якщо ви не бачите ваші додатки, перевірте, чи правильну теку ви обрали."
 
 #: src/gtk/empty-list-placeholder.ui:46
 msgid "Open Preferences"
@@ -352,16 +352,15 @@ msgstr "Встановити Gear lever за замовченням"
 msgid ""
 "Click on the button to open a demo folder, containing a sample AppImage."
 msgstr ""
-"Натисніть на кнопку, щоб відчинити теку з демонстраційним AppImage додатком."
+"Натисніть на кнопку, щоб відкрити теку з демонстраційним AppImage додатком."
 
 #: src/gtk/tutorial/3.ui:33
 msgid ""
 "Use the right-click menu to set Gear lever as the default app for \"."
 "appimage\" files"
 msgstr ""
-"Натиснувши правою кнопкою миші по файлу, в відкритому контекстному меню "
-"оберіть опцію, щоб зробити Gear lever стандартним додатком для відкривання "
-"\".appimage\" файлів"
+"Натисніть праву кнопку миші по ньому і у меню оберіть пункт, щоб зробити "
+"Gear Lever стандартним додатком для відкривання \".appimage\" файлів"
 
 #: src/gtk/tutorial/3.ui:44
 msgid "Open demo folder"
