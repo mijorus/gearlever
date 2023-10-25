@@ -149,7 +149,7 @@ class AppDetails(Gtk.ScrolledWindow):
         # Package info
         row = Adw.ActionRow(
             subtitle=f'{self.provider.name.capitalize()} Type. {self.app_list_element.generation}', 
-            title='Package type',
+            title=_('Package type'),
             selectable=False
         )
 
