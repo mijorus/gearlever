@@ -50,12 +50,6 @@ class AppDetails(Gtk.ScrolledWindow):
         self.source_selector = Gtk.ComboBoxText()
         self.source_selector_revealer = Gtk.Revealer(child=self.source_selector, transition_type=Gtk.RevealerTransitionType.CROSSFADE)
 
-        # Trust app check button
-        self.trust_app_check_button = Gtk.CheckButton(label=_('I have verified the source of this app'))
-        self.trust_app_check_button.connect('toggled', self.after_trust_buttons_interaction)
-
-        self.trust_app_check_button_revealer = Gtk.Revealer(child=self.trust_app_check_button)
-
         # Action buttons
         self.primary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, css_classes=self.common_btn_css_classes)
         self.secondary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, visible=False, css_classes=self.common_btn_css_classes)
@@ -64,7 +58,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.primary_action_button.connect('clicked', self.on_primary_action_button_clicked)
         self.secondary_action_button.connect('clicked', self.on_secondary_action_button_clicked)
 
-        [action_buttons_row.append(el) for el in [self.trust_app_check_button_revealer, self.secondary_action_button, self.primary_action_button]]
+        [action_buttons_row.append(el) for el in [self.secondary_action_button, self.primary_action_button]]
         [self.details_row.append(el) for el in [self.icon_slot, title_col, action_buttons_row]]
 
         # preview row
@@ -93,8 +87,6 @@ class AppDetails(Gtk.ScrolledWindow):
         # Window top banner
         self.window_banner = Adw.Banner(use_markup=True)
 
-        self.set_trust_button(trusted=True)
-
         container_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         [container_box.append(el) for el in [self.window_banner, clamp]]
     
@@ -104,9 +96,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_list_element = el
         self.provider = appimage_provider
 
-        self.load(load_completed_callback=lambda: (
-            self.set_trust_button(trusted=(el.installed_status is InstalledStatus.INSTALLED))
-        ))
+        self.load()
 
     def set_from_local_file(self, file: Gio.File):
         if appimage_provider.can_install_file(file):
@@ -203,7 +193,16 @@ class AppDetails(Gtk.ScrolledWindow):
             # Show or hide window banner
             self.window_banner.set_revealed(self.app_list_element.external_folder)
             if self.app_list_element.external_folder:
+                self.window_banner.set_button_label(None)
                 self.window_banner.set_title(_('This app is located outside the default folder\n<small>You can hide external apps in the settings</small>'))
+        else:
+            self.window_banner.set_revealed(not self.app_list_element.trusted)
+            self.window_banner.set_title(_('Please, verify the source of this app before opening it'))
+            self.window_banner.set_button_label(_('Unlock'))
+            self.window_banner.connect('button-clicked', self.after_trust_buttons_interaction)
+
+            self.secondary_action_button.set_sensitive(self.app_list_element.trusted)
+            self.primary_action_button.set_sensitive(self.app_list_element.trusted)
 
         self.extra_data.append(gtk_list)
 
@@ -218,7 +217,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.show_row_spinner(True)
         icon = Gtk.Image(icon_name='application-x-executable-symbolic')
 
-        if self.trust_app_check_button.get_active():
+        if self.app_list_element.trusted:
             icon = self.provider.get_icon(self.app_list_element)
 
             if self.app_list_element.installed_status is not InstalledStatus.INSTALLED:
@@ -261,7 +260,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
             self.app_list_element.set_installed_status(InstalledStatus.INSTALLING)
 
-            if self.trust_app_check_button.get_active():
+            if self.app_list_element.trusted:
                 self.update_installation_status()
 
                 if self.app_list_element.update_logic and (self.app_list_element.update_logic is AppImageUpdateLogic.REPLACE):
@@ -275,7 +274,7 @@ class AppDetails(Gtk.ScrolledWindow):
     def on_secondary_action_button_clicked(self, button: Gtk.Button):
         if self.app_list_element.installed_status in [InstalledStatus.INSTALLED, InstalledStatus.NOT_INSTALLED]:
             is_terminal = self.app_list_element.desktop_entry and self.app_list_element.desktop_entry.getTerminal()
-            if self.trust_app_check_button.get_active() and (not is_terminal):
+            if self.app_list_element.trusted and (not is_terminal):
                 try:
                     self.app_list_element.set_trusted()
                     
@@ -359,30 +358,16 @@ class AppDetails(Gtk.ScrolledWindow):
         self.desc_row_spinner.set_visible(status)
         self.desc_row_spinner.set_spinning(status)
 
-    def set_trust_button(self, trusted=False):
-        if trusted:
-            app_is_terminal = self.app_list_element and self.app_list_element.desktop_entry and self.app_list_element.desktop_entry.getTerminal()
+    def after_trust_buttons_interaction(self, widget: Adw.Banner):
+        if not self.app_list_element:
+            return
+        
+        self.app_list_element.trusted = True
+        widget.set_revealed(False)
 
-            self.trust_app_check_button_revealer.set_reveal_child(False)
-            self.trust_app_check_button.set_active(True)
-            self.secondary_action_button.set_sensitive(not app_is_terminal)
-            self.primary_action_button.set_sensitive(True)
-        else:
-            self.trust_app_check_button_revealer.set_reveal_child(True)
-            self.trust_app_check_button.set_active(False)
-            self.secondary_action_button.set_sensitive(False)
-            self.primary_action_button.set_sensitive(False)
-
-    def after_trust_buttons_interaction(self, widget):
-        if self.app_list_element and self.trust_app_check_button.get_active():
-            self.app_list_element.trusted = True
-
-            self.trust_app_check_button_revealer.set_reveal_child(False)
-            self.title.set_label('...')
-            self.load(load_completed_callback=lambda: [
-                self.secondary_action_button.set_sensitive(True),
-                self.primary_action_button.set_sensitive(True)
-            ])
+        self.title.set_label('...')
+        self.load()
+            
 
     @debounce(0.5)
     def on_web_browser_input_apply(self, widget):
