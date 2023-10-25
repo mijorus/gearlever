@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-04 15:35+0200\n"
+"POT-Creation-Date: 2023-10-25 14:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,96 +17,111 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: data/it.mijorus.gearlever.desktop.in:2
+#: data/it.mijorus.gearlever.desktop.in:3
 msgid "Gear Lever"
 msgstr ""
 
-#: data/it.mijorus.gearlever.desktop.in:3
+#: data/it.mijorus.gearlever.desktop.in:4
 msgid "An utility to manage AppImages with ease!"
+msgstr ""
+
+#: data/it.mijorus.gearlever.desktop.in:12
+msgid "AppImage;"
 msgstr ""
 
 #: src/main.py:93
 msgid "translator_credits"
 msgstr ""
 
-#: src/AppDetails.py:53
-msgid "I have verified the source of this app"
-msgstr ""
-
-#: src/AppDetails.py:152
+#: src/AppDetails.py:142
 msgid "Package type"
 msgstr ""
 
-
-#: src/AppDetails.py:160
+#: src/AppDetails.py:151
 msgid "Path"
 msgstr ""
 
-#: src/AppDetails.py:170
+#: src/AppDetails.py:153
+msgid "Open Folder"
+msgstr ""
+
+#: src/AppDetails.py:165
+msgid "Hash"
+msgstr ""
+
+#: src/AppDetails.py:178
 msgid "Website"
 msgstr ""
 
-#: src/AppDetails.py:170
+#: src/AppDetails.py:178
 msgid "Add a website"
 msgstr ""
 
-#: src/AppDetails.py:176
+#: src/AppDetails.py:184
 msgid "Open URL"
 msgstr ""
 
-#: src/AppDetails.py:186
+#: src/AppDetails.py:194
 msgid "Reload metadata"
 msgstr ""
 
-#: src/AppDetails.py:187
+#: src/AppDetails.py:195
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
 msgstr ""
 
-#: src/AppDetails.py:202
+#: src/AppDetails.py:211
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
 msgstr ""
 
-#: src/AppDetails.py:279
+#: src/AppDetails.py:214
+msgid "Please, verify the source of this app before opening it"
+msgstr ""
+
+#: src/AppDetails.py:215
+msgid "Unlock"
+msgstr ""
+
+#: src/AppDetails.py:296
 msgid "Launching..."
 msgstr ""
 
-#: src/AppDetails.py:309
+#: src/AppDetails.py:326
 msgid "This app runs in the terminal"
 msgstr ""
 
-#: src/AppDetails.py:313 src/AppDetails.py:330
+#: src/AppDetails.py:330 src/AppDetails.py:347
 msgid "Launch"
 msgstr ""
 
-#: src/AppDetails.py:316 src/AppDetails.py:337
+#: src/AppDetails.py:333 src/AppDetails.py:354
 msgid "Remove"
 msgstr ""
 
-#: src/AppDetails.py:320
+#: src/AppDetails.py:337
 msgid "Uninstalling..."
 msgstr ""
 
-#: src/AppDetails.py:323
+#: src/AppDetails.py:340
 msgid "Installing..."
 msgstr ""
 
-#: src/AppDetails.py:329
+#: src/AppDetails.py:346
 msgid "Move to the app menu"
 msgstr ""
 
-#: src/AppDetails.py:333
+#: src/AppDetails.py:350
 msgid "Update"
 msgstr ""
 
-#: src/AppDetails.py:341
+#: src/AppDetails.py:358
 msgid "Updating"
 msgstr ""
 
-#: src/AppDetails.py:344
+#: src/AppDetails.py:361
 msgid "Error"
 msgstr ""
 
@@ -298,7 +313,6 @@ msgid ""
 msgstr ""
 
 #: src/gtk/tutorial/2.ui:33
-#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
 msgstr ""
 
