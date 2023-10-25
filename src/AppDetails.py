@@ -157,7 +157,7 @@ class AppDetails(Gtk.ScrolledWindow):
         gtk_list.append(row)
 
         # Hashes
-        if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
+        if self.app_list_element.installed_status is not InstalledStatus.INSTALLED:
             md5_hash = get_file_hash(Gio.File.new_for_path(self.app_list_element.file_path))
             sha1_hash = get_file_hash(Gio.File.new_for_path(self.app_list_element.file_path), 'sha1')
             row = Adw.ActionRow(
