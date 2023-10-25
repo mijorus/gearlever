@@ -11,7 +11,7 @@ from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
 from .lib.json_config import read_json_config, set_json_config
-from .lib.utils import url_is_valid
+from .lib.utils import url_is_valid, get_file_hash
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
 
@@ -155,6 +155,20 @@ class AppDetails(Gtk.ScrolledWindow):
         row.add_prefix(row_img)
         row.add_suffix(row_btn)
         gtk_list.append(row)
+
+        # Hashes
+        if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
+            md5_hash = get_file_hash(Gio.File.new_for_path(self.app_list_element.file_path))
+            sha1_hash = get_file_hash(Gio.File.new_for_path(self.app_list_element.file_path), 'sha1')
+            row = Adw.ActionRow(
+                subtitle=f'md5: {md5_hash}\nsha1: {sha1_hash}', 
+                title=_('Hash'),
+                selectable=True
+            )
+
+            row_img = Gtk.Image(icon_name='hash-symbolic', pixel_size=34)
+            row.add_prefix(row_img)
+            gtk_list.append(row)
 
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
             # A custom link to a website

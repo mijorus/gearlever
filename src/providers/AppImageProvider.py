@@ -394,7 +394,7 @@ class AppImageProvider():
         el = AppImageListElement(
             name=re.sub('\.appimage$', '', app_name, 1, re.IGNORECASE),
             description='',
-            version='md5: ' + get_file_hash(file),
+            version='',
             provider=self.name,
             installed_status=InstalledStatus.NOT_INSTALLED,
             file_path=file.get_path(),
