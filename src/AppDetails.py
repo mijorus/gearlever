@@ -54,7 +54,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.primary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, css_classes=self.common_btn_css_classes)
         self.secondary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, visible=False, css_classes=self.common_btn_css_classes)
 
-        action_buttons_row = CenteringBox(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        action_buttons_row = CenteringBox(orientation=Gtk.Orientation.VERTICAL, spacing=10, width_request=200)
         self.primary_action_button.connect('clicked', self.on_primary_action_button_clicked)
         self.secondary_action_button.connect('clicked', self.on_secondary_action_button_clicked)
 
