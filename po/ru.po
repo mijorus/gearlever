@@ -7,53 +7,67 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-17 12:36+0200\n"
-"PO-Revision-Date: 2023-08-17 21:55+0300\n"
+"POT-Creation-Date: 2023-10-25 14:53+0200\n"
+"PO-Revision-Date: 2023-10-26 00:11+0300\n"
 "Last-Translator: Сергей Ворон <voron@duck.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.3.2\n"
-
-#: data/it.mijorus.gearlever.desktop.in:2
-msgid "Gear lever"
-msgstr "Gear lever"
+"X-Generator: Poedit 3.4\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
+#, fuzzy
+#| msgid "Gear lever"
+msgid "Gear Lever"
+msgstr "Gear lever"
+
+#: data/it.mijorus.gearlever.desktop.in:4
 msgid "An utility to manage AppImages with ease!"
-msgstr ""
+msgstr "Утилита для простого управления приложениями AppImage!"
+
+#: data/it.mijorus.gearlever.desktop.in:12
+msgid "AppImage;"
+msgstr "AppImage;"
 
 #: src/main.py:93
 msgid "translator_credits"
 msgstr "Сергей Ворон <voron@duck.com>"
 
-#: src/AppDetails.py:53
-msgid "I have verified the source of this app"
-msgstr "Я проверил источник этого приложения"
+#: src/AppDetails.py:142
+msgid "Package type"
+msgstr "Тип пакета"
 
-#: src/AppDetails.py:158
+#: src/AppDetails.py:151
 msgid "Path"
 msgstr "Путь"
 
-#: src/AppDetails.py:168
+#: src/AppDetails.py:153
+msgid "Open Folder"
+msgstr "Открыть папку"
+
+#: src/AppDetails.py:165
+msgid "Hash"
+msgstr "Хэш"
+
+#: src/AppDetails.py:178
 msgid "Website"
 msgstr "Веб-сайт"
 
-#: src/AppDetails.py:168
+#: src/AppDetails.py:178
 msgid "Add a website"
 msgstr "Добавить веб-сайт"
 
-#: src/AppDetails.py:174
+#: src/AppDetails.py:184
 msgid "Open URL"
 msgstr "Открыть URL-адрес"
 
-#: src/AppDetails.py:184
+#: src/AppDetails.py:194
 msgid "Reload metadata"
 msgstr "Обновить метаданные"
 
-#: src/AppDetails.py:185
+#: src/AppDetails.py:195
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -61,7 +75,7 @@ msgstr ""
 "Обновление информации, такой как значок, версия и описание.\n"
 "Полезно, если приложение обновлялось само."
 
-#: src/AppDetails.py:200
+#: src/AppDetails.py:211
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -69,43 +83,52 @@ msgstr ""
 "Это приложение находится вне папки по умолчанию.\n"
 "<small>Вы можете скрыть внешние приложения в настройках</small>"
 
-#: src/AppDetails.py:276
+#: src/AppDetails.py:214
+msgid "Please, verify the source of this app before opening it"
+msgstr ""
+"Пожалуйста, проверьте источник этого приложения, прежде чем открывать его"
+
+#: src/AppDetails.py:215
+msgid "Unlock"
+msgstr "Разблокировать"
+
+#: src/AppDetails.py:296
 msgid "Launching..."
 msgstr "Запуск..."
 
-#: src/AppDetails.py:306
+#: src/AppDetails.py:326
 msgid "This app runs in the terminal"
 msgstr "Это приложение запускается в терминале"
 
-#: src/AppDetails.py:310 src/AppDetails.py:327
+#: src/AppDetails.py:330 src/AppDetails.py:347
 msgid "Launch"
 msgstr "Запустить"
 
-#: src/AppDetails.py:313 src/AppDetails.py:334
+#: src/AppDetails.py:333 src/AppDetails.py:354
 msgid "Remove"
 msgstr "Удалить"
 
-#: src/AppDetails.py:317
+#: src/AppDetails.py:337
 msgid "Uninstalling..."
 msgstr "Удаление..."
 
-#: src/AppDetails.py:320
+#: src/AppDetails.py:340
 msgid "Installing..."
 msgstr "Установка..."
 
-#: src/AppDetails.py:326
+#: src/AppDetails.py:346
 msgid "Move to the app menu"
 msgstr "Добавить в меню приложений"
 
-#: src/AppDetails.py:330
+#: src/AppDetails.py:350
 msgid "Update"
 msgstr "Обновить"
 
-#: src/AppDetails.py:338
+#: src/AppDetails.py:358
 msgid "Updating"
 msgstr "Обновление"
 
-#: src/AppDetails.py:341
+#: src/AppDetails.py:361
 msgid "Error"
 msgstr "Ошибка"
 
@@ -113,7 +136,11 @@ msgstr "Ошибка"
 msgid "Open a new AppImage"
 msgstr "Открыть новый AppImage"
 
-#: src/GearleverWindow.py:201
+#: src/GearleverWindow.py:45
+msgid "Open"
+msgstr "Открыть"
+
+#: src/GearleverWindow.py:209
 msgid "Open a file"
 msgstr "Открыть файл"
 
@@ -309,7 +336,6 @@ msgstr ""
 "их."
 
 #: src/gtk/tutorial/2.ui:33
-#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
 msgstr "По умолчанию AppImage сохраняются по адресу: {location}"
 
@@ -359,12 +385,9 @@ msgstr "Закрыть руководство"
 msgid "No description provided"
 msgstr "Описание не предоставлено"
 
-#: src/providers/AppImageProvider.py:481
+#: src/providers/AppImageProvider.py:487
 msgid "Cannot load an untrusted AppImage"
 msgstr "Не удается загрузить ненадежный AppImage"
-
-#~ msgid "Manage AppImages"
-#~ msgstr "Управление приложениями AppImage"
 
 #~ msgid "Lorenzo Paderi"
 #~ msgstr "Lorenzo Paderi"
