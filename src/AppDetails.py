@@ -52,7 +52,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         # Action buttons
         self.primary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, css_classes=self.common_btn_css_classes)
-        self.secondary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, visible=False, css_classes=self.common_btn_css_classes)
+        self.secondary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, css_classes=self.common_btn_css_classes)
 
         action_buttons_row = CenteringBox(orientation=Gtk.Orientation.VERTICAL, spacing=10, width_request=200)
         self.primary_action_button.connect('clicked', self.on_primary_action_button_clicked)
@@ -170,6 +170,9 @@ class AppDetails(Gtk.ScrolledWindow):
             row.add_prefix(row_img)
             gtk_list.append(row)
 
+        
+        self.update_installation_status()
+
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
             # A custom link to a website
             app_config = self.get_config_for_app()
@@ -215,12 +218,11 @@ class AppDetails(Gtk.ScrolledWindow):
             self.window_banner.set_button_label(_('Unlock'))
             self.window_banner.connect('button-clicked', self.after_trust_buttons_interaction)
 
-            self.secondary_action_button.set_sensitive(self.app_list_element.trusted)
-            self.primary_action_button.set_sensitive(self.app_list_element.trusted)
+            if not self.app_list_element.trusted:
+                self.secondary_action_button.set_sensitive(False)
+                self.primary_action_button.set_sensitive(False)
 
         self.extra_data.append(gtk_list)
-
-        self.update_installation_status()
         self.show_row_spinner(False)
 
         if load_completed_callback:
@@ -316,46 +318,52 @@ class AppDetails(Gtk.ScrolledWindow):
 
     def update_installation_status(self):
         self.primary_action_button.set_css_classes(self.common_btn_css_classes)
-        self.secondary_action_button.set_visible(False)
         self.secondary_action_button.set_css_classes(self.common_btn_css_classes)
-        self.secondary_action_button.set_sensitive(True)
         self.source_selector.set_visible(False)
+
+        self.primary_action_button.set_sensitive(True)
+        self.secondary_action_button.set_sensitive(True)
 
         if self.app_list_element.installed_status == InstalledStatus.INSTALLED:
             if self.app_list_element.desktop_entry and self.app_list_element.desktop_entry.getTerminal():
                 self.secondary_action_button.set_label(_('This app runs in the terminal'))
-                self.secondary_action_button.set_visible(True)
-                self.secondary_action_button.set_sensitive(False)
             else:
                 self.secondary_action_button.set_label(_('Launch'))
-                self.secondary_action_button.set_visible(True)
 
             self.primary_action_button.set_label(_('Remove'))
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
 
         elif self.app_list_element.installed_status == InstalledStatus.UNINSTALLING:
             self.primary_action_button.set_label(_('Uninstalling...'))
+            self.primary_action_button.set_sensitive(False)
 
         elif self.app_list_element.installed_status == InstalledStatus.INSTALLING:
             self.primary_action_button.set_label(_('Installing...'))
+            self.primary_action_button.set_sensitive(False)
 
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
-            self.secondary_action_button.set_visible(True)
-            self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'suggested-action'])
+            if not self.app_list_element.desktop_entry:
+                self.secondary_action_button.set_label(_('Launch'))
+            else:
+                if self.app_list_element.desktop_entry.getTerminal():
+                    self.secondary_action_button.set_label(_('This app runs in the terminal'))
+                    self.secondary_action_button.set_sensitive(False)
+                else:
+                    self.secondary_action_button.set_label(_('Launch'))
 
             self.primary_action_button.set_label(_('Move to the app menu'))
-            self.secondary_action_button.set_label(_('Launch'))
+            self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'suggested-action'])
 
         elif self.app_list_element.installed_status == InstalledStatus.UPDATE_AVAILABLE:
             self.secondary_action_button.set_label(_('Update'))
             self.secondary_action_button.set_css_classes([*self.common_btn_css_classes, 'suggested-action'])
-            self.secondary_action_button.set_visible(True)
 
             self.primary_action_button.set_label(_('Remove'))
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
 
         elif self.app_list_element.installed_status == InstalledStatus.UPDATING:
             self.primary_action_button.set_label(_('Updating'))
+            self.primary_action_button.set_sensitive(False)
 
         elif self.app_list_element.installed_status == InstalledStatus.ERROR:
             self.primary_action_button.set_label(_('Error'))
