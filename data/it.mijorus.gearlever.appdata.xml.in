@@ -13,7 +13,12 @@
         <p>An utility to manage AppImages with ease! Gear lever will organize and manage AppImage files for you, generate desktop entries and app metadata, update apps in-place or keep multiple versions side-by-side.</p>
     </description>
     <releases>
-        <release type="stable" version="1.0.135" date="2023-10-25:00:00Z">
+        <release type="stable" version="1.0.16" date="2023-10-28:00:00Z">
+            <description>
+                <p>- Bug fix</p>
+            </description>
+        </release>
+        <release type="stable" version="1.0.15" date="2023-10-25:00:00Z">
             <description>
                 <p>- Minor UI updates</p>
             </description>
