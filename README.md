@@ -15,7 +15,7 @@
 
 
 ## Features
-- Integrate AppImages into your app menu with **just click**
+- Integrate AppImages into your app menu with **just one click**
 - **Drag and drop** files directly from your file manager
 - Keep all the AppImages organized in a custom folder
 - Open new AppImages directly with Gear lever
