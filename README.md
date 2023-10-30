@@ -20,7 +20,7 @@
 - Keep all the AppImages organized in a custom folder
 - Open new AppImages directly with Gear lever
 - **Manage updates**: keep older versions installed or replace them with the latest release
-- Save CLI apps directly with their executable name
+- Save CLI apps with their executable name automatically
 - Modern and Fresh UI
 
 ## Download
