@@ -175,9 +175,6 @@ class AppImageProvider():
 
         el.set_installed_status(InstalledStatus.NOT_INSTALLED)
 
-    def install(self, el: AppListElement):
-        pass
-
     def search(self, query: str) -> List[AppListElement]:
         return []
 
@@ -186,15 +183,6 @@ class AppImageProvider():
 
     def list_updatables(self) -> List[AppUpdateElement]:
         return []
-
-    def update(self, el: AppListElement):
-        pass
-
-    def update_all(self, callback: Callable[[bool, str, bool], None]):
-        pass
-
-    def updates_need_refresh(self) -> bool:
-        return False
 
     def run(self, el: AppImageListElement):
         if el.trusted:
