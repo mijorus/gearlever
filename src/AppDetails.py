@@ -279,8 +279,13 @@ class AppDetails(Gtk.ScrolledWindow):
             if self.app_list_element.trusted:
                 self.update_installation_status()
 
-                if self.app_list_element.update_logic and (self.app_list_element.update_logic is AppImageUpdateLogic.REPLACE):
-                    old_version = next(filter(lambda old_v: (old_v.name == self.app_list_element.name), self.provider.list_installed()), None)
+                if self.app_list_element.update_logic and (self.app_list_element.update_logic == AppImageUpdateLogic.REPLACE):
+                    old_version = next(
+                        filter(lambda old_v: (old_v.name == self.app_list_element.name), self.provider.list_installed()), 
+                        None
+                    )
+
+                    self.app_list_element.updating_from = old_version
                     self.provider.uninstall(old_version)
 
                 self.install_file(self.app_list_element)

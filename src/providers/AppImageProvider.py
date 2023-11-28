@@ -42,6 +42,7 @@ class AppImageListElement():
     trusted: bool = False
     desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
     update_logic: Optional[AppImageUpdateLogic] = None
+    updating_from: Optional[any] = None
     version: Optional[str] = None
     extracted: Optional[ExtractedAppImage] = None
     local_file: Optional[Gio.File] = None
@@ -72,8 +73,7 @@ class AppImageProvider():
         self.user_desktop_files_path = f'{GLib.get_home_dir()}/.local/share/applications'
         self.user_local_share_path = f'{GLib.get_home_dir()}/.local/share/'
 
-
-    def list_installed(self) -> List[AppImageListElement]:
+    def list_installed(self) -> list[AppImageListElement]:
         default_folder_path = self._get_appimages_default_destination_path()
         manage_from_outside = get_gsettings().get_boolean('manage-files-outside-default-folder')
         output = []
@@ -175,7 +175,7 @@ class AppImageProvider():
 
         el.set_installed_status(InstalledStatus.NOT_INSTALLED)
 
-    def search(self, query: str) -> List[AppListElement]:
+    def search(self, query: str) -> list[AppListElement]:
         return []
 
     def get_long_description(self, el: AppListElement) -> str:
@@ -214,27 +214,34 @@ class AppImageProvider():
                 os.mkdir(f'{appimages_destination_path}')
 
             # how the appimage will be called
-            safe_app_name = f'gearlever_{dest_file_info.get_name()}'
-            if extracted_appimage.desktop_entry:
-                safe_app_name = 'gearlever_' + extracted_appimage.desktop_entry.getName()
-            
-            safe_app_name = re.sub(r"[^A-Za-z0-9_]+", "", safe_app_name).lower() + '_' + extracted_appimage.md5[0:6] + '.appimage'
-            app_name_without_ext = re.sub(r'(_\d+)?\.appimage', '', safe_app_name)
-            
-            append_file_ext = True
-            if extracted_appimage.desktop_entry and get_gsettings().get_boolean('exec-as-name-for-terminal-apps') and extracted_appimage.desktop_entry.getTerminal():
-                safe_app_name = extracted_appimage.desktop_entry.getExec()
-                append_file_ext = False
+            safe_app_name = ''
+            app_name_without_ext = ''
+            if el.update_logic == AppImageUpdateLogic.REPLACE:
+                safe_app_name = os.path.basename(el.updating_from.file_path)
+                app_name_without_ext = re.sub(r'(_\d+)?\.appimage', '', safe_app_name)
+            else:
+                safe_app_name = f'gearlever_{dest_file_info.get_name()}'
+                if extracted_appimage.desktop_entry:
+                    safe_app_name = 'gearlever_' + extracted_appimage.desktop_entry.getName()
+                
+                safe_app_name = re.sub(r"[^A-Za-z0-9_]+", "", safe_app_name).lower() + '_' + extracted_appimage.md5[0:6] + '.appimage'
+                app_name_without_ext = re.sub(r'(_\d+)?\.appimage', '', safe_app_name)
+                
+                append_file_ext = True
+                if extracted_appimage.desktop_entry and get_gsettings().get_boolean('exec-as-name-for-terminal-apps') and extracted_appimage.desktop_entry.getTerminal():
+                    safe_app_name = extracted_appimage.desktop_entry.getExec()
+                    append_file_ext = False
 
-            # if there is already an app with the same name, 
-            # we try not to overwrite
+                # if there is already an app with the same name, 
+                # we try not to overwrite
 
-            i = 1
-            while safe_app_name in os.listdir(self._get_appimages_default_destination_path()):
-                safe_app_name =  app_name_without_ext + f'_{i}' + ('.appimage' if append_file_ext else '')
-                i += 1
+                i = 1
+                while safe_app_name in os.listdir(self._get_appimages_default_destination_path()):
+                    safe_app_name =  app_name_without_ext + f'_{i}' + ('.appimage' if append_file_ext else '')
+                    i += 1
 
             dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + safe_app_name)
+            print(safe_app_name)
 
             if not gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
                 raise InternalError('Error while moving appimage file to the destination folder')
@@ -346,6 +353,8 @@ class AppImageProvider():
 
         update_dkt_db = terminal.host_sh(['update-desktop-database', self.user_desktop_files_path, '-v'], return_stderr=True)
         logging.debug(update_dkt_db)
+
+        el.updating_from = None
 
     def reload_metadata(self, el: AppImageListElement):
         if not (el.installed_status is InstalledStatus.INSTALLED):
