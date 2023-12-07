@@ -27,4 +27,8 @@ configure_file(
   install_dir: get_option('bindir')
 )
 
+<<<<<<< HEAD
 install_subdir('.', install_dir: moduledir, exclude_files: ['gearlever.in'])
+=======
+install_subdir('.', install_dir: moduledir, exclude_files: ['gearlever.in'])
+>>>>>>> 283f3395de5f3d19469bf0d91b29fd4bc582f759
