@@ -3,6 +3,7 @@ import re
 import os
 import shutil
 import filecmp
+import shlex
 from xdg import DesktopEntry
 import subprocess
 import random
@@ -241,7 +242,6 @@ class AppImageProvider():
                     i += 1
 
             dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + safe_app_name)
-            print(safe_app_name)
 
             if not gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
                 raise InternalError('Error while moving appimage file to the destination folder')
@@ -265,16 +265,18 @@ class AppImageProvider():
                 gio_copy(icon_file, dest_appimage_icon_file)
 
             # Move .desktop file to its default location
-            dest_destop_file_path = f'{self.user_desktop_files_path}/{app_name_without_ext}.desktop'
-            dest_destop_file_path = dest_destop_file_path.replace(' ', '_')
+            dest_desktop_file_path = f'{self.user_desktop_files_path}/{app_name_without_ext}.desktop'
+            dest_desktop_file_path = dest_desktop_file_path.replace(' ', '_')
+            exec_arguments = shlex.split(extracted_appimage.desktop_entry.getExec())[1:]
 
             with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
                 desktop_file_content = dskt_file.read()
+                exec_command = dest_appimage_file.get_path() + exec_arguments.join(' ')
 
                 # replace executable path
                 desktop_file_content = re.sub(
                     r'^Exec=.*$',
-                    f"Exec={dest_appimage_file.get_path()}",
+                    f"Exec={exec_command}",
                     desktop_file_content,
                     flags=re.MULTILINE
                 )
@@ -282,7 +284,7 @@ class AppImageProvider():
                 # replace try exec executable path
                 desktop_file_content = re.sub(
                     r'^TryExec=.*$',
-                    f"TryExec={dest_appimage_file.get_path()}",
+                    f"TryExec={exec_command}",
                     desktop_file_content,
                     flags=re.MULTILINE
                 )
@@ -328,11 +330,11 @@ class AppImageProvider():
                 if (not os.path.exists(self.user_desktop_files_path)) and os.path.exists(self.user_local_share_path):
                     os.mkdir(self.user_desktop_files_path)
 
-                with open(dest_destop_file_path, 'w+') as desktop_file_python_dest:
+                with open(dest_desktop_file_path, 'w+') as desktop_file_python_dest:
                     desktop_file_python_dest.write(desktop_file_content)
 
-            if os.path.exists(dest_destop_file_path):
-                el.desktop_entry = DesktopEntry.DesktopEntry(filename=dest_destop_file_path)
+            if os.path.exists(dest_desktop_file_path):
+                el.desktop_entry = DesktopEntry.DesktopEntry(filename=dest_desktop_file_path)
                 el.installed_status = InstalledStatus.INSTALLED
 
         except Exception as e:
