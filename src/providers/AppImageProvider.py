@@ -9,15 +9,15 @@ import subprocess
 import random
 import signal
 
+import dataclasses
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async
 from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash
 from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalError
-from typing import List, Callable, Union, Dict, Optional, List, TypedDict
-from gi.repository import GLib, Gtk, Gdk, GdkPixbuf, Gio, GObject, Pango, Adw
+from typing import Optional, List, TypedDict
+from gi.repository import GLib, Gtk, Gdk, Gio
 from enum import Enum
-from dataclasses import dataclass
 
 
 class ExtractedAppImage():
@@ -32,7 +32,7 @@ class AppImageUpdateLogic(Enum):
     REPLACE = 'REPLACE'
     KEEP = 'KEEP'
 
-@dataclass
+@dataclasses.dataclass
 class AppImageListElement():
     name: str 
     description: str
@@ -41,6 +41,7 @@ class AppImageListElement():
     file_path: str
     generation: int
     trusted: bool = False
+    exec_arguments: List[str] = dataclasses.field(default_factory=lambda: [])
     desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
     update_logic: Optional[AppImageUpdateLogic] = None
     updating_from: Optional[any] = None
@@ -49,6 +50,7 @@ class AppImageListElement():
     local_file: Optional[Gio.File] = None
     size: Optional[float] = None
     external_folder: bool = False
+    desktop_file_path: Optional[str] = None
 
     def set_installed_status(self, installed_status: InstalledStatus):
         self.installed_status = installed_status
@@ -88,24 +90,28 @@ class AppImageProvider():
             try:
                 if os.path.isfile(gfile.get_path()) and get_giofile_content_type(gfile) == 'application/x-desktop':
                     entry = DesktopEntry.DesktopEntry(filename=gfile.get_path())
+                    exec_tokens = shlex.split(entry.getExec())
+                    exec_location = exec_tokens[0]
 
-                    if os.path.isfile(entry.getExec()):
-                        exec_gfile = Gio.File.new_for_path(entry.getExec())
+                    if os.path.isfile(exec_location):
+                        exec_gfile = Gio.File.new_for_path(exec_location)
                         exec_in_defalut_folder = os.path.isfile(f'{default_folder_path}/{exec_gfile.get_basename()}')
                         exec_in_folder = True if manage_from_outside else exec_in_defalut_folder
 
                         if exec_in_folder and self.can_install_file(exec_gfile):
                             list_element = AppImageListElement(
                                 name=entry.getName(),
+                                desktop_file_path=gfile.get_path(),
                                 description=entry.getComment(),
                                 version=entry.get('X-AppImage-Version'),
                                 installed_status=InstalledStatus.INSTALLED,
-                                file_path=entry.getExec(),
+                                file_path=exec_location,
                                 provider=self.name,
                                 desktop_entry=entry,
                                 trusted=True,
                                 generation=self.get_appimage_generation(exec_gfile),
-                                external_folder=(not exec_in_defalut_folder)
+                                external_folder=(not exec_in_defalut_folder),
+                                exec_arguments=exec_tokens[1:]
                             )
 
                             output.append(list_element)
@@ -267,11 +273,14 @@ class AppImageProvider():
             # Move .desktop file to its default location
             dest_desktop_file_path = f'{self.user_desktop_files_path}/{app_name_without_ext}.desktop'
             dest_desktop_file_path = dest_desktop_file_path.replace(' ', '_')
+
+            # Get default exec arguments
             exec_arguments = shlex.split(extracted_appimage.desktop_entry.getExec())[1:]
+            el.exec_arguments = exec_arguments
 
             with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
                 desktop_file_content = dskt_file.read()
-                exec_command = dest_appimage_file.get_path() + exec_arguments.join(' ')
+                exec_command = shlex.join([dest_appimage_file.get_path(), *exec_arguments])
 
                 # replace executable path
                 desktop_file_content = re.sub(
@@ -413,6 +422,39 @@ class AppImageProvider():
         logging.debug(f'Clearing {self.extraction_folder}')
         if os.path.exists(self.extraction_folder):
             shutil.rmtree(self.extraction_folder)
+
+    def update_exec_arguments(self, el:AppImageListElement, arg_string: str):
+        arg_string = arg_string.replace("\n", "")
+
+        if not el.desktop_file_path:
+            raise Exception('desktop_file_path not specified')
+    
+        desktop_file_content = ''
+        entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
+        with open(el.desktop_file_path, 'r') as desktop_file:
+            desktop_file_content = desktop_file.read()
+            exec_command = shlex.split(entry.getExec())[0]
+
+            exec_command += f' {arg_string}'
+
+            # replace executable path
+            desktop_file_content = re.sub(
+                r'^Exec=.*$',
+                f"Exec={exec_command}",
+                desktop_file_content,
+                flags=re.MULTILINE
+            )
+
+            # replace try exec executable path
+            desktop_file_content = re.sub(
+                r'^TryExec=.*$',
+                f"TryExec={exec_command}",
+                desktop_file_content,
+                flags=re.MULTILINE
+            )
+
+        with open(el.desktop_file_path, 'w') as desktop_file:
+            desktop_file.write(desktop_file_content)            
 
 
     def _extract_appimage(self, el: AppImageListElement) -> str:

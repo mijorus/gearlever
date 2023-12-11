@@ -24,6 +24,8 @@ class AppDetails(Gtk.ScrolledWindow):
 
     def __init__(self):
         super().__init__()
+        self.ACTION_ROW_ICON_SIZE = 34
+
         self.app_list_element: AppImageListElement = None
         self.common_btn_css_classes = ['pill', 'text-button']
 
@@ -143,13 +145,13 @@ class AppDetails(Gtk.ScrolledWindow):
             selectable=False
         )
 
-        row_img = Gtk.Image(resource=self.provider.icon, pixel_size=34)
+        row_img = Gtk.Image(resource=self.provider.icon, pixel_size=self.ACTION_ROW_ICON_SIZE)
         row.add_prefix(row_img)
         gtk_list.append(row)
 
         # The path of the executable
         row = Adw.ActionRow(title=_('Path'), subtitle=self.app_list_element.file_path, subtitle_selectable=True, selectable=False)
-        row_img = Gtk.Image(icon_name='gearlever-file-manager-symbolic', pixel_size=34)
+        row_img = Gtk.Image(icon_name='gearlever-file-manager-symbolic', pixel_size=self.ACTION_ROW_ICON_SIZE)
         row_btn = Gtk.Button(icon_name='gl-arrow2-top-right-symbolic', valign=Gtk.Align.CENTER, tooltip_text=_('Open Folder'))
         row_btn.connect('clicked', self.on_open_folder_clicked)
         row.add_prefix(row_img)
@@ -166,7 +168,7 @@ class AppDetails(Gtk.ScrolledWindow):
                 selectable=True
             )
 
-            row_img = Gtk.Image(icon_name='hash-symbolic', pixel_size=34)
+            row_img = Gtk.Image(icon_name='hash-symbolic', pixel_size=self.ACTION_ROW_ICON_SIZE)
             row.add_prefix(row_img)
             gtk_list.append(row)
 
@@ -174,6 +176,18 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_installation_status()
 
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
+            # Exec arguments
+            row = Adw.EntryRow(
+                title=(_('Command line arguments')),
+                selectable=False,
+                text=' '.join(self.app_list_element.exec_arguments)
+            )
+
+            row_img = Gtk.Image(icon_name='cmd-args', pixel_size=self.ACTION_ROW_ICON_SIZE)
+            row.connect('changed', self.on_cmd_arguments_changed)
+            row.add_prefix(row_img)
+            gtk_list.append(row)
+
             # A custom link to a website
             app_config = self.get_config_for_app()
             
@@ -183,7 +197,7 @@ class AppDetails(Gtk.ScrolledWindow):
                 text=(app_config['website'] if 'website' in app_config else '')
             )
 
-            row_img = Gtk.Image(icon_name='gl-earth', pixel_size=34)
+            row_img = Gtk.Image(icon_name='gl-earth', pixel_size=self.ACTION_ROW_ICON_SIZE)
             row_btn = Gtk.Button(icon_name='gl-arrow2-top-right-symbolic', valign=Gtk.Align.CENTER, tooltip_text=_('Open URL'),)
             row_btn.connect('clicked', self.on_web_browser_open_btn_clicked)
 
@@ -198,7 +212,7 @@ class AppDetails(Gtk.ScrolledWindow):
                 subtitle=_('Update information like icon, version and description.\nUseful if the app updated itself.')
             )
 
-            row_img = Gtk.Image(icon_name='refresh', pixel_size=34)
+            row_img = Gtk.Image(icon_name='refresh', pixel_size=self.ACTION_ROW_ICON_SIZE)
 
             reload_data_listbox = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
             reload_data_listbox.append(row)
@@ -249,6 +263,9 @@ class AppDetails(Gtk.ScrolledWindow):
             logging.error(str(e))
 
         self.update_installation_status()
+        self.complete_load(
+            self.provider.get_icon(self.app_list_element)
+        )
 
     def on_conflict_modal_close(self, widget, data: str):
         if data == 'cancel':
@@ -395,7 +412,6 @@ class AppDetails(Gtk.ScrolledWindow):
         self.title.set_label('...')
         self.load()
             
-
     @debounce(0.5)
     def on_web_browser_input_apply(self, widget):
         conf = read_json_config('apps')
@@ -410,6 +426,12 @@ class AppDetails(Gtk.ScrolledWindow):
         app_conf['website'] = text
         conf[app_conf['b64name']] = app_conf
         set_json_config('apps', conf)
+
+    @debounce(0.5)
+    def on_cmd_arguments_changed(self, widget):
+        text = widget.get_text().strip()
+
+        self.provider.update_exec_arguments(self.app_list_element, text)
 
     # Returns the configuration from the json for this specific app
     def get_config_for_app(self) -> dict:
