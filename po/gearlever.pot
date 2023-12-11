@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-25 14:53+0200\n"
+"POT-Creation-Date: 2023-12-11 16:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,95 +33,99 @@ msgstr ""
 msgid "translator_credits"
 msgstr ""
 
-#: src/AppDetails.py:142
+#: src/AppDetails.py:144
 msgid "Package type"
 msgstr ""
 
-#: src/AppDetails.py:151
+#: src/AppDetails.py:153
 msgid "Path"
 msgstr ""
 
-#: src/AppDetails.py:153
+#: src/AppDetails.py:155
 msgid "Open Folder"
 msgstr ""
 
-#: src/AppDetails.py:165
+#: src/AppDetails.py:167
 msgid "Hash"
 msgstr ""
 
-#: src/AppDetails.py:178
-msgid "Website"
-msgstr ""
-
-#: src/AppDetails.py:178
-msgid "Add a website"
-msgstr ""
-
-#: src/AppDetails.py:184
-msgid "Open URL"
-msgstr ""
-
-#: src/AppDetails.py:194
-msgid "Reload metadata"
+#: src/AppDetails.py:181
+msgid "Command line arguments"
 msgstr ""
 
 #: src/AppDetails.py:195
+msgid "Website"
+msgstr ""
+
+#: src/AppDetails.py:195
+msgid "Add a website"
+msgstr ""
+
+#: src/AppDetails.py:201
+msgid "Open URL"
+msgstr ""
+
+#: src/AppDetails.py:211
+msgid "Reload metadata"
+msgstr ""
+
+#: src/AppDetails.py:212
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
 msgstr ""
 
-#: src/AppDetails.py:211
+#: src/AppDetails.py:228
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
 msgstr ""
 
-#: src/AppDetails.py:214
+#: src/AppDetails.py:231
 msgid "Please, verify the source of this app before opening it"
 msgstr ""
 
-#: src/AppDetails.py:215
+#: src/AppDetails.py:232
 msgid "Unlock"
 msgstr ""
 
-#: src/AppDetails.py:296
+#: src/AppDetails.py:320
 msgid "Launching..."
 msgstr ""
 
-#: src/AppDetails.py:326
+#: src/AppDetails.py:351 src/AppDetails.py:371
 msgid "This app runs in the terminal"
 msgstr ""
 
-#: src/AppDetails.py:330 src/AppDetails.py:347
+#: src/AppDetails.py:353 src/AppDetails.py:368 src/AppDetails.py:374
 msgid "Launch"
 msgstr ""
 
-#: src/AppDetails.py:333 src/AppDetails.py:354
+#: src/AppDetails.py:355 src/AppDetails.py:383
 msgid "Remove"
 msgstr ""
 
-#: src/AppDetails.py:337
+#: src/AppDetails.py:359
 msgid "Uninstalling..."
 msgstr ""
 
-#: src/AppDetails.py:340
+#: src/AppDetails.py:363
 msgid "Installing..."
 msgstr ""
 
-#: src/AppDetails.py:346
+#: src/AppDetails.py:376
 msgid "Move to the app menu"
 msgstr ""
 
-#: src/AppDetails.py:350
+#: src/AppDetails.py:380
 msgid "Update"
 msgstr ""
 
-#: src/AppDetails.py:358
+#: src/AppDetails.py:387
 msgid "Updating"
 msgstr ""
 
-#: src/AppDetails.py:361
+#: src/AppDetails.py:391
 msgid "Error"
 msgstr ""
 
@@ -133,7 +137,7 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: src/GearleverWindow.py:209
+#: src/GearleverWindow.py:207
 msgid "Open a file"
 msgstr ""
 
@@ -359,6 +363,6 @@ msgstr ""
 msgid "No description provided"
 msgstr ""
 
-#: src/providers/AppImageProvider.py:487
+#: src/providers/AppImageProvider.py:528
 msgid "Cannot load an untrusted AppImage"
 msgstr ""
