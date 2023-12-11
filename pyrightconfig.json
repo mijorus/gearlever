@@ -1,0 +1,8 @@
+{
+    "exclude": [
+        "src/precompile/*"
+    ],
+    "include": [
+        "src"
+    ],
+}
