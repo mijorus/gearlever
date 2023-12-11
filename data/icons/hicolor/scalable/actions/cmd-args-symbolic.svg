@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="16"
+   height="16"
+   version="1.1"
+   id="svg3"
+   sodipodi:docname="utilities-terminal-symbolic.svg"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs3" />
+  <sodipodi:namedview
+     id="namedview3"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="51.486213"
+     inkscape:cx="3.0687827"
+     inkscape:cy="9.9346985"
+     inkscape:window-width="2560"
+     inkscape:window-height="1371"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g3" />
+  <g
+     color="#bebebe"
+     fill="#474747"
+     id="g3">
+    <path
+       d="M 3.184047,3.7369917 A 0.98000842,0.98000842 0 0 0 2.5013078,5.4177061 L 5.0754632,7.9918617 2.5013078,10.566018 a 0.98000842,0.98000842 0 1 0 1.3850785,1.385079 L 7.153081,8.6844009 a 0.98000842,0.98000842 0 0 0 0,-1.3850785 L 3.8863863,4.0326276 A 0.98000842,0.98000842 0 0 0 3.184047,3.7369917 Z"
+       style="line-height:normal;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;text-transform:none;text-orientation:mixed;shape-padding:0;isolation:auto;mix-blend-mode:normal;stroke-width:1.63335;marker:none"
+       font-weight="400"
+       font-family="sans-serif"
+       overflow="visible"
+       id="path2" />
+    <path
+       d="m 8.9105628,10.441883 h 4.9000412 v 1.633348 H 8.9105628 Z"
+       style="stroke-width:1.63335;marker:none"
+       overflow="visible"
+       id="path3" />
+  </g>
+</svg>
