@@ -280,12 +280,19 @@ class AppImageProvider():
 
             with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
                 desktop_file_content = dskt_file.read()
-                # replace try exec executable path
                 desktop_file_content = re.sub(r'^TryExec=.*$', "", desktop_file_content, flags=re.MULTILINE)
+                desktop_file_content = re.sub(r'^Icon=.*$', "", desktop_file_content, flags=re.MULTILINE)
 
                 # replace executable path
                 exec_command = 'Exec=' + shlex.join([dest_appimage_file.get_path(), *exec_arguments])
+                # replace try exec executable path
                 exec_command += f'\nTryExec={dest_appimage_file.get_path()}'
+
+                if dest_appimage_icon_file:
+                    exec_command += f"Icon={dest_appimage_icon_file.get_path()}
+                else:
+                    exec_command += f'Icon=applications-other'
+
                 desktop_file_content = re.sub(
                     r'^Exec=.*$',
                     exec_command,
@@ -293,18 +300,10 @@ class AppImageProvider():
                     flags=re.MULTILINE
                 )
 
-                # replace icon path
-                desktop_file_content = re.sub(
-                    r'^Icon=.*$',
-                    f"Icon={dest_appimage_icon_file.get_path() if dest_appimage_icon_file else 'applications-other'}",
-                    desktop_file_content,
-                    flags=re.MULTILINE
-                )
-
                 # generate a new app name
                 final_app_name = extracted_appimage.appimage_file.get_basename()
                 if extracted_appimage.desktop_entry:
-                    final_app_name = f"{extracted_appimage.desktop_entry.getName()}"
+                    final_app_name = extracted_appimage.desktop_entry.getName()
 
                     version = extracted_appimage.desktop_entry.get('X-AppImage-Version')
                     
