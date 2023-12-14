@@ -284,18 +284,18 @@ class AppImageProvider():
                 desktop_file_content = re.sub(r'^Icon=.*$', "", desktop_file_content, flags=re.MULTILINE)
 
                 # replace executable path
-                exec_command = 'Exec=' + shlex.join([dest_appimage_file.get_path(), *exec_arguments])
+                exec_command = ['Exec=' + shlex.join([dest_appimage_file.get_path(), *exec_arguments])]
                 # replace try exec executable path
-                exec_command += f'\nTryExec={dest_appimage_file.get_path()}'
+                exec_command.append(f'TryExec={dest_appimage_file.get_path()}')
 
                 if dest_appimage_icon_file:
-                    exec_command += f"Icon={dest_appimage_icon_file.get_path()}
+                    exec_command.append(f"Icon={dest_appimage_icon_file.get_path()}")
                 else:
-                    exec_command += f'Icon=applications-other'
+                    exec_command.append(f'Icon=applications-other')
 
                 desktop_file_content = re.sub(
                     r'^Exec=.*$',
-                    exec_command,
+                    '\n'.join(exec_command),
                     desktop_file_content,
                     flags=re.MULTILINE
                 )
