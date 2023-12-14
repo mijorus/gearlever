@@ -9,11 +9,7 @@
         "--socket=wayland",
         "--socket=fallback-x11",
         "--device=dri",
-
-        "--filesystem=xdg-data/applications:rw",
-        "--filesystem=xdg-data/icons:ro",
         "--filesystem=home:rw",
-
         "--talk-name=org.freedesktop.Flatpak",
         "--talk-name=org.freedesktop.portal.OpenURI",
         "--talk-name=org.freedesktop.portal.OpenFile"
