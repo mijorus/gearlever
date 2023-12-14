@@ -428,21 +428,12 @@ class AppImageProvider():
         with open(el.desktop_file_path, 'r') as desktop_file:
             desktop_file_content = desktop_file.read()
             exec_command = shlex.split(entry.getExec())[0]
-
             exec_command += f' {arg_string}'
 
             # replace executable path
             desktop_file_content = re.sub(
                 r'^Exec=.*$',
                 f"Exec={exec_command}",
-                desktop_file_content,
-                flags=re.MULTILINE
-            )
-
-            # replace try exec executable path
-            desktop_file_content = re.sub(
-                r'^TryExec=.*$',
-                f"TryExec={exec_command}",
                 desktop_file_content,
                 flags=re.MULTILINE
             )
