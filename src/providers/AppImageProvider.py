@@ -293,7 +293,7 @@ class AppImageProvider():
                 # replace try exec executable path
                 desktop_file_content = re.sub(
                     r'^TryExec=.*$',
-                    f"TryExec={exec_command}",
+                    f"TryExec={dest_appimage_file.get_path()}",
                     desktop_file_content,
                     flags=re.MULTILINE
                 )
