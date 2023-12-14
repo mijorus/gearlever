@@ -280,20 +280,15 @@ class AppImageProvider():
 
             with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
                 desktop_file_content = dskt_file.read()
-                exec_command = shlex.join([dest_appimage_file.get_path(), *exec_arguments])
+                # replace try exec executable path
+                desktop_file_content = re.sub(r'^TryExec=.*$', "", desktop_file_content, flags=re.MULTILINE)
 
                 # replace executable path
+                exec_command = 'Exec=' + shlex.join([dest_appimage_file.get_path(), *exec_arguments])
+                exec_command += f'\nTryExec={dest_appimage_file.get_path()}'
                 desktop_file_content = re.sub(
                     r'^Exec=.*$',
-                    f"Exec={exec_command}",
-                    desktop_file_content,
-                    flags=re.MULTILINE
-                )
-
-                # replace try exec executable path
-                desktop_file_content = re.sub(
-                    r'^TryExec=.*$',
-                    f"TryExec={dest_appimage_file.get_path()}",
+                    exec_command,
                     desktop_file_content,
                     flags=re.MULTILINE
                 )
