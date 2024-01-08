@@ -100,10 +100,10 @@ class AppImageProvider():
                         after_exec = entry.getExec()[exec_index:]
                         before_exec = entry.getExec()[:exec_index]
 
-                        exec_tokens = shlex.split(after_exec)
+                        exec_tokens = shlex.split(after_exec)[1:]
                         before_exec_tokens = shlex.split(before_exec)
 
-                        if before_exec_tokens[0] == 'env':
+                        if before_exec and before_exec_tokens[0] == 'env':
                             [env_variables.append(v) for v in before_exec_tokens[1:]]
 
                     if os.path.isfile(exec_location):
@@ -124,7 +124,7 @@ class AppImageProvider():
                                 trusted=True,
                                 generation=self.get_appimage_generation(exec_gfile),
                                 external_folder=(not exec_in_defalut_folder),
-                                exec_arguments=exec_tokens[1:],
+                                exec_arguments=exec_tokens,
                                 env_variables=env_variables
                             )
 
@@ -454,7 +454,39 @@ class AppImageProvider():
             )
 
         with open(el.desktop_file_path, 'w') as desktop_file:
-            desktop_file.write(desktop_file_content)            
+            desktop_file.write(desktop_file_content)         
+
+    def update_desktop_file(self, el: AppImageListElement):
+        if not el.desktop_file_path:
+            raise Exception('desktop_file_path not specified')
+    
+        desktop_file_content = ''
+        entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
+        with open(el.desktop_file_path, 'r') as desktop_file:
+            desktop_file_content = desktop_file.read()
+
+            tryexec_command = entry.getTryExec()
+            exec_arguments = ' '.join(el.exec_arguments)
+            env_vars = ' '.join(el.env_variables)
+
+            if exec_arguments:
+                exec_arguments = f' {exec_arguments}'
+
+            if env_vars:
+                env_vars = f'env {env_vars} '
+
+            exec_command = f'{env_vars}{tryexec_command}{exec_arguments}'
+
+            # replace executable path
+            desktop_file_content = re.sub(
+                r'^Exec=.*$',
+                f"Exec={exec_command}",
+                desktop_file_content,
+                flags=re.MULTILINE
+            )
+
+        with open(el.desktop_file_path, 'w') as desktop_file:
+            desktop_file.write(desktop_file_content)   
 
     # Private methods
 

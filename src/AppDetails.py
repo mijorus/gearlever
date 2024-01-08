@@ -2,6 +2,7 @@ import time
 import logging
 import base64
 import os
+import shlex
 from typing import Optional, Callable
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
 
@@ -21,8 +22,6 @@ class AppDetails(Gtk.ScrolledWindow):
     __gsignals__ = {
         "uninstalled-app": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
     }
-
-
 
     def __init__(self):
         super().__init__()
@@ -95,7 +94,10 @@ class AppDetails(Gtk.ScrolledWindow):
 
         container_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         [container_box.append(el) for el in [self.window_banner, clamp]]
-    
+
+        self.env_variables_widgets = []
+        self.env_variables_group_container = None
+
         self.set_child(container_box)
 
     def set_app_list_element(self, el: AppImageListElement):
@@ -379,21 +381,50 @@ class AppDetails(Gtk.ScrolledWindow):
         set_json_config('apps', conf)
 
     @debounce(0.5)
-    def on_env_var_value_changed(self, widget, key_widget=None):
-        value_widget = widget if key_widget else widget.get_next_sibling()
-        key_widget = key_widget or widget
-
+    @idle
+    def on_env_var_value_changed(self, widget, key_widget, value_widget):
         key = key_widget.get_text()
-        value = value_widget.get_text()
+        value_widget.set_sensitive(len(key) > 0)
+        key_widget.remove_css_class('error')
 
-        if not key or not value:
+        if not key:
             return
+        
+        counts = 0
+        for kv_widgets in self.env_variables_widgets:
+            k, v = kv_widgets
+            
+            if k.get_text() == key_widget.get_text():
+                counts += 1
+
+        if counts > 1:
+            key_widget.add_css_class('error')
+            value_widget.set_sensitive(False)
+        else:    
+            self.update_env_variables()
+            self.provider.update_desktop_file(self.app_list_element)
+
+    def on_delete_env_var_clicked(self, widget, key_widget, value_widget, listbox):
+        for i, kv_widgets in enumerate(self.env_variables_widgets):
+            k, v = kv_widgets
+            
+            if k.get_text() == key_widget.get_text():
+                self.env_variables_widgets.pop(i)
+                break
+
+        self.update_env_variables()
+        self.provider.update_desktop_file(self.app_list_element)
+
+        if self.env_variables_group_container:
+            self.env_variables_group_container.remove(listbox)
 
     @debounce(0.5)
     def on_cmd_arguments_changed(self, widget):
         text = widget.get_text().strip()
+        text = text.replace('\n', '')
 
-        self.provider.update_exec_arguments(self.app_list_element, text)
+        self.app_list_element.exec_arguments = shlex.split(text)
+        self.provider.update_desktop_file(self.app_list_element)
 
     # Returns the configuration from the json for this specific app
     def get_config_for_app(self) -> dict:
@@ -428,6 +459,21 @@ class AppDetails(Gtk.ScrolledWindow):
         path = Gio.File.new_for_path(os.path.dirname(self.app_list_element.file_path))
         launcher = Gtk.FileLauncher.new(path)
         launcher.launch()
+
+    def update_env_variables(self):
+        self.app_list_element.env_variables = []
+        for kv_widgets in self.env_variables_widgets:
+            k, v = kv_widgets
+
+            if k.has_css_class('error') or v.has_css_class('error'):
+                continue
+
+            key = k.get_text().strip()
+            value = v.get_text().strip()
+            value = shlex.quote(value)
+
+            if key:
+                self.app_list_element.env_variables.append(f'{key}={value}')
 
     # Create widgets methods
         
@@ -533,16 +579,19 @@ class AppDetails(Gtk.ScrolledWindow):
         )
 
         row_key = Gtk.Entry(placeholder_text=_('Key'), text=key, hexpand=True)
-        row_value = Gtk.Entry(placeholder_text=_('Value'), text=value, hexpand=True)
+        row_value = Gtk.Entry(placeholder_text=_('Value'), text=value, hexpand=True, sensitive=(len(key) > 0))
         delete_btn = Gtk.Button(icon_name='trash-symbolic', css_classes=['destructive-action'])
 
-        row_key.connect('changed', self.on_env_var_value_changed)
-        row_value.connect('changed', self.on_env_var_value_changed, row_key)
+        row_key.connect('changed', self.on_env_var_value_changed, row_key, row_value)
+        row_value.connect('changed', self.on_env_var_value_changed, row_key, row_value)
+        delete_btn.connect('clicked', self.on_delete_env_var_clicked, row_key, row_value, listbox)
 
         listbox.append(row_key)
         listbox.append(Gtk.Label.new('='))
         listbox.append(row_value)
         listbox.append(delete_btn)
+
+        self.env_variables_widgets.append([row_key, row_value])
 
         return listbox
     
@@ -558,19 +607,20 @@ class AppDetails(Gtk.ScrolledWindow):
             header_suffix=add_item_btn,
         )
 
-        group_container = Gtk.Box(
+        self.env_variables_group_container = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL,
             css_classes=['card']
         )
 
-        group.add(group_container)
+        group.add(self.env_variables_group_container)
 
-        add_item_btn.connect('clicked', self.on_create_edit_row_btn_clicked, group_container)
+        add_item_btn.connect('clicked', self.on_create_edit_row_btn_clicked, self.env_variables_group_container)
 
+        self.env_variables_widgets = []
         for kv in self.app_list_element.env_variables:
             k, v = kv.split('=')
 
             row = self.create_edit_env_var_form(k, v)
-            group_container.append(row)
+            self.env_variables_group_container.append(row)
 
         return group
