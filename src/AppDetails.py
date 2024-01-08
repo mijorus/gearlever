@@ -88,6 +88,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         # Window top banner
         self.window_banner = Adw.Banner(use_markup=True)
+        self.window_banner.connect('button-clicked', self.after_trust_buttons_interaction)
 
         container_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         [container_box.append(el) for el in [self.window_banner, clamp]]
@@ -117,8 +118,8 @@ class AppDetails(Gtk.ScrolledWindow):
         self.details_row.remove(self.icon_slot)
         self.icon_slot = icon
         icon.set_pixel_size(128)
-        self.details_row.prepend(self.icon_slot)
 
+        self.details_row.prepend(self.icon_slot)
         self.title.set_label(self.app_list_element.name)
 
         self.app_subtitle.set_text(self.app_list_element.version)
@@ -130,6 +131,7 @@ class AppDetails(Gtk.ScrolledWindow):
         )
 
         self.third_row.remove(self.extra_data)
+        
         self.extra_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.third_row.append(self.extra_data)
 
@@ -139,86 +141,27 @@ class AppDetails(Gtk.ScrolledWindow):
         gtk_list = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
 
         # Package info
-        row = Adw.ActionRow(
-            subtitle=f'{self.provider.name.capitalize()} Type. {self.app_list_element.generation}', 
-            title=_('Package type'),
-            selectable=False
-        )
-
-        row_img = Gtk.Image(resource=self.provider.icon, pixel_size=self.ACTION_ROW_ICON_SIZE)
-        row.add_prefix(row_img)
-        gtk_list.append(row)
+        gtk_list.append(self.create_package_info_row())
 
         # The path of the executable
-        row = Adw.ActionRow(title=_('Path'), subtitle=self.app_list_element.file_path, subtitle_selectable=True, selectable=False)
-        row_img = Gtk.Image(icon_name='gearlever-file-manager-symbolic', pixel_size=self.ACTION_ROW_ICON_SIZE)
-        row_btn = Gtk.Button(icon_name='gl-arrow2-top-right-symbolic', valign=Gtk.Align.CENTER, tooltip_text=_('Open Folder'))
-        row_btn.connect('clicked', self.on_open_folder_clicked)
-        row.add_prefix(row_img)
-        row.add_suffix(row_btn)
-        gtk_list.append(row)
+        gtk_list.append(self.create_exec_path_row())
 
         # Hashes
         if self.app_list_element.installed_status is not InstalledStatus.INSTALLED:
-            md5_hash = get_file_hash(Gio.File.new_for_path(self.app_list_element.file_path))
-            sha1_hash = get_file_hash(Gio.File.new_for_path(self.app_list_element.file_path), 'sha1')
-            row = Adw.ActionRow(
-                subtitle=f'md5: {md5_hash}\nsha1: {sha1_hash}', 
-                title=_('Hash'),
-                selectable=True
-            )
-
-            row_img = Gtk.Image(icon_name='hash-symbolic', pixel_size=self.ACTION_ROW_ICON_SIZE)
-            row.add_prefix(row_img)
-            gtk_list.append(row)
-
+            gtk_list.append(self.create_app_hash_row())
         
         self.update_installation_status()
 
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
             # Exec arguments
-            row = Adw.EntryRow(
-                title=(_('Command line arguments')),
-                selectable=False,
-                text=' '.join(self.app_list_element.exec_arguments)
-            )
-
-            row_img = Gtk.Image(icon_name='cmd-args', pixel_size=self.ACTION_ROW_ICON_SIZE)
-            row.connect('changed', self.on_cmd_arguments_changed)
-            row.add_prefix(row_img)
-            gtk_list.append(row)
+            gtk_list.append(self.create_show_exec_args_row())
 
             # A custom link to a website
-            app_config = self.get_config_for_app()
-            
-            row = Adw.EntryRow(
-                title=(_('Website') if ('website' in app_config and app_config['website']) else _('Add a website')),
-                selectable=False,
-                text=(app_config['website'] if 'website' in app_config else '')
-            )
-
-            row_img = Gtk.Image(icon_name='gl-earth', pixel_size=self.ACTION_ROW_ICON_SIZE)
-            row_btn = Gtk.Button(icon_name='gl-arrow2-top-right-symbolic', valign=Gtk.Align.CENTER, tooltip_text=_('Open URL'),)
-            row_btn.connect('clicked', self.on_web_browser_open_btn_clicked)
-
-            row.connect('changed', self.on_web_browser_input_apply)
-            row.add_prefix(row_img)
-            row.add_suffix(row_btn)
-            gtk_list.append(row)
+            gtk_list.append(self.create_edit_custom_website_row())
 
             # Reload metadata row
-            row = Adw.ActionRow(selectable=False, activatable=True,
-                title=(_('Reload metadata')), 
-                subtitle=_('Update information like icon, version and description.\nUseful if the app updated itself.')
-            )
-
-            row_img = Gtk.Image(icon_name='refresh', pixel_size=self.ACTION_ROW_ICON_SIZE)
-
+            reload_data_listbox.append(self.create_edit_custom_website_row())
             reload_data_listbox = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
-            reload_data_listbox.append(row)
-            row.add_prefix(row_img)
-
-            row.connect('activated', self.on_refresh_metadata_btn_clicked)
             self.extra_data.prepend(reload_data_listbox)
 
             # Show or hide window banner
@@ -230,7 +173,6 @@ class AppDetails(Gtk.ScrolledWindow):
             self.window_banner.set_revealed(not self.app_list_element.trusted)
             self.window_banner.set_title(_('Please, verify the source of this app before opening it'))
             self.window_banner.set_button_label(_('Unlock'))
-            self.window_banner.connect('button-clicked', self.after_trust_buttons_interaction)
 
             if not self.app_list_element.trusted:
                 self.secondary_action_button.set_sensitive(False)
@@ -466,3 +408,89 @@ class AppDetails(Gtk.ScrolledWindow):
         path = Gio.File.new_for_path(os.path.dirname(self.app_list_element.file_path))
         launcher = Gtk.FileLauncher.new(path)
         launcher.launch()
+
+    # Create widgets methods
+        
+    def create_edit_custom_website_row(self) -> Adw.EntryRow:
+        app_config = self.get_config_for_app()
+            
+        row = Adw.EntryRow(
+            title=(_('Website') if ('website' in app_config and app_config['website']) else _('Add a website')),
+            selectable=False,
+            text=(app_config['website'] if 'website' in app_config else '')
+        )
+
+        row_img = Gtk.Image(icon_name='gl-earth', pixel_size=self.ACTION_ROW_ICON_SIZE)
+        row_btn = Gtk.Button(
+            icon_name='gl-arrow2-top-right-symbolic', 
+            valign=Gtk.Align.CENTER, 
+            tooltip_text=_('Open URL'),
+        )
+        
+        row_btn.connect('clicked', self.on_web_browser_open_btn_clicked)
+
+        row.connect('changed', self.on_web_browser_input_apply)
+        row.add_prefix(row_img)
+        row.add_suffix(row_btn)
+
+        return row
+    
+    def create_reload_metadata_row(self) -> Adw.EntryRow:
+        row = Adw.ActionRow(selectable=False, activatable=True,
+            title=(_('Reload metadata')), 
+            subtitle=_('Update information like icon, version and description.\nUseful if the app updated itself.')
+        )
+
+        row_img = Gtk.Image(icon_name='refresh', pixel_size=self.ACTION_ROW_ICON_SIZE)
+
+        row.add_prefix(row_img)
+        row.connect('activated', self.on_refresh_metadata_btn_clicked)
+
+        return row
+    
+    def create_show_exec_args_row(self) -> Adw.ActionRow:
+        row = Adw.EntryRow(
+            title=(_('Command line arguments')),
+            selectable=False,
+            text=' '.join(self.app_list_element.exec_arguments)
+        )
+
+        row_img = Gtk.Image(icon_name='cmd-args', pixel_size=self.ACTION_ROW_ICON_SIZE)
+        row.connect('changed', self.on_cmd_arguments_changed)
+        row.add_prefix(row_img)
+
+    def create_app_hash_row(self) -> Adw.ActionRow:
+        md5_hash = get_file_hash(Gio.File.new_for_path(self.app_list_element.file_path))
+        sha1_hash = get_file_hash(Gio.File.new_for_path(self.app_list_element.file_path), 'sha1')
+        row = Adw.ActionRow(
+            subtitle=f'md5: {md5_hash}\nsha1: {sha1_hash}', 
+            title=_('Hash'),
+            selectable=True
+        )
+
+        row_img = Gtk.Image(icon_name='hash-symbolic', pixel_size=self.ACTION_ROW_ICON_SIZE)
+        row.add_prefix(row_img)
+
+        return row
+    
+    def create_exec_path_row(self) -> Adw.ActionRow:
+        row = Adw.ActionRow(title=_('Path'), subtitle=self.app_list_element.file_path, subtitle_selectable=True, selectable=False)
+        row_img = Gtk.Image(icon_name='gearlever-file-manager-symbolic', pixel_size=self.ACTION_ROW_ICON_SIZE)
+        row_btn = Gtk.Button(icon_name='gl-arrow2-top-right-symbolic', valign=Gtk.Align.CENTER, tooltip_text=_('Open Folder'))
+        row_btn.connect('clicked', self.on_open_folder_clicked)
+        row.add_prefix(row_img)
+        row.add_suffix(row_btn)
+
+        return row
+    
+    def create_package_info_row(self) -> Adw.ActionRow:        
+        row = Adw.ActionRow(
+            subtitle=f'{self.provider.name.capitalize()} Type. {self.app_list_element.generation}', 
+            title=_('Package type'),
+            selectable=False
+        )
+
+        row_img = Gtk.Image(resource=self.provider.icon, pixel_size=self.ACTION_ROW_ICON_SIZE)
+        row.add_prefix(row_img)
+
+        return row
