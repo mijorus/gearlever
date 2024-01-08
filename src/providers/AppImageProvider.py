@@ -41,6 +41,7 @@ class AppImageListElement():
     file_path: str
     generation: int
     trusted: bool = False
+    env_variables: List[str] = dataclasses.field(default_factory=lambda: [])
     exec_arguments: List[str] = dataclasses.field(default_factory=lambda: [])
     desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
     update_logic: Optional[AppImageUpdateLogic] = None
@@ -90,8 +91,20 @@ class AppImageProvider():
             try:
                 if os.path.isfile(gfile.get_path()) and get_giofile_content_type(gfile) == 'application/x-desktop':
                     entry = DesktopEntry.DesktopEntry(filename=gfile.get_path())
-                    exec_tokens = shlex.split(entry.getExec())
-                    exec_location = exec_tokens[0]
+                    exec_location = entry.getTryExec()
+                    exec_index = entry.getExec().find(exec_location)
+
+                    exec_tokens = []
+                    env_variables = []
+                    if exec_index >= 0:
+                        after_exec = entry.getExec()[exec_index:]
+                        before_exec = entry.getExec()[:exec_index]
+
+                        exec_tokens = shlex.split(after_exec)
+                        before_exec_tokens = shlex.split(before_exec)
+
+                        if before_exec_tokens[0] == 'env':
+                            [env_variables.append(v) for v in before_exec_tokens[1:]]
 
                     if os.path.isfile(exec_location):
                         exec_gfile = Gio.File.new_for_path(exec_location)
@@ -111,12 +124,14 @@ class AppImageProvider():
                                 trusted=True,
                                 generation=self.get_appimage_generation(exec_gfile),
                                 external_folder=(not exec_in_defalut_folder),
-                                exec_arguments=exec_tokens[1:]
+                                exec_arguments=exec_tokens[1:],
+                                env_variables=env_variables
                             )
 
                             output.append(list_element)
 
             except Exception as e:
+                print(e)
                 logging.warn(e)
 
         return output
