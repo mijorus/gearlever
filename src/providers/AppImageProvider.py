@@ -441,6 +441,7 @@ class AppImageProvider():
         with open(el.desktop_file_path, 'w') as desktop_file:
             desktop_file.write(desktop_file_content)            
 
+    # Private methods
 
     def _extract_appimage(self, el: AppImageListElement) -> str:
         random_str = ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))

@@ -22,9 +22,12 @@ class AppDetails(Gtk.ScrolledWindow):
         "uninstalled-app": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
     }
 
+
+
     def __init__(self):
         super().__init__()
         self.ACTION_ROW_ICON_SIZE = 34
+        self.EXTRA_DATA_SPACING = 20
 
         self.app_list_element: AppImageListElement = None
         self.common_btn_css_classes = ['pill', 'text-button']
@@ -79,7 +82,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         # row
         self.third_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.extra_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.extra_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=self.EXTRA_DATA_SPACING)
         self.third_row.append(self.extra_data)
 
         [self.main_box.append(el) for el in [self.details_row, self.previews_row, self.desc_row, self.third_row]]
@@ -132,13 +135,13 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.third_row.remove(self.extra_data)
         
-        self.extra_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.extra_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=self.EXTRA_DATA_SPACING)
         self.third_row.append(self.extra_data)
 
         self.install_button_label_info = None
 
         # Load the boxed list with additional information
-        gtk_list = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
+        gtk_list = Gtk.ListBox(css_classes=['boxed-list'])
 
         # Package info
         gtk_list.append(self.create_package_info_row())
@@ -160,8 +163,8 @@ class AppDetails(Gtk.ScrolledWindow):
             gtk_list.append(self.create_edit_custom_website_row())
 
             # Reload metadata row
-            reload_data_listbox.append(self.create_edit_custom_website_row())
-            reload_data_listbox = Gtk.ListBox(css_classes=['boxed-list'], margin_bottom=20)
+            reload_data_listbox = Gtk.ListBox(css_classes=['boxed-list'])
+            reload_data_listbox.append(self.create_reload_metadata_row())
             self.extra_data.prepend(reload_data_listbox)
 
             # Show or hide window banner
@@ -169,6 +172,7 @@ class AppDetails(Gtk.ScrolledWindow):
             if self.app_list_element.external_folder:
                 self.window_banner.set_button_label(None)
                 self.window_banner.set_title(_('This app is located outside the default folder\n<small>You can hide external apps in the settings</small>'))
+
         else:
             self.window_banner.set_revealed(not self.app_list_element.trusted)
             self.window_banner.set_title(_('Please, verify the source of this app before opening it'))
@@ -179,6 +183,11 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.primary_action_button.set_sensitive(False)
 
         self.extra_data.append(gtk_list)
+
+        if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
+            edit_env_vars_widget = self.create_edit_env_vars_row()
+            self.extra_data.append(edit_env_vars_widget)
+
         self.show_row_spinner(False)
 
         if load_completed_callback:
@@ -370,6 +379,17 @@ class AppDetails(Gtk.ScrolledWindow):
         set_json_config('apps', conf)
 
     @debounce(0.5)
+    def on_env_var_value_changed(self, widget, key_widget=None):
+        value_widget = widget if key_widget else widget.get_next_sibling()
+        key_widget = key_widget or widget
+
+        key = key_widget.get_text()
+        value = value_widget.get_text()
+
+        if not key or not value:
+            return
+
+    @debounce(0.5)
     def on_cmd_arguments_changed(self, widget):
         text = widget.get_text().strip()
 
@@ -411,6 +431,10 @@ class AppDetails(Gtk.ScrolledWindow):
 
     # Create widgets methods
         
+    def on_create_edit_row_btn_clicked(self, w, group):
+        edit_form = self.create_edit_env_var_form()
+        group.append(edit_form)
+
     def create_edit_custom_website_row(self) -> Adw.EntryRow:
         app_config = self.get_config_for_app()
             
@@ -459,6 +483,8 @@ class AppDetails(Gtk.ScrolledWindow):
         row.connect('changed', self.on_cmd_arguments_changed)
         row.add_prefix(row_img)
 
+        return row
+
     def create_app_hash_row(self) -> Adw.ActionRow:
         md5_hash = get_file_hash(Gio.File.new_for_path(self.app_list_element.file_path))
         sha1_hash = get_file_hash(Gio.File.new_for_path(self.app_list_element.file_path), 'sha1')
@@ -494,3 +520,51 @@ class AppDetails(Gtk.ScrolledWindow):
         row.add_prefix(row_img)
 
         return row
+    
+    def create_edit_env_var_form(self, key='', value=''):
+        listbox = Gtk.Box(
+            # css_classes=['linked'], 
+            # margin_bottom=self.EXTRA_DATA_SPACING,
+            orientation=Gtk.Orientation.HORIZONTAL,
+            halign=Gtk.Align.CENTER,
+            spacing=10,
+            margin_top=self.EXTRA_DATA_SPACING / 2,
+            margin_bottom=self.EXTRA_DATA_SPACING / 2,
+        )
+
+        row_key = Gtk.Entry(placeholder_text=_('Key'), text=key, hexpand=True)
+        row_value = Gtk.Entry(placeholder_text=_('Value'), text=value, hexpand=True)
+        delete_btn = Gtk.Button(icon_name='trash-symbolic', css_classes=['destructive-action'])
+
+        row_key.connect('changed', self.on_env_var_value_changed)
+        row_value.connect('changed', self.on_env_var_value_changed, row_key)
+
+        listbox.append(row_key)
+        listbox.append(Gtk.Label.new('='))
+        listbox.append(row_value)
+        listbox.append(delete_btn)
+
+        return listbox
+    
+    def create_edit_env_vars_row(self) -> Adw.PreferencesGroup:
+        add_btn_content = Adw.ButtonContent(
+            icon_name='plus-symbolic',
+            label=_('Add')
+        )
+
+        add_item_btn = Gtk.Button(child=add_btn_content)
+        group = Adw.PreferencesGroup(
+            title=_('Environment variables'),
+            header_suffix=add_item_btn,
+        )
+
+        group_container = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            css_classes=['card']
+        )
+
+        group.add(group_container)
+
+        add_item_btn.connect('clicked', self.on_create_edit_row_btn_clicked, group_container)
+
+        return group
