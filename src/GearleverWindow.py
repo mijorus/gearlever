@@ -59,9 +59,12 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.set_title('Gear lever')
         self.set_default_size(700, 700)
 
+        toast_overlay = Adw.ToastOverlay()
+
+
         # Create the "stack" widget for the "installed apps" view
         self.installed_stack = Gtk.Stack()
-        self.app_details = AppDetails()
+        self.app_details = AppDetails(toast_overlay)
         self.app_details.connect('uninstalled-app', self.on_uninstalled_app)
 
         self.installed_apps_list = InstalledAppsList()
@@ -101,7 +104,9 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         self.connect('close-request', self.on_close_request)
 
-        self.set_child(self.container_stack)
+        toast_overlay.set_child(self.container_stack)
+
+        self.set_child(toast_overlay)
 
 
     # Show app details

@@ -12,7 +12,7 @@ from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
 from .lib.json_config import read_json_config, set_json_config
-from .lib.utils import url_is_valid, get_file_hash
+from .lib.utils import url_is_valid, get_file_hash, get_application_window
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
 
@@ -23,7 +23,7 @@ class AppDetails(Gtk.ScrolledWindow):
         "uninstalled-app": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
     }
 
-    def __init__(self):
+    def __init__(self, toast_overlay):
         super().__init__()
         self.ACTION_ROW_ICON_SIZE = 34
         self.EXTRA_DATA_SPACING = 20
@@ -98,6 +98,8 @@ class AppDetails(Gtk.ScrolledWindow):
         self.env_variables_widgets = []
         self.env_variables_group_container = None
         self.save_vars_btn: Optional[Gtk.Button] = None
+
+        self.toast_overlay = toast_overlay
 
         self.set_child(container_box)
 
@@ -193,6 +195,8 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.show_row_spinner(False)
 
+        self.desc_row.set_visible(len(self.description.get_text()) > 0)
+
         if load_completed_callback:
             load_completed_callback()
 
@@ -271,7 +275,9 @@ class AppDetails(Gtk.ScrolledWindow):
                     self.app_list_element.set_trusted()
                     
                     pre_launch_label = self.secondary_action_button.get_label()
-                    GLib.idle_add(lambda: self.secondary_action_button.set_label(_('Launching...')))
+                    self.secondary_action_button.set_label(_('Launching...'))
+                    self.secondary_action_button.set_sensitive(False)
+
                     self.provider.run(self.app_list_element)
                     self.post_launch_animation(restore_as=pre_launch_label)
 
@@ -280,11 +286,19 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @_async
     def post_launch_animation(self, restore_as):
-        GLib.idle_add(lambda: self.secondary_action_button.set_sensitive(False))
-        time.sleep(3)
+        time.sleep(5)
+        self.restore_launch_button(restore_as)
 
-        GLib.idle_add(lambda: self.secondary_action_button.set_label(restore_as))
-        GLib.idle_add(lambda: self.secondary_action_button.set_sensitive(True))
+        if get_application_window().is_active():
+            GLib.idle_add(lambda: self.toast_overlay.add_toast(
+                Adw.Toast.new(_('App not opening? Go to Menu > Open Log File for more details'))
+            ))
+
+    @idle
+    def restore_launch_button(self, restore_as):
+        self.secondary_action_button.set_label(restore_as)
+        self.secondary_action_button.set_sensitive(True)
+
 
     def update_status_callback(self, status: bool):
         if not status:

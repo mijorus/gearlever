@@ -208,7 +208,7 @@ class AppImageProvider():
 
     def run(self, el: AppImageListElement):
         if el.trusted:
-            terminal.host_threaded_sh([f'{el.file_path}'], return_stderr=True)
+            terminal.host_threaded_sh(shlex.split(el.desktop_entry.getExec()), return_stderr=True)
 
     def can_install_file(self, file: Gio.File) -> bool:
         return get_giofile_content_type(file) in self.supported_mimes
@@ -353,6 +353,7 @@ class AppImageProvider():
 
             if os.path.exists(dest_desktop_file_path):
                 el.desktop_entry = DesktopEntry.DesktopEntry(filename=dest_desktop_file_path)
+                el.desktop_file_path = dest_desktop_file_path
                 el.installed_status = InstalledStatus.INSTALLED
 
         except Exception as e:
@@ -486,7 +487,9 @@ class AppImageProvider():
             )
 
         with open(el.desktop_file_path, 'w') as desktop_file:
-            desktop_file.write(desktop_file_content)   
+            desktop_file.write(desktop_file_content)
+
+        el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
 
     # Private methods
 
