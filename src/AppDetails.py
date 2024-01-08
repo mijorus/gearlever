@@ -567,4 +567,10 @@ class AppDetails(Gtk.ScrolledWindow):
 
         add_item_btn.connect('clicked', self.on_create_edit_row_btn_clicked, group_container)
 
+        for kv in self.app_list_element.env_variables:
+            k, v = kv.split('=')
+
+            row = self.create_edit_env_var_form(k, v)
+            group_container.append(row)
+
         return group
