@@ -97,6 +97,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.env_variables_widgets = []
         self.env_variables_group_container = None
+        self.save_vars_btn: Optional[Gtk.Button] = None
 
         self.set_child(container_box)
 
@@ -380,8 +381,6 @@ class AppDetails(Gtk.ScrolledWindow):
         conf[app_conf['b64name']] = app_conf
         set_json_config('apps', conf)
 
-    @debounce(0.5)
-    @idle
     def on_env_var_value_changed(self, widget, key_widget, value_widget):
         key = key_widget.get_text()
         value_widget.set_sensitive(len(key) > 0)
@@ -399,10 +398,14 @@ class AppDetails(Gtk.ScrolledWindow):
 
         if counts > 1:
             key_widget.add_css_class('error')
-            value_widget.set_sensitive(False)
-        else:    
-            self.update_env_variables()
-            self.provider.update_desktop_file(self.app_list_element)
+        
+        value_widget.set_sensitive(counts == 1)
+        self.save_vars_btn.set_sensitive(counts == 1)
+
+    def on_save_env_vars_clicked(self, widget):
+        widget.set_sensitive(False)
+        self.update_env_variables()
+        self.provider.update_desktop_file(self.app_list_element)
 
     def on_delete_env_var_clicked(self, widget, key_widget, value_widget, listbox):
         for i, kv_widgets in enumerate(self.env_variables_widgets):
@@ -474,12 +477,12 @@ class AppDetails(Gtk.ScrolledWindow):
 
             if key:
                 self.app_list_element.env_variables.append(f'{key}={value}')
+        
+    def on_create_edit_row_btn_clicked(self, w):
+        edit_form = self.create_edit_env_var_form()
+        self.env_variables_group_container.append(edit_form)
 
     # Create widgets methods
-        
-    def on_create_edit_row_btn_clicked(self, w, group):
-        edit_form = self.create_edit_env_var_form()
-        group.append(edit_form)
 
     def create_edit_custom_website_row(self) -> Adw.EntryRow:
         app_config = self.get_config_for_app()
@@ -569,8 +572,6 @@ class AppDetails(Gtk.ScrolledWindow):
     
     def create_edit_env_var_form(self, key='', value=''):
         listbox = Gtk.Box(
-            # css_classes=['linked'], 
-            # margin_bottom=self.EXTRA_DATA_SPACING,
             orientation=Gtk.Orientation.HORIZONTAL,
             halign=Gtk.Align.CENTER,
             spacing=10,
@@ -580,7 +581,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         row_key = Gtk.Entry(placeholder_text=_('Key'), text=key, hexpand=True)
         row_value = Gtk.Entry(placeholder_text=_('Value'), text=value, hexpand=True, sensitive=(len(key) > 0))
-        delete_btn = Gtk.Button(icon_name='trash-symbolic', css_classes=['destructive-action'])
+        delete_btn = Gtk.Button(icon_name='user-trash-symbolic', css_classes=['destructive-action'])
 
         row_key.connect('changed', self.on_env_var_value_changed, row_key, row_value)
         row_value.connect('changed', self.on_env_var_value_changed, row_key, row_value)
@@ -597,24 +598,41 @@ class AppDetails(Gtk.ScrolledWindow):
     
     def create_edit_env_vars_row(self) -> Adw.PreferencesGroup:
         add_btn_content = Adw.ButtonContent(
-            icon_name='plus-symbolic',
+            icon_name='gl-plus-symbolic',
             label=_('Add')
         )
 
+        save_btn_content = Adw.ButtonContent(
+            icon_name='check-plain-symbolic',
+            label=_('Save')
+        )
+
         add_item_btn = Gtk.Button(child=add_btn_content)
+        self.save_vars_btn = Gtk.Button(child=save_btn_content, sensitive=False,
+                                        css_classes=['suggested-action'])
+
+        self.save_vars_btn.connect('clicked', self.on_save_env_vars_clicked)
+
+        btn_container = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5, 
+                                valign=Gtk.Align.CENTER)
+
+        [btn_container.append(w) for w in [self.save_vars_btn, add_item_btn]]
+
         group = Adw.PreferencesGroup(
             title=_('Environment variables'),
-            header_suffix=add_item_btn,
+            description=_('Add or customize environment for this application'),
+            header_suffix=btn_container,
         )
 
         self.env_variables_group_container = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL,
-            css_classes=['card']
+            css_classes=['card'],
+            margin_top=self.EXTRA_DATA_SPACING / 2
         )
 
         group.add(self.env_variables_group_container)
 
-        add_item_btn.connect('clicked', self.on_create_edit_row_btn_clicked, self.env_variables_group_container)
+        add_item_btn.connect('clicked', self.on_create_edit_row_btn_clicked)
 
         self.env_variables_widgets = []
         for kv in self.app_list_element.env_variables:
