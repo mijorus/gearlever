@@ -189,7 +189,16 @@ class AppImageProvider():
 
     def uninstall(self, el: AppImageListElement):
         logging.info(f'Removing {el.file_path}')
-        os.remove(el.file_path)
+
+        gf = Gio.File.new_for_path(el.file_path)
+
+        try:
+            logging.info(f'Trashing {el.file_path}')
+            gf.trash(None)
+        except Exception as e:
+            logging.warn(f'Trashing {el.file_path} failed! Removing it instead...')
+            logging.warn(e)
+            os.remove(el.file_path)
 
         if el.desktop_entry:
             logging.info(f'Removing {el.desktop_entry.getFileName()}')
