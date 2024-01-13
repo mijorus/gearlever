@@ -7,61 +7,33 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-17 12:36+0200\n"
-"PO-Revision-Date: 2023-09-06 14:33+0200\n"
+"POT-Creation-Date: 2024-01-08 15:39+0100\n"
+"PO-Revision-Date: 2024-01-12 15:34+0100\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.3.2\n"
+"X-Generator: Poedit 3.4.2\n"
 
-#: data/it.mijorus.gearlever.desktop.in:2
+#: data/it.mijorus.gearlever.desktop.in:3
 msgid "Gear Lever"
 msgstr "Versnellingspook"
 
-#: data/it.mijorus.gearlever.desktop.in:3
+#: data/it.mijorus.gearlever.desktop.in:4
 msgid "An utility to manage AppImages with ease!"
-msgstr ""
+msgstr "Een toepassing voor het eenvoudig beheren van AppImages!"
+
+#: data/it.mijorus.gearlever.desktop.in:12
+msgid "AppImage;"
+msgstr "AppImage;"
 
 #: src/main.py:93
 msgid "translator_credits"
 msgstr "Heimen Stoffels <vistausss@fastmail.com>"
 
-#: src/AppDetails.py:53
-msgid "I have verified the source of this app"
-msgstr "Ik heb de bron van deze toepassing gecontroleerd"
-
-#: src/AppDetails.py:158
-msgid "Path"
-msgstr "Locatie"
-
-#: src/AppDetails.py:168
-msgid "Website"
-msgstr "Website"
-
-#: src/AppDetails.py:168
-msgid "Add a website"
-msgstr "Website toevoegen"
-
-#: src/AppDetails.py:174
-msgid "Open URL"
-msgstr "Url openen"
-
-#: src/AppDetails.py:184
-msgid "Reload metadata"
-msgstr "Metagegevens herladen"
-
-#: src/AppDetails.py:185
-msgid ""
-"Update information like icon, version and description.\n"
-"Useful if the app updated itself."
-msgstr ""
-"Werk de metagegevens bĳ, zoals pictogram, versienummer en beschrĳving.\n"
-"Dit is nuttig na het installeren van een nieuwe versie."
-
-#: src/AppDetails.py:200
+#: src/AppDetails.py:176
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -70,51 +42,123 @@ msgstr ""
 "<small>U kunt in de voorkeuren kiezen om externe toepassingen te verbergen.</"
 "small>"
 
-#: src/AppDetails.py:276
+#: src/AppDetails.py:180
+msgid "Please, verify the source of this app before opening it"
+msgstr "Controleer de bron van deze toepassing"
+
+#: src/AppDetails.py:181
+msgid "Unlock"
+msgstr "Ontgrendelen"
+
+#: src/AppDetails.py:273
 msgid "Launching..."
 msgstr "Bezig met starten…"
 
-#: src/AppDetails.py:306
+#: src/AppDetails.py:304 src/AppDetails.py:324
 msgid "This app runs in the terminal"
 msgstr "Deze toepassing draait in een terminalvenster"
 
-#: src/AppDetails.py:310 src/AppDetails.py:327
+#: src/AppDetails.py:306 src/AppDetails.py:321 src/AppDetails.py:327
 msgid "Launch"
 msgstr "Starten"
 
-#: src/AppDetails.py:313 src/AppDetails.py:334
+#: src/AppDetails.py:308 src/AppDetails.py:336
 msgid "Remove"
 msgstr "Verwijderen"
 
-#: src/AppDetails.py:317
+#: src/AppDetails.py:312
 msgid "Uninstalling..."
 msgstr "Bezig met verwijderen…"
 
-#: src/AppDetails.py:320
+#: src/AppDetails.py:316
 msgid "Installing..."
 msgstr "Bezig met installeren…"
 
-#: src/AppDetails.py:326
+#: src/AppDetails.py:329
 msgid "Move to the app menu"
 msgstr "Verplaatsen naar toepassingsmenu"
 
-#: src/AppDetails.py:330
+#: src/AppDetails.py:333
 msgid "Update"
 msgstr "Bĳwerken"
 
-#: src/AppDetails.py:338
+#: src/AppDetails.py:340
 msgid "Updating"
 msgstr "Bezig met bĳwerken…"
 
-#: src/AppDetails.py:341
+#: src/AppDetails.py:344
 msgid "Error"
 msgstr "Foutmelding"
+
+#: src/AppDetails.py:488
+msgid "Website"
+msgstr "Website"
+
+#: src/AppDetails.py:488
+msgid "Add a website"
+msgstr "Website toevoegen"
+
+#: src/AppDetails.py:497
+msgid "Open URL"
+msgstr "Url openen"
+
+#: src/AppDetails.py:510
+msgid "Reload metadata"
+msgstr "Metagegevens herladen"
+
+#: src/AppDetails.py:511
+msgid ""
+"Update information like icon, version and description.\n"
+"Useful if the app updated itself."
+msgstr ""
+"Werk de metagegevens bĳ, zoals pictogram, versienummer en beschrĳving.\n"
+"Dit is nuttig na het installeren van een nieuwe versie."
+
+#: src/AppDetails.py:523
+msgid "Command line arguments"
+msgstr "Opdrachtregelopties"
+
+#: src/AppDetails.py:539
+msgid "Hash"
+msgstr "Controlesom"
+
+#: src/AppDetails.py:549
+msgid "Path"
+msgstr "Locatie"
+
+#: src/AppDetails.py:551
+msgid "Open Folder"
+msgstr "Map openen"
+
+#: src/AppDetails.py:561
+msgid "Package type"
+msgstr "Pakkettype"
+
+#: src/AppDetails.py:581
+msgid "Key"
+msgstr "Sleutel"
+
+#: src/AppDetails.py:582
+msgid "Value"
+msgstr "Waarde"
+
+#: src/AppDetails.py:601
+msgid "Add"
+msgstr "Toevoegen"
+
+#: src/AppDetails.py:606
+msgid "Environment variables"
+msgstr "Omgevingsvariabelen"
 
 #: src/GearleverWindow.py:35
 msgid "Open a new AppImage"
 msgstr "AppImage openen"
 
-#: src/GearleverWindow.py:201
+#: src/GearleverWindow.py:45
+msgid "Open"
+msgstr "Openen"
+
+#: src/GearleverWindow.py:207
 msgid "Open a file"
 msgstr "Bestand openen"
 
@@ -357,6 +401,6 @@ msgstr "Instelhulp sluiten"
 msgid "No description provided"
 msgstr "Er is geen beschrĳving beschikbaar"
 
-#: src/providers/AppImageProvider.py:481
+#: src/providers/AppImageProvider.py:561
 msgid "Cannot load an untrusted AppImage"
 msgstr "Onvertrouwde AppImages kunnen niet worden gestart"
