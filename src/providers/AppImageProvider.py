@@ -195,6 +195,10 @@ class AppImageProvider():
             logging.info(f'Removing {el.desktop_entry.getFileName()}')
             os.remove(el.desktop_entry.getFileName())
 
+        icon = el.desktop_entry.getIcon()
+        if '/' in icon and os.path.isfile(icon):
+            os.remove(icon)
+
         el.set_installed_status(InstalledStatus.NOT_INSTALLED)
 
     def search(self, query: str) -> list[AppListElement]:
@@ -282,7 +286,10 @@ class AppImageProvider():
                 if not os.path.exists(f'{appimages_destination_path}/.icons'):
                     os.mkdir(f'{appimages_destination_path}/.icons')
 
-                dest_appimage_icon_file = Gio.File.new_for_path(f'{appimages_destination_path}/.icons/{app_name_without_ext}')
+                i, icon_file_ext = os.path.splitext(icon_file.get_path())
+                dest_appimage_icon_file = Gio.File.new_for_path(
+                    f'{appimages_destination_path}/.icons/{app_name_without_ext}{icon_file_ext}')
+
                 gio_copy(icon_file, dest_appimage_icon_file)
 
             # Move .desktop file to its default location
@@ -620,15 +627,16 @@ class AppImageProvider():
                         # always prefer svg(s) to png(s)
                         # if a png is not found in the root of the filesystem, try somewhere else
 
-                        try_paths = [
-                            extraction_folder.get_path() + f'/usr/share/icons/hicolor/scalable/apps/{desktop_entry_icon}.svg',
-                            extraction_folder.get_path() + f'/usr/share/icons/hicolor/512x512/apps/{desktop_entry_icon}.png',
-                            extraction_folder.get_path() + f'/usr/share/icons/hicolor/256x256/apps/{desktop_entry_icon}.png',
-                            extraction_folder.get_path() + f'/usr/share/icons/hicolor/128x128/apps/{desktop_entry_icon}.png',
-                            extraction_folder.get_path() + f'/usr/share/icons/hicolor/96x96apps/{desktop_entry_icon}.png'
+                        icons_folder_prefix = '/usr/share/icons/hicolor'
+                        icon_try_paths = [
+                            extraction_folder.get_path() + f'{icons_folder_prefix}/scalable/apps/{desktop_entry_icon}.svg',
+                            extraction_folder.get_path() + f'{icons_folder_prefix}/512x512/apps/{desktop_entry_icon}.png',
+                            extraction_folder.get_path() + f'{icons_folder_prefix}/256x256/apps/{desktop_entry_icon}.png',
+                            extraction_folder.get_path() + f'{icons_folder_prefix}/128x128/apps/{desktop_entry_icon}.png',
+                            extraction_folder.get_path() + f'{icons_folder_prefix}/96x96/apps/{desktop_entry_icon}.png'
                         ]
 
-                        for icon_xt in try_paths:
+                        for icon_xt in icon_try_paths:
                             logging.debug('Looking for icon in: ' + icon_xt)
                             icon_xt_f = Gio.File.new_for_path(icon_xt)
 
@@ -637,7 +645,8 @@ class AppImageProvider():
                                 break
 
                     if tmp_icon_file:
-                        icon_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/icon')
+                        i, tmp_icon_ext = os.path.splitext(tmp_icon_file.get_path())
+                        icon_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/icon{tmp_icon_ext}')
                         gio_copy(file=tmp_icon_file, destination=icon_file)
 
             except Exception as e:
@@ -653,7 +662,6 @@ class AppImageProvider():
 
         el.desktop_entry = desktop_entry
         el.extracted = result
-
 
         return result
 
