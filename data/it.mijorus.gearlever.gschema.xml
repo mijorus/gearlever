@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="gearlever">
-	<schema id="it.mijorus.gearlever" path="/it/mijorus/gearlever/">
+    <schema id="it.mijorus.gearlever" path="/it/mijorus/gearlever/">
         <key name="appimages-default-folder" type="s">
             <default>"~/AppImages"</default>
         </key>
-         <key name="move-appimage-on-integration" type="b">
+        <key name="move-appimage-on-integration" type="b">
             <default>true</default>
         </key>
         <key name="exec-as-name-for-terminal-apps" type="b">
@@ -16,11 +16,14 @@
         <key name="first-run" type="b">
             <default>true</default>
         </key>
-         <key name="last-run-version" type="s">
+        <key name="last-run-version" type="s">
             <default>"1.0.0"</default>
         </key>
-         <key name="manage-files-outside-default-folder" type="b">
+        <key name="manage-files-outside-default-folder" type="b">
             <default>true</default>
         </key>
-	</schema>
+        <key name="is-maximized" type="b">
+            <default>false</default>
+        </key>
+    </schema>
 </schemalist>

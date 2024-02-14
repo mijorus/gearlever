@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from time import sleep
 
 from .lib.costants import APP_ID
 from .InstalledAppsList import InstalledAppsList
@@ -25,7 +24,7 @@ from .providers.providers_list import appimage_provider
 from .models.AppListElement import AppListElement
 from .lib import utils
 
-from gi.repository import Gtk, Adw, Gio, Gdk, GLib
+from gi.repository import Gtk, Adw, Gio, Gdk
 
 
 class GearleverWindow(Gtk.ApplicationWindow):
@@ -33,6 +32,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
         super().__init__(**kwargs)
         self.from_file = from_file
         self.open_appimage_tooltip = _('Open a new AppImage')
+        self.settings = utils.get_gsettings()
 
         # Create a container stack 
         self.container_stack = Adw.Leaflet(can_unfold=False, can_navigate_back=True, can_navigate_forward=False)
@@ -60,7 +60,6 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.set_default_size(700, 700)
 
         toast_overlay = Adw.ToastOverlay()
-
 
         # Create the "stack" widget for the "installed apps" view
         self.installed_stack = Gtk.Stack()
@@ -103,10 +102,14 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.container_stack.append(self.drag_drop_ui)
 
         self.connect('close-request', self.on_close_request)
+        self.connect('notify::maximized', self.on_window_maximixed_changed)
 
         toast_overlay.set_child(self.container_stack)
 
         self.set_child(toast_overlay)
+
+        if self.settings.get_boolean('is-maximized'):
+            self.maximize()
 
 
     # Show app details
@@ -219,3 +222,6 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
     def on_close_request(self, widget):
         appimage_provider.extraction_folder_cleanup()
+
+    def on_window_maximixed_changed(self, *args):
+        self.settings.set_boolean('is-maximized', self.is_maximized())
