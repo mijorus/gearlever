@@ -221,7 +221,11 @@ class AppImageProvider():
 
     def run(self, el: AppImageListElement):
         if el.trusted:
-            terminal.host_threaded_sh(shlex.split(el.desktop_entry.getExec()), return_stderr=True)
+            if el.installed_status is InstalledStatus.INSTALLED:
+                terminal.host_threaded_sh(shlex.split(el.desktop_entry.getExec()), return_stderr=True)
+            else:
+               exec_args = shlex.split(el.desktop_entry.getExec())[1:]
+               terminal.host_threaded_sh([el.file_path, *exec_args], return_stderr=True) 
 
     def can_install_file(self, file: Gio.File) -> bool:
         return get_giofile_content_type(file) in self.supported_mimes
