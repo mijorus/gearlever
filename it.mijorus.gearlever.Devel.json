@@ -10,9 +10,7 @@
         "--socket=fallback-x11",
         "--device=dri",
         "--filesystem=home:rw",
-        "--talk-name=org.freedesktop.Flatpak",
-        "--talk-name=org.freedesktop.portal.OpenURI",
-        "--talk-name=org.freedesktop.portal.OpenFile"
+        "--talk-name=org.freedesktop.Flatpak"
     ],
     "cleanup" : [
         "/include",
