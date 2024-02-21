@@ -180,11 +180,10 @@ class AppImageProvider():
         if el.desktop_entry:
             el.name = el.desktop_entry.getName()
         
-        if el.trusted:
-            extracted = self._load_appimage_metadata(el)
-            if extracted.desktop_entry:
-                el.name = extracted.desktop_entry.getName()
-                el.version = el.desktop_entry.get('X-AppImage-Version')
+        extracted = self._load_appimage_metadata(el)
+        if extracted.desktop_entry:
+            el.name = extracted.desktop_entry.getName()
+            el.version = el.desktop_entry.get('X-AppImage-Version')
 
     def uninstall(self, el: AppImageListElement):
         logging.info(f'Removing {el.file_path}')

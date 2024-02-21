@@ -1,5 +1,5 @@
 from urllib import request
-from gi.repository import Gtk, Pango
+from gi.repository import Gtk, Pango, GObject
 from typing import Dict, List, Optional
 from ..lib.async_utils import idle, _async
 
@@ -8,10 +8,15 @@ from ..providers.providers_list import appimage_provider
 
 
 class AppListBoxItem(Gtk.ListBoxRow):
-    def __init__(self, list_element: AppListElement, **kwargs):
+    __gsignals__ = {
+        "details-clicked": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
+    }
+
+    def __init__(self, list_element: AppListElement, show_details_btn=False, **kwargs):
         super().__init__(**kwargs)
 
         self._app: AppListElement = list_element
+        self.details_btn: Optional[Gtk.Button] = None
 
         col = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
         col.set_css_classes(['app-listbox-item'])
@@ -54,6 +59,12 @@ class AppListBoxItem(Gtk.ListBoxRow):
         app_details_box.set_hexpand(True)
         col.append(app_details_box)
 
+        if show_details_btn:
+            self.details_btn = Gtk.Button(icon_name='gl-arrow2-top-right-symbolic',
+                                     valign=Gtk.Align.CENTER)
+            
+            col.append(self.details_btn)
+        
         self.set_child(col)
 
         if self._app.installed_status in [InstalledStatus.UPDATING, InstalledStatus.INSTALLING]:
@@ -61,6 +72,9 @@ class AppListBoxItem(Gtk.ListBoxRow):
 
     def load_icon(self):
         image = appimage_provider.get_icon(self._app)
+        self.set_icon(image)
+    
+    def set_icon(self, image: Gtk.Image):
         image.set_pixel_size(45)
         self.image_container.append(image)
 

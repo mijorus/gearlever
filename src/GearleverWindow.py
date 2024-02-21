@@ -33,6 +33,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
     def __init__(self, from_file=False, **kwargs):
         super().__init__(**kwargs)
         self.from_file = from_file
+        self.selected_files_count = 0
         self.open_appimage_tooltip = _('Open a new AppImage')
         self.settings = utils.get_gsettings()
 
@@ -122,6 +123,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
     # Show app details
     def on_selected_installed_app(self, source: Gtk.Widget, list_element: AppListElement):
+        self.selected_files_count = 0
         self.app_details.set_app_list_element(list_element)
         self.container_stack.set_transition_type(Adw.LeafletTransitionType.OVER)
         self.container_stack.set_visible_child(self.app_details)
@@ -174,9 +176,15 @@ class GearleverWindow(Gtk.ApplicationWindow):
         if self.app_lists_stack.get_visible_child() == self.installed_stack:
             container_visible = self.container_stack.get_visible_child()
 
-            if container_visible == self.app_details \
-                or container_visible == self.multi_install:
+            if container_visible == self.app_details:
+                if self.selected_files_count > 1:
+                   self.container_stack.set_visible_child(self.multi_install)
 
+                else:
+                    self.titlebar.set_title_widget(self.view_title_widget)
+                    self.on_show_installed_list()
+
+            elif container_visible == self.multi_install:
                 self.titlebar.set_title_widget(self.view_title_widget)
                 self.on_show_installed_list()
 
@@ -231,6 +239,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
     def on_open_file_chooser_response(self, dialog, result):
         try:
             selected_files = dialog.open_multiple_finish(result)
+            self.selected_files_count = len(selected_files)
         except Exception as e:
             logging.error(str(e))
             return
