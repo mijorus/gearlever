@@ -606,7 +606,7 @@ class AppImageProvider():
 
             try:
                 if not extraction_folder.query_exists():
-                    raise InternalError('Missing mounted extraction folder')
+                    raise InternalError('Missing mounted extraction folder', mounted_appimage_path)
 
                 for d in  os.listdir(f'{extraction_folder.get_path()}'):
                     if not d.endswith('.desktop'):

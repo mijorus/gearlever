@@ -20,6 +20,7 @@ import logging
 from .lib.costants import APP_ID
 from .InstalledAppsList import InstalledAppsList
 from .AppDetails import AppDetails
+from .MultiInstall import MultiInstall
 from .providers.providers_list import appimage_provider
 from .models.AppListElement import AppListElement
 from .lib import utils
@@ -69,6 +70,8 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.installed_apps_list = InstalledAppsList()
         self.installed_apps_list.refresh_list()
 
+        self.multi_install = MultiInstall()
+
         self.installed_stack.add_child(self.installed_apps_list)
 
         self.installed_stack.set_visible_child(self.installed_apps_list)
@@ -78,6 +81,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         self.container_stack.append(self.app_lists_stack)
         self.container_stack.append(self.app_details)
+        self.container_stack.append(self.multi_install)
         
         # Show details of an installed app
         self.installed_apps_list.connect('selected-app', self.on_selected_installed_app)
@@ -93,6 +97,8 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.drag_drop_ui = builder.get_object('drag-drop')
 
         self.drop_target_controller = Gtk.DropTarget.new(Gio.File, Gdk.DragAction.COPY)
+        self.drop_target_controller.set_gtypes([Gdk.FileList])
+
         self.drop_target_controller.connect('drop', self.on_drop_event)
         self.drop_target_controller.connect('enter', self.on_drop_enter)
         self.drop_target_controller.connect('leave', self.on_drop_leave)
@@ -118,12 +124,15 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.container_stack.set_transition_type(Adw.LeafletTransitionType.OVER)
         self.container_stack.set_visible_child(self.app_details)
 
-    def on_selected_local_file(self, file: Gio.File) -> bool:
-        if self.app_details.set_from_local_file(file):
+    def on_selected_local_file(self, files: Gio.ListStore) -> bool:
+        files = list(files)
+
+        if files:
             self.container_stack.set_transition_type(
                 Adw.LeafletTransitionType.UNDER if self.from_file else Adw.LeafletTransitionType.OVER
             )
 
+        if len(files) == 1 and self.app_details.set_from_local_file(files[0]):
             self.container_stack.set_visible_child(self.app_details)
 
             if self.from_file:
@@ -133,7 +142,16 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
             return True
 
-        
+        elif len(files) > 1 and self.multi_install.set_from_local_files(files):
+            self.container_stack.set_visible_child(self.multi_install)
+
+            if self.from_file:
+                # open the app with a minimal UI when opening a single file
+                self.left_button.set_visible(False)
+                self.menu_button.set_visible(False)
+
+            return True
+
         utils.send_notification(
             Gio.Notification.new('Unsupported file type: Gear lever can\'t handle these types of files.')
         )
@@ -203,18 +221,18 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
     def on_open_file_chooser_response(self, dialog, result):
         try:
-            selected_file = dialog.open_finish(result)
+            selected_files = dialog.open_multiple_finish(result)
         except Exception as e:
             logging.error(str(e))
             return
 
-        if selected_file:
-            self.on_selected_local_file(selected_file)
+        if selected_files:
+            self.on_selected_local_file(selected_files)
 
     def on_open_file_chooser(self):
-        dialog = Gtk.FileDialog(title=_('Open a file'),modal=True)
+        dialog = Gtk.FileDialog(title=_('Open a file'), modal=True)
 
-        dialog.open(
+        dialog.open_multiple(
             parent=self,
             cancellable=None,
             callback=self.on_open_file_chooser_response
