@@ -384,7 +384,8 @@ class AppImageProvider():
                 raise InternalError('Cannot delete original file')
 
         try:
-            self.extraction_folder_cleanup()
+            # self.extraction_folder_cleanup()/
+            pass
         except Exception as g:
             logging.error('Appimage cleanup error: ' + str(g))
             raise g
@@ -450,6 +451,7 @@ class AppImageProvider():
         logging.debug(f'Clearing {self.extraction_folder}')
         if os.path.exists(self.extraction_folder):
             shutil.rmtree(self.extraction_folder)
+            os.makedirs(self.extraction_folder)
 
     def update_exec_arguments(self, el:AppImageListElement, arg_string: str):
         arg_string = arg_string.replace("\n", "")

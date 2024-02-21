@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-08 15:39+0100\n"
+"POT-Creation-Date: 2024-02-21 23:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,127 +33,139 @@ msgstr ""
 msgid "translator_credits"
 msgstr ""
 
-#: src/AppDetails.py:176
+#: src/AppDetails.py:179
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
 msgstr ""
 
-#: src/AppDetails.py:180
+#: src/AppDetails.py:183
 msgid "Please, verify the source of this app before opening it"
 msgstr ""
 
-#: src/AppDetails.py:181
+#: src/AppDetails.py:184
 msgid "Unlock"
 msgstr ""
 
-#: src/AppDetails.py:273
+#: src/AppDetails.py:278
 msgid "Launching..."
 msgstr ""
 
-#: src/AppDetails.py:304 src/AppDetails.py:324
+#: src/AppDetails.py:294
+msgid "App not opening? Go to Menu > Open Log File for more details"
+msgstr ""
+
+#: src/AppDetails.py:319 src/AppDetails.py:339
 msgid "This app runs in the terminal"
 msgstr ""
 
-#: src/AppDetails.py:306 src/AppDetails.py:321 src/AppDetails.py:327
+#: src/AppDetails.py:321 src/AppDetails.py:336 src/AppDetails.py:342
 msgid "Launch"
 msgstr ""
 
-#: src/AppDetails.py:308 src/AppDetails.py:336
+#: src/AppDetails.py:323 src/AppDetails.py:351
 msgid "Remove"
 msgstr ""
 
-#: src/AppDetails.py:312
+#: src/AppDetails.py:327
 msgid "Uninstalling..."
 msgstr ""
 
-#: src/AppDetails.py:316
+#: src/AppDetails.py:331
 msgid "Installing..."
 msgstr ""
 
-#: src/AppDetails.py:329
+#: src/AppDetails.py:344
 msgid "Move to the app menu"
 msgstr ""
 
-#: src/AppDetails.py:333
+#: src/AppDetails.py:348
 msgid "Update"
 msgstr ""
 
-#: src/AppDetails.py:340
+#: src/AppDetails.py:355
 msgid "Updating"
 msgstr ""
 
-#: src/AppDetails.py:344
+#: src/AppDetails.py:359
 msgid "Error"
 msgstr ""
 
-#: src/AppDetails.py:488
+#: src/AppDetails.py:505
 msgid "Website"
 msgstr ""
 
-#: src/AppDetails.py:488
+#: src/AppDetails.py:505
 msgid "Add a website"
 msgstr ""
 
-#: src/AppDetails.py:497
+#: src/AppDetails.py:514
 msgid "Open URL"
 msgstr ""
 
-#: src/AppDetails.py:510
+#: src/AppDetails.py:527
 msgid "Reload metadata"
 msgstr ""
 
-#: src/AppDetails.py:511
+#: src/AppDetails.py:528
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
 msgstr ""
 
-#: src/AppDetails.py:523
+#: src/AppDetails.py:540
 msgid "Command line arguments"
 msgstr ""
 
-#: src/AppDetails.py:539
+#: src/AppDetails.py:556
 msgid "Hash"
 msgstr ""
 
-#: src/AppDetails.py:549
+#: src/AppDetails.py:566
 msgid "Path"
 msgstr ""
 
-#: src/AppDetails.py:551
+#: src/AppDetails.py:568
 msgid "Open Folder"
 msgstr ""
 
-#: src/AppDetails.py:561
+#: src/AppDetails.py:578
 msgid "Package type"
 msgstr ""
 
-#: src/AppDetails.py:581
+#: src/AppDetails.py:596
 msgid "Key"
 msgstr ""
 
-#: src/AppDetails.py:582
+#: src/AppDetails.py:597
 msgid "Value"
 msgstr ""
 
-#: src/AppDetails.py:601
+#: src/AppDetails.py:616
 msgid "Add"
 msgstr ""
 
-#: src/AppDetails.py:606
+#: src/AppDetails.py:621
+msgid "Save"
+msgstr ""
+
+#: src/AppDetails.py:636
 msgid "Environment variables"
 msgstr ""
 
-#: src/GearleverWindow.py:35
+#: src/AppDetails.py:637
+msgid "Add or customize environment for this application"
+msgstr ""
+
+#: src/GearleverWindow.py:37
 msgid "Open a new AppImage"
 msgstr ""
 
-#: src/GearleverWindow.py:45
+#: src/GearleverWindow.py:49
 msgid "Open"
 msgstr ""
 
-#: src/GearleverWindow.py:207
+#: src/GearleverWindow.py:254
 msgid "Open a file"
 msgstr ""
 
@@ -333,7 +345,6 @@ msgid ""
 msgstr ""
 
 #: src/gtk/tutorial/2.ui:33
-#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
 msgstr ""
 
@@ -378,8 +389,4 @@ msgstr ""
 
 #: src/models/AppListElement.py:19
 msgid "No description provided"
-msgstr ""
-
-#: src/providers/AppImageProvider.py:561
-msgid "Cannot load an untrusted AppImage"
 msgstr ""

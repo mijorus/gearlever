@@ -60,7 +60,7 @@ class AppListBoxItem(Gtk.ListBoxRow):
         col.append(app_details_box)
 
         if show_details_btn:
-            self.details_btn = Gtk.Button(icon_name='gl-arrow2-top-right-symbolic',
+            self.details_btn = Gtk.Button(icon_name='right-symbolic',
                                      valign=Gtk.Align.CENTER)
             
             col.append(self.details_btn)

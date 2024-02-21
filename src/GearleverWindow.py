@@ -45,7 +45,9 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         self.titlebar = Adw.HeaderBar()
         self.view_title_widget = Adw.ViewSwitcherTitle(stack=self.app_lists_stack)
-        self.open_appimage_button_child = Adw.ButtonContent(icon_name='gl-plus-symbolic', tooltip_text=self.open_appimage_tooltip, label=_('Open'))
+        self.open_appimage_button_child = Adw.ButtonContent(icon_name='gl-plus-symbolic', 
+                                                            tooltip_text=self.open_appimage_tooltip, label=_('Open'))
+
         self.left_button = Gtk.Button(
             child=self.open_appimage_button_child
         )
@@ -74,6 +76,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         self.multi_install = MultiInstall()
         self.multi_install.connect('show-details', self.on_multi_install_show_details)
+        self.multi_install.connect('go-back', lambda *_: self.on_left_button_clicked(self.left_button))
 
         self.installed_stack.add_child(self.installed_apps_list)
 
@@ -128,9 +131,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.container_stack.set_transition_type(Adw.LeafletTransitionType.OVER)
         self.container_stack.set_visible_child(self.app_details)
 
-    def on_selected_local_file(self, files: Gio.ListStore) -> bool:
-        files = list(files)
-
+    def on_selected_local_file(self, files: list[Gio.File]) -> bool:
         if files:
             self.container_stack.set_transition_type(
                 Adw.LeafletTransitionType.UNDER if self.from_file else Adw.LeafletTransitionType.OVER
@@ -177,6 +178,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
             container_visible = self.container_stack.get_visible_child()
 
             if container_visible == self.app_details:
+                print(self.selected_files_count)
                 if self.selected_files_count > 1:
                    self.container_stack.set_visible_child(self.multi_install)
 
@@ -207,9 +209,10 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.view_title_widget.set_visible(not in_app_details)
 
     def on_drop_event(self, widget, value, x, y):
-        if isinstance(value, Gio.File):
+        if isinstance(value, Gdk.FileList):
             logging.debug('Opening file from drag and drop')
-            return self.on_selected_local_file(value)
+            self.selected_files_count = len(list(value))
+            return self.on_selected_local_file(list(value))
 
         return False
     
@@ -239,13 +242,13 @@ class GearleverWindow(Gtk.ApplicationWindow):
     def on_open_file_chooser_response(self, dialog, result):
         try:
             selected_files = dialog.open_multiple_finish(result)
-            self.selected_files_count = len(selected_files)
+            self.selected_files_count = len(list(selected_files))
         except Exception as e:
             logging.error(str(e))
             return
 
         if selected_files:
-            self.on_selected_local_file(selected_files)
+            self.on_selected_local_file(list(selected_files))
 
     def on_open_file_chooser(self):
         dialog = Gtk.FileDialog(title=_('Open a file'), modal=True)
