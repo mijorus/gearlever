@@ -22,6 +22,7 @@ from .InstalledAppsList import InstalledAppsList
 from .AppDetails import AppDetails
 from .MultiInstall import MultiInstall
 from .providers.providers_list import appimage_provider
+from .providers.AppImageProvider import AppImageListElement
 from .models.AppListElement import AppListElement
 from .lib import utils
 
@@ -71,6 +72,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.installed_apps_list.refresh_list()
 
         self.multi_install = MultiInstall()
+        self.multi_install.connect('show-details', self.on_multi_install_show_details)
 
         self.installed_stack.add_child(self.installed_apps_list)
 
@@ -158,6 +160,10 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         return False
 
+    def on_multi_install_show_details(self, source: MultiInstall, el: AppImageListElement):
+        file = Gio.File.new_for_path(el.file_path)
+        self.on_selected_local_file([file])
+
     def on_show_installed_list(self, source: Gtk.Widget=None, data=None):
         self.container_stack.set_transition_type(Adw.LeafletTransitionType.OVER)
 
@@ -168,7 +174,9 @@ class GearleverWindow(Gtk.ApplicationWindow):
         if self.app_lists_stack.get_visible_child() == self.installed_stack:
             container_visible = self.container_stack.get_visible_child()
 
-            if container_visible == self.app_details:
+            if container_visible == self.app_details \
+                or container_visible == self.multi_install:
+
                 self.titlebar.set_title_widget(self.view_title_widget)
                 self.on_show_installed_list()
 
@@ -180,8 +188,9 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
     def on_container_stack_change(self, widget, data):
         in_app_details = self.container_stack.get_visible_child() is self.app_details
+        in_multi_install = self.container_stack.get_visible_child() is self.multi_install
 
-        if in_app_details:
+        if in_app_details or in_multi_install:
             self.left_button.set_icon_name('gl-left-symbolic')
             self.left_button.set_tooltip_text(None)
         else:

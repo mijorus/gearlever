@@ -48,7 +48,7 @@ class AppImageListElement():
     updating_from: Optional[any] = None
     version: Optional[str] = None
     extracted: Optional[ExtractedAppImage] = None
-    local_file: Optional[Gio.File] = None
+    local_file: Optional[bool] = None
     size: Optional[float] = None
     external_folder: bool = False
     desktop_file_path: Optional[str] = None
@@ -163,11 +163,10 @@ class AppImageProvider():
             if el.desktop_entry and icon_theme.has_icon(el.desktop_entry.getIcon()):
                 return Gtk.Image.new_from_icon_name(el.desktop_entry.getIcon())
 
-            if el.trusted:
-                extracted = self._load_appimage_metadata(el)
+            extracted = self._load_appimage_metadata(el)
 
-                if extracted.icon_file and os.path.exists(extracted.icon_file.get_path()):
-                    return Gtk.Image.new_from_file(extracted.icon_file.get_path())
+            if extracted.icon_file and os.path.exists(extracted.icon_file.get_path()):
+                return Gtk.Image.new_from_file(extracted.icon_file.get_path())
 
         return Gtk.Image(icon_name='gl-application-x-executable-symbolic')
 
@@ -580,9 +579,6 @@ class AppImageProvider():
         return f'{dest_path}/squashfs-root'
 
     def _load_appimage_metadata(self, el: AppImageListElement) -> ExtractedAppImage:
-        if not el.trusted:
-            raise InternalError(message=_('Cannot load an untrusted AppImage'))
-        
         if el.extracted:
             return el.extracted
 
