@@ -571,9 +571,9 @@ class AppImageProvider():
         # logging.info('This appiamge does not support appimage-extract, trying with 7z')
         logging.info('Exctracting with p7zip')
         z7zoutput = '=== 7z log ==='
-        z7zoutput = '\n\n' + terminal.sandbox_sh(['7z', 'x', dest.get_path(), '-r', '*.png', '-osquashfs-root', '-y'], cwd=dest_path)
-        z7zoutput += '\n\n' + terminal.sandbox_sh(['7z', 'x', dest.get_path(), '-r', '*.desktop', '-osquashfs-root', '-y'], cwd=dest_path)
-        z7zoutput += '\n\n' + terminal.sandbox_sh(['7z', 'x', dest.get_path(), '-r', '*.svg', '-osquashfs-root', '-y'], cwd=dest_path)
+        z7zoutput = '\n\n' + terminal.sandbox_sh(['7z', 'x', dest.get_path(), '-r', '*.png', '-osquashfs-root', '-y', '-bso0', 'bsp0'], cwd=dest_path)
+        z7zoutput += '\n\n' + terminal.sandbox_sh(['7z', 'x', dest.get_path(), '-r', '*.desktop', '-osquashfs-root', '-y', '-bso0', 'bsp0'], cwd=dest_path)
+        z7zoutput += '\n\n' + terminal.sandbox_sh(['7z', 'x', dest.get_path(), '-r', '*.svg', '-osquashfs-root', '-y', '-bso0', 'bsp0'], cwd=dest_path)
 
         logging.debug(z7zoutput)
 
