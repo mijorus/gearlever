@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
     <id>it.mijorus.gearlever</id>
+    <launchable type="desktop-id">it.mijorus.gearlever.desktop</launchable>
     <name>Gear Lever</name>
     <summary>Manage AppImages</summary>
     <url type="homepage">https://mijorus.it/projects/gearlever</url>
