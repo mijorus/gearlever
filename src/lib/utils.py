@@ -1,3 +1,4 @@
+import random
 import dbus
 import re
 import os
@@ -139,3 +140,6 @@ def url_is_valid(url: str) -> bool:
     , re.IGNORECASE)
 
     return True if url_regex.match(url) else False
+
+def get_random_string():
+    return ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))

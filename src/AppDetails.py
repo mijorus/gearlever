@@ -7,6 +7,7 @@ from typing import Optional, Callable
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
 
 from .State import state
+from .models.UpdateManager import UpdateManager, UpdateManagerChecker
 from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
@@ -166,6 +167,8 @@ class AppDetails(Gtk.ScrolledWindow):
 
             # A custom link to a website
             gtk_list.append(self.create_edit_custom_website_row())
+            
+            gtk_list.append(self.create_edit_update_url_row())
 
             # Reload metadata row
             reload_data_listbox = Gtk.ListBox(css_classes=['boxed-list'])
@@ -299,7 +302,6 @@ class AppDetails(Gtk.ScrolledWindow):
         self.secondary_action_button.set_label(restore_as)
         self.secondary_action_button.set_sensitive(True)
 
-
     def update_status_callback(self, status: bool):
         if not status:
             self.app_list_element.set_installed_status(InstalledStatus.ERROR)
@@ -394,6 +396,26 @@ class AppDetails(Gtk.ScrolledWindow):
         app_conf['website'] = text
         conf[app_conf['b64name']] = app_conf
         set_json_config('apps', conf)
+   
+    @debounce(0.5)
+    @_async
+    def on_app_update_url_apply(self, widget):
+        conf = read_json_config('apps')
+        app_conf = self.get_config_for_app()
+
+        text = widget.get_text().strip()
+        
+        GLib.idle_add(lambda: widget.remove_css_class('error'))
+
+        manager = UpdateManagerChecker.check_url(text)
+
+        if not manager:
+            GLib.idle_add(lambda: widget.add_css_class('error'))
+            return
+
+        app_conf['update_url'] = text
+        conf[app_conf['b64name']] = app_conf
+        set_json_config('apps', conf)
 
     def on_env_var_value_changed(self, widget, key_widget, value_widget):
         key = key_widget.get_text()
@@ -460,6 +482,11 @@ class AppDetails(Gtk.ScrolledWindow):
             launcher = Gtk.UriLauncher.new(app_config['website'])
             launcher.launch()
 
+    def on_update_url_info_btn_clicked(self, widget):
+        url = 'https://mijorus.it/posts/gearlever/update-url-info/'
+        launcher = Gtk.UriLauncher.new(url)
+        launcher.launch()
+
     @_async
     def on_refresh_metadata_btn_clicked(self, widget):
         self.show_row_spinner(True)
@@ -517,6 +544,33 @@ class AppDetails(Gtk.ScrolledWindow):
         row_btn.connect('clicked', self.on_web_browser_open_btn_clicked)
 
         row.connect('changed', self.on_web_browser_input_apply)
+        row.add_prefix(row_img)
+        row.add_suffix(row_btn)
+
+        return row
+    
+    def create_edit_update_url_row(self) -> Adw.EntryRow:
+        app_config = self.get_config_for_app()
+
+        title = (_('Update URL') if app_config.get('update_url', False) else _('Add an update url'))
+        row = Adw.EntryRow(
+            title=title,
+            selectable=False,
+            text=(app_config.get('update_url', ''))
+        )
+
+        row_img = Gtk.Image(icon_name='software-update-available-symbolic', 
+                            pixel_size=self.ACTION_ROW_ICON_SIZE)
+
+        row_btn = Gtk.Button(
+            icon_name='info-symbolic', 
+            valign=Gtk.Align.CENTER, 
+            tooltip_text=_('How it works'),
+        )
+
+        row_btn.connect('clicked', self.on_update_url_info_btn_clicked)
+
+        row.connect('changed', self.on_app_update_url_apply)
         row.add_prefix(row_img)
         row.add_suffix(row_btn)
 

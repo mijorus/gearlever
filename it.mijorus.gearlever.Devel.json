@@ -1,5 +1,5 @@
 {
-    "app-id" : "it.mijorus.gearlever",
+    "id" : "it.mijorus.gearlever",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "45",
     "sdk" : "org.gnome.Sdk",
@@ -10,6 +10,7 @@
         "--socket=fallback-x11",
         "--device=dri",
         "--filesystem=home:rw",
+        "--share=network",
         "--talk-name=org.freedesktop.Flatpak"
     ],
     "cleanup" : [

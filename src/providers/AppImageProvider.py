@@ -13,7 +13,8 @@ import dataclasses
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async
-from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash
+from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
+    get_random_string
 from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalError
 from typing import Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, Gio
@@ -63,12 +64,13 @@ class AppImageListElement():
 
 
 class AppImageProvider():
+    supported_mimes = ['application/x-iso9660-appimage', 'application/vnd.appimage']
+    
     def __init__(self):
         self.name = 'AppImage'
         self.icon = "/it/mijorus/gearlever/assets/App-image-logo.png"
         logging.info(f'Activating {self.name} provider')
 
-        self.supported_mimes = ['application/x-iso9660-appimage', 'application/vnd.appimage']
 
         self.general_messages = []
         self.update_messages = []
@@ -401,7 +403,7 @@ class AppImageProvider():
             return
         
         logging.info(f'Reloading metadata for {el.file_path}')
-        random_str = ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))
+        random_str = get_random_string()
         dest_path = f'{self.extraction_folder}/gearlever_{random_str}'
 
         if not os.path.exists(dest_path):
@@ -514,7 +516,7 @@ class AppImageProvider():
     # Private methods
 
     def _extract_appimage(self, el: AppImageListElement) -> str:
-        random_str = ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))
+        random_str = get_random_string()
         dest_path = f'{self.extraction_folder}/gearlever_{random_str}'
 
         file = Gio.File.new_for_path(el.file_path)
