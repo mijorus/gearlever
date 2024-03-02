@@ -13,9 +13,10 @@ import dataclasses
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async
-from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
-    get_random_string
-from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalError
+# from ..models.UpdateManager import UpdateManager as UpManager
+from ..lib.utils import log, get_giofile_content_type, get_gsettings, \
+    gio_copy, get_file_hash, get_random_string
+from ..models.Models import AppUpdateElement, InternalError
 from typing import Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, Gio
 from enum import Enum
@@ -42,6 +43,7 @@ class AppImageListElement():
     file_path: str
     generation: int
     trusted: bool = False
+    is_updatable_from_url = False
     env_variables: List[str] = dataclasses.field(default_factory=lambda: [])
     exec_arguments: List[str] = dataclasses.field(default_factory=lambda: [])
     desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
@@ -50,7 +52,6 @@ class AppImageListElement():
     version: Optional[str] = None
     extracted: Optional[ExtractedAppImage] = None
     local_file: Optional[bool] = None
-    size: Optional[float] = None
     external_folder: bool = False
     desktop_file_path: Optional[str] = None
 
@@ -512,6 +513,19 @@ class AppImageProvider():
             desktop_file.write(desktop_file_content)
 
         el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
+
+    def update_from_url(self, manager, el: AppImageListElement):
+        update_file_path = manager.download()
+        update_gfile = Gio.file_new_for_path(update_file_path)
+
+        if not self.can_install_file(update_gfile):
+            raise Exception(_('The downloaded file is not a valid appimage, please check if the provided URL is correct'))
+        
+        list_element = self.create_list_element_from_file(update_gfile)
+        self.refresh_title(list_element)
+
+        # if not self.is_updatable(list_element):
+        raise Exception(_(f'The downloaded appimage does not have the same app name and can\t be updated\n{el.name} ➔ {list_element.name}'))
 
     # Private methods
 

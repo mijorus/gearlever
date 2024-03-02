@@ -58,12 +58,21 @@ class AppDetails(Gtk.ScrolledWindow):
         # Action buttons
         self.primary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, css_classes=self.common_btn_css_classes)
         self.secondary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, css_classes=self.common_btn_css_classes)
+        self.update_action_button = Gtk.Button(
+            label=_('Update'), 
+            valign=Gtk.Align.CENTER, 
+            css_classes=[*self.common_btn_css_classes, 'suggested-action'],
+            visible=False
+        )
 
         action_buttons_row = CenteringBox(orientation=Gtk.Orientation.VERTICAL, spacing=10, width_request=200)
         self.primary_action_button.connect('clicked', self.on_primary_action_button_clicked)
         self.secondary_action_button.connect('clicked', self.on_secondary_action_button_clicked)
+        self.update_action_button.connect('clicked', self.update_action_button_clicked)
+        
+        [action_buttons_row.append(el) for el in [self.secondary_action_button, self.update_action_button, 
+                                                    self.primary_action_button]]
 
-        [action_buttons_row.append(el) for el in [self.secondary_action_button, self.primary_action_button]]
         [self.details_row.append(el) for el in [self.icon_slot, title_col, action_buttons_row]]
 
         # preview row
@@ -100,6 +109,9 @@ class AppDetails(Gtk.ScrolledWindow):
         self.env_variables_group_container = None
         self.save_vars_btn: Optional[Gtk.Button] = None
 
+        # Update url entry
+        self.update_url_row: Optional[Adw.EntryRow] = None
+
         self.toast_overlay = toast_overlay
 
         self.set_child(container_box)
@@ -107,6 +119,7 @@ class AppDetails(Gtk.ScrolledWindow):
     def set_app_list_element(self, el: AppImageListElement):
         self.app_list_element = el
         self.provider = appimage_provider
+        self.update_action_button.set_visible(False)
 
         self.load()
 
@@ -168,7 +181,8 @@ class AppDetails(Gtk.ScrolledWindow):
             # A custom link to a website
             gtk_list.append(self.create_edit_custom_website_row())
             
-            gtk_list.append(self.create_edit_update_url_row())
+            self.update_url_row = self.create_edit_update_url_row()
+            gtk_list.append(self.update_url_row)
 
             # Reload metadata row
             reload_data_listbox = Gtk.ListBox(css_classes=['boxed-list'])
@@ -195,6 +209,8 @@ class AppDetails(Gtk.ScrolledWindow):
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
             edit_env_vars_widget = self.create_edit_env_vars_row()
             self.extra_data.append(edit_env_vars_widget)
+
+            self.check_updates()
 
         self.show_row_spinner(False)
 
@@ -286,6 +302,40 @@ class AppDetails(Gtk.ScrolledWindow):
 
                 except Exception as e:
                     logging.error(str(e))
+
+    @_async
+    def update_action_button_clicked(self, w):
+        self.set_all_btn_sensitivity(False)
+        GLib.idle_add(lambda: self.update_action_button.set_label(_('Downloading...')))
+
+        app_conf = self.get_config_for_app()
+        manager = UpdateManagerChecker.check_url(app_conf.get('update_url'))
+
+        try:
+            appimage_provider.update_from_url(manager, self.app_list_element)
+        except Exception as e:
+           self.show_updete_error_dialog(str(e))
+
+        self.set_all_btn_sensitivity(True)
+
+        GLib.idle_add(lambda: self.update_action_button.set_label(_('Update')))
+        self.check_updates()
+
+    @idle
+    def show_updete_error_dialog(self, msg: str):
+        dialog = Adw.MessageDialog(
+            transient_for=get_application_window(),
+            heading=_('Update error'),
+            body=msg
+        )
+
+        dialog.present()
+
+    @idle
+    def set_all_btn_sensitivity(self, s: bool):
+        self.primary_action_button.set_sensitive(s)
+        self.secondary_action_button.set_sensitive(s)
+        self.update_action_button.set_sensitive(s)
 
     @_async
     def post_launch_animation(self, restore_as):
@@ -397,6 +447,29 @@ class AppDetails(Gtk.ScrolledWindow):
         conf[app_conf['b64name']] = app_conf
         set_json_config('apps', conf)
    
+    @_async
+    def check_updates(self):
+        app_conf = self.get_config_for_app()
+
+        if not app_conf.get('update_url', None):
+            logging.debug(f'Update url missing for app {self.app_list_element.name}, skipping...')
+            return
+
+        manager = UpdateManagerChecker.check_url(app_conf.get('update_url'))
+
+        if not manager:
+            if self.update_url_row:
+                GLib.idle_add(lambda: self.update_url_row.add_css_class('error'))
+
+            return
+        
+        is_updatable = manager.is_update_available(self.app_list_element)
+        self.app_list_element.is_updatable_from_url = is_updatable
+
+        if is_updatable:
+            logging.debug(f'{self.app_list_element.name} is_updatable')
+            GLib.idle_add(lambda: self.update_action_button.set_visible(True))
+
     @debounce(0.5)
     @_async
     def on_app_update_url_apply(self, widget):

@@ -187,5 +187,4 @@ class MultiInstall(Gtk.ScrolledWindow):
         return installable > 0
 
     def on_install_all_clicked(self, widget: Gtk.Button):
-        body = Gtk.BaselinePosition
         self.show_confirmation_dialog()
