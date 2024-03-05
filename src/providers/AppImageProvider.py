@@ -514,8 +514,8 @@ class AppImageProvider():
 
         el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
 
-    def update_from_url(self, manager, el: AppImageListElement):
-        update_file_path = manager.download()
+    def update_from_url(self, manager, el: AppImageListElement, status_cb: callable):
+        update_file_path = manager.download(status_cb)
         update_gfile = Gio.file_new_for_path(update_file_path)
 
         if not self.can_install_file(update_gfile):

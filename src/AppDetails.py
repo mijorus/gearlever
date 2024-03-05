@@ -306,16 +306,18 @@ class AppDetails(Gtk.ScrolledWindow):
     @_async
     def update_action_button_clicked(self, w):
         self.set_all_btn_sensitivity(False)
-        GLib.idle_add(lambda: self.update_action_button.set_label(_('Downloading...')))
 
         app_conf = self.get_config_for_app()
         manager = UpdateManagerChecker.check_url(app_conf.get('update_url'))
 
         try:
-            appimage_provider.update_from_url(manager, self.app_list_element)
+            appimage_provider.update_from_url(manager, self.app_list_element, status_cb= lambda s: \
+                GLib.idle_add(lambda: self.update_action_button.set_label(str(round(s * 100)) + ' %')
+            ))
         except Exception as e:
            self.show_updete_error_dialog(str(e))
 
+        manager.cleanup()
         self.set_all_btn_sensitivity(True)
 
         GLib.idle_add(lambda: self.update_action_button.set_label(_('Update')))
