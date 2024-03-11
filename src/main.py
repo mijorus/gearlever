@@ -76,16 +76,22 @@ class GearleverApplication(Adw.Application):
         self.win.present()
 
     def do_open(self, files: list[Gio.File], n_files: int, data):
-        if files and appimage_provider.can_install_file(files[0]):
-            self.do_activate(from_file=True)
-            self.win.on_selected_local_file(files[0])
+        if not files:
+            return
+
+        for f in files:
+            if not appimage_provider.can_install_file(f):
+                return
+        
+        self.do_activate(from_file=True)
+        self.win.on_selected_local_file(list(files))
 
     def on_about_action(self, widget, data):
         about = Adw.AboutWindow(
-            application_name='Gear lever',
+            application_name='Gear Lever',
             version=self.version,
             developers=['Lorenzo Paderi'],
-            copyright='2023 Lorenzo Paderi',
+            copyright='2024 Lorenzo Paderi',
             application_icon='it.mijorus.gearlever',
             issue_url='https://github.com/mijorus/gearlever',
         )
