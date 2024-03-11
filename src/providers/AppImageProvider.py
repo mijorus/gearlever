@@ -129,9 +129,12 @@ class AppImageProvider():
                             )
 
                             output.append(list_element)
+                        else:
+                            logging.debug(f'{gfile.get_path()} skipped because {exec_location} is not a supported file type')
+                    else:
+                        logging.debug(f'{gfile.get_path()} skipped because {exec_location} does not exists on the filesystem')
 
             except Exception as e:
-                print(e)
                 logging.warn(e)
 
         return output
