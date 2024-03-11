@@ -78,7 +78,7 @@ class GearleverApplication(Adw.Application):
     def do_open(self, files: list[Gio.File], n_files: int, data):
         if files and appimage_provider.can_install_file(files[0]):
             self.do_activate(from_file=True)
-            self.win.on_selected_local_file(files[0])
+            self.win.on_selected_local_file(list(files))
 
     def on_about_action(self, widget, data):
         about = Adw.AboutWindow(
