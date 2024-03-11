@@ -221,11 +221,16 @@ class AppImageProvider():
         return []
 
     def run(self, el: AppImageListElement):
+        desktop_exec_codes = ["%f", "%F",  "%u",  "%U",  "%i",  "%c", "%k"]
+
         if el.trusted:
             if el.installed_status is InstalledStatus.INSTALLED:
-                terminal.host_threaded_sh(shlex.split(el.desktop_entry.getExec()), return_stderr=True)
+                cmd = shlex.split(el.desktop_entry.getExec())
+                cmd = [i for i in cmd if i not in desktop_exec_codes]
+                terminal.host_threaded_sh(cmd, return_stderr=True)
             else:
                exec_args = shlex.split(el.desktop_entry.getExec())[1:]
+               exec_args = [i for i in exec_args if i not in desktop_exec_codes]
                terminal.host_threaded_sh([el.file_path, *exec_args], return_stderr=True) 
 
     def can_install_file(self, file: Gio.File) -> bool:

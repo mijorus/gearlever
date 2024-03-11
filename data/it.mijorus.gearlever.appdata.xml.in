@@ -14,6 +14,14 @@
         <p>An utility to manage AppImages with ease! Gear lever will organize and manage AppImage files for you, generate desktop entries and app metadata, update apps in-place or keep multiple versions side-by-side.</p>
     </description>
     <releases>
+        <release type="stable" version="1.4.3" date="2024-03-12:00:00Z">
+            <description>
+                <p>- Fixed an issue that was preventing Gear Lever from opening appimages when invoked by a file manager</p>
+                <p>- Added some debug logs to better identify issues</p>
+                <p>- Updated p7zip lib</p>
+                <p>- Fixed an issue causing apps to be launched with desktop files exec codes (like %U)</p>
+            </description>
+        </release>
         <release type="stable" version="1.4.2" date="2024-03-12:00:00Z">
             <description>
                 <p>- Fixed an issue that was preventing Gear Lever from opening appimages when invoked by a file manager</p>
