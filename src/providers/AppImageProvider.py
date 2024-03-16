@@ -225,13 +225,22 @@ class AppImageProvider():
 
         if el.trusted:
             if el.installed_status is InstalledStatus.INSTALLED:
-                cmd = shlex.split(el.desktop_entry.getExec())
-                cmd = [i for i in cmd if i not in desktop_exec_codes]
-                terminal.host_threaded_sh(cmd, return_stderr=True)
+                gtk_launch = terminal.host_sh(['which', 'gtk-launch'])
+                gtk_launch = gtk_launch.strip()
+
+                if gtk_launch and el.desktop_file_path:
+                    terminal.host_threaded_sh(['gtk-launch', el.desktop_file_path], return_stderr=True)
+                else:
+                    cmd = shlex.split(el.desktop_entry.getExec())
+                    cmd = [i for i in cmd if i not in desktop_exec_codes]
+                    terminal.host_threaded_sh(cmd, return_stderr=True)
             else:
-               exec_args = shlex.split(el.desktop_entry.getExec())[1:]
-               exec_args = [i for i in exec_args if i not in desktop_exec_codes]
-               terminal.host_threaded_sh([el.file_path, *exec_args], return_stderr=True) 
+                exec_args = []
+                if el.desktop_entry:
+                    exec_args = shlex.split(el.desktop_entry.getExec())[1:]
+                    exec_args = [i for i in exec_args if i not in desktop_exec_codes]
+
+                terminal.host_threaded_sh([el.file_path, *exec_args], return_stderr=True) 
 
     def can_install_file(self, file: Gio.File) -> bool:
         return get_giofile_content_type(file) in self.supported_mimes
