@@ -32,12 +32,6 @@ class Preferences(Adw.PreferencesWindow):
         pick_default_localtion_btn.connect('clicked', self.on_default_localtion_btn_clicked)
         self.default_location_row.add_suffix(pick_default_localtion_btn)
 
-        exec_as_name_switch = self.create_boolean_settings_entry(
-            _('Use executable name for integrated terminal apps'),
-            'exec-as-name-for-terminal-apps',
-            _('If enabled, apps that run in the terminal are renamed as their executable.\nYou would need to add the aforementioned folder to your $PATH manually.\n\nFor example, "golang_x86_64.appimage" will be saved as "go"')
-        )
-
         files_outside_folder_switch = self.create_boolean_settings_entry(
             _('Show integrated AppImages outside the default folder'),
             'manage-files-outside-default-folder',
@@ -45,10 +39,9 @@ class Preferences(Adw.PreferencesWindow):
         )
 
         general_preference_group.add(self.default_location_row)
-        general_preference_group.add(exec_as_name_switch)
         general_preference_group.add(files_outside_folder_switch)
 
-        # move appimage on integration
+        # file management group
         move_appimages_group = Adw.PreferencesGroup(name=_('File management'), title=_('File management'))
         move_appimages_row = Adw.ActionRow(
             title=_('Move AppImages into the destination folder'),
@@ -77,9 +70,27 @@ class Preferences(Adw.PreferencesWindow):
 
         move_appimages_group.add(move_appimages_row)
         move_appimages_group.add(copy_appimages_row)
+        # move_appimages_group.add(exec_as_name_switch)
 
         self.move_to_destination_check.connect('toggled', self.on_move_appimages_setting_changed)
         self.copy_to_destination_check.connect('toggled', self.on_move_appimages_setting_changed)
+
+        # naming conventions group
+        nconvention_group = Adw.PreferencesGroup(name=_('Naming conventions'), title=_('Naming conventions'))
+        exec_as_name_switch = self.create_boolean_settings_entry(
+            _('Use executable name for integrated terminal apps'),
+            'exec-as-name-for-terminal-apps',
+            _('If enabled, apps that run in the terminal are renamed as their executable.\nYou would need to add the aforementioned folder to your $PATH manually.\n\nFor example, "golang_x86_64.appimage" will be saved as "go"')
+        )
+
+        simple_filename_name_switch = self.create_boolean_settings_entry(
+            _('Save appimages files without prefixes'),
+            'simple-file-name-for-apps',
+            _('When enabled, every appimage will be renamed as a short, lowercase version of their app name, without the "gearlever" prefix.\n\nFor example, "kdenlive-24.02-x86_64.appimage" will be saved as "kdelive.appimage"')
+        )
+
+        nconvention_group.add(exec_as_name_switch)
+        nconvention_group.add(simple_filename_name_switch)
 
         # debugging group
         debug_group = Adw.PreferencesGroup(name=_('Debugging'), title=_('Debugging'))
@@ -91,9 +102,10 @@ class Preferences(Adw.PreferencesWindow):
 
         debug_group.add(debug_row)
 
-        
+
         page1.add(general_preference_group)
         page1.add(move_appimages_group)
+        page1.add(nconvention_group)
         page1.add(debug_group)
         self.add(page1)
 
