@@ -620,11 +620,13 @@ class AppImageProvider():
                     desktop_entry = DesktopEntry.DesktopEntry(desktop_file.get_path())
                     desktop_entry_icon = desktop_entry.getIcon()
 
+                desktop_entry_icon = os.path.splitext(desktop_entry_icon)[0]
+
                 if desktop_entry_icon:
                     # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#the-filesystem-image
 
-
                     tmp_icon_file: Optional[Gio.File] = None
+                    icon_xt_f = None
                     for icon_xt in ['.svg', '.png']:
                         icon_xt_f = Gio.File.new_for_path(extraction_folder.get_path() + f'/{desktop_entry_icon}{icon_xt}')
 
