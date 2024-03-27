@@ -10,6 +10,9 @@
         <key name="exec-as-name-for-terminal-apps" type="b">
             <default>false</default>
         </key>
+        <key name="simple-file-name-for-apps" type="b">
+            <default>false</default>
+        </key>
         <key name="debug-logs" type="b">
             <default>false</default>
         </key>

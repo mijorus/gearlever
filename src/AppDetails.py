@@ -289,10 +289,10 @@ class AppDetails(Gtk.ScrolledWindow):
         time.sleep(5)
         self.restore_launch_button(restore_as)
 
-        if get_application_window().is_active():
-            GLib.idle_add(lambda: self.toast_overlay.add_toast(
-                Adw.Toast.new(_('App not opening? Go to Menu > Open Log File for more details'))
-            ))
+        # if get_application_window().is_active():
+        #     GLib.idle_add(lambda: self.toast_overlay.add_toast(
+        #         Adw.Toast.new(_('App not opening? Go to Menu > Open Log File for more details'))
+        #     ))
 
     @idle
     def restore_launch_button(self, restore_as):

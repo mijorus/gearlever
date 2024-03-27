@@ -178,7 +178,6 @@ class GearleverWindow(Gtk.ApplicationWindow):
             container_visible = self.container_stack.get_visible_child()
 
             if container_visible == self.app_details:
-                print(self.selected_files_count)
                 if self.selected_files_count > 1:
                    self.container_stack.set_visible_child(self.multi_install)
 
