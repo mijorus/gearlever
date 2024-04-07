@@ -86,7 +86,8 @@ class AppImageProvider():
             return output
 
         for file_name in os.listdir(self.user_desktop_files_path):
-            gfile = Gio.File.new_for_path(self.user_desktop_files_path + f'/{file_name}')
+            gfile = Gio.File.new_for_path(
+                os.path.join(self.user_desktop_files_path, file_name))
 
             try:
                 if os.path.isfile(gfile.get_path()) and get_giofile_content_type(gfile) == 'application/x-desktop':
@@ -108,7 +109,8 @@ class AppImageProvider():
 
                     if os.path.isfile(exec_location):
                         exec_gfile = Gio.File.new_for_path(exec_location)
-                        exec_in_defalut_folder = os.path.isfile(f'{default_folder_path}/{exec_gfile.get_basename()}')
+                        exec_in_defalut_folder = os.path.isfile(
+                                os.path.join(default_folder_path, exec_gfile.get_basename()))
                         exec_in_folder = True if manage_from_outside else exec_in_defalut_folder
 
                         if exec_in_folder and self.can_install_file(exec_gfile):
@@ -664,12 +666,13 @@ class AppImageProvider():
                 if desktop_file:
                     desktop_entry = DesktopEntry.DesktopEntry(desktop_file.get_path())
                     desktop_entry_icon = desktop_entry.getIcon()
+                    desktop_entry_icon = re.sub(r"\.(png|svg)$", '', desktop_entry_icon)
 
                 if desktop_entry_icon:
                     # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#the-filesystem-image
 
-
                     tmp_icon_file: Optional[Gio.File] = None
+                    icon_xt_f = None
                     for icon_xt in ['.svg', '.png']:
                         icon_xt_f = Gio.File.new_for_path(extraction_folder.get_path() + f'/{desktop_entry_icon}{icon_xt}')
 
@@ -677,7 +680,7 @@ class AppImageProvider():
                             tmp_icon_file = icon_xt_f
                             break
 
-                    if icon_xt_f.get_path().endswith('.png'):
+                    if get_giofile_content_type(icon_xt_f) not in ['image/svg+xml', 'image/svg']:
                         # always prefer svg(s) to png(s)
                         # if a png is not found in the root of the filesystem, try somewhere else
 
