@@ -52,6 +52,13 @@ class GearleverApplication(Adw.Application):
         log('\n\n---- Application startup')
         Adw.Application.do_startup(self)
 
+        settings = get_gsettings()
+        logging.debug('::: Settings')
+        for k in settings.props.settings_schema.list_keys():
+            logging.debug(k + ': ' + str(settings.get_value(k)))
+
+        logging.debug('::: End settings')
+
         css_provider = Gtk.CssProvider()
         css_provider.load_from_resource(f'/it/mijorus/{APP_NAME}/assets/style.css')
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
