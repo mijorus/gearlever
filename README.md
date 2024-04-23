@@ -58,8 +58,8 @@ flatpak install --bundle --user gearlever.flatpak
 - Option #2
   ```sh
   # Run the app
-  flatpak-builder build/ it.mijorus.gearlever.Devel.json --user --force-clean
-  flatpak-builder --run build/ it.mijorus.gearlever.Devel.json gearlever
+  flatpak-builder build/ it.mijorus.gearlever.json --user --force-clean
+  flatpak-builder --run build/ it.mijorus.gearlever.json gearlever
 
   # Install the app
   flatpak-builder build/ it.mijorus.gearlever.Devel.json --user --install --force-clean
