@@ -24,10 +24,15 @@ class AppDetails(Gtk.ScrolledWindow):
         "uninstalled-app": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
     }
 
+    UPDATE_BTN_LABEL = _('Update')
+    UPDATE_NOT_AVAIL_BTN_LABEL = _('No updates available')
+
     def __init__(self, toast_overlay):
         super().__init__()
         self.ACTION_ROW_ICON_SIZE = 34
         self.EXTRA_DATA_SPACING = 20
+
+        print(read_json_config('apps'))
 
         self.app_list_element: AppImageListElement = None
         self.common_btn_css_classes = ['pill', 'text-button']
@@ -258,6 +263,12 @@ class AppDetails(Gtk.ScrolledWindow):
             self.update_installation_status()
 
             self.provider.uninstall(self.app_list_element)
+            
+            app_config = self.get_config_for_app()
+            conf = read_json_config('apps')
+            del conf[app_config['b64name']]
+            set_json_config('apps', conf)
+            
             self.emit('uninstalled-app', self)
 
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
@@ -315,16 +326,24 @@ class AppDetails(Gtk.ScrolledWindow):
                 GLib.idle_add(lambda: self.update_action_button.set_label(str(round(s * 100)) + ' %')
             ))
         except Exception as e:
-           self.show_updete_error_dialog(str(e))
+           self.show_update_error_dialog(str(e))
 
         manager.cleanup()
-        self.set_all_btn_sensitivity(True)
 
         GLib.idle_add(lambda: self.update_action_button.set_label(_('Update')))
         self.check_updates()
 
+        self.provider.reload_metadata(self.app_list_element)
+
+        icon = self.provider.get_icon(self.app_list_element)
+        self.provider.refresh_title(self.app_list_element)
+
+        self.complete_load(icon)
+        self.set_all_btn_sensitivity(True)
+
+
     @idle
-    def show_updete_error_dialog(self, msg: str):
+    def show_update_error_dialog(self, msg: str):
         dialog = Adw.MessageDialog(
             transient_for=get_application_window(),
             heading=_('Update error'),
@@ -453,6 +472,8 @@ class AppDetails(Gtk.ScrolledWindow):
     def check_updates(self):
         app_conf = self.get_config_for_app()
 
+        GLib.idle_add(lambda: self.update_action_button.set_visible(False))
+
         if not app_conf.get('update_url', None):
             logging.debug(f'Update url missing for app {self.app_list_element.name}, skipping...')
             return
@@ -468,9 +489,17 @@ class AppDetails(Gtk.ScrolledWindow):
         is_updatable = manager.is_update_available(self.app_list_element)
         self.app_list_element.is_updatable_from_url = is_updatable
 
+        GLib.idle_add(lambda: self.update_action_button.set_visible(True))
+
         if is_updatable:
             logging.debug(f'{self.app_list_element.name} is_updatable')
-            GLib.idle_add(lambda: self.update_action_button.set_visible(True))
+            GLib.idle_add(lambda: self.update_action_button.set_label(self.UPDATE_BTN_LABEL))
+        else:
+            GLib.idle_add(lambda: self.update_action_button.set_label(self.UPDATE_NOT_AVAIL_BTN_LABEL))
+
+        GLib.idle_add(lambda: self.update_action_button.set_sensitive(is_updatable))
+
+
 
     @debounce(0.5)
     @_async
