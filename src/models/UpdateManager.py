@@ -40,6 +40,7 @@ class UpdateManagerChecker():
         models = [StaticFileUpdater]
 
         for m in models:
+            logging.debug(f'Checking url with {m.__name__}')
             if m.can_handle_link(url):
                 return m(url)
             
@@ -64,7 +65,7 @@ class StaticFileUpdater(UpdateManager):
             logging.error(e)
 
         logging.debug(f'{url} responded with content-type: {ct}')
-        return ct in [*AppImageProvider.supported_mimes, 'binary/octet-stream']
+        return ct in [*AppImageProvider.supported_mimes, 'binary/octet-stream', 'application/octet-stream']
 
     def download(self, status_update_cb) -> str:
         logging.info(f'Downloading file from {self.url}')
@@ -102,9 +103,8 @@ class StaticFileUpdater(UpdateManager):
 
     def is_update_available(self, el: AppImageListElement):
         resp = requests.head(self.url, allow_redirects=True)
-        resp_cl = resp.headers.get('content-length')
+        resp_cl = int(resp.headers.get('content-length'))
         old_size = os.path.getsize(el.file_path)
 
         logging.debug(f'StaticFileUpdater: new url has length {resp_cl}, old was {old_size}')
-
-        return resp_cl != old_size
+        return (resp_cl != old_size)
