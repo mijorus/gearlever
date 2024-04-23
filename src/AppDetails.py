@@ -12,7 +12,7 @@ from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
-from .lib.json_config import read_json_config, set_json_config
+from .lib.json_config import read_json_config, set_json_config, read_config_for_app
 from .lib.utils import url_is_valid, get_file_hash, get_application_window
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
@@ -31,8 +31,6 @@ class AppDetails(Gtk.ScrolledWindow):
         super().__init__()
         self.ACTION_ROW_ICON_SIZE = 34
         self.EXTRA_DATA_SPACING = 20
-
-        print(read_json_config('apps'))
 
         self.app_list_element: AppImageListElement = None
         self.common_btn_css_classes = ['pill', 'text-button']
@@ -499,8 +497,6 @@ class AppDetails(Gtk.ScrolledWindow):
 
         GLib.idle_add(lambda: self.update_action_button.set_sensitive(is_updatable))
 
-
-
     @debounce(0.5)
     @_async
     def on_app_update_url_apply(self, widget):
@@ -571,13 +567,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
     # Returns the configuration from the json for this specific app
     def get_config_for_app(self) -> dict:
-        conf = read_json_config('apps')
-        b64name = base64.b64encode(self.app_list_element.name.encode('ascii')).decode('ascii')
-
-        app_config = conf[b64name] if b64name in conf else {}
-        app_config['b64name'] = b64name
-
-        return app_config
+        return read_config_for_app(self.app_list_element)
 
     def on_web_browser_open_btn_clicked(self, widget):
         app_config = self.get_config_for_app()

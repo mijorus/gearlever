@@ -77,6 +77,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.multi_install = MultiInstall()
         self.multi_install.connect('show-details', self.on_multi_install_show_details)
         self.multi_install.connect('go-back', lambda *_: self.on_left_button_clicked(self.left_button))
+        self.multi_install.load_updates()
 
         self.installed_stack.add_child(self.installed_apps_list)
 
@@ -88,6 +89,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.container_stack.append(self.app_lists_stack)
         self.container_stack.append(self.app_details)
         self.container_stack.append(self.multi_install)
+
         
         # Show details of an installed app
         self.installed_apps_list.connect('selected-app', self.on_selected_installed_app)
@@ -122,6 +124,8 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         if self.settings.get_boolean('is-maximized'):
             self.maximize()
+
+        self.container_stack.set_visible_child(self.multi_install)
 
 
     # Show app details
@@ -178,7 +182,6 @@ class GearleverWindow(Gtk.ApplicationWindow):
             container_visible = self.container_stack.get_visible_child()
 
             if container_visible == self.app_details:
-                print(self.selected_files_count)
                 if self.selected_files_count > 1:
                    self.container_stack.set_visible_child(self.multi_install)
 

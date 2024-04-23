@@ -5,9 +5,11 @@ from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
-from .lib.utils import url_is_valid, get_file_hash, get_application_window
+from .lib.utils import get_application_window
 from .components.AppListBoxItem import AppListBoxItem
-from .components.AppDetailsConflictModal import AppDetailsConflictModal
+from .lib.json_config import read_config_for_app
+from .models.UpdateManager import UpdateManager, UpdateManagerChecker
+
 
 
 class MultiInstall(Gtk.ScrolledWindow):
@@ -185,6 +187,36 @@ class MultiInstall(Gtk.ScrolledWindow):
 
         self.create_list_elements(files)
         return installable > 0
+    
+    @_async
+    def load_updates(self):
+        if self.progress_bar.get_fraction() not in [0, 1]:
+            return True
+
+        self.progress_bar.pulse()
+        self.app_list_box.remove_all()
+        self.app_list = []
+        self.app_list_box_items = []
+
+        self.install_all_btn.set_sensitive(False)
+
+        installed = appimage_provider.list_installed()
+        installed_count = len(installed)
+
+        updatables = []
+
+        for count, el in enumerate(installed):
+            app_conf = read_config_for_app(el)
+
+            GLib.idle_add(lambda: self.progress_bar.set_fraction((count + 1) / installed_count))
+
+            if 'update_url' in app_conf:
+                manager: UpdateManager = UpdateManagerChecker.check_url(app_conf['update_url'])
+                
+                if manager and manager.is_update_available(el):
+                    updatables.append(Gio.File.new_for_uri)
+
+        self.create_list_elements(updatables)
 
     def on_install_all_clicked(self, widget: Gtk.Button):
         self.show_confirmation_dialog()
