@@ -48,7 +48,7 @@ class MultiInstall(Gtk.ScrolledWindow):
             halign=Gtk.Align.CENTER,
             child=Adw.ButtonContent(
                 label=_('Some apps are already installed'),
-                icon_name='info-symbolic'
+                icon_name='gl-info-symbolic'
             )
         )
 
