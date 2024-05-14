@@ -6,14 +6,16 @@ from typing import Dict, List, Optional
 
 from .State import state
 from .lib.utils import get_element_without_overscroll, get_gsettings, gio_copy
-from .lib.costants import APP_ID, APP_NAME
+from .lib.costants import APP_ID, APP_NAME, APP_DATA
 
 class WelcomeScreen(Gtk.Window):
 
-    def __init__(self, pkgdatadir):
+    def __init__(self):
         super().__init__()
         self.set_default_size(700, 700)
         self.set_resizable(False)
+
+        pkgdatadir = APP_DATA['PKGDATADIR']
 
         container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, valign=Gtk.Align.CENTER)
         self.carousel = Adw.Carousel()

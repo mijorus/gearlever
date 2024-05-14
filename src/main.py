@@ -21,7 +21,7 @@ import logging
 import os
 
 from .lib.utils import log, get_gsettings
-from .lib.costants import APP_ID, APP_NAME
+from .lib.costants import APP_ID, APP_NAME, APP_DATA
 from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
 from  .WelcomeScreen import WelcomeScreen
@@ -46,7 +46,6 @@ class GearleverApplication(Adw.Application):
         self.create_action('open_welcome_screen', self.on_open_welcome_screen)
         self.win = None
         self.version = version
-        self.pkgdatadir = pkgdatadir
 
     def do_startup(self):
         log('\n\n---- Application startup')
@@ -74,11 +73,8 @@ class GearleverApplication(Adw.Application):
         if not self.win:
             self.win = GearleverWindow(application=self, from_file=from_file)
 
-            # if True:
-            if not get_gsettings().get_boolean('first-run'):
-                get_gsettings().set_boolean('first-run', True)
-                tutorial = WelcomeScreen(self.pkgdatadir)
-                tutorial.present()
+            if get_gsettings().get_boolean('first-run'):
+                get_gsettings().set_boolean('first-run', False)
 
         self.win.present()
 
@@ -136,11 +132,13 @@ class GearleverApplication(Adw.Application):
         launcher.launch()
 
     def on_open_welcome_screen(self, widget, event):
-        tutorial = WelcomeScreen(self.pkgdatadir)
+        tutorial = WelcomeScreen()
         tutorial.present()
 
 def main(version, pkgdatadir):
     """The application's entry point."""
+
+    APP_DATA['PKGDATADIR'] = pkgdatadir
 
     log_file = f'{LOG_FOLDER}/{APP_NAME}.log'
 

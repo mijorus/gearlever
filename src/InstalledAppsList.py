@@ -11,6 +11,7 @@ from .components.FilterEntry import FilterEntry
 from .components.CustomComponents import NoAppsFoundRow
 from .components.AppListBoxItem import AppListBoxItem
 from .preferences import Preferences
+from .WelcomeScreen import WelcomeScreen
 from .lib.utils import set_window_cursor, get_application_window
 
 class InstalledAppsList(Gtk.ScrolledWindow):
@@ -51,6 +52,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         builder = Gtk.Builder.new_from_resource('/it/mijorus/gearlever/gtk/empty-list-placeholder.ui')
         self.placeholder = builder.get_object('target')
         builder.get_object('open-preferences').connect('clicked', self.open_preferences)
+        builder.get_object('show-welcome-screen').connect('clicked', self.on_open_welcome_screen)
 
         self.container_stack.add_child(self.clamp_container)
         self.container_stack.add_child(self.placeholder)
@@ -80,7 +82,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
             self.installed_apps_list_rows.append(list_row)
             self.installed_apps_list.append(list_row)
 
-        if installed:
+        if not installed:
             self.container_stack.set_visible_child(self.clamp_container)
         else:
             self.container_stack.set_visible_child(self.placeholder)
@@ -132,3 +134,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
     def open_preferences(self, widget):
         pref = Preferences()
         pref.present()
+
+    def on_open_welcome_screen(self, widget):
+        tutorial = WelcomeScreen()
+        tutorial.present()
