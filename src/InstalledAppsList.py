@@ -82,7 +82,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
             self.installed_apps_list_rows.append(list_row)
             self.installed_apps_list.append(list_row)
 
-        if not installed:
+        if installed:
             self.container_stack.set_visible_child(self.clamp_container)
         else:
             self.container_stack.set_visible_child(self.placeholder)
