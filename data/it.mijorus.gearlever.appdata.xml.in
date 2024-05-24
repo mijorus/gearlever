@@ -10,6 +10,10 @@
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0-or-later</project_license>
     <developer_name>Lorenzo Paderi</developer_name>
+    <branding>
+      <color type="primary" scheme_preference="light">#e6eaec</color>
+      <color type="primary" scheme_preference="dark">#33373a</color>
+    </branding>
     <description>
         <p>An utility to manage AppImages with ease! Gear lever will organize and manage AppImage files for you, generate desktop entries and app metadata, update apps in-place or keep multiple versions side-by-side.</p>
     </description>
