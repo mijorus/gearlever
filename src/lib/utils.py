@@ -139,3 +139,17 @@ def url_is_valid(url: str) -> bool:
     , re.IGNORECASE)
 
     return True if url_regex.match(url) else False
+
+def remove_special_chars(filename, replacement=""):
+    """Removes special characters from a filename and replaces them with a chosen character.
+
+    Args:
+        filename: The filename to be sanitized.
+        replacement: The character to replace special characters with (default: "_").
+
+    Returns:
+        The sanitized filename.
+    """
+    # Regular expression to match special characters (excluding alphanumeric, underscore, and dot)
+    pattern = r"[^\w\._]+"
+    return re.sub(pattern, replacement, filename)
