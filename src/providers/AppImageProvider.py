@@ -13,7 +13,7 @@ import dataclasses
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async
-from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash
+from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, remove_special_chars
 from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalError
 from typing import Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, Gio
@@ -324,6 +324,7 @@ class AppImageProvider():
 
                     i += 1
 
+            appimage_filename = remove_special_chars(appimage_filename)
             dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + appimage_filename)
 
             if not gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
@@ -431,8 +432,7 @@ class AppImageProvider():
                 raise InternalError('Cannot delete original file')
 
         try:
-            # self.extraction_folder_cleanup()/
-            pass
+            self.extraction_folder_cleanup()
         except Exception as g:
             logging.error('Appimage cleanup error: ' + str(g))
             raise g
@@ -565,65 +565,29 @@ class AppImageProvider():
         dest_path = f'{self.extraction_folder}/gearlever_{random_str}'
 
         file = Gio.File.new_for_path(el.file_path)
-        dest = Gio.File.new_for_path(f'{dest_path}/tmp.appimage')
 
         if not os.path.exists(f'{dest_path}'):
             os.makedirs(f'{dest_path}')
 
         logging.debug(f'Created temporary folder at {dest_path}')
 
-        gio_copy(file, dest)
+        ###############################################################################
+
+        # We use p7zip to extract the content of the appimage bundle
+        # Old versions of Gear Lever used the --appimage-extract command, which is not
+        # supported by all the appimage packages
 
         ###############################################################################
 
-        # The following code has been commented because uses appimage's built in extract method, 
-        # however not all the appimages support it.
-        #
-        # Instead, we use p7zip to extract the content of the appimage bundle
-
-        ###############################################################################
-        
-        # self._make_file_executable(el, dest.get_path())
-        # appimage_extract_support = False
-
-
-        # if el.generation == 2:
-        #     try:
-        #         appimage_help = subprocess.run([dest.get_path(), '--appimage-help'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).stderr.decode()
-
-        #         appimage_extract_support = ('-appimage-extract' in appimage_help)
-        #         if not appimage_extract_support:
-        #             raise InternalError('This appimage does not support appimage-extract')
-
-        #     except Exception as e:
-        #         logging.error(str(e))
-
-        # if appimage_extract_support:
-        #     prefix = [dest.get_path(), '--appimage-extract']
-        #     extraction_output = ''
-
-        #     # check if the appimage supports partial extraction 
-        #     if '--appimage-extract [<pattern>]' in appimage_help:
-        #         for match in ['*.desktop', 'usr/share/icons/*', '*.svg', '*.png']:
-        #             run = [*prefix, match]
-
-        #             extraction_output += terminal.sandbox_sh(run, cwd=dest_path)
-        #     else:
-        #         logging.debug('This AppImage does not support partial extraction, running ' + ' '.join(prefix))
-        #         extraction_output += terminal.sandbox_sh([*prefix], cwd=dest_path)
-
-        #     logging.debug(f'Extracted appimage {file.get_path()} with log:\n\n======\n\n{extraction_output}\n\n======\n\n')
-        
-        # else:
-        # logging.info('This appiamge does not support appimage-extract, trying with 7z')
-        logging.info('Exctracting with p7zip')
+        squashfs_root_folder = os.path.join(dest_path, 'squashfs-root')
+        logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
         z7zoutput = '=== 7z log ==='
-        z7zoutput = '\n\n' + terminal.sandbox_sh(['7z', 'x', dest.get_path(), '-osquashfs-root', '-y', '-bso0', 'bsp0', 
+        z7zoutput = '\n\n' + terminal.sandbox_sh(['7z', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', 'bsp0', 
                                                   '*.png', '*.svg', '*.desktop', '-r'], cwd=dest_path)
 
         logging.debug(z7zoutput)
 
-        return f'{dest_path}/squashfs-root'
+        return squashfs_root_folder
 
     def _load_appimage_metadata(self, el: AppImageListElement) -> ExtractedAppImage:
         if el.extracted:
