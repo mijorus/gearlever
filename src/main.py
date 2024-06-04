@@ -48,7 +48,7 @@ class GearleverApplication(Adw.Application):
         self.version = version
 
     def do_startup(self):
-        log('\n\n---- Application startup')
+        log(f'\n\n---- Application startup | version {self.version}')
         Adw.Application.do_startup(self)
 
         settings = get_gsettings()
@@ -162,6 +162,7 @@ def main(version, pkgdatadir):
         filename=log_file,
         filemode='a',
         encoding='utf-8',
+        format='%(levelname)-1s [%(filename)s:%(lineno)d] %(message)s',
         level= logging.DEBUG if get_gsettings().get_boolean('debug-logs') else logging.INFO,
         force=True
     )
