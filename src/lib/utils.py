@@ -153,3 +153,8 @@ def remove_special_chars(filename, replacement=""):
     # Regular expression to match special characters (excluding alphanumeric, underscore, and dot)
     pattern = r"[^\w\._]+"
     return re.sub(pattern, replacement, filename)
+
+def log_command_output(output):
+    output = output.replace('\n', '')
+    if "libfuse" in output:
+        logging.error(output)
