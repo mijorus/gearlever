@@ -41,7 +41,7 @@ def host_threaded_sh(command: List[str], callback: Optional[Callable[[str], None
             output = host_sh(command, return_stderr)
 
             if callback:
-                callback(re.sub(r'\n$', '', output))
+                callback(output)
 
         except subprocess.CalledProcessError as e:
             logging.error(e.stderr)

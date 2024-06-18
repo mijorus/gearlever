@@ -7,6 +7,7 @@ import gi
 import hashlib
 
 from .costants import APP_ID
+from .async_utils import idle
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
@@ -153,3 +154,20 @@ def remove_special_chars(filename, replacement=""):
     # Regular expression to match special characters (excluding alphanumeric, underscore, and dot)
     pattern = r"[^\w\._]+"
     return re.sub(pattern, replacement, filename)
+
+@idle
+def command_output_error(output):
+    if 'libfuse' in output:
+        output = output.replace('\n', '')
+        logging.error(output)
+
+        dialog = Adw.MessageDialog(
+            transient_for=get_application_window(),
+            heading=_('Error')
+        )
+
+        dialog.set_body(f'AppImages require FUSE to run. You might still be able to run it with --appimage-extract-and-run in the command line arguments. \n\nClick the link below for more information. \n<a href="https://github.com/AppImage/AppImageKit/wiki/FUSE">https://github.com/AppImage/AppImageKit/wiki/FUSE</a>')
+        dialog.set_body_use_markup('True')
+        dialog.add_response('okay', _('Okay'))
+
+        dialog.present()
