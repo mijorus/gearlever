@@ -20,7 +20,8 @@
     <releases>
         <release type="stable" version="1.6.2" date="2024-06-18:00:00Z">
             <description>
-                <p>- Fixed bugs introduced with 1.6.1</p>
+                <p>- Fixed bugs introduced with 1.6.1 causing the app to crash at startup</p>
+                <p>- Fixed an issue causing multi-install to fail</p>
             </description>
         </release>
         <release type="stable" version="1.6.1" date="2024-06-18:00:00Z">
