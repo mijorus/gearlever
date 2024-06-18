@@ -120,7 +120,7 @@ class AppDetails(Gtk.ScrolledWindow):
         return False
 
     @idle
-    def complete_load(self, icon: Gtk.Image, load_completed_callback: Optional[Callable] = None):
+    def complete_load(self, icon: Gtk.Image, generation: str, load_completed_callback: Optional[Callable] = None):
         self.show_row_spinner(True)
 
         self.details_row.remove(self.icon_slot)
@@ -149,7 +149,7 @@ class AppDetails(Gtk.ScrolledWindow):
         gtk_list = Gtk.ListBox(css_classes=['boxed-list'])
 
         # Package info
-        gtk_list.append(self.create_package_info_row())
+        gtk_list.append(self.create_package_info_row(generation))
 
         # The path of the executable
         gtk_list.append(self.create_exec_path_row())
@@ -204,6 +204,8 @@ class AppDetails(Gtk.ScrolledWindow):
     def load(self, load_completed_callback: Optional[Callable] = None):
         self.show_row_spinner(True)
         icon = Gtk.Image(icon_name='application-x-executable-symbolic')
+        generation = self.provider.get_appimage_generation(self.app_list_element)
+
 
         if self.app_list_element.trusted:
             icon = self.provider.get_icon(self.app_list_element)
@@ -211,7 +213,11 @@ class AppDetails(Gtk.ScrolledWindow):
             if self.app_list_element.installed_status is not InstalledStatus.INSTALLED:
                 self.provider.refresh_title(self.app_list_element)
 
-        self.complete_load(icon, load_completed_callback)
+        self.complete_load(
+            icon,
+            generation,
+            load_completed_callback=load_completed_callback
+        )
 
     @_async
     def install_file(self, el: AppImageListElement):
@@ -221,8 +227,10 @@ class AppDetails(Gtk.ScrolledWindow):
             logging.error(str(e))
 
         self.update_installation_status()
+
         self.complete_load(
-            self.provider.get_icon(self.app_list_element)
+            self.provider.get_icon(self.app_list_element),
+            self.provider.get_appimage_generation(self.app_list_element),
         )
 
     def on_conflict_modal_close(self, widget, data: str):
@@ -470,7 +478,9 @@ class AppDetails(Gtk.ScrolledWindow):
         icon = self.provider.get_icon(self.app_list_element)
         self.provider.refresh_title(self.app_list_element)
 
-        self.complete_load(icon)
+        generation = self.provider.get_appimage_generation(self.app_list_element)
+
+        self.complete_load(icon, generation)
 
     def on_open_folder_clicked(self, widget):
         path = Gio.File.new_for_path(os.path.dirname(self.app_list_element.file_path))
@@ -571,11 +581,10 @@ class AppDetails(Gtk.ScrolledWindow):
         row.add_suffix(row_btn)
 
         return row
-    
-    def create_package_info_row(self) -> Adw.ActionRow:
-        generation = self.provider.get_appimage_generation(self.app_list_element)
+
+    def create_package_info_row(self, gen) -> Adw.ActionRow:
         row = Adw.ActionRow(
-            subtitle=f'{self.provider.name.capitalize()} Type. {generation}', 
+            subtitle=f'{self.provider.name.capitalize()} Type. {gen}', 
             title=_('Package type'),
             selectable=False
         )
