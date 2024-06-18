@@ -9,7 +9,7 @@ def host_sh(command: List[str], return_stderr=False, **kwargs) -> str:
     try:
         cmd = ['flatpak-spawn', '--host', *command]
         
-        log(f'Running {command}')
+        log(f'Running {cmd}')
         output = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
         output.check_returncode()
     except subprocess.CalledProcessError as e:
