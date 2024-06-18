@@ -467,7 +467,19 @@ class AppImageProvider():
         self.install_file(el)
 
     def get_appimage_generation(self, file: Gio.File) -> int:
-        return self.supported_mimes.index(get_giofile_content_type(file)) + 1
+        content_type = get_giofile_content_type(file)
+        generation = self.supported_mimes.index(content_type) + 1
+        detect_v3 = 'AppImages require FUSE to run'
+
+        # This means it can either be type 2 or 3
+        if (generation == 2):
+            # Thanks to https://github.com/ivan-hc/AM/blob/main/modules/files.am
+            check = terminal.sandbox_sh(['strings', '-d', '-n', str(len(detect_v3)), file.get_path()])
+
+            if detect_v3 not in check:
+                generation = 3
+
+        return generation
 
     def create_list_element_from_file(self, file: Gio.File) -> AppImageListElement:
         if not self.can_install_file(file):
