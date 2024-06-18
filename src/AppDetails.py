@@ -528,7 +528,7 @@ class AppDetails(Gtk.ScrolledWindow):
             subtitle=_('Update information like icon, version and description.\nUseful if the app updated itself.')
         )
 
-        row_img = Gtk.Image(icon_name='refresh', pixel_size=self.ACTION_ROW_ICON_SIZE)
+        row_img = Gtk.Image(icon_name='gl-refresh', pixel_size=self.ACTION_ROW_ICON_SIZE)
 
         row.add_prefix(row_img)
         row.connect('activated', self.on_refresh_metadata_btn_clicked)
@@ -542,7 +542,7 @@ class AppDetails(Gtk.ScrolledWindow):
             text=' '.join(self.app_list_element.exec_arguments)
         )
 
-        row_img = Gtk.Image(icon_name='cmd-args', pixel_size=self.ACTION_ROW_ICON_SIZE)
+        row_img = Gtk.Image(icon_name='gearlever-cmd-args', pixel_size=self.ACTION_ROW_ICON_SIZE)
         row.connect('changed', self.on_cmd_arguments_changed)
         row.add_prefix(row_img)
 
@@ -557,7 +557,7 @@ class AppDetails(Gtk.ScrolledWindow):
             selectable=True
         )
 
-        row_img = Gtk.Image(icon_name='hash-symbolic', pixel_size=self.ACTION_ROW_ICON_SIZE)
+        row_img = Gtk.Image(icon_name='gl-hash-symbolic', pixel_size=self.ACTION_ROW_ICON_SIZE)
         row.add_prefix(row_img)
 
         return row
@@ -595,7 +595,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         row_key = Gtk.Entry(placeholder_text=_('Key'), text=key, hexpand=True)
         row_value = Gtk.Entry(placeholder_text=_('Value'), text=value, hexpand=True, sensitive=(len(key) > 0))
-        delete_btn = Gtk.Button(icon_name='user-trash-symbolic', css_classes=['destructive-action'])
+        delete_btn = Gtk.Button(icon_name='gl-user-trash-symbolic', css_classes=['destructive-action'])
 
         row_key.connect('changed', self.on_env_var_value_changed, row_key, row_value)
         row_value.connect('changed', self.on_env_var_value_changed, row_key, row_value)
@@ -617,7 +617,7 @@ class AppDetails(Gtk.ScrolledWindow):
         )
 
         save_btn_content = Adw.ButtonContent(
-            icon_name='check-plain-symbolic',
+            icon_name='gearlever-check-plain-symbolic',
             label=_('Save')
         )
 

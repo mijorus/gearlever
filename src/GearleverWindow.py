@@ -83,7 +83,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.installed_stack.set_visible_child(self.installed_apps_list)
         
         # Add content to the main_stack
-        utils.add_page_to_adw_stack(self.app_lists_stack, self.installed_stack, 'installed', 'Installed', 'computer-symbolic' )
+        utils.add_page_to_adw_stack(self.app_lists_stack, self.installed_stack, 'installed', 'Installed', 'gearlever-computer-symbolic' )
 
         self.container_stack.append(self.app_lists_stack)
         self.container_stack.append(self.app_details)
