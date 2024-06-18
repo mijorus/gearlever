@@ -12,11 +12,11 @@ import signal
 import dataclasses
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
-from ..lib.async_utils import _async
-from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, remove_special_chars, command_output_error
+from ..lib.async_utils import _async, idle
+from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, remove_special_chars, get_application_window
 from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalError
 from typing import Optional, List, TypedDict
-from gi.repository import GLib, Gtk, Gdk, Gio
+from gi.repository import GLib, Gtk, Gdk, Gio, Adw
 from enum import Enum
 
 
@@ -232,18 +232,18 @@ class AppImageProvider():
 
                 if gtk_launch and el.desktop_file_path:
                     desktop_file_name = os.path.basename(el.desktop_file_path)
-                    terminal.host_threaded_sh(['gtk-launch', desktop_file_name], callback=command_output_error, return_stderr=True)
+                    terminal.host_threaded_sh(['gtk-launch', desktop_file_name], callback=self._check_launch_output, return_stderr=True)
                 else:
                     cmd = shlex.split(el.desktop_entry.getExec())
                     cmd = [i for i in cmd if i not in desktop_exec_codes]
-                    terminal.host_threaded_sh(cmd, callback=command_output_error, return_stderr=True)
+                    terminal.host_threaded_sh(cmd, callback=self._check_launch_output, return_stderr=True)
             else:
                 exec_args = []
                 if el.desktop_entry:
                     exec_args = shlex.split(el.desktop_entry.getExec())[1:]
                     exec_args = [i for i in exec_args if i not in desktop_exec_codes]
 
-                terminal.host_threaded_sh([el.file_path, *exec_args], callback=command_output_error, return_stderr=True)
+                terminal.host_threaded_sh([el.file_path, *exec_args], callback=self._check_launch_output, return_stderr=True)
 
     def can_install_file(self, file: Gio.File) -> bool:
         return get_giofile_content_type(file) in self.supported_mimes
@@ -559,6 +559,31 @@ class AppImageProvider():
         el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
 
     # Private methods
+
+    @idle
+    def _check_launch_output(self, output: str):
+        if 'libfuse' in output:
+            output = output.replace('\n', ' ')
+            
+            logging.error(output)
+            
+            # Printing the output might help folks who run 
+            # run Gear Lever from the terminal
+            print(output)
+
+            dialog = Adw.MessageDialog(
+                transient_for=get_application_window(),
+                heading=_('Error')
+            )
+
+            dialog.set_body(_('AppImages require FUSE to run. You might still be able to run it with --appimage-extract-and-run in the command line arguments. \n\nClick the link below for more information. \n{url}'.format(
+                url='<a href="https://github.com/AppImage/AppImageKit/wiki/FUSE">https://github.com/AppImage/AppImageKit/wiki/FUSE</a>'
+            )))
+
+            dialog.set_body_use_markup(True)
+            dialog.add_response('okay', _('Okay'))
+
+            dialog.present()
 
     def _extract_appimage(self, el: AppImageListElement) -> str:
         random_str = ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))

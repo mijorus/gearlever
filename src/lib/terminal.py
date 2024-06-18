@@ -18,7 +18,12 @@ def host_sh(command: List[str], return_stderr=False, **kwargs) -> str:
 
         raise e
 
-    return re.sub(r'\n$', '', output.stdout.decode() + (output.stderr.decode() if return_stderr else ''))
+    output_string = output.stdout.decode()
+
+    if return_stderr:
+        output_string += output.stderr.decode()
+
+    return re.sub(r'\n$', '', output_string)
 
 def sandbox_sh(command: List[str], return_stderr=False, **kwargs) -> str:
     try:
