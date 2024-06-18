@@ -43,7 +43,7 @@ class MultiInstall(Gtk.ScrolledWindow):
 
         self.already_installed_warn = Gtk.Button(
             css_classes=['flat'],
-            visible=True,
+            visible=False,
             sensitive=False,
             halign=Gtk.Align.CENTER,
             child=Adw.ButtonContent(
@@ -135,6 +135,7 @@ class MultiInstall(Gtk.ScrolledWindow):
             return
         
         self.install_all_btn.set_sensitive(False)
+
         for el in self.app_list:
             if el.installed_status is InstalledStatus.INSTALLED:
                 continue
