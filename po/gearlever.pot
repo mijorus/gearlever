@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-16 16:56+0100\n"
+"POT-Creation-Date: 2024-06-18 11:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgstr ""
 msgid "AppImage;"
 msgstr ""
 
-#: src/main.py:99
+#: src/main.py:102
 msgid "translator_credits"
 msgstr ""
 
@@ -83,7 +83,7 @@ msgstr ""
 msgid "Updating"
 msgstr ""
 
-#: src/AppDetails.py:359
+#: src/AppDetails.py:359 src/providers/AppImageProvider.py:588
 msgid "Error"
 msgstr ""
 
@@ -165,11 +165,11 @@ msgstr ""
 msgid "Open a file"
 msgstr ""
 
-#: src/InstalledAppsList.py:36
+#: src/InstalledAppsList.py:37
 msgid "Filter installed applications"
 msgstr ""
 
-#: src/InstalledAppsList.py:41
+#: src/InstalledAppsList.py:42
 msgid "Installed applications"
 msgstr ""
 
@@ -255,11 +255,11 @@ msgid ""
 "Requires a restart."
 msgstr ""
 
-#: src/preferences.py:124 src/WelcomeScreen.py:90
+#: src/preferences.py:124 src/WelcomeScreen.py:95
 msgid "The folder must be in your home directory"
 msgstr ""
 
-#: src/preferences.py:127 src/WelcomeScreen.py:93
+#: src/preferences.py:127 src/WelcomeScreen.py:98
 msgid "Select a folder"
 msgstr ""
 
@@ -317,6 +317,10 @@ msgid " If you don't see your apps, check if the selected folder is correct."
 msgstr ""
 
 #: src/gtk/empty-list-placeholder.ui:46
+msgid "Show welcome screen"
+msgstr ""
+
+#: src/gtk/empty-list-placeholder.ui:56
 msgid "Open Preferences"
 msgstr ""
 
@@ -402,4 +406,18 @@ msgstr ""
 
 #: src/models/AppListElement.py:19
 msgid "No description provided"
+msgstr ""
+
+#: src/providers/AppImageProvider.py:591
+#, python-brace-format
+msgid ""
+"AppImages require FUSE to run. You might still be able to run it with --"
+"appimage-extract-and-run in the command line arguments. \n"
+"\n"
+"Click the link below for more information. \n"
+"{url}"
+msgstr ""
+
+#: src/providers/AppImageProvider.py:596
+msgid "Okay"
 msgstr ""
