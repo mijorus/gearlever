@@ -13,7 +13,8 @@ import dataclasses
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async, idle
-from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, remove_special_chars, get_application_window
+from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
+    remove_special_chars, get_application_window, strings
 from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalError
 from typing import Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, Gio, Adw
@@ -39,7 +40,6 @@ class AppImageListElement():
     provider: str
     installed_status: InstalledStatus
     file_path: str
-    generation: int
     trusted: bool = False
     env_variables: List[str] = dataclasses.field(default_factory=lambda: [])
     exec_arguments: List[str] = dataclasses.field(default_factory=lambda: [])
@@ -65,6 +65,7 @@ class AppImageListElement():
 class AppImageProvider():
     def __init__(self):
         self.name = 'AppImage'
+        self.v2_detector_string = 'AppImages require FUSE to run.'
         self.icon = "/it/mijorus/gearlever/assets/App-image-logo.png"
         logging.info(f'Activating {self.name} provider')
 
@@ -124,7 +125,6 @@ class AppImageProvider():
                                 provider=self.name,
                                 desktop_entry=entry,
                                 trusted=True,
-                                generation=self.get_appimage_generation(exec_gfile),
                                 external_folder=(not exec_in_defalut_folder),
                                 exec_arguments=exec_tokens,
                                 env_variables=env_variables
@@ -466,18 +466,19 @@ class AppImageProvider():
 
         self.install_file(el)
 
-    def get_appimage_generation(self, file: Gio.File) -> int:
+    def get_appimage_generation(self, el: AppImageListElement) -> int:
+        file = Gio.File.new_for_path(el.file_path)
         content_type = get_giofile_content_type(file)
         generation = self.supported_mimes.index(content_type) + 1
-        detect_v3 = 'AppImages require FUSE to run'
 
         # This means it can either be type 2 or 3
         if (generation == 2):
             # Thanks to https://github.com/ivan-hc/AM/blob/main/modules/files.am
-            check = terminal.sandbox_sh(['strings', '-d', '-n', str(len(detect_v3)), file.get_path()])
+            if terminal.host_sh(['which', 'strings']):
+                check = terminal.host_sh(['strings', '--data', '-n', str(len(self.v2_detector_string)), file.get_path()])
 
-            if detect_v3 not in check:
-                generation = 3
+                if self.v2_detector_string not in check:
+                    generation = 3
 
         return generation
 
@@ -496,7 +497,6 @@ class AppImageProvider():
             file_path=file.get_path(),
             desktop_entry=None,
             local_file=True,
-            generation=self.get_appimage_generation(file)
         )
 
         if self.is_installed(el):
@@ -574,7 +574,7 @@ class AppImageProvider():
 
     @idle
     def _check_launch_output(self, output: str):
-        if 'libfuse' in output:
+        if self.v2_detector_string in output:
             output = output.replace('\n', ' ')
             
             logging.error(output)

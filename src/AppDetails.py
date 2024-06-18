@@ -572,9 +572,10 @@ class AppDetails(Gtk.ScrolledWindow):
 
         return row
     
-    def create_package_info_row(self) -> Adw.ActionRow:        
+    def create_package_info_row(self) -> Adw.ActionRow:
+        generation = self.provider.get_appimage_generation(self.app_list_element)
         row = Adw.ActionRow(
-            subtitle=f'{self.provider.name.capitalize()} Type. {self.app_list_element.generation}', 
+            subtitle=f'{self.provider.name.capitalize()} Type. {generation}', 
             title=_('Package type'),
             selectable=False
         )
