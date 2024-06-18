@@ -479,8 +479,10 @@ class AppImageProvider():
 
                 if self.v2_detector_string not in check:
                     generation = 3
+            else:
+                return '2 / 3'
 
-        return generation
+        return str(generation)
 
     def create_list_element_from_file(self, file: Gio.File) -> AppImageListElement:
         if not self.can_install_file(file):
