@@ -431,13 +431,6 @@ class AppImageProvider():
             if not extracted_appimage.appimage_file.delete(None):
                 raise InternalError('Cannot delete original file')
 
-        try:
-            self.extraction_folder_cleanup()
-        except Exception as g:
-            logging.error('Appimage cleanup error: ' + str(g))
-            raise g
-
-
         update_dkt_db = terminal.host_sh(['update-desktop-database', self.user_desktop_files_path, '-v'], return_stderr=True)
         logging.debug(update_dkt_db)
 
