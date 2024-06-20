@@ -262,6 +262,7 @@ class AppImageProvider():
 
         try:
             extracted_appimage = self._load_appimage_metadata(el)
+            version = self._get_app_version(extracted_appimage)
             dest_file_info = extracted_appimage.appimage_file.query_info('*', Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS)
 
             # Move .appimage to its default location
@@ -309,22 +310,28 @@ class AppImageProvider():
 
                 # if there is already an app with the same name, 
                 # we try not to overwrite
-                
+
                 if append_file_ext:
                     appimage_filename = appimage_filename + '.appimage'
 
                 app_name_without_ext = os.path.splitext(appimage_filename)[0]
+                app_name_without_ext = remove_special_chars(app_name_without_ext)
+                appimage_filename = remove_special_chars(appimage_filename)
 
-                i = 1
-                while appimage_filename in os.listdir(self._get_appimages_default_destination_path()):
-                    appimage_filename = app_name_without_ext + f'_{i}'
+                i = 0
+                files_in_dest_dir = os.listdir(self._get_appimages_default_destination_path())
+                while appimage_filename in files_in_dest_dir:
+                    if i == 0:
+                        appimage_filename = app_name_without_ext + '_' + version.replace('.', '_')
+                    else:
+                        appimage_filename = app_name_without_ext + f'_{i}'
 
                     if append_file_ext:
                         appimage_filename = appimage_filename + '.appimage'
 
                     i += 1
 
-            appimage_filename = remove_special_chars(appimage_filename)
+            
             dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + appimage_filename)
 
             if not gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
@@ -385,12 +392,7 @@ class AppImageProvider():
                 final_app_name = extracted_appimage.appimage_file.get_basename()
                 if extracted_appimage.desktop_entry:
                     final_app_name = extracted_appimage.desktop_entry.getName()
-
-                    version = extracted_appimage.desktop_entry.get('X-AppImage-Version')
-                    
-                    if not version:
-                        version = extracted_appimage.md5[0:6]
-                        desktop_file_content += f'\nX-AppImage-Version={version}'
+                    desktop_file_content += f'\nX-AppImage-Version={version}'
 
                     if el.update_logic is AppImageUpdateLogic.KEEP:
                         final_app_name += f' ({version})'
@@ -421,6 +423,10 @@ class AppImageProvider():
                 el.desktop_entry = DesktopEntry.DesktopEntry(filename=dest_desktop_file_path)
                 el.desktop_file_path = dest_desktop_file_path
                 el.installed_status = InstalledStatus.INSTALLED
+
+            if el.updating_from and el.updating_from.env_variables:
+                el.env_variables = el.updating_from.env_variables
+                self.update_desktop_file(el)
 
         except Exception as e:
             logging.error('Appimage installation error: ' + str(e))
@@ -720,3 +726,14 @@ class AppImageProvider():
 
     def _get_appimages_default_destination_path(self) -> str:
         return get_gsettings().get_string('appimages-default-folder').replace('~', GLib.get_home_dir())
+
+    def _get_app_version(self, extracted_appimage: ExtractedAppImage):
+        version = None
+
+        if extracted_appimage.desktop_entry:
+            version = extracted_appimage.desktop_entry.get('X-AppImage-Version')
+
+        if not version:
+            version = extracted_appimage.md5[0:6]
+
+        return version
