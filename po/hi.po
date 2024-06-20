@@ -8,15 +8,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gearlever\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-16 16:56+0100\n"
-"PO-Revision-Date: 2024-05-06 16:59+0530\n"
+"POT-Creation-Date: 2024-06-18 11:07+0200\n"
+"PO-Revision-Date: 2024-06-20 15:48+0530\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
-"Language-Team: Hindi\n"
+"Language-Team: Hindi <indlinux-hindi@lists.sourceforge.net>\n"
 "Language: hi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Gtranslator 46.1\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
@@ -31,7 +31,7 @@ msgstr "AppImages को आसानी से प्रबंधित कर�
 msgid "AppImage;"
 msgstr "AppImage;"
 
-#: src/main.py:99
+#: src/main.py:102
 msgid "translator_credits"
 msgstr "Scrambled777 <weblate.scrambled777@simplelogin.com>"
 
@@ -87,7 +87,7 @@ msgstr "अद्यतन"
 msgid "Updating"
 msgstr "अद्यतन किया जा रहा है"
 
-#: src/AppDetails.py:359
+#: src/AppDetails.py:359 src/providers/AppImageProvider.py:588
 msgid "Error"
 msgstr "त्रुटि"
 
@@ -171,11 +171,11 @@ msgstr "खोलें"
 msgid "Open a file"
 msgstr "फाइल खोलें"
 
-#: src/InstalledAppsList.py:36
+#: src/InstalledAppsList.py:37
 msgid "Filter installed applications"
 msgstr "स्थापित अनुप्रयोगों को छाने"
 
-#: src/InstalledAppsList.py:41
+#: src/InstalledAppsList.py:42
 msgid "Installed applications"
 msgstr "स्थापित अनुप्रयोग"
 
@@ -276,11 +276,11 @@ msgstr ""
 "करता है।\n"
 "पुनरारंभ की आवश्यकता है।"
 
-#: src/preferences.py:124 src/WelcomeScreen.py:90
+#: src/preferences.py:124 src/WelcomeScreen.py:95
 msgid "The folder must be in your home directory"
 msgstr "फोल्डर आपकी होम निर्देशिका में होना चाहिए"
 
-#: src/preferences.py:127 src/WelcomeScreen.py:93
+#: src/preferences.py:127 src/WelcomeScreen.py:98
 msgid "Select a folder"
 msgstr "फोल्डर चुनें"
 
@@ -338,6 +338,10 @@ msgid " If you don't see your apps, check if the selected folder is correct."
 msgstr " यदि आपको अपने ऐप्स दिखाई नहीं देते हैं, तो जांचें कि चयनित फोल्डर सही है या नहीं।"
 
 #: src/gtk/empty-list-placeholder.ui:46
+msgid "Show welcome screen"
+msgstr "स्वागत स्क्रीन दिखाएं"
+
+#: src/gtk/empty-list-placeholder.ui:56
 msgid "Open Preferences"
 msgstr "प्राथमिकताएं खोलें"
 
@@ -428,3 +432,22 @@ msgstr "अनुशिक्षण बंद करें"
 #: src/models/AppListElement.py:19
 msgid "No description provided"
 msgstr "कोई विवरण उपलब्ध नहीं कराया गया"
+
+#: src/providers/AppImageProvider.py:591
+#, python-brace-format
+msgid ""
+"AppImages require FUSE to run. You might still be able to run it with --"
+"appimage-extract-and-run in the command line arguments. \n"
+"\n"
+"Click the link below for more information. \n"
+"{url}"
+msgstr ""
+"AppImages को चलाने के लिए FUSE की आवश्यकता होती है। आप कमांड लाइन तर्कों में --"
+"appimage-extract-and-run के साथ इसे चलाने में सक्षम हो सकते हैं। \n"
+"\n"
+"अधिक जानकारी के लिए नीचे दिए गए लिंक पर क्लिक करें। \n"
+"{url}"
+
+#: src/providers/AppImageProvider.py:596
+msgid "Okay"
+msgstr "ठीक है"
