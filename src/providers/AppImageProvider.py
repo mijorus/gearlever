@@ -14,8 +14,8 @@ from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async, idle
 from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
-    remove_special_chars, get_application_window
-from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalError
+    remove_special_chars, get_application_window, get_random_string
+from ..models.Models import AppUpdateElement, InternalError
 from typing import Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, Gio, Adw
 from enum import Enum
@@ -35,7 +35,7 @@ class AppImageUpdateLogic(Enum):
 
 @dataclasses.dataclass
 class AppImageListElement():
-    name: str 
+    name: str
     description: str
     provider: str
     installed_status: InstalledStatus
@@ -572,7 +572,7 @@ class AppImageProvider():
 
         el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
 
-    def update_from_url(self, manager, el: AppImageListElement, status_cb: callable):
+    def update_from_url(self, manager, el: AppImageListElement, status_cb: callable) -> AppImageListElement:
         update_file_path = manager.download(status_cb)
         update_gfile = Gio.file_new_for_path(update_file_path)
 
@@ -588,6 +588,11 @@ class AppImageProvider():
         list_element.update_logic = AppImageUpdateLogic.REPLACE
         list_element.updating_from = el
         self.install_file(list_element)
+
+        list_element.updating_from = None
+        list_element.update_logic = None
+
+        return list_element
 
     # Private methods
 

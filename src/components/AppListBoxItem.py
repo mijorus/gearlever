@@ -52,7 +52,6 @@ class AppListBoxItem(Gtk.ListBoxRow):
             margin_top=3,
             halign=Gtk.Align.START,
             css_classes=['subtitle'],
-            visible=False
         )
 
         app_details_box.append(self.update_version)
@@ -62,8 +61,18 @@ class AppListBoxItem(Gtk.ListBoxRow):
         if show_details_btn:
             self.details_btn = Gtk.Button(icon_name='gl-right-symbolic',
                                      valign=Gtk.Align.CENTER)
-            
+
             col.append(self.details_btn)
+
+        self.update_available_btn = Gtk.Button(
+            icon_name='software-update-available-symbolic',
+            valign=Gtk.Align.CENTER,
+            css_classes=['flat'],
+            sensitive=False,
+            visible=False
+        )
+
+        col.append(self.update_available_btn)
         
         self.set_child(col)
 
@@ -81,3 +90,6 @@ class AppListBoxItem(Gtk.ListBoxRow):
     def set_update_version(self, text: Optional[str]):
         self.update_version.set_visible(text != None)
         self.update_version.set_label(text if text else '')
+
+    def show_updatable_badge(self):
+        self.update_available_btn.set_visible(True)

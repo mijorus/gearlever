@@ -68,7 +68,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         # Create the "stack" widget for the "installed apps" view
         self.installed_stack = Gtk.Stack()
-        self.app_details = AppDetails(toast_overlay)
+        self.app_details = AppDetails()
         self.app_details.connect('uninstalled-app', self.on_uninstalled_app)
 
         self.installed_apps_list = InstalledAppsList()
@@ -77,7 +77,6 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.multi_install = MultiInstall()
         self.multi_install.connect('show-details', self.on_multi_install_show_details)
         self.multi_install.connect('go-back', lambda *_: self.on_left_button_clicked(self.left_button))
-        self.multi_install.load_updates()
 
         self.installed_stack.add_child(self.installed_apps_list)
 
@@ -124,9 +123,6 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         if self.settings.get_boolean('is-maximized'):
             self.maximize()
-
-        self.container_stack.set_visible_child(self.multi_install)
-
 
     # Show app details
     def on_selected_installed_app(self, source: Gtk.Widget, list_element: AppListElement):

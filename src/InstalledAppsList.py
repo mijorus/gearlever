@@ -1,5 +1,7 @@
-from gi.repository import Gtk, Adw, GObject, Gio
+from gi.repository import Gtk, Adw, GObject, Gio, GLib
 from typing import Dict, List, Optional
+
+import logging
 
 from .State import state
 from .lib.costants import APP_ID
@@ -12,12 +14,18 @@ from .components.CustomComponents import NoAppsFoundRow
 from .components.AppListBoxItem import AppListBoxItem
 from .preferences import Preferences
 from .WelcomeScreen import WelcomeScreen
-from .lib.utils import set_window_cursor, get_application_window
+from .lib.utils import set_window_cursor, get_application_window, get_gsettings
+from .lib.json_config import read_json_config, set_json_config, read_config_for_app
+from .lib.async_utils import _async, idle
+from .models.UpdateManager import UpdateManager, UpdateManagerChecker
 
 class InstalledAppsList(Gtk.ScrolledWindow):
     __gsignals__ = {
         "selected-app": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
     }
+
+    CHECK_FOR_UPDATES_LABEL = _('Check for updates')
+    CHECKING_FOR_UPDATES_LABEL = _('Checking updates...')
 
     def __init__(self):
         super().__init__()
@@ -27,9 +35,11 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.container_stack = Gtk.Stack(transition_type=Gtk.StackTransitionType.CROSSFADE)
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
+        self.updates_fetched = False
+
         self.installed_apps_list_slot = Gtk.Box()
         self.installed_apps_list: Optional[Gtk.ListBox] = None
-        self.installed_apps_list_rows: List[Gtk.ListBoxRow] = []
+        self.installed_apps_list_rows: List[AppListBoxItem] = []
         self.no_apps_found_row = NoAppsFoundRow(visible=False)
 
         # Create the filter search bar
@@ -38,8 +48,21 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.filter_entry.search_entry.connect('search-changed', self.trigger_filter_list)
 
         # title row
-        title_row = Gtk.Box(margin_bottom=5)
-        title_row.append( Gtk.Label(label=_('Installed applications'), css_classes=['title-2']) )
+        title_row = Gtk.Box(margin_bottom=15, )
+        title_row.append( Gtk.Label(
+            label=_('Installed applications'), 
+            css_classes=['title-2'],
+            hexpand=True,
+            halign=Gtk.Align.START,
+        ))
+
+        # fetch updates btn
+        self.updates_btn = Gtk.Button(
+            label=self.CHECK_FOR_UPDATES_LABEL,
+        )
+
+        self.updates_btn.connect('clicked', lambda w: self.fetch_updates())
+        title_row.append(self.updates_btn)
 
         [self.main_box.append(el) for el in [title_row, self.installed_apps_list_slot]]
 
@@ -95,6 +118,42 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.installed_apps_list.invalidate_sort()
 
         self.installed_apps_list.connect('row-activated', self.on_activated_row)
+        
+        if not self.updates_fetched:
+            self.fetch_updates()
+
+    @_async
+    def fetch_updates(self):
+        logging.debug('Fetching for updates for all apps')
+
+        self.updates_btn.set_label(self.CHECKING_FOR_UPDATES_LABEL)
+        self.updates_btn.set_sensitive(False)
+
+        for row in self.installed_apps_list_rows:
+            app_conf = read_config_for_app(row._app)
+            update_url = app_conf.get('update_url', None)
+
+            if not update_url:
+                continue
+
+            manager = UpdateManagerChecker.check_url(update_url)
+
+            if not manager:
+                continue
+
+            logging.debug(f'Found app with update url: {update_url}')
+
+            try:
+                status = manager.is_update_available(row._app)
+
+                if status:
+                    row.show_updatable_badge()
+            except Exception as e:
+                logging.error(e)
+
+        self.updates_btn.set_label(self.CHECK_FOR_UPDATES_LABEL)
+        self.updates_btn.set_sensitive(True)
+        self.updates_fetched = True
 
     def trigger_filter_list(self, widget):
         if not self.installed_apps_list:
