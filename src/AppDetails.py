@@ -137,7 +137,7 @@ class AppDetails(Gtk.ScrolledWindow):
         return False
 
     @idle
-    def complete_load(self, icon: Gtk.Image, load_completed_callback: Optional[Callable] = None):
+    def complete_load(self, icon: Gtk.Image, generation: str, load_completed_callback: Optional[Callable] = None):
         self.show_row_spinner(True)
 
         self.details_row.remove(self.icon_slot)
@@ -166,7 +166,7 @@ class AppDetails(Gtk.ScrolledWindow):
         gtk_list = Gtk.ListBox(css_classes=['boxed-list'])
 
         # Package info
-        gtk_list.append(self.create_package_info_row())
+        gtk_list.append(self.create_package_info_row(generation))
 
         # The path of the executable
         gtk_list.append(self.create_exec_path_row())
@@ -226,6 +226,8 @@ class AppDetails(Gtk.ScrolledWindow):
     def load(self, load_completed_callback: Optional[Callable] = None):
         self.show_row_spinner(True)
         icon = Gtk.Image(icon_name='application-x-executable-symbolic')
+        generation = self.provider.get_appimage_generation(self.app_list_element)
+
 
         if self.app_list_element.trusted:
             icon = self.provider.get_icon(self.app_list_element)
@@ -233,7 +235,11 @@ class AppDetails(Gtk.ScrolledWindow):
             if self.app_list_element.installed_status is not InstalledStatus.INSTALLED:
                 self.provider.refresh_title(self.app_list_element)
 
-        self.complete_load(icon, load_completed_callback)
+        self.complete_load(
+            icon,
+            generation,
+            load_completed_callback=load_completed_callback
+        )
 
     @_async
     def install_file(self, el: AppImageListElement):
@@ -243,8 +249,10 @@ class AppDetails(Gtk.ScrolledWindow):
             logging.error(str(e))
 
         self.update_installation_status()
+
         self.complete_load(
-            self.provider.get_icon(self.app_list_element)
+            self.provider.get_icon(self.app_list_element),
+            self.provider.get_appimage_generation(self.app_list_element),
         )
 
     def on_conflict_modal_close(self, widget, data: str):
@@ -361,10 +369,10 @@ class AppDetails(Gtk.ScrolledWindow):
         time.sleep(5)
         self.restore_launch_button(restore_as)
 
-        if get_application_window().is_active():
-            GLib.idle_add(lambda: self.toast_overlay.add_toast(
-                Adw.Toast.new(_('App not opening? Go to Menu > Open Log File for more details'))
-            ))
+        # if get_application_window().is_active():
+        #     GLib.idle_add(lambda: self.toast_overlay.add_toast(
+        #         Adw.Toast.new(_('App not opening? Go to Menu > Open Log File for more details'))
+        #     ))
 
     @idle
     def restore_launch_button(self, restore_as):
@@ -591,7 +599,9 @@ class AppDetails(Gtk.ScrolledWindow):
         icon = self.provider.get_icon(self.app_list_element)
         self.provider.refresh_title(self.app_list_element)
 
-        self.complete_load(icon)
+        generation = self.provider.get_appimage_generation(self.app_list_element)
+
+        self.complete_load(icon, generation)
 
     def on_open_folder_clicked(self, widget):
         path = Gio.File.new_for_path(os.path.dirname(self.app_list_element.file_path))
@@ -676,7 +686,7 @@ class AppDetails(Gtk.ScrolledWindow):
             subtitle=_('Update information like icon, version and description.\nUseful if the app updated itself.')
         )
 
-        row_img = Gtk.Image(icon_name='refresh', pixel_size=self.ACTION_ROW_ICON_SIZE)
+        row_img = Gtk.Image(icon_name='gl-refresh', pixel_size=self.ACTION_ROW_ICON_SIZE)
 
         row.add_prefix(row_img)
         row.connect('activated', self.on_refresh_metadata_btn_clicked)
@@ -690,7 +700,7 @@ class AppDetails(Gtk.ScrolledWindow):
             text=' '.join(self.app_list_element.exec_arguments)
         )
 
-        row_img = Gtk.Image(icon_name='cmd-args', pixel_size=self.ACTION_ROW_ICON_SIZE)
+        row_img = Gtk.Image(icon_name='gearlever-cmd-args', pixel_size=self.ACTION_ROW_ICON_SIZE)
         row.connect('changed', self.on_cmd_arguments_changed)
         row.add_prefix(row_img)
 
@@ -705,7 +715,7 @@ class AppDetails(Gtk.ScrolledWindow):
             selectable=True
         )
 
-        row_img = Gtk.Image(icon_name='hash-symbolic', pixel_size=self.ACTION_ROW_ICON_SIZE)
+        row_img = Gtk.Image(icon_name='gl-hash-symbolic', pixel_size=self.ACTION_ROW_ICON_SIZE)
         row.add_prefix(row_img)
 
         return row
@@ -719,10 +729,10 @@ class AppDetails(Gtk.ScrolledWindow):
         row.add_suffix(row_btn)
 
         return row
-    
-    def create_package_info_row(self) -> Adw.ActionRow:        
+
+    def create_package_info_row(self, gen) -> Adw.ActionRow:
         row = Adw.ActionRow(
-            subtitle=f'{self.provider.name.capitalize()} Type. {self.app_list_element.generation}', 
+            subtitle=f'{self.provider.name.capitalize()} Type. {gen}', 
             title=_('Package type'),
             selectable=False
         )
@@ -743,7 +753,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         row_key = Gtk.Entry(placeholder_text=_('Key'), text=key, hexpand=True)
         row_value = Gtk.Entry(placeholder_text=_('Value'), text=value, hexpand=True, sensitive=(len(key) > 0))
-        delete_btn = Gtk.Button(icon_name='user-trash-symbolic', css_classes=['destructive-action'])
+        delete_btn = Gtk.Button(icon_name='gl-user-trash-symbolic', css_classes=['destructive-action'])
 
         row_key.connect('changed', self.on_env_var_value_changed, row_key, row_value)
         row_value.connect('changed', self.on_env_var_value_changed, row_key, row_value)
@@ -765,7 +775,7 @@ class AppDetails(Gtk.ScrolledWindow):
         )
 
         save_btn_content = Adw.ButtonContent(
-            icon_name='check-plain-symbolic',
+            icon_name='gearlever-check-plain-symbolic',
             label=_('Save')
         )
 

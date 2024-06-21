@@ -8,7 +8,7 @@
     <child>
       <object class="GtkImage">
         <property name="name">logo</property>
-        <property name="icon-name">lightbulb-symbolic</property>
+        <property name="icon-name">gl-lightbulb-symbolic</property>
         <property name="pixel-size">120</property>
         <property name="margin-bottom">30</property>
       </object>
@@ -41,6 +41,16 @@
         <property name="orientation">1</property>
         <property name="valign">3</property>
         <property name="halign">3</property>
+         <child>
+          <object class="GtkButton" id="show-welcome-screen">
+            <property name="label" translatable="yes">Show welcome screen</property>
+            <property name="margin-bottom">10</property>
+            <property name="vexpand">0</property>
+            <style>
+              <class name="pill" />
+            </style>
+          </object>
+        </child>
         <child>
           <object class="GtkButton" id="open-preferences">
             <property name="label" translatable="yes">Open Preferences</property>

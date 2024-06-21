@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-21 23:09+0100\n"
+"POT-Creation-Date: 2024-06-18 11:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgstr ""
 msgid "AppImage;"
 msgstr ""
 
-#: src/main.py:93
+#: src/main.py:102
 msgid "translator_credits"
 msgstr ""
 
@@ -49,10 +49,6 @@ msgstr ""
 
 #: src/AppDetails.py:278
 msgid "Launching..."
-msgstr ""
-
-#: src/AppDetails.py:294
-msgid "App not opening? Go to Menu > Open Log File for more details"
 msgstr ""
 
 #: src/AppDetails.py:319 src/AppDetails.py:339
@@ -87,7 +83,7 @@ msgstr ""
 msgid "Updating"
 msgstr ""
 
-#: src/AppDetails.py:359
+#: src/AppDetails.py:359 src/providers/AppImageProvider.py:588
 msgid "Error"
 msgstr ""
 
@@ -165,15 +161,15 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: src/GearleverWindow.py:254
+#: src/GearleverWindow.py:253
 msgid "Open a file"
 msgstr ""
 
-#: src/InstalledAppsList.py:36
+#: src/InstalledAppsList.py:37
 msgid "Filter installed applications"
 msgstr ""
 
-#: src/InstalledAppsList.py:41
+#: src/InstalledAppsList.py:42
 msgid "Installed applications"
 msgstr ""
 
@@ -186,10 +182,44 @@ msgid "AppImage default location"
 msgstr ""
 
 #: src/preferences.py:36
-msgid "Use executable name for integrated terminal apps"
+msgid "Show integrated AppImages outside the default folder"
 msgstr ""
 
 #: src/preferences.py:38
+msgid ""
+"List AppImages that have been integrated into the system menu but are "
+"located outside the default folder"
+msgstr ""
+
+#: src/preferences.py:45
+msgid "File management"
+msgstr ""
+
+#: src/preferences.py:47
+msgid "Move AppImages into the destination folder"
+msgstr ""
+
+#: src/preferences.py:48
+msgid "Reduce disk usage"
+msgstr ""
+
+#: src/preferences.py:52
+msgid "Clone AppImages into the destination folder"
+msgstr ""
+
+#: src/preferences.py:53
+msgid "Keep the original file and create a copy in the destination folder"
+msgstr ""
+
+#: src/preferences.py:79
+msgid "Naming conventions"
+msgstr ""
+
+#: src/preferences.py:81
+msgid "Use executable name for integrated terminal apps"
+msgstr ""
+
+#: src/preferences.py:83
 msgid ""
 "If enabled, apps that run in the terminal are renamed as their executable.\n"
 "You would need to add the aforementioned folder to your $PATH manually.\n"
@@ -197,56 +227,39 @@ msgid ""
 "For example, \"golang_x86_64.appimage\" will be saved as \"go\""
 msgstr ""
 
-#: src/preferences.py:42
-msgid "Show integrated AppImages outside the default folder"
-msgstr ""
-
-#: src/preferences.py:44
-msgid ""
-"List AppImages that have been integrated into the system menu but are "
-"located outside the default folder"
-msgstr ""
-
-#: src/preferences.py:52
-msgid "File management"
-msgstr ""
-
-#: src/preferences.py:54
-msgid "Move AppImages into the destination folder"
-msgstr ""
-
-#: src/preferences.py:55
-msgid "Reduce disk usage"
-msgstr ""
-
-#: src/preferences.py:59
-msgid "Clone AppImages into the destination folder"
-msgstr ""
-
-#: src/preferences.py:60
-msgid "Keep the original file and create a copy in the destination folder"
-msgstr ""
-
-#: src/preferences.py:85
-msgid "Debugging"
-msgstr ""
-
 #: src/preferences.py:87
-msgid "Enable debug logs"
+msgid "Save appimages files without prefixes"
 msgstr ""
 
 #: src/preferences.py:89
+msgid ""
+"When enabled, every appimage will be renamed as a short, lowercase version "
+"of their app name, without the \"gearlever\" prefix.\n"
+"\n"
+"For example, \"kdenlive-24.02-x86_64.appimage\" will be saved as \"kdelive."
+"appimage\""
+msgstr ""
+
+#: src/preferences.py:96
+msgid "Debugging"
+msgstr ""
+
+#: src/preferences.py:98
+msgid "Enable debug logs"
+msgstr ""
+
+#: src/preferences.py:100
 msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
 "Requires a restart."
 msgstr ""
 
-#: src/preferences.py:112 src/WelcomeScreen.py:90
+#: src/preferences.py:124 src/WelcomeScreen.py:95
 msgid "The folder must be in your home directory"
 msgstr ""
 
-#: src/preferences.py:115 src/WelcomeScreen.py:93
+#: src/preferences.py:127 src/WelcomeScreen.py:98
 msgid "Select a folder"
 msgstr ""
 
@@ -304,6 +317,10 @@ msgid " If you don't see your apps, check if the selected folder is correct."
 msgstr ""
 
 #: src/gtk/empty-list-placeholder.ui:46
+msgid "Show welcome screen"
+msgstr ""
+
+#: src/gtk/empty-list-placeholder.ui:56
 msgid "Open Preferences"
 msgstr ""
 
@@ -389,4 +406,18 @@ msgstr ""
 
 #: src/models/AppListElement.py:19
 msgid "No description provided"
+msgstr ""
+
+#: src/providers/AppImageProvider.py:591
+#, python-brace-format
+msgid ""
+"AppImages require FUSE to run. You might still be able to run it with --"
+"appimage-extract-and-run in the command line arguments. \n"
+"\n"
+"Click the link below for more information. \n"
+"{url}"
+msgstr ""
+
+#: src/providers/AppImageProvider.py:596
+msgid "Okay"
 msgstr ""

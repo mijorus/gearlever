@@ -21,7 +21,7 @@ import logging
 import os
 
 from .lib.utils import log, get_gsettings
-from .lib.costants import APP_ID, APP_NAME
+from .lib.costants import APP_ID, APP_NAME, APP_DATA
 from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
 from  .WelcomeScreen import WelcomeScreen
@@ -46,11 +46,17 @@ class GearleverApplication(Adw.Application):
         self.create_action('open_welcome_screen', self.on_open_welcome_screen)
         self.win = None
         self.version = version
-        self.pkgdatadir = pkgdatadir
 
     def do_startup(self):
-        log('\n\n---- Application startup')
+        log(f'\n\n---- Application startup | version {self.version}')
         Adw.Application.do_startup(self)
+
+        settings = get_gsettings()
+        logging.debug('::: Settings')
+        for k in settings.props.settings_schema.list_keys():
+            logging.debug(k + ': ' + str(settings.get_value(k)))
+
+        logging.debug('::: End settings')
 
         css_provider = Gtk.CssProvider()
         css_provider.load_from_resource(f'/it/mijorus/{APP_NAME}/assets/style.css')
@@ -67,25 +73,28 @@ class GearleverApplication(Adw.Application):
         if not self.win:
             self.win = GearleverWindow(application=self, from_file=from_file)
 
-            # if True:
-            if not get_gsettings().get_boolean('first-run'):
-                get_gsettings().set_boolean('first-run', True)
-                tutorial = WelcomeScreen(self.pkgdatadir)
-                tutorial.present()
+            if get_gsettings().get_boolean('first-run'):
+                get_gsettings().set_boolean('first-run', False)
 
         self.win.present()
 
     def do_open(self, files: list[Gio.File], n_files: int, data):
-        if files and appimage_provider.can_install_file(files[0]):
-            self.do_activate(from_file=True)
-            self.win.on_selected_local_file(files[0])
+        if not files:
+            return
+
+        for f in files:
+            if not appimage_provider.can_install_file(f):
+                return
+        
+        self.do_activate(from_file=True)
+        self.win.on_selected_local_file(list(files))
 
     def on_about_action(self, widget, data):
         about = Adw.AboutWindow(
-            application_name='Gear lever',
+            application_name='Gear Lever',
             version=self.version,
             developers=['Lorenzo Paderi'],
-            copyright='2023 Lorenzo Paderi',
+            copyright='2024 Lorenzo Paderi',
             application_icon='it.mijorus.gearlever',
             issue_url='https://github.com/mijorus/gearlever',
         )
@@ -123,11 +132,13 @@ class GearleverApplication(Adw.Application):
         launcher.launch()
 
     def on_open_welcome_screen(self, widget, event):
-        tutorial = WelcomeScreen(self.pkgdatadir)
+        tutorial = WelcomeScreen()
         tutorial.present()
 
 def main(version, pkgdatadir):
     """The application's entry point."""
+
+    APP_DATA['PKGDATADIR'] = pkgdatadir
 
     log_file = f'{LOG_FOLDER}/{APP_NAME}.log'
 
@@ -151,6 +162,7 @@ def main(version, pkgdatadir):
         filename=log_file,
         filemode='a',
         encoding='utf-8',
+        format='%(levelname)-1s [%(filename)s:%(lineno)d] %(message)s',
         level= logging.DEBUG if get_gsettings().get_boolean('debug-logs') else logging.INFO,
         force=True
     )

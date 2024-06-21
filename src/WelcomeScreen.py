@@ -6,14 +6,16 @@ from typing import Dict, List, Optional
 
 from .State import state
 from .lib.utils import get_element_without_overscroll, get_gsettings, gio_copy
-from .lib.costants import APP_ID, APP_NAME
+from .lib.costants import APP_ID, APP_NAME, APP_DATA
 
 class WelcomeScreen(Gtk.Window):
 
-    def __init__(self, pkgdatadir):
+    def __init__(self):
         super().__init__()
         self.set_default_size(700, 700)
         self.set_resizable(False)
+
+        pkgdatadir = APP_DATA['PKGDATADIR']
 
         container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, valign=Gtk.Align.CENTER)
         self.carousel = Adw.Carousel()
@@ -46,15 +48,18 @@ class WelcomeScreen(Gtk.Window):
 
         container.append(self.carousel)
 
-        self.demo_folder = GLib.get_user_cache_dir() + f'/{APP_ID}/demo'
-        if not os.path.exists(self.demo_folder):
-            os.makedirs(self.demo_folder)
+        self.demo_folder = os.path.join(GLib.get_user_cache_dir(), APP_ID, 'demo')
+        demo_app = Gio.File.new_for_path(os.path.join(pkgdatadir, APP_NAME, 'assets', 'demo.AppImage'))
+        demo_app_dest = os.path.join(self.demo_folder, demo_app.get_basename())
 
-        # move the demo appimage into a temp folder
-        demo_app = Gio.File.new_for_path(f'{pkgdatadir}/{APP_NAME}/assets/demo.AppImage')
-        gio_copy(demo_app, Gio.File.new_for_path(f'{self.demo_folder}/demo.AppImage'))
+        # if the demo file exists, the path to it exists so we can skip checking both
+        if not os.path.exists(demo_app_dest):
+            # create paths to demo file if the path does not exist
+            os.makedirs(self.demo_folder, exist_ok=True)
+            # move demo file to the demo_folder
+            gio_copy(demo_app, Gio.File.new_for_path(demo_app_dest))
+            logging.debug(f'Copied demo app into {self.demo_folder}')
 
-        logging.debug(f'Copied demo app into {self.demo_folder}')
         third_page.get_object('open-demo-folder').connect('clicked', self.on_open_demo_folder_clicked)
         second_page.get_object('open-preferences').connect('clicked', self.on_default_localtion_btn_clicked)
 

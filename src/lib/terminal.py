@@ -9,7 +9,7 @@ def host_sh(command: List[str], return_stderr=False, **kwargs) -> str:
     try:
         cmd = ['flatpak-spawn', '--host', *command]
         
-        log(f'Running {command}')
+        log(f'Running {cmd}')
         output = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
         output.check_returncode()
     except subprocess.CalledProcessError as e:
@@ -18,7 +18,12 @@ def host_sh(command: List[str], return_stderr=False, **kwargs) -> str:
 
         raise e
 
-    return re.sub(r'\n$', '', output.stdout.decode() + (output.stderr.decode() if return_stderr else ''))
+    output_string = output.stdout.decode()
+
+    if return_stderr:
+        output_string += output.stderr.decode()
+
+    return re.sub(r'\n$', '', output_string)
 
 def sandbox_sh(command: List[str], return_stderr=False, **kwargs) -> str:
     try:
@@ -33,7 +38,12 @@ def sandbox_sh(command: List[str], return_stderr=False, **kwargs) -> str:
 
         raise e
 
-    return re.sub(r'\n$', '', output.stdout.decode() + (output.stderr.decode() if return_stderr else ''))
+    output_string = output.stdout.decode()
+
+    if return_stderr:
+        output_string += output.stderr.decode()
+
+    return re.sub(r'\n$', '', output_string)
 
 def host_threaded_sh(command: List[str], callback: Optional[Callable[[str], None]]=None, return_stderr=False):
     def run_command(command: List[str], callback: Optional[Callable[[str], None]]=None):
@@ -41,7 +51,7 @@ def host_threaded_sh(command: List[str], callback: Optional[Callable[[str], None
             output = host_sh(command, return_stderr)
 
             if callback:
-                callback(re.sub(r'\n$', '', output))
+                callback(output)
 
         except subprocess.CalledProcessError as e:
             logging.error(e.stderr)

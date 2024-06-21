@@ -8,6 +8,7 @@ import gi
 import hashlib
 
 from .costants import APP_ID
+from .async_utils import idle
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
@@ -143,3 +144,17 @@ def url_is_valid(url: str) -> bool:
 
 def get_random_string():
     return ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))
+
+def remove_special_chars(filename, replacement=""):
+    """Removes special characters from a filename and replaces them with a chosen character.
+
+    Args:
+        filename: The filename to be sanitized.
+        replacement: The character to replace special characters with (default: "_").
+
+    Returns:
+        The sanitized filename.
+    """
+    # Regular expression to match special characters (excluding alphanumeric, underscore, and dot)
+    pattern = r"[^\w\._]+"
+    return re.sub(pattern, replacement, filename)

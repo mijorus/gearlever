@@ -6,7 +6,7 @@ class FilterEntry(Gtk.SearchBar):
         super().__init__()
     
         self.search_entry = Gtk.SearchEntry(placeholder_text=label, hexpand=True)
-        self.search_entry.get_first_child().set_from_icon_name("funnel-outline-symbolic")
+        self.search_entry.get_first_child().set_from_icon_name("gl-funnel-outline-symbolic")
 
         clamp = Adw.Clamp(child=self.search_entry, maximum_size=maximum_size,hexpand=True, margin_top=5, margin_bottom=5)
 

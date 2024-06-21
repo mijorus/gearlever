@@ -19,7 +19,7 @@ jobs:
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6.1
         with:
           bundle: gearlever-${{ steps.tag.outputs.release_tag }}.flatpak
-          manifest-path: it.mijorus.gearlever.Devel.json
+          manifest-path: it.mijorus.gearlever.json
       - name: Publish release package
         uses: softprops/action-gh-release@v1
         env:
