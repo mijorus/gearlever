@@ -13,6 +13,7 @@ import dataclasses
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async, idle
+from ..lib.json_config import save_config_for_app, read_config_for_app
 from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
     remove_special_chars, get_application_window, get_random_string
 from ..models.Models import AppUpdateElement, InternalError
@@ -573,7 +574,7 @@ class AppImageProvider():
         el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
 
     def update_from_url(self, manager, el: AppImageListElement, status_cb: callable) -> AppImageListElement:
-        update_file_path = manager.download(status_cb)
+        update_file_path, f_hash = manager.download(status_cb)
         update_gfile = Gio.file_new_for_path(update_file_path)
 
         if not self.can_install_file(update_gfile):
@@ -591,6 +592,10 @@ class AppImageProvider():
 
         list_element.updating_from = None
         list_element.update_logic = None
+
+        app_config = read_config_for_app(el)
+        app_config['last_update_hash'] = f_hash
+        save_config_for_app(app_config)
 
         return list_element
 
