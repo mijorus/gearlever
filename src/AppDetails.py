@@ -12,7 +12,7 @@ from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
-from .lib.json_config import read_json_config, set_json_config, read_config_for_app
+from .lib.json_config import read_json_config, set_json_config, read_config_for_app, save_config_for_app
 from .lib.utils import url_is_valid, get_file_hash, get_application_window
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
@@ -457,7 +457,6 @@ class AppDetails(Gtk.ScrolledWindow):
     @debounce(0.5)
     @idle
     def on_web_browser_input_apply(self, widget):
-        conf = read_json_config('apps')
         app_conf = self.get_config_for_app()
 
         text = widget.get_text().strip()
@@ -473,9 +472,8 @@ class AppDetails(Gtk.ScrolledWindow):
             widget.remove_css_class('error')
 
         app_conf['website'] = text
-        conf[app_conf['b64name']] = app_conf
-        set_json_config('apps', conf)
-   
+        save_config_for_app(app_conf)
+
     @_async
     def check_updates(self):
         app_conf = self.get_config_for_app()
@@ -527,8 +525,8 @@ class AppDetails(Gtk.ScrolledWindow):
             else:
                 GLib.idle_add(lambda: widget.add_css_class('success'))
         else:
-            GLib.idle_add(lambda: widget.remove_class('success'))
-            GLib.idle_add(lambda: widget.remove_class('error'))
+            GLib.idle_add(lambda: widget.remove_css_class('success'))
+            GLib.idle_add(lambda: widget.remove_css_class('error'))
 
         app_conf['update_url'] = text
         conf[app_conf['b64name']] = app_conf
