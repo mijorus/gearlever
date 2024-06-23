@@ -46,6 +46,7 @@ class Preferences(Adw.PreferencesWindow):
 
         general_preference_group.add(self.default_location_row)
         general_preference_group.add(files_outside_folder_switch)
+        general_preference_group.add(autofetch_updates)
 
         # file management group
         move_appimages_group = Adw.PreferencesGroup(name=_('File management'), title=_('File management'))
