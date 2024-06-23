@@ -38,6 +38,12 @@ class Preferences(Adw.PreferencesWindow):
             _('List AppImages that have been integrated into the system menu but are located outside the default folder')
         )
 
+        autofetch_updates = self.create_boolean_settings_entry(
+            _('Check updates on open'),
+            'fetch-updates-on-startup',
+            _('Automatically checks for app updates when Gear Lever is opened')
+        )
+
         general_preference_group.add(self.default_location_row)
         general_preference_group.add(files_outside_folder_switch)
 
