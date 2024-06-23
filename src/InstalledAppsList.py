@@ -118,17 +118,18 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.installed_apps_list.invalidate_sort()
 
         self.installed_apps_list.connect('row-activated', self.on_activated_row)
-        
-        if not self.updates_fetched:
-            self.fetch_updates()
+
+        self.fetch_updates()
 
     @_async
     def fetch_updates(self):
         logging.debug('Fetching for updates for all apps')
 
-        self.updates_btn.set_label(self.CHECKING_FOR_UPDATES_LABEL)
-        self.updates_btn.set_sensitive(False)
+        GLib.idle_add(lambda: self.updates_btn.set_label(self.CHECKING_FOR_UPDATES_LABEL))
+        GLib.idle_add(lambda: self.updates_btn.set_sensitive(False))
 
+        updatable_apps = 0
+        final_rows = []
         for row in self.installed_apps_list_rows:
             app_conf = read_config_for_app(row._app)
             update_url = app_conf.get('update_url', None)
@@ -136,6 +137,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
             if not update_url:
                 continue
 
+            updatable_apps += 1
             manager = UpdateManagerChecker.check_url(update_url)
 
             if not manager:
@@ -147,13 +149,22 @@ class InstalledAppsList(Gtk.ScrolledWindow):
                 status = manager.is_update_available(row._app)
 
                 if status:
-                    row.show_updatable_badge()
+                    final_rows.append(row)
             except Exception as e:
                 logging.error(e)
 
-        self.updates_btn.set_label(self.CHECK_FOR_UPDATES_LABEL)
-        self.updates_btn.set_sensitive(True)
         self.updates_fetched = True
+        self.complete_updates_fetch(final_rows, updatable_apps)
+
+    @idle
+    def complete_updates_fetch(self, rows, updatable_apps):
+        for row in rows:
+            row.show_updatable_badge()
+
+        self.updates_btn.set_label(self.CHECK_FOR_UPDATES_LABEL)
+
+        if updatable_apps:
+            self.updates_btn.set_sensitive(True)
 
     def trigger_filter_list(self, widget):
         if not self.installed_apps_list:
