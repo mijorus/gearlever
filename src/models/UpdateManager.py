@@ -183,31 +183,7 @@ class GithubUpdater(UpdateManager):
 
     def download(self, status_update_cb) -> str:
         logging.info(f'Downloading file from {self.url}')
-
-        self.currend_download = requests.get(self.url, stream=True)
-        random_name = get_random_string()
-        fname = f'{self.download_folder}/{random_name}.appimage'
-
-        if not os.path.exists(self.download_folder):
-            os.makedirs(self.download_folder)
-
-        etag = self.currend_download.headers.get("etag", '')
-        total_size = int(self.currend_download.headers.get("content-length", 0))
-        status = 0
-        block_size = 1024
-
-        if os.path.exists(fname):
-            os.remove(fname)
-
-        with open(fname, 'wb') as f:
-            for chunk in self.currend_download.iter_content(block_size):
-                f.write(chunk)
-
-                status += block_size
-                status_update_cb(status / total_size)
-
-        self.currend_download = None
-        return fname, etag
+        pass
     
     def cancel_download(self):
         if self.currend_download:
