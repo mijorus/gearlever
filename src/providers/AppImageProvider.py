@@ -16,7 +16,7 @@ from ..lib.async_utils import _async, idle
 from ..lib.json_config import save_config_for_app, read_config_for_app
 from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
     remove_special_chars, get_application_window, get_random_string
-from ..models.Models import AppUpdateElement, InternalError
+from ..models.Models import AppUpdateElement, InternalError, DownloadInterruptedException
 from typing import Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, Gio, Adw
 from enum import Enum
@@ -575,7 +575,14 @@ class AppImageProvider():
         el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
 
     def update_from_url(self, manager, el: AppImageListElement, status_cb: callable) -> AppImageListElement:
-        update_file_path, f_hash = manager.download(status_cb)
+        try:
+            update_file_path, f_hash = manager.download(status_cb)
+        except DownloadInterruptedException as de:
+            return el
+        except Exception as e:
+            print('test')
+            raise e
+
         update_gfile = Gio.file_new_for_path(update_file_path)
 
         if not self.can_install_file(update_gfile):

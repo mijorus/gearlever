@@ -19,3 +19,6 @@ class InternalError(Exception):
         self.message = message
 
         logging.error(message)
+
+class DownloadInterruptedException(Exception):
+    pass

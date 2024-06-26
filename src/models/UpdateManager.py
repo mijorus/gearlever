@@ -12,6 +12,7 @@ from ..lib import terminal
 from ..lib.json_config import read_config_for_app, save_config_for_app
 from ..lib.utils import get_random_string
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
+from .Models import DownloadInterruptedException
 
 class UpdateManager(ABC):
     @abstractmethod
@@ -40,9 +41,18 @@ class UpdateManager(ABC):
 
 
 class UpdateManagerChecker():
-    def check_url(url: str) -> Optional[UpdateManager]:
+    def check_url(url: str, el: Optional[AppImageListElement]=None) -> Optional[UpdateManager]:
         models = [StaticFileUpdater, GithubUpdater]
 
+        if el:
+            embedded_app_data = UpdateManagerChecker.check_app(el)
+
+            if embedded_app_data:
+                for m in models:
+                    logging.debug(f'Checking url with {m.__name__}')
+                    if m.can_handle_link(embedded_app_data):
+                        return m(embedded_app_data)
+                    
         for m in models:
             logging.debug(f'Checking url with {m.__name__}')
             if m.can_handle_link(url):
@@ -55,24 +65,23 @@ class UpdateManagerChecker():
             return
 
         readelf_out = terminal.host_sh(['readelf', '--string-dump=.upd_info', '--wide', el.file_path])
-        readelf_out = readelf_out.replace('\n', ' ')
+        readelf_out = readelf_out.replace('\n', ' ') + ' '
 
         # Github url
-        pattern_gh = r"^gh-releases-zsync\|(.*)$"
-        matches = re.match(pattern_gh, readelf_out)
+        pattern_gh = r"gh-releases-zsync\|.*(.zsync)"
+        matches = re.search(pattern_gh, readelf_out)
 
         if matches:
-            return matches[0]
+            return matches[0].strip()
         
         # Static url
-        pattern_link = r"^zsync\|http(.*)$"
-        matches = re.match(pattern_link, readelf_out)
+        pattern_link = r"^zsync\|http(.*)\s"
+        matches = re.search(pattern_link, readelf_out)
 
         if matches:
-            return re.sub(r"^zsync\|", '', matches[0])
+            return re.sub(r"^zsync\|", '', matches[0]).strip()
 
         return None
-
 
 
 class StaticFileUpdater(UpdateManager):
@@ -80,7 +89,7 @@ class StaticFileUpdater(UpdateManager):
 
     def __init__(self, url) -> None:
         super().__init__(url)
-        self.url = url
+        self.url = re.sub(r"\.zsync$", "", url)
         self.currend_download = None
 
     def can_handle_link(url: str):
@@ -88,7 +97,7 @@ class StaticFileUpdater(UpdateManager):
 
         if url.endswith('.zsync'):
             # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#zsync-1
-            url = re.sub(r"\.zsync$", "")
+            url = re.sub(r"\.zsync$", "", url)
 
         try:
             resp = requests.head(url, allow_redirects=True)
@@ -126,15 +135,20 @@ class StaticFileUpdater(UpdateManager):
                 status += block_size
                 status_update_cb(status / total_size)
 
+        if os.path.getsize(fname) < total_size:
+            raise DownloadInterruptedException()
+
         self.currend_download = None
         return fname, etag
-    
+
     def cancel_download(self):
         if self.currend_download:
             self.currend_download.close()
-    
+            self.currend_download = None
+
     def cleanup(self):
-        shutil.rmtree(self.download_folder)
+        if os.path.exists(self.download_folder):
+            shutil.rmtree(self.download_folder)
 
     def is_update_available(self, el: AppImageListElement):
         resp = requests.head(self.url, allow_redirects=True)
@@ -155,13 +169,14 @@ class StaticFileUpdater(UpdateManager):
 
 
 class GithubUpdater(UpdateManager):
-    currend_download: Optional[requests.Response]
+    staticfile_manager: Optional[StaticFileUpdater]
 
     def __init__(self, url) -> None:
         super().__init__(url)
         self.url = url
-        self.currend_download = None
+        self.staticfile_manager = None
         self.url_data = GithubUpdater.get_url_data(url)
+        self.target_asset = None
 
     def get_url_data(url):
         # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
@@ -182,17 +197,27 @@ class GithubUpdater(UpdateManager):
         return GithubUpdater.get_url_data(url) != False
 
     def download(self, status_update_cb) -> str:
-        logging.info(f'Downloading file from {self.url}')
-        pass
-    
-    def cancel_download(self):
-        if self.currend_download:
-            self.currend_download.close()
-    
-    def cleanup(self):
-        shutil.rmtree(self.download_folder)
+        if not self.target_asset:
+            logging.warn('Missing target_asset for GithubUpdater instance')
+            return
 
-    def convert_glob_to_regex(glob_str):
+        dwnl = self.target_asset['browser_download_url']
+        self.staticfile_manager = StaticFileUpdater(dwnl)
+        fname, etag = self.staticfile_manager.download(status_update_cb)
+
+        self.staticfile_manager = None
+        return fname, self.target_asset['id']
+
+    def cancel_download(self):
+        if self.staticfile_manager:
+            self.staticfile_manager.cancel_download()
+            self.staticfile_manager = None
+
+    def cleanup(self):
+        if self.staticfile_manager:
+            self.staticfile_manager.cleanup()
+
+    def convert_glob_to_regex(self, glob_str):
         """
         Converts a string with glob patterns to a regular expression.
 
@@ -211,15 +236,17 @@ class GithubUpdater(UpdateManager):
 
         return regex
 
-    def is_update_available(self, el: AppImageListElement):
-        rel_url = f'https://api.github.com/repos/{self.url_data["username"]}'
-        rel_url += f'/{self.url_data["username"]}/releases/{self.url_data["release"]}'
+    def fetch_target_asset(self):
+        rel_url = f'https://api.github.com/repos/{self.url_data["username"]}/{self.url_data["repo"]}'
+        rel_url += f'/releases/{self.url_data["release"]}'
 
         try:
-            rel_data = requests.get(rel_url)
+            rel_data_resp = requests.get(rel_url)
+            rel_data_resp.raise_for_status()
+            rel_data = rel_data_resp.json()
         except Exception as e:
             logging.error(e)
-            return False
+            return
         
         zsync_file = None
         target_re = re.compile(self.convert_glob_to_regex(self.url_data['filename']))
@@ -228,28 +255,30 @@ class GithubUpdater(UpdateManager):
                 zsync_file = asset
                 break
 
-        target_file = None
-        if zsync_file:
-            target_file = re.sub(r'\.zsync$', '', zsync_file['name'])
+        if not zsync_file:
+            return
 
-        target_asset = None
-        if target_file:
-            for asset in rel_data['assets']:
-                if asset['name'] == target_file:
-                    target_asset = asset
-                    break
+        target_file = re.sub(r'\.zsync$', '', zsync_file['name'])
 
-        if target_asset:
-            ct_supported = asset['content_type'] in [*AppImageProvider.supported_mimes, 
+        for asset in rel_data['assets']:
+            if asset['name'] == target_file:
+                self.target_asset = asset
+                break
+
+    def is_update_available(self, el: AppImageListElement):
+        self.fetch_target_asset()
+
+        if self.target_asset:
+            ct_supported = self.target_asset['content_type'] in [*AppImageProvider.supported_mimes, 
                                                      'binary/octet-stream', 'application/octet-stream']
 
             if ct_supported:
                 app_conf = read_config_for_app(el)
                 old_size = os.path.getsize(el.file_path)
-                is_size_different = asset['size'] != old_size
+                is_size_different = self.target_asset['size'] != old_size
 
                 if 'last_update_hash' in app_conf:
-                    is_id_different = app_conf['last_update_hash'] != asset['id']
+                    is_id_different = app_conf['last_update_hash'] != self.target_asset['id']
                     return is_id_different
                 else:
                     return is_size_different

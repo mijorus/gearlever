@@ -25,11 +25,13 @@ class AppDetails(Gtk.ScrolledWindow):
     }
 
     UPDATE_BTN_LABEL = _('Update')
+    CANCEL_UPDATE = _('Cancel update')
     UPDATE_FETCHING = _('Checking updates...')
     UPDATE_NOT_AVAIL_BTN_LABEL = _('No updates available')
 
     def __init__(self):
         super().__init__()
+        self.current_update_manager: Optional[UpdateManager] = None
         self.ACTION_ROW_ICON_SIZE = 34
         self.EXTRA_DATA_SPACING = 20
 
@@ -280,7 +282,6 @@ class AppDetails(Gtk.ScrolledWindow):
             set_json_config('apps', conf)
             
             self.emit('uninstalled-app', self)
-
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
             if self.provider.is_updatable(self.app_list_element) and not self.app_list_element.update_logic:
                 confirm_modal = AppDetailsConflictModal(app_name=self.app_list_element.name)
@@ -304,6 +305,9 @@ class AppDetails(Gtk.ScrolledWindow):
                     self.provider.uninstall(old_version)
 
                 self.install_file(self.app_list_element)
+        elif self.app_list_element.installed_status == InstalledStatus.UPDATING:
+            if self.current_update_manager:
+                self.current_update_manager.cancel_download()
 
         self.update_installation_status()
 
@@ -325,18 +329,25 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @_async
     def update_action_button_clicked(self, w):
-        self.set_all_btn_sensitivity(False)
+        self.app_list_element.set_installed_status(InstalledStatus.UPDATING)
+        self.update_installation_status()
 
         app_conf = self.get_config_for_app()
-        manager = UpdateManagerChecker.check_url(app_conf.get('update_url'))
+        manager = UpdateManagerChecker.check_url(app_conf.get('update_url'), self.app_list_element)
+
+        if not manager:
+            return
 
         try:
+            self.current_update_manager = manager
             self.app_list_element = appimage_provider.update_from_url(manager, self.app_list_element, status_cb= lambda s: \
                 GLib.idle_add(lambda: self.update_action_button.set_label(str(round(s * 100)) + ' %')
             ))
         except Exception as e:
            self.show_update_error_dialog(str(e))
 
+        self.app_list_element.set_installed_status(InstalledStatus.INSTALLED)
+        self.current_update_manager = None
         manager.cleanup()
 
         GLib.idle_add(lambda: self.update_action_button.set_label(_('Update')))
@@ -349,7 +360,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         generation = self.provider.get_appimage_generation(self.app_list_element)
         self.complete_load(icon, generation)
-        self.set_all_btn_sensitivity(True)
+        self.update_installation_status()
 
     @idle
     def show_update_error_dialog(self, msg: str):
@@ -359,7 +370,7 @@ class AppDetails(Gtk.ScrolledWindow):
             body=msg
         )
 
-        dialog.add_reponse('okay', _('Close'))
+        dialog.add_response('okay', _('Close'))
 
         dialog.present()
 
@@ -426,8 +437,11 @@ class AppDetails(Gtk.ScrolledWindow):
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
 
         elif self.app_list_element.installed_status == InstalledStatus.UPDATING:
-            self.primary_action_button.set_label(_('Updating'))
-            self.primary_action_button.set_sensitive(False)
+            self.primary_action_button.set_label(self.CANCEL_UPDATE)
+            self.primary_action_button.set_sensitive(True)
+            self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
+            self.secondary_action_button.set_sensitive(False)
+            self.update_action_button.set_sensitive(False)
 
         elif self.app_list_element.installed_status == InstalledStatus.ERROR:
             self.primary_action_button.set_label(_('Error'))
@@ -486,7 +500,8 @@ class AppDetails(Gtk.ScrolledWindow):
         GLib.idle_add(lambda: self.update_action_button.set_label(self.UPDATE_FETCHING))
         GLib.idle_add(lambda: self.update_action_button.set_sensitive(False))
 
-        manager = UpdateManagerChecker.check_url(app_conf.get('update_url'))
+        manager = UpdateManagerChecker.check_url(app_conf.get('update_url'), self.app_list_element)
+        print(manager)
 
         if not manager:
             if self.update_url_row:
