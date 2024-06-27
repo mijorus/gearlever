@@ -67,6 +67,7 @@ class AppImageProvider():
         self.name = 'AppImage'
         self.v2_detector_string = 'AppImages require FUSE to run.'
         self.icon = "/it/mijorus/gearlever/assets/App-image-logo.png"
+        self.desktop_exec_codes = ["%f", "%F",  "%u",  "%U",  "%i",  "%c", "%k"]
         logging.info(f'Activating {self.name} provider')
 
         self.supported_mimes = ['application/x-iso9660-appimage', 'application/vnd.appimage']
@@ -223,8 +224,6 @@ class AppImageProvider():
         return []
 
     def run(self, el: AppImageListElement):
-        desktop_exec_codes = ["%f", "%F",  "%u",  "%U",  "%i",  "%c", "%k"]
-
         if el.trusted:
             if el.installed_status is InstalledStatus.INSTALLED:
                 gtk_launch = terminal.host_sh(['which', 'gtk-launch'])
@@ -234,16 +233,9 @@ class AppImageProvider():
                     desktop_file_name = os.path.basename(el.desktop_file_path)
                     terminal.host_threaded_sh(['gtk-launch', desktop_file_name], callback=self._check_launch_output, return_stderr=True)
                 else:
-                    cmd = shlex.split(el.desktop_entry.getExec())
-                    cmd = [i for i in cmd if i not in desktop_exec_codes]
-                    terminal.host_threaded_sh(cmd, callback=self._check_launch_output, return_stderr=True)
+                    self._run_from_desktopentry(el)
             else:
-                exec_args = []
-                if el.desktop_entry:
-                    exec_args = shlex.split(el.desktop_entry.getExec())[1:]
-                    exec_args = [i for i in exec_args if i not in desktop_exec_codes]
-
-                terminal.host_threaded_sh([el.file_path, *exec_args], callback=self._check_launch_output, return_stderr=True)
+                self._run_filepath(el)
 
     def can_install_file(self, file: Gio.File) -> bool:
         return get_giofile_content_type(file) in self.supported_mimes
@@ -573,6 +565,32 @@ class AppImageProvider():
         el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
 
     # Private methods
+    def _get_osinfo(self):
+        return terminal.sandbox_sh(['cat', '/run/host/os-release'])
+
+    def _run_filepath(self, el: AppImageListElement):
+        is_nixos = re.search(r"^NAME=NixOS$", self._get_osinfo(), re.MULTILINE) != None
+
+        exec_args = []
+        if el.desktop_entry:
+            exec_args = shlex.split(el.desktop_entry.getExec())[1:]
+            exec_args = [i for i in exec_args if i not in self.desktop_exec_codes]
+
+        if is_nixos:
+            exec_args = ['appimage-run', *exec_args]
+
+        terminal.host_threaded_sh([el.file_path, *exec_args], callback=self._check_launch_output, return_stderr=True)
+
+    def _run_from_desktopentry(self, el: AppImageListElement):
+        is_nixos = re.search(r"^NAME=NixOS$", self._get_osinfo(), re.MULTILINE) != None
+
+        cmd = shlex.split(el.desktop_entry.getExec())
+        cmd = [i for i in cmd if i not in self.desktop_exec_codes]
+
+        if is_nixos:
+            cmd = ['appimage-run', *cmd]
+
+        terminal.host_threaded_sh(cmd, callback=self._check_launch_output, return_stderr=True)
 
     @idle
     def _check_launch_output(self, output: str):
