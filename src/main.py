@@ -20,7 +20,7 @@ import gi
 import logging
 import os
 
-from .lib.utils import log, get_gsettings
+from .lib.utils import get_gsettings
 from .lib.costants import APP_ID, APP_NAME, APP_DATA
 from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
@@ -48,7 +48,7 @@ class GearleverApplication(Adw.Application):
         self.version = version
 
     def do_startup(self):
-        log(f'\n\n---- Application startup | version {self.version}')
+        logging.info(f'\n\n---- Application startup | version {self.version}')
         Adw.Application.do_startup(self)
 
         settings = get_gsettings()

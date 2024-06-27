@@ -12,7 +12,7 @@ from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
 from .lib.json_config import read_json_config, set_json_config
-from .lib.utils import url_is_valid, get_file_hash, get_application_window
+from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
 
@@ -286,7 +286,12 @@ class AppDetails(Gtk.ScrolledWindow):
                     self.secondary_action_button.set_label(_('Launching...'))
                     self.secondary_action_button.set_sensitive(False)
 
-                    self.provider.run(self.app_list_element)
+                    try:
+                        self.provider.run(self.app_list_element)
+                    except Exception as e:
+                        logging.error(e)
+                        show_message_dialog(_('Error'), str(e))
+
                     self.post_launch_animation(restore_as=pre_launch_label)
 
                 except Exception as e:
@@ -501,7 +506,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
             if key:
                 self.app_list_element.env_variables.append(f'{key}={value}')
-        
+
     def on_create_edit_row_btn_clicked(self, w):
         edit_form = self.create_edit_env_var_form()
         self.env_variables_group_container.append(edit_form)
