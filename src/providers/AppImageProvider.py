@@ -577,6 +577,7 @@ class AppImageProvider():
             exec_args = [i for i in exec_args if i not in self.desktop_exec_codes]
 
         if is_nixos:
+            self._nixos_checks()
             exec_args = ['appimage-run', *exec_args]
 
         terminal.host_threaded_sh([el.file_path, *exec_args], callback=self._check_launch_output, return_stderr=True)
@@ -588,9 +589,16 @@ class AppImageProvider():
         cmd = [i for i in cmd if i not in self.desktop_exec_codes]
 
         if is_nixos:
+            self._nixos_checks()
             cmd = ['appimage-run', *cmd]
 
         terminal.host_threaded_sh(cmd, callback=self._check_launch_output, return_stderr=True)
+
+    def _nixos_checks(self):
+        try:
+            terminal.host_sh(['which', 'appimage-run'])
+        except:
+            raise Exception(_("Running AppImages on NixOS requires appimage-run"))
 
     @idle
     def _check_launch_output(self, output: str):
