@@ -571,26 +571,28 @@ class AppImageProvider():
     def _run_filepath(self, el: AppImageListElement):
         is_nixos = re.search(r"^NAME=NixOS$", self._get_osinfo(), re.MULTILINE) != None
 
+        if is_nixos:
+            self._nixos_checks()
+            terminal.host_threaded_sh(['appimage-run', el.file_path], callback=self._check_launch_output, return_stderr=True)
+            return
+
         exec_args = []
         if el.desktop_entry:
             exec_args = shlex.split(el.desktop_entry.getExec())[1:]
             exec_args = [i for i in exec_args if i not in self.desktop_exec_codes]
-
-        if is_nixos:
-            self._nixos_checks()
-            exec_args = ['appimage-run', *exec_args]
 
         terminal.host_threaded_sh([el.file_path, *exec_args], callback=self._check_launch_output, return_stderr=True)
 
     def _run_from_desktopentry(self, el: AppImageListElement):
         is_nixos = re.search(r"^NAME=NixOS$", self._get_osinfo(), re.MULTILINE) != None
 
-        cmd = shlex.split(el.desktop_entry.getExec())
-        cmd = [i for i in cmd if i not in self.desktop_exec_codes]
-
         if is_nixos:
             self._nixos_checks()
-            cmd = ['appimage-run', *cmd]
+            cmd = ['appimage-run', el.desktop_entry.getTryExec()]
+            return
+
+        cmd = shlex.split(el.desktop_entry.getExec())
+        cmd = [i for i in cmd if i not in self.desktop_exec_codes]
 
         terminal.host_threaded_sh(cmd, callback=self._check_launch_output, return_stderr=True)
 
