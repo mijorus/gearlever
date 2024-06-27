@@ -597,8 +597,11 @@ class AppImageProvider():
     def _nixos_checks(self):
         try:
             terminal.host_sh(['which', 'appimage-run'])
-        except:
-            raise Exception(_("Running AppImages on NixOS requires appimage-run"))
+        except Exception as e:
+            logging.error(e)
+            msg = _("Running AppImages on NixOS requires appimage-run")
+            print(msg)
+            raise Exception(msg)
 
     @idle
     def _check_launch_output(self, output: str):
