@@ -12,11 +12,11 @@ import signal
 import dataclasses
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
-from ..lib.async_utils import _async, idle
-from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
-    remove_special_chars, get_application_window
-from ..models.Models import FlatpakHistoryElement, AppUpdateElement, InternalError
-from typing import Optional, List, TypedDict
+from ..lib.async_utils import idle
+from ..lib.utils import  get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
+    remove_special_chars, show_message_dialog, get_osinfo
+from ..models.Models import AppUpdateElement, InternalError
+from typing import Optional, List
 from gi.repository import GLib, Gtk, Gdk, Gio, Adw
 from enum import Enum
 
@@ -329,7 +329,7 @@ class AppImageProvider():
             if not gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
                 raise InternalError('Error while moving appimage file to the destination folder')
 
-            log(f'file copied to {appimages_destination_path}')
+            logging.debug(f'file copied to {appimages_destination_path}')
 
             el.file_path = dest_appimage_file.get_path()
             el.set_trusted()
@@ -565,11 +565,8 @@ class AppImageProvider():
         el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
 
     # Private methods
-    def _get_osinfo(self):
-        return terminal.sandbox_sh(['cat', '/run/host/os-release'])
-
     def _run_filepath(self, el: AppImageListElement):
-        is_nixos = re.search(r"^NAME=NixOS$", self._get_osinfo(), re.MULTILINE) != None
+        is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) != None
 
         if is_nixos:
             self._nixos_checks()
@@ -584,7 +581,7 @@ class AppImageProvider():
         terminal.host_threaded_sh([el.file_path, *exec_args], callback=self._check_launch_output, return_stderr=True)
 
     def _run_from_desktopentry(self, el: AppImageListElement):
-        is_nixos = re.search(r"^NAME=NixOS$", self._get_osinfo(), re.MULTILINE) != None
+        is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) != None
 
         if is_nixos:
             self._nixos_checks()
@@ -600,9 +597,7 @@ class AppImageProvider():
         try:
             terminal.host_sh(['which', 'appimage-run'])
         except Exception as e:
-            logging.error(e)
             msg = _("Running AppImages on NixOS requires appimage-run")
-            print(msg)
             raise Exception(msg)
 
     @idle
@@ -616,19 +611,13 @@ class AppImageProvider():
             # run Gear Lever from the terminal
             print(output)
 
-            dialog = Adw.MessageDialog(
-                transient_for=get_application_window(),
-                heading=_('Error')
+            show_message_dialog(
+                _('Error'),
+                _('AppImages require FUSE to run. You might still be able to run it with --appimage-extract-and-run in the command line arguments. \n\nClick the link below for more information. \n{url}'.format(
+                    url='<a href="https://github.com/AppImage/AppImageKit/wiki/FUSE">https://github.com/AppImage/AppImageKit/wiki/FUSE</a>'
+                )),
+                markup=True
             )
-
-            dialog.set_body(_('AppImages require FUSE to run. You might still be able to run it with --appimage-extract-and-run in the command line arguments. \n\nClick the link below for more information. \n{url}'.format(
-                url='<a href="https://github.com/AppImage/AppImageKit/wiki/FUSE">https://github.com/AppImage/AppImageKit/wiki/FUSE</a>'
-            )))
-
-            dialog.set_body_use_markup(True)
-            dialog.add_response('okay', _('Okay'))
-
-            dialog.present()
 
     def _extract_appimage(self, el: AppImageListElement) -> str:
         random_str = ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))
