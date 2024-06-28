@@ -602,22 +602,25 @@ class AppImageProvider():
 
     @idle
     def _check_launch_output(self, output: str):
-        if self.v2_detector_string in output:
-            output = output.replace('\n', ' ')
-            
-            logging.error(output)
-            
+        output = output.strip()
+
+        if output:
+            logging.debug('=== Launch output ===')
+            logging.debug(output)
+            logging.debug('=== End launch output ===')
+
             # Printing the output might help folks who run 
             # run Gear Lever from the terminal
             print(output)
 
-            show_message_dialog(
-                _('Error'),
-                _('AppImages require FUSE to run. You might still be able to run it with --appimage-extract-and-run in the command line arguments. \n\nClick the link below for more information. \n{url}'.format(
-                    url='<a href="https://github.com/AppImage/AppImageKit/wiki/FUSE">https://github.com/AppImage/AppImageKit/wiki/FUSE</a>'
-                )),
-                markup=True
-            )
+            if self.v2_detector_string in output:
+                show_message_dialog(
+                    _('Error'),
+                    _('AppImages require FUSE to run. You might still be able to run it with --appimage-extract-and-run in the command line arguments. \n\nClick the link below for more information. \n{url}'.format(
+                        url='<a href="https://github.com/AppImage/AppImageKit/wiki/FUSE">https://github.com/AppImage/AppImageKit/wiki/FUSE</a>'
+                    )),
+                    markup=True
+                )
 
     def _extract_appimage(self, el: AppImageListElement) -> str:
         random_str = ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))
