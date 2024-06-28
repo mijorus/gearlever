@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-18 11:07+0200\n"
+"POT-Creation-Date: 2024-06-28 11:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,109 +47,110 @@ msgstr ""
 msgid "Unlock"
 msgstr ""
 
-#: src/AppDetails.py:278
+#: src/AppDetails.py:286
 msgid "Launching..."
 msgstr ""
 
-#: src/AppDetails.py:319 src/AppDetails.py:339
-msgid "This app runs in the terminal"
-msgstr ""
-
-#: src/AppDetails.py:321 src/AppDetails.py:336 src/AppDetails.py:342
-msgid "Launch"
-msgstr ""
-
-#: src/AppDetails.py:323 src/AppDetails.py:351
-msgid "Remove"
-msgstr ""
-
-#: src/AppDetails.py:327
-msgid "Uninstalling..."
-msgstr ""
-
-#: src/AppDetails.py:331
-msgid "Installing..."
-msgstr ""
-
-#: src/AppDetails.py:344
-msgid "Move to the app menu"
-msgstr ""
-
-#: src/AppDetails.py:348
-msgid "Update"
-msgstr ""
-
-#: src/AppDetails.py:355
-msgid "Updating"
-msgstr ""
-
-#: src/AppDetails.py:359 src/providers/AppImageProvider.py:588
+#: src/AppDetails.py:293 src/AppDetails.py:372
+#: src/providers/AppImageProvider.py:618
 msgid "Error"
 msgstr ""
 
-#: src/AppDetails.py:505
+#: src/AppDetails.py:332 src/AppDetails.py:352
+msgid "This app runs in the terminal"
+msgstr ""
+
+#: src/AppDetails.py:334 src/AppDetails.py:349 src/AppDetails.py:355
+msgid "Launch"
+msgstr ""
+
+#: src/AppDetails.py:336 src/AppDetails.py:364
+msgid "Remove"
+msgstr ""
+
+#: src/AppDetails.py:340
+msgid "Uninstalling..."
+msgstr ""
+
+#: src/AppDetails.py:344
+msgid "Installing..."
+msgstr ""
+
+#: src/AppDetails.py:357
+msgid "Move to the app menu"
+msgstr ""
+
+#: src/AppDetails.py:361
+msgid "Update"
+msgstr ""
+
+#: src/AppDetails.py:368
+msgid "Updating"
+msgstr ""
+
+#: src/AppDetails.py:520
 msgid "Website"
 msgstr ""
 
-#: src/AppDetails.py:505
+#: src/AppDetails.py:520
 msgid "Add a website"
 msgstr ""
 
-#: src/AppDetails.py:514
+#: src/AppDetails.py:529
 msgid "Open URL"
 msgstr ""
 
-#: src/AppDetails.py:527
+#: src/AppDetails.py:542
 msgid "Reload metadata"
 msgstr ""
 
-#: src/AppDetails.py:528
+#: src/AppDetails.py:543
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
 msgstr ""
 
-#: src/AppDetails.py:540
+#: src/AppDetails.py:555
 msgid "Command line arguments"
 msgstr ""
 
-#: src/AppDetails.py:556
+#: src/AppDetails.py:571
 msgid "Hash"
 msgstr ""
 
-#: src/AppDetails.py:566
+#: src/AppDetails.py:581
 msgid "Path"
 msgstr ""
 
-#: src/AppDetails.py:568
+#: src/AppDetails.py:583
 msgid "Open Folder"
 msgstr ""
 
-#: src/AppDetails.py:578
+#: src/AppDetails.py:593
 msgid "Package type"
 msgstr ""
 
-#: src/AppDetails.py:596
+#: src/AppDetails.py:611
 msgid "Key"
 msgstr ""
 
-#: src/AppDetails.py:597
+#: src/AppDetails.py:612
 msgid "Value"
 msgstr ""
 
-#: src/AppDetails.py:616
+#: src/AppDetails.py:631
 msgid "Add"
 msgstr ""
 
-#: src/AppDetails.py:621
+#: src/AppDetails.py:636
 msgid "Save"
 msgstr ""
 
-#: src/AppDetails.py:636
+#: src/AppDetails.py:651
 msgid "Environment variables"
 msgstr ""
 
-#: src/AppDetails.py:637
+#: src/AppDetails.py:652
 msgid "Add or customize environment for this application"
 msgstr ""
 
@@ -362,6 +363,7 @@ msgid ""
 msgstr ""
 
 #: src/gtk/tutorial/2.ui:33
+#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
 msgstr ""
 
@@ -408,7 +410,11 @@ msgstr ""
 msgid "No description provided"
 msgstr ""
 
-#: src/providers/AppImageProvider.py:591
+#: src/providers/AppImageProvider.py:600
+msgid "Running AppImages on NixOS requires appimage-run"
+msgstr ""
+
+#: src/providers/AppImageProvider.py:619
 #, python-brace-format
 msgid ""
 "AppImages require FUSE to run. You might still be able to run it with --"
@@ -416,8 +422,4 @@ msgid ""
 "\n"
 "Click the link below for more information. \n"
 "{url}"
-msgstr ""
-
-#: src/providers/AppImageProvider.py:596
-msgid "Okay"
 msgstr ""

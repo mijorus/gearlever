@@ -15,7 +15,7 @@ from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async, idle
 from ..lib.json_config import save_config_for_app, read_config_for_app
 from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
-    remove_special_chars, get_application_window, get_random_string
+    remove_special_chars, get_application_window, get_random_string, show_message_dialog, get_osinfo
 from ..models.Models import AppUpdateElement, InternalError, DownloadInterruptedException
 from typing import Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, Gio, Adw
@@ -70,6 +70,7 @@ class AppImageProvider():
         self.name = 'AppImage'
         self.v2_detector_string = 'AppImages require FUSE to run.'
         self.icon = "/it/mijorus/gearlever/assets/App-image-logo.png"
+        self.desktop_exec_codes = ["%f", "%F",  "%u",  "%U",  "%i",  "%c", "%k"]
         logging.info(f'Activating {self.name} provider')
 
 
@@ -225,8 +226,6 @@ class AppImageProvider():
         return []
 
     def run(self, el: AppImageListElement):
-        desktop_exec_codes = ["%f", "%F",  "%u",  "%U",  "%i",  "%c", "%k"]
-
         if el.trusted:
             if el.installed_status is InstalledStatus.INSTALLED:
                 gtk_launch = terminal.host_sh(['which', 'gtk-launch'])
@@ -236,16 +235,9 @@ class AppImageProvider():
                     desktop_file_name = os.path.basename(el.desktop_file_path)
                     terminal.host_threaded_sh(['gtk-launch', desktop_file_name], callback=self._check_launch_output, return_stderr=True)
                 else:
-                    cmd = shlex.split(el.desktop_entry.getExec())
-                    cmd = [i for i in cmd if i not in desktop_exec_codes]
-                    terminal.host_threaded_sh(cmd, callback=self._check_launch_output, return_stderr=True)
+                    self._run_from_desktopentry(el)
             else:
-                exec_args = []
-                if el.desktop_entry:
-                    exec_args = shlex.split(el.desktop_entry.getExec())[1:]
-                    exec_args = [i for i in exec_args if i not in desktop_exec_codes]
-
-                terminal.host_threaded_sh([el.file_path, *exec_args], callback=self._check_launch_output, return_stderr=True)
+                self._run_filepath(el)
 
     def can_install_file(self, file: Gio.File) -> bool:
         return get_giofile_content_type(file) in self.supported_mimes
@@ -339,7 +331,7 @@ class AppImageProvider():
             if not gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
                 raise InternalError('Error while moving appimage file to the destination folder')
 
-            log(f'file copied to {appimages_destination_path}')
+            logging.debug(f'file copied to {appimages_destination_path}')
 
             el.file_path = dest_appimage_file.get_path()
             el.set_trusted()
@@ -608,31 +600,58 @@ class AppImageProvider():
         return list_element
 
     # Private methods
+    def _run_filepath(self, el: AppImageListElement):
+        is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) != None
+
+        if is_nixos:
+            self._nixos_checks()
+            terminal.host_threaded_sh(['appimage-run', el.file_path], callback=self._check_launch_output, return_stderr=True)
+            return
+
+        exec_args = []
+        if el.desktop_entry:
+            exec_args = shlex.split(el.desktop_entry.getExec())[1:]
+            exec_args = [i for i in exec_args if i not in self.desktop_exec_codes]
+
+        terminal.host_threaded_sh([el.file_path, *exec_args], callback=self._check_launch_output, return_stderr=True)
+
+    def _run_from_desktopentry(self, el: AppImageListElement):
+        is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) != None
+
+        if is_nixos:
+            self._nixos_checks()
+            cmd = ['appimage-run', el.desktop_entry.getTryExec()]
+            return
+
+        cmd = shlex.split(el.desktop_entry.getExec())
+        cmd = [i for i in cmd if i not in self.desktop_exec_codes]
+
+        terminal.host_threaded_sh(cmd, callback=self._check_launch_output, return_stderr=True)
+
+    def _nixos_checks(self):
+        try:
+            terminal.host_sh(['which', 'appimage-run'])
+        except Exception as e:
+            msg = _("Running AppImages on NixOS requires appimage-run")
+            raise Exception(msg)
 
     @idle
     def _check_launch_output(self, output: str):
-        if self.v2_detector_string in output:
-            output = output.replace('\n', ' ')
-            
-            logging.error(output)
-            
+        output = output.strip()
+
+        if output:
             # Printing the output might help folks who run 
             # run Gear Lever from the terminal
             print(output)
 
-            dialog = Adw.MessageDialog(
-                transient_for=get_application_window(),
-                heading=_('Error')
-            )
-
-            dialog.set_body(_('AppImages require FUSE to run. You might still be able to run it with --appimage-extract-and-run in the command line arguments. \n\nClick the link below for more information. \n{url}'.format(
-                url='<a href="https://github.com/AppImage/AppImageKit/wiki/FUSE">https://github.com/AppImage/AppImageKit/wiki/FUSE</a>'
-            )))
-
-            dialog.set_body_use_markup(True)
-            dialog.add_response('okay', _('Okay'))
-
-            dialog.present()
+            if self.v2_detector_string in output:
+                show_message_dialog(
+                    _('Error'),
+                    _('AppImages require FUSE to run. You might still be able to run it with --appimage-extract-and-run in the command line arguments. \n\nClick the link below for more information. \n{url}'.format(
+                        url='<a href="https://github.com/AppImage/AppImageKit/wiki/FUSE">https://github.com/AppImage/AppImageKit/wiki/FUSE</a>'
+                    )),
+                    markup=True
+                )
 
     def _extract_appimage(self, el: AppImageListElement) -> str:
         random_str = get_random_string()

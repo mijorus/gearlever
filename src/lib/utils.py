@@ -6,6 +6,7 @@ import time
 import logging
 import gi
 import hashlib
+from . import terminal
 
 from .costants import APP_ID
 from .async_utils import idle
@@ -32,10 +33,6 @@ def key_in_dict(_dict: dict, key_lookup: str, separator='.'):
             break
 
     return subdict
-
-
-def log(s):
-    logging.debug(s)
 
 
 def add_page_to_adw_stack(stack: Adw.ViewStack, page: Gtk.Widget, name: str, title: str, icon: str):
@@ -69,10 +66,6 @@ def get_application_window() -> Gtk.ApplicationWindow:
             return w
 
 
-def qq(condition, is_true, is_false):
-    return is_true if condition else is_false
-
-
 def get_giofile_content_type(file: Gio.File):
     return file.query_info('standard::', Gio.FileQueryInfoFlags.NONE, None).get_content_type()
 
@@ -94,6 +87,7 @@ def get_file_hash(file: Gio.File, alg='md5') -> str:
             return hashlib.sha1(f.read()).hexdigest()
 
     raise Exception('Invalid hash requested')
+
 
 def send_notification(notification=Gio.Notification, tag=None):
     if not tag:
@@ -158,3 +152,22 @@ def remove_special_chars(filename, replacement=""):
     # Regular expression to match special characters (excluding alphanumeric, underscore, and dot)
     pattern = r"[^\w\._]+"
     return re.sub(pattern, replacement, filename)
+
+
+def show_message_dialog(header, message, markup=False):
+    dialog = Adw.MessageDialog(
+        transient_for=get_application_window(),
+        heading=_('Error'),
+        body_use_markup=markup
+    )
+
+    dialog.set_body(message)
+
+    dialog.set_body_use_markup(True)
+    dialog.add_response('okay', _('Dismiss'))
+
+    dialog.present()
+
+
+def get_osinfo():
+    return terminal.sandbox_sh(['cat', '/run/host/os-release'])
