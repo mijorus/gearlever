@@ -605,10 +605,6 @@ class AppImageProvider():
         output = output.strip()
 
         if output:
-            logging.debug('=== Launch output ===')
-            logging.debug(output)
-            logging.debug('=== End launch output ===')
-
             # Printing the output might help folks who run 
             # run Gear Lever from the terminal
             print(output)
