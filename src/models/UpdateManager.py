@@ -265,9 +265,14 @@ class GithubUpdater(UpdateManager):
         zsync_file = None
         target_re = re.compile(self.convert_glob_to_regex(self.url_data['filename']))
         for asset in rel_data['assets']:
-            if re.match(target_re, asset['name']) and asset['name'].endswith('.zsync'):
-                zsync_file = asset
-                break
+            if self.embedded:
+                if re.match(target_re, asset['name']) and asset['name'].endswith('.zsync'):
+                    zsync_file = asset
+                    break
+            else:
+                if re.match(target_re, asset['name']):
+                    zsync_file = asset
+                    break
 
         if not zsync_file:
             logging.debug(f'No matching assets found from {rel_url}')

@@ -28,6 +28,9 @@ class AppDetails(Gtk.ScrolledWindow):
     CANCEL_UPDATE = _('Cancel update')
     UPDATE_FETCHING = _('Checking updates...')
     UPDATE_NOT_AVAIL_BTN_LABEL = _('No updates available')
+    UPDATE_INFO_EMBEDDED = _('This application includes update information provided by the developer')
+    UPDATE_INFO_NOT_EMBEDDED = _('Manage update details for this application')
+
 
     def __init__(self):
         super().__init__()
@@ -122,7 +125,9 @@ class AppDetails(Gtk.ScrolledWindow):
         # Update url entry
         self.update_url_group: Optional[Adw.PreferencesGroup] = None
         self.update_url_row: Optional[Adw.EntryRow] = None
+        self.update_url_save_btn: Optional[Gtk.Button] = None
         self.update_url_source: Optional[Adw.ComboRow] = None
+        self.update_url_group: Optional[Adw.PreferenciesGroup] = None
 
         self.set_child(container_box)
 
@@ -515,8 +520,14 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.update_url_source.get_model()._items_val.index(manager.label)
             )
         
-        self.update_url_row.set_sensitive(not manager.embedded)
+        self.update_url_row.set_editable(not manager.embedded)
         self.update_url_source.set_sensitive(not manager.embedded)
+        self.update_url_save_btn.set_visible(not manager.embedded)
+
+        if manager.embedded:
+            self.update_url_group.set_description(self.UPDATE_INFO_EMBEDDED)
+        else:
+            self.update_url_group.set_description(self.UPDATE_INFO_NOT_EMBEDDED)
 
     @_async
     def check_updates(self):
@@ -544,7 +555,6 @@ class AppDetails(Gtk.ScrolledWindow):
         GLib.idle_add(lambda: self.update_action_button.set_sensitive(True))
         GLib.idle_add(lambda: self.update_action_button.set_sensitive(is_updatable))
 
-    @debounce(0.5)
     @_async
     def on_app_update_url_apply(self, widget):
         conf = read_json_config('apps')
@@ -702,9 +712,24 @@ class AppDetails(Gtk.ScrolledWindow):
     def create_edit_update_url_row(self) -> Adw.EntryRow:
         app_config = self.get_config_for_app()
 
+        save_btn_content = Adw.ButtonContent(
+            icon_name='gearlever-check-plain-symbolic',
+            label=_('Save')
+        )
+
+        self.update_url_save_btn = Gtk.Button(child=save_btn_content, sensitive=False,
+                                        css_classes=['suggested-action'])
+
+        self.update_url_save_btn.connect('clicked', self.on_app_update_url_apply)
+
+        btn_container = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5, 
+                                valign=Gtk.Align.CENTER)
+        btn_container.append(self.update_url_save_btn)
+
         group = Adw.PreferencesGroup(
             title=_('Update management'),
-            description=_('Manage update details for this application'),
+            description=self.UPDATE_INFO_NOT_EMBEDDED,
+            header_suffix=btn_container,
         )
 
         title = (_('Update URL') if app_config.get('update_url', False) else _('Add an update url'))
@@ -724,7 +749,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.update_url_row = Adw.EntryRow(
             title=title,
-            selectable=False,
+            selectable=True,
             text=(app_config.get('update_url', ''))
         )
 
@@ -739,7 +764,6 @@ class AppDetails(Gtk.ScrolledWindow):
 
         row_btn.connect('clicked', self.on_update_url_info_btn_clicked)
 
-        self.update_url_row.connect('changed', self.on_app_update_url_apply)
         self.update_url_row.add_prefix(row_img)
         self.update_url_row.add_suffix(row_btn)
 
