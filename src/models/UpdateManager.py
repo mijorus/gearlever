@@ -166,15 +166,7 @@ class StaticFileUpdater(UpdateManager):
 
         logging.debug(f'StaticFileUpdater: new url has length {resp_cl}, old was {old_size}')
         is_size_different = resp_cl != old_size
-        is_etag_different = False
-
-        app_conf = read_config_for_app(el)
-        etag = resp.headers.get('etag', None)
-
-        if etag and 'last_update_hash' in app_conf:
-            is_etag_different = app_conf['last_update_hash'] == etag
-
-        return is_size_different or is_etag_different
+        return is_size_different
 
 
 class GithubUpdater(UpdateManager):
@@ -296,12 +288,7 @@ class GithubUpdater(UpdateManager):
                 app_conf = read_config_for_app(el)
                 old_size = os.path.getsize(el.file_path)
                 is_size_different = target_asset['size'] != old_size
-
-                if 'last_update_hash' in app_conf:
-                    is_id_different = app_conf['last_update_hash'] != target_asset['id']
-                    return is_id_different
-                else:
-                    return is_size_different
+                return is_size_different
 
         return False
 

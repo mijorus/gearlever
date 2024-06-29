@@ -589,10 +589,6 @@ class AppImageProvider():
         list_element.updating_from = None
         list_element.update_logic = None
 
-        app_config = read_config_for_app(el)
-        app_config['last_update_hash'] = f_hash
-        save_config_for_app(app_config)
-
         return list_element
 
     # Private methods
