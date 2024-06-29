@@ -120,7 +120,9 @@ class AppDetails(Gtk.ScrolledWindow):
         self.save_vars_btn: Optional[Gtk.Button] = None
 
         # Update url entry
+        self.update_url_group: Optional[Adw.PreferencesGroup] = None
         self.update_url_row: Optional[Adw.EntryRow] = None
+        self.update_url_source: Optional[Adw.ComboRow] = None
 
         self.set_child(container_box)
 
@@ -188,9 +190,6 @@ class AppDetails(Gtk.ScrolledWindow):
 
             # A custom link to a website
             gtk_list.append(self.create_edit_custom_website_row())
-            
-            self.update_url_row = self.create_edit_update_url_row()
-            gtk_list.append(self.update_url_row)
 
             # Reload metadata row
             reload_data_listbox = Gtk.ListBox(css_classes=['boxed-list'])
@@ -215,6 +214,9 @@ class AppDetails(Gtk.ScrolledWindow):
         self.extra_data.append(gtk_list)
 
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
+            self.update_url_group = self.create_edit_update_url_row()
+            self.extra_data.append(self.update_url_group)
+
             edit_env_vars_widget = self.create_edit_env_vars_row()
             self.extra_data.append(edit_env_vars_widget)
 
@@ -278,9 +280,13 @@ class AppDetails(Gtk.ScrolledWindow):
             
             app_config = self.get_config_for_app()
             conf = read_json_config('apps')
-            del conf[app_config['b64name']]
-            set_json_config('apps', conf)
-            
+
+            if 'b64name' in app_config and app_config['b64name'] in conf:
+                del conf[app_config['b64name']]
+                set_json_config('apps', conf)
+            else:
+                logging.warn('Missing app key from app config')
+
             self.emit('uninstalled-app', self)
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
             if self.provider.is_updatable(self.app_list_element) and not self.app_list_element.update_logic:
@@ -350,7 +356,7 @@ class AppDetails(Gtk.ScrolledWindow):
                 GLib.idle_add(lambda: self.update_action_button.set_label(str(round(s * 100)) + ' %')
             ))
         except Exception as e:
-           self.show_update_error_dialog(str(e))
+            self.show_update_error_dialog(str(e))
 
         self.app_list_element.set_installed_status(InstalledStatus.INSTALLED)
         self.current_update_manager = None
@@ -370,6 +376,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @idle
     def show_update_error_dialog(self, msg: str):
+        logging.error(msg)
         dialog = Adw.MessageDialog(
             transient_for=get_application_window(),
             heading=_('Update error'),
@@ -494,26 +501,36 @@ class AppDetails(Gtk.ScrolledWindow):
         app_conf['website'] = text
         save_config_for_app(app_conf)
 
+    @idle
+    def set_app_as_updatable(self):
+        self.update_action_button.set_visible(True)
+        self.update_action_button.set_label(self.UPDATE_FETCHING)
+        self.update_action_button.set_sensitive(False)
+
+    @idle
+    def set_update_information(self, manager: UpdateManager):
+        if manager.embedded:
+            self.update_url_row.set_text(manager.url)
+            self.update_url_source.set_selected(
+                self.update_url_source.get_model()._items_val.index(manager.label)
+            )
+        
+        self.update_url_row.set_sensitive(not manager.embedded)
+        self.update_url_source.set_sensitive(not manager.embedded)
+
     @_async
     def check_updates(self):
         app_conf = self.get_config_for_app()
-
-        if not app_conf.get('update_url', None):
-            logging.debug(f'Update url missing for app {self.app_list_element.name}, skipping...')
-            return
-
-        GLib.idle_add(lambda: self.update_action_button.set_visible(True))
-        GLib.idle_add(lambda: self.update_action_button.set_label(self.UPDATE_FETCHING))
-        GLib.idle_add(lambda: self.update_action_button.set_sensitive(False))
-
-        manager = UpdateManagerChecker.check_url(app_conf.get('update_url'), self.app_list_element)
-        print(manager)
+        update_url = app_conf.get('update_url', None)
+        manager = UpdateManagerChecker.check_url(update_url, self.app_list_element)
 
         if not manager:
             if self.update_url_row:
                 GLib.idle_add(lambda: self.update_url_row.add_css_class('error'))
-
             return
+
+        self.set_update_information(manager)
+        self.set_app_as_updatable()
 
         is_updatable = manager.is_update_available(self.app_list_element)
         self.app_list_element.is_updatable_from_url = is_updatable
@@ -685,8 +702,27 @@ class AppDetails(Gtk.ScrolledWindow):
     def create_edit_update_url_row(self) -> Adw.EntryRow:
         app_config = self.get_config_for_app()
 
+        group = Adw.PreferencesGroup(
+            title=_('Update management'),
+            description=_('Manage update details for this application'),
+        )
+
         title = (_('Update URL') if app_config.get('update_url', False) else _('Add an update url'))
-        row = Adw.EntryRow(
+
+        combo_model = Gtk.StringList()
+        combo_model._items_val = []
+
+        for m in UpdateManagerChecker.get_models():
+            combo_model.append(m.label)
+            combo_model._items_val.append(m.label)
+
+        self.update_url_source = Adw.ComboRow(
+            title=_('Source'),
+            subtitle=_('Select the source type'),
+            model=combo_model
+        )
+
+        self.update_url_row = Adw.EntryRow(
             title=title,
             selectable=False,
             text=(app_config.get('update_url', ''))
@@ -703,11 +739,14 @@ class AppDetails(Gtk.ScrolledWindow):
 
         row_btn.connect('clicked', self.on_update_url_info_btn_clicked)
 
-        row.connect('changed', self.on_app_update_url_apply)
-        row.add_prefix(row_img)
-        row.add_suffix(row_btn)
+        self.update_url_row.connect('changed', self.on_app_update_url_apply)
+        self.update_url_row.add_prefix(row_img)
+        self.update_url_row.add_suffix(row_btn)
 
-        return row
+        group.add(self.update_url_source)
+        group.add(self.update_url_row)
+
+        return group
     
     def create_reload_metadata_row(self) -> Adw.EntryRow:
         row = Adw.ActionRow(selectable=False, activatable=True,

@@ -24,6 +24,8 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         "selected-app": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
     }
 
+    ONE_UPDATE_AVAILABLE_LABEL = _('1 update available')
+    UPDATES_AVAILABLE_LABEL = _('{n} updates available')
     CHECK_FOR_UPDATES_LABEL = _('Check for updates')
     CHECKING_FOR_UPDATES_LABEL = _('Checking updates...')
 
@@ -129,39 +131,43 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         GLib.idle_add(lambda: self.updates_btn.set_sensitive(False))
 
         updatable_apps = 0
+        updates_available = 0
         final_rows = []
         for row in self.installed_apps_list_rows:
             app_conf = read_config_for_app(row._app)
             update_url = app_conf.get('update_url', None)
 
-            if not update_url:
-                continue
+            manager = UpdateManagerChecker.check_url(update_url, row._app)
 
             updatable_apps += 1
-            manager = UpdateManagerChecker.check_url(update_url)
-
             if not manager:
                 continue
 
-            logging.debug(f'Found app with update url: {update_url}')
+            logging.debug(f'Found app with update url: {manager.url}')
 
             try:
                 status = manager.is_update_available(row._app)
 
                 if status:
+                    updates_available += 1
                     final_rows.append(row)
             except Exception as e:
                 logging.error(e)
 
         self.updates_fetched = True
-        self.complete_updates_fetch(final_rows, updatable_apps)
+        self.complete_updates_fetch(final_rows, updatable_apps, updates_available)
 
     @idle
-    def complete_updates_fetch(self, rows, updatable_apps):
+    def complete_updates_fetch(self, rows, updatable_apps: int, updates_available: int):
         for row in rows:
             row.show_updatable_badge()
 
-        self.updates_btn.set_label(self.CHECK_FOR_UPDATES_LABEL)
+        if updates_available == 0:
+            self.updates_btn.set_label(self.CHECK_FOR_UPDATES_LABEL)
+        elif updates_available == 1:
+            self.updates_btn.set_label(self.ONE_UPDATE_AVAILABLE_LABEL)
+        else:
+            self.updates_btn.set_label(self.UPDATES_AVAILABLE_LABEL.replace('{n}', str(updates_available)))
 
         if updatable_apps:
             self.updates_btn.set_sensitive(True)

@@ -9,14 +9,14 @@ from gi.repository import GLib
 
 
 from ..lib import terminal
-from ..lib.json_config import read_config_for_app, save_config_for_app
-from ..lib.utils import get_random_string
+from ..lib.json_config import read_config_for_app
+from ..lib.utils import get_random_string, url_is_valid
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 from .Models import DownloadInterruptedException
 
 class UpdateManager(ABC):
     @abstractmethod
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, embedded=False) -> None:
         self.download_folder = GLib.get_tmp_dir() + '/it.mijorus.gearlever/downloads'
         pass
 
@@ -41,22 +41,26 @@ class UpdateManager(ABC):
 
 
 class UpdateManagerChecker():
-    def check_url(url: str, el: Optional[AppImageListElement]=None) -> Optional[UpdateManager]:
-        models = [StaticFileUpdater, GithubUpdater]
+    def get_models() -> list[UpdateManager]:
+        return [StaticFileUpdater, GithubUpdater]
+
+    def check_url(url: str=Optional[str], el: Optional[AppImageListElement]=None) -> Optional[UpdateManager]:
+        models = UpdateManagerChecker.get_models()
 
         if el:
             embedded_app_data = UpdateManagerChecker.check_app(el)
 
             if embedded_app_data:
                 for m in models:
-                    logging.debug(f'Checking url with {m.__name__}')
+                    logging.debug(f'Checking embedded url with {m.__name__}')
                     if m.can_handle_link(embedded_app_data):
-                        return m(embedded_app_data)
-                    
-        for m in models:
-            logging.debug(f'Checking url with {m.__name__}')
-            if m.can_handle_link(url):
-                return m(url)
+                        return m(embedded_app_data, embedded=True)
+
+        if url:
+             for m in models:
+                logging.debug(f'Checking url with {m.__name__}')
+                if m.can_handle_link(url):
+                    return m(url)
 
         return None
 
@@ -85,14 +89,19 @@ class UpdateManagerChecker():
 
 
 class StaticFileUpdater(UpdateManager):
+    label = _('Static URL')
     currend_download: Optional[requests.Response]
 
-    def __init__(self, url) -> None:
+    def __init__(self, url, embedded=False) -> None:
         super().__init__(url)
         self.url = re.sub(r"\.zsync$", "", url)
         self.currend_download = None
+        self.embedded = embedded
 
     def can_handle_link(url: str):
+        if not url_is_valid(url):
+            return False
+
         ct = ''
 
         if url.endswith('.zsync'):
@@ -170,13 +179,14 @@ class StaticFileUpdater(UpdateManager):
 
 class GithubUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
+    label = 'Github'
 
-    def __init__(self, url) -> None:
+    def __init__(self, url, embedded=False) -> None:
         super().__init__(url)
-        self.url = url
         self.staticfile_manager = None
         self.url_data = GithubUpdater.get_url_data(url)
-        self.target_asset = None
+        self.url = f'https://github.com/{self.url_data["username"]}/{self.url_data["repo"]}'
+        self.embedded = embedded
 
     def get_url_data(url):
         # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
@@ -197,16 +207,17 @@ class GithubUpdater(UpdateManager):
         return GithubUpdater.get_url_data(url) != False
 
     def download(self, status_update_cb) -> str:
-        if not self.target_asset:
+        target_asset = self.fetch_target_asset()
+        if not target_asset:
             logging.warn('Missing target_asset for GithubUpdater instance')
             return
 
-        dwnl = self.target_asset['browser_download_url']
+        dwnl = target_asset['browser_download_url']
         self.staticfile_manager = StaticFileUpdater(dwnl)
         fname, etag = self.staticfile_manager.download(status_update_cb)
 
         self.staticfile_manager = None
-        return fname, self.target_asset['id']
+        return fname, target_asset['id']
 
     def cancel_download(self):
         if self.staticfile_manager:
@@ -234,6 +245,7 @@ class GithubUpdater(UpdateManager):
             else:
                 regex += re.escape(char)
 
+        regex = f'^{regex}$'
         return regex
 
     def fetch_target_asset(self):
@@ -248,6 +260,8 @@ class GithubUpdater(UpdateManager):
             logging.error(e)
             return
         
+        logging.debug(f'Found {len(rel_data["assets"])} assets from {rel_url}')
+        
         zsync_file = None
         target_re = re.compile(self.convert_glob_to_regex(self.url_data['filename']))
         for asset in rel_data['assets']:
@@ -256,29 +270,30 @@ class GithubUpdater(UpdateManager):
                 break
 
         if not zsync_file:
+            logging.debug(f'No matching assets found from {rel_url}')
             return
 
         target_file = re.sub(r'\.zsync$', '', zsync_file['name'])
 
         for asset in rel_data['assets']:
             if asset['name'] == target_file:
-                self.target_asset = asset
-                break
+                logging.debug(f'Found 1 matching asset: {asset["name"]}')
+                return asset
 
     def is_update_available(self, el: AppImageListElement):
-        self.fetch_target_asset()
+        target_asset = self.fetch_target_asset()
 
-        if self.target_asset:
-            ct_supported = self.target_asset['content_type'] in [*AppImageProvider.supported_mimes, 
+        if target_asset:
+            ct_supported = target_asset['content_type'] in [*AppImageProvider.supported_mimes, 
                                                      'binary/octet-stream', 'application/octet-stream']
 
             if ct_supported:
                 app_conf = read_config_for_app(el)
                 old_size = os.path.getsize(el.file_path)
-                is_size_different = self.target_asset['size'] != old_size
+                is_size_different = target_asset['size'] != old_size
 
                 if 'last_update_hash' in app_conf:
-                    is_id_different = app_conf['last_update_hash'] != self.target_asset['id']
+                    is_id_different = app_conf['last_update_hash'] != target_asset['id']
                     return is_id_different
                 else:
                     return is_size_different

@@ -19,7 +19,7 @@ def read_json_config(name: str):
         return {}
 
     with open(path, 'r') as file:
-        return json.loads(file.read())
+        return json.loads(file.read() or '{}')
 
 def set_json_config(name: str, data):
     path = f'{GLib.get_user_config_dir()}/{name}.json'
@@ -39,8 +39,8 @@ def read_config_for_app(el: AppListElement) -> dict:
 
 def save_config_for_app(app_conf):
     conf = read_json_config('apps')
+    app_conf['name'] = base64.b64decode(app_conf['b64name'])
     conf[app_conf['b64name']] = app_conf
 
-    set_json_config('apps', conf)
-
     logging.debug(f'Setting configuration for app: {json.dumps(app_conf)}')
+    set_json_config('apps', conf)

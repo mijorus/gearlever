@@ -5,17 +5,14 @@ import shutil
 import filecmp
 import shlex
 from xdg import DesktopEntry
-import subprocess
-import random
-import signal
 
 import dataclasses
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async, idle
 from ..lib.json_config import save_config_for_app, read_config_for_app
-from ..lib.utils import log, get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
-    remove_special_chars, get_application_window, get_random_string, show_message_dialog, get_osinfo
+from ..lib.utils import get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
+    remove_special_chars, get_random_string, show_message_dialog, get_osinfo
 from ..models.Models import AppUpdateElement, InternalError, DownloadInterruptedException
 from typing import Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, Gio, Adw
@@ -572,7 +569,6 @@ class AppImageProvider():
         except DownloadInterruptedException as de:
             return el
         except Exception as e:
-            print('test')
             raise e
 
         update_gfile = Gio.file_new_for_path(update_file_path)
