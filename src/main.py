@@ -26,6 +26,7 @@ from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
 from  .WelcomeScreen import WelcomeScreen
 from .preferences import Preferences
+from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
@@ -157,14 +158,18 @@ def main(version, pkgdatadir):
             with open(log_file, 'w+') as f:
                 f.write('')
 
-    app = GearleverApplication(version, pkgdatadir)
-    logging.basicConfig(
-        filename=log_file,
-        filemode='a',
-        encoding='utf-8',
-        format='%(levelname)-1s [%(filename)s:%(lineno)d] %(message)s',
-        level= logging.DEBUG if get_gsettings().get_boolean('debug-logs') else logging.INFO,
-        force=True
-    )
+    # Startup
+    if FETCH_UPDATES_ARG in sys.argv[1:]:
+        BackgroudUpdatesFetcher.start()
+    else:
+        app = GearleverApplication(version, pkgdatadir)
+        logging.basicConfig(
+            filename=log_file,
+            filemode='a',
+            encoding='utf-8',
+            format='%(levelname)-1s [%(filename)s:%(lineno)d] %(message)s',
+            level= logging.DEBUG if get_gsettings().get_boolean('debug-logs') else logging.INFO,
+            force=True
+        )
 
-    return app.run(sys.argv)
+        app.run(sys.argv)

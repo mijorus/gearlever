@@ -1,8 +1,9 @@
 import gi
 import logging
 
+from .lib.costants import FETCH_UPDATES_ARG
 from .models.Models import InternalError
-from .lib.utils import get_gsettings
+from .lib.utils import get_gsettings, portal
 from .State import state
 
 gi.require_version('Gtk', '4.0')
@@ -150,3 +151,11 @@ class Preferences(Adw.PreferencesWindow):
 
         row.add_suffix(switch)
         return row
+        
+    def on_background_fetchupdates_changed(self, settings, key: str):
+        value: bool = settings.get_boolean(key)
+        
+        inter = portal("org.freedesktop.portal.Background")
+        res = inter.RequestBackground('', {'reason': 'Gear Lever background updates fetch', 'autostart': value, 'background': value, 'commandline': DBusArray(['gearlever', FETCH_UPDATES_ARG])})
+
+
