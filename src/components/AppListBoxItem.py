@@ -65,7 +65,7 @@ class AppListBoxItem(Gtk.ListBoxRow):
             col.append(self.details_btn)
 
         self.update_available_btn = Gtk.Button(
-            icon_name='software-update-available-symbolic',
+            icon_name='gl-software-update-available-symbolic',
             valign=Gtk.Align.CENTER,
             css_classes=['flat'],
             sensitive=False,

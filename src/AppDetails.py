@@ -536,12 +536,11 @@ class AppDetails(Gtk.ScrolledWindow):
         manager = UpdateManagerChecker.check_url(update_url, self.app_list_element)
 
         if not manager:
-            if self.update_url_row:
-                GLib.idle_add(lambda: self.update_url_row.add_css_class('error'))
+            GLib.idle_add(lambda: self.update_url_save_btn.set_visible(True))
             return
 
-        self.set_update_information(manager)
         self.set_app_as_updatable()
+        self.set_update_information(manager)
 
         is_updatable = manager.is_update_available(self.app_list_element)
         self.app_list_element.is_updatable_from_url = is_updatable
@@ -555,30 +554,51 @@ class AppDetails(Gtk.ScrolledWindow):
         GLib.idle_add(lambda: self.update_action_button.set_sensitive(True))
         GLib.idle_add(lambda: self.update_action_button.set_sensitive(is_updatable))
 
-    @_async
-    def on_app_update_url_apply(self, widget):
-        conf = read_json_config('apps')
+    def on_app_update_url_change(self, *props):
         app_conf = self.get_config_for_app()
+        has_changed = False
+
+        manager_label = self.update_url_source.get_model().get_string(
+            self.update_url_source.get_selected())
+    
+        selected_manager = list(filter(lambda m: m.label == manager_label, 
+                                  UpdateManagerChecker.get_models()))[0]
+        
+        if app_conf['update_url_manager'] != selected_manager.name:
+            has_changed = True
+
+        if app_conf['update_url'] != self.update_url_row.get_text():
+            has_changed = True
+
+        self.update_url_save_btn.set_sensitive(has_changed)
+
+    @_async
+    def on_app_update_url_apply(self, ev):
+        app_conf = self.get_config_for_app()
+        widget = self.update_url_row
 
         text = widget.get_text().strip()
 
-        if text:
-            GLib.idle_add(lambda: widget.remove_css_class('error'))
+        GLib.idle_add(lambda: widget.remove_css_class('error'))
+        GLib.idle_add(lambda: widget.remove_css_class('success'))
 
-            manager = UpdateManagerChecker.check_url(text)
-
-            if not manager:
-                GLib.idle_add(lambda: widget.add_css_class('error'))
-                return
-            else:
-                GLib.idle_add(lambda: widget.add_css_class('success'))
+        manager_label = self.update_url_source.get_model().get_string(
+            self.update_url_source.get_selected())
+    
+        selected_manager = list(filter(lambda m: m.label == manager_label, 
+                                  UpdateManagerChecker.get_models()))[0]
+        
+        manager = UpdateManagerChecker.check_url(text, model=selected_manager)
+        
+        if not manager:
+            GLib.idle_add(lambda: widget.add_css_class('error'))
+            return
         else:
-            GLib.idle_add(lambda: widget.remove_css_class('success'))
-            GLib.idle_add(lambda: widget.remove_css_class('error'))
+            GLib.idle_add(lambda: widget.add_css_class('success'))
 
-        app_conf['update_url'] = text
-        conf[app_conf['b64name']] = app_conf
-        set_json_config('apps', conf)
+        app_conf['update_url'] = manager.url
+        app_conf['update_url_manager'] = manager.name
+        save_config_for_app(app_conf)
 
     def on_env_var_value_changed(self, widget, key_widget, value_widget):
         key = key_widget.get_text()
@@ -736,10 +756,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         combo_model = Gtk.StringList()
         combo_model._items_val = []
-
-        for m in UpdateManagerChecker.get_models():
-            combo_model.append(m.label)
-            combo_model._items_val.append(m.label)
+        selected_model = app_config.get('update_url_manager', None)
 
         self.update_url_source = Adw.ComboRow(
             title=_('Source'),
@@ -747,13 +764,21 @@ class AppDetails(Gtk.ScrolledWindow):
             model=combo_model
         )
 
+
+        for i, m in enumerate(UpdateManagerChecker.get_models()):
+            combo_model.append(m.label)
+            combo_model._items_val.append(m.label)
+
+            if selected_model == m.name:
+                self.update_url_source.set_selected(i)
+
         self.update_url_row = Adw.EntryRow(
             title=title,
             selectable=True,
             text=(app_config.get('update_url', ''))
         )
 
-        row_img = Gtk.Image(icon_name='software-update-available-symbolic', 
+        row_img = Gtk.Image(icon_name='gl-software-update-available-symbolic', 
                             pixel_size=self.ACTION_ROW_ICON_SIZE)
 
         row_btn = Gtk.Button(
@@ -763,6 +788,8 @@ class AppDetails(Gtk.ScrolledWindow):
         )
 
         row_btn.connect('clicked', self.on_update_url_info_btn_clicked)
+        self.update_url_source.connect('notify::selected', self.on_app_update_url_change)
+        self.update_url_row.connect('changed', self.on_app_update_url_change)
 
         self.update_url_row.add_prefix(row_img)
         self.update_url_row.add_suffix(row_btn)

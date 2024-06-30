@@ -39,7 +39,7 @@ def read_config_for_app(el: AppListElement) -> dict:
 
 def save_config_for_app(app_conf):
     conf = read_json_config('apps')
-    app_conf['name'] = base64.b64decode(app_conf['b64name'])
+    app_conf['name'] = (base64.b64decode(app_conf['b64name'])).decode('ascii')
     conf[app_conf['b64name']] = app_conf
 
     logging.debug(f'Setting configuration for app: {json.dumps(app_conf)}')

@@ -4,8 +4,9 @@ import shutil
 import os
 import re
 from typing import Optional, Callable
-from abc import ABC, abstractmethod 
+from abc import ABC, abstractmethod
 from gi.repository import GLib
+from urllib.parse import urlsplit
 
 
 from ..lib import terminal
@@ -15,6 +16,8 @@ from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 from .Models import DownloadInterruptedException
 
 class UpdateManager(ABC):
+    name = ''
+
     @abstractmethod
     def __init__(self, url: str, embedded=False) -> None:
         self.download_folder = GLib.get_tmp_dir() + '/it.mijorus.gearlever/downloads'
@@ -44,8 +47,15 @@ class UpdateManagerChecker():
     def get_models() -> list[UpdateManager]:
         return [StaticFileUpdater, GithubUpdater]
 
-    def check_url(url: str=Optional[str], el: Optional[AppImageListElement]=None) -> Optional[UpdateManager]:
+    def check_url(url: str=Optional[str], el: Optional[AppImageListElement]=None,
+                    model: Optional[UpdateManager]=None) -> Optional[UpdateManager]:
+        if not url:
+            return None
+        
         models = UpdateManagerChecker.get_models()
+
+        if model:
+            models = list(filter(lambda m: m is model, models))
 
         if el:
             embedded_app_data = UpdateManagerChecker.check_app(el)
@@ -90,6 +100,7 @@ class UpdateManagerChecker():
 
 class StaticFileUpdater(UpdateManager):
     label = _('Static URL')
+    name = 'StaticFileUpdater'
     currend_download: Optional[requests.Response]
 
     def __init__(self, url, embedded=False) -> None:
@@ -172,17 +183,43 @@ class StaticFileUpdater(UpdateManager):
 class GithubUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
     label = 'Github'
+    name = 'GithubUpdater'
 
     def __init__(self, url, embedded=False) -> None:
         super().__init__(url)
         self.staticfile_manager = None
         self.url_data = GithubUpdater.get_url_data(url)
+
         self.url = f'https://github.com/{self.url_data["username"]}/{self.url_data["repo"]}'
+        self.url += f'/releases/dowload/{self.url_data["release"]}/{self.url_data["filename"]}'
+        
         self.embedded = embedded
 
-    def get_url_data(url):
+    def get_url_data(url: str):
         # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
         # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#github-releases
+        if url.startswith('https://'):
+            logging.debug(f'GithubUpdater: found http url, trying to detect github data')
+            urldata = urlsplit(url)
+
+            if urldata.netloc != 'github.com':
+                return False
+            
+            paths = urldata.path.split('/')
+
+            if len(paths) != 7:
+                return False
+            
+            if paths[3] != 'releases' or paths[4] != 'download':
+                return False
+            
+            rel_name = 'latest'
+            if paths[5] == 'continuous':
+                rel_name = 'continuous'
+
+            url = f'|{paths[1]}|{paths[2]}|{rel_name}|{paths[6]}'
+            logging.debug(f'GithubUpdater: generated appimages-like update string "{url}"')
+
         items = url.split('|')
 
         if len(items) != 5:
