@@ -1,4 +1,5 @@
 import gi
+import threading
 import logging
 
 from .lib.costants import FETCH_UPDATES_ARG
@@ -6,6 +7,7 @@ from .models.Models import InternalError
 from .lib.utils import get_gsettings, portal
 from .State import state
 from dbus import Array as DBusArray
+from .lib.terminal import sandbox_sh
 
 gi.require_version('Gtk', '4.0')
 
@@ -164,5 +166,9 @@ class Preferences(Adw.PreferencesWindow):
             'background': value, 
             'commandline': DBusArray(['gearlever', FETCH_UPDATES_ARG])
         })
+
+        threading.Thread(
+            sandbox_sh(['gearlever', FETCH_UPDATES_ARG])
+        ).start()
 
 

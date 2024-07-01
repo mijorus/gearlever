@@ -5,6 +5,5 @@ APP_DATA = {
     'PKGDATADIR': ''
 }
 
-def set_pkgdatadir(v):
-    global PKGDATADIR
-    PKGDATADIR = v
+ONE_UPDATE_AVAILABLE_LABEL = _('1 update available')
+UPDATES_AVAILABLE_LABEL = _('{n} updates available')

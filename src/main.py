@@ -53,6 +53,8 @@ class GearleverApplication(Adw.Application):
         Adw.Application.do_startup(self)
 
         settings = get_gsettings()
+        settings.set_boolean('updates-fetcher-running', False)
+
         logging.debug('::: Settings')
         for k in settings.props.settings_schema.list_keys():
             logging.debug(k + ': ' + str(settings.get_value(k)))
@@ -69,15 +71,15 @@ class GearleverApplication(Adw.Application):
         We raise the application's main window, creating it if
         necessary.
         """
-        self.win = self.props.active_window
+        if FETCH_UPDATES_ARG in sys.argv[1:] or True:
+            BackgroudUpdatesFetcher.start()
+        else:
+            self.win = self.props.active_window
 
-        if not self.win:
-            self.win = GearleverWindow(application=self, from_file=from_file)
+            if not self.win:
+                self.win = GearleverWindow(application=self, from_file=from_file)
 
-            if get_gsettings().get_boolean('first-run'):
-                get_gsettings().set_boolean('first-run', False)
-
-        self.win.present()
+            self.win.present()
 
     def do_open(self, files: list[Gio.File], n_files: int, data):
         if not files:
@@ -158,18 +160,14 @@ def main(version, pkgdatadir):
             with open(log_file, 'w+') as f:
                 f.write('')
 
-    # Startup
-    if FETCH_UPDATES_ARG in sys.argv[1:]:
-        BackgroudUpdatesFetcher.start()
-    else:
-        app = GearleverApplication(version, pkgdatadir)
-        logging.basicConfig(
-            filename=log_file,
-            filemode='a',
-            encoding='utf-8',
-            format='%(levelname)-1s [%(filename)s:%(lineno)d] %(message)s',
-            level= logging.DEBUG if get_gsettings().get_boolean('debug-logs') else logging.INFO,
-            force=True
-        )
+    app = GearleverApplication(version, pkgdatadir)
+    logging.basicConfig(
+        filename=log_file,
+        filemode='a',
+        encoding='utf-8',
+        format='%(levelname)-1s [%(filename)s:%(lineno)d] %(message)s',
+        level= logging.DEBUG if get_gsettings().get_boolean('debug-logs') else logging.INFO,
+        force=True
+    )
 
-        app.run(sys.argv)
+    app.run(sys.argv)

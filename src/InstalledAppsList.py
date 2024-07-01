@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 import logging
 
 from .State import state
-from .lib.costants import APP_ID
+from .lib.costants import APP_ID, ONE_UPDATE_AVAILABLE_LABEL, UPDATES_AVAILABLE_LABEL
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageListElement
 from .models.AppListElement import AppListElement, InstalledStatus
@@ -24,8 +24,6 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         "selected-app": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
     }
 
-    ONE_UPDATE_AVAILABLE_LABEL = _('1 update available')
-    UPDATES_AVAILABLE_LABEL = _('{n} updates available')
     CHECK_FOR_UPDATES_LABEL = _('Check for updates')
     CHECKING_FOR_UPDATES_LABEL = _('Checking updates...')
 
@@ -165,9 +163,9 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         if updates_available == 0:
             self.updates_btn.set_label(self.CHECK_FOR_UPDATES_LABEL)
         elif updates_available == 1:
-            self.updates_btn.set_label(self.ONE_UPDATE_AVAILABLE_LABEL)
+            self.updates_btn.set_label(ONE_UPDATE_AVAILABLE_LABEL)
         else:
-            self.updates_btn.set_label(self.UPDATES_AVAILABLE_LABEL.replace('{n}', str(updates_available)))
+            self.updates_btn.set_label(UPDATES_AVAILABLE_LABEL.replace('{n}', str(updates_available)))
 
         if updatable_apps:
             self.updates_btn.set_sensitive(True)
