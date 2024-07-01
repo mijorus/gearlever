@@ -5,6 +5,7 @@ from .lib.costants import FETCH_UPDATES_ARG
 from .models.Models import InternalError
 from .lib.utils import get_gsettings, portal
 from .State import state
+from dbus import Array as DBusArray
 
 gi.require_version('Gtk', '4.0')
 
@@ -39,15 +40,19 @@ class Preferences(Adw.PreferencesWindow):
             _('List AppImages that have been integrated into the system menu but are located outside the default folder')
         )
 
-        autofetch_updates = self.create_boolean_settings_entry(
-            _('Check updates on open'),
-            'fetch-updates-on-startup',
-            _('Automatically checks for app updates when Gear Lever is opened')
-        )
-
         general_preference_group.add(self.default_location_row)
         general_preference_group.add(files_outside_folder_switch)
-        general_preference_group.add(autofetch_updates)
+
+        # updates management group
+        updates_management_group = Adw.PreferencesGroup(name=_('Updates management'), title=_('Updates management'))
+        autofetch_updates = self.create_boolean_settings_entry(
+            _('Check updates in the backgroud'),
+            'fetch-updates-in-background',
+            _('Receive a notification when a new update is detected; updates will not be installed automatically')
+        )
+
+        updates_management_group.add(autofetch_updates)
+        autofetch_updates.connect('notify::active', self.on_background_fetchupdates_changed)
 
         # file management group
         move_appimages_group = Adw.PreferencesGroup(name=_('File management'), title=_('File management'))
@@ -110,8 +115,8 @@ class Preferences(Adw.PreferencesWindow):
 
         debug_group.add(debug_row)
 
-
         page1.add(general_preference_group)
+        page1.add(updates_management_group)
         page1.add(move_appimages_group)
         page1.add(nconvention_group)
         page1.add(debug_group)
@@ -143,19 +148,21 @@ class Preferences(Adw.PreferencesWindow):
     def on_move_appimages_setting_changed(self, widget):
         self.settings.set_boolean('move-appimage-on-integration', self.move_to_destination_check.get_active())
 
-    def create_boolean_settings_entry(self, label: str, key: str, subtitle: str = None) -> Adw.ActionRow:
-        row = Adw.ActionRow(title=label, subtitle=subtitle)
+    def create_boolean_settings_entry(self, label: str, key: str, subtitle: str = None) -> Adw.SwitchRow:
+        row = Adw.SwitchRow(title=label, subtitle=subtitle)
+        self.settings.bind(key, row, 'active', Gio.SettingsBindFlags.DEFAULT)
 
-        switch = Gtk.Switch(valign=Gtk.Align.CENTER)
-        self.settings.bind(key, switch, 'active', Gio.SettingsBindFlags.DEFAULT)
-
-        row.add_suffix(switch)
         return row
         
-    def on_background_fetchupdates_changed(self, settings, key: str):
-        value: bool = settings.get_boolean(key)
+    def on_background_fetchupdates_changed(self, *args):
+        value: bool = self.settings.get_boolean('fetch-updates-in-background')
         
         inter = portal("org.freedesktop.portal.Background")
-        res = inter.RequestBackground('', {'reason': 'Gear Lever background updates fetch', 'autostart': value, 'background': value, 'commandline': DBusArray(['gearlever', FETCH_UPDATES_ARG])})
+        res = inter.RequestBackground('', {
+            'reason': 'Gear Lever background updates fetch', 
+            'autostart': value, 
+            'background': value, 
+            'commandline': DBusArray(['gearlever', FETCH_UPDATES_ARG])
+        })
 
 

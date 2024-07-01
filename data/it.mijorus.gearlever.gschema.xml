@@ -13,9 +13,6 @@
         <key name="simple-file-name-for-apps" type="b">
             <default>false</default>
         </key>
-        <key name="fetch-updates-on-startup" type="b">
-            <default>true</default>
-        </key>
         <key name="debug-logs" type="b">
             <default>false</default>
         </key>
