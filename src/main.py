@@ -20,7 +20,7 @@ import gi
 import logging
 import os
 
-from .lib.utils import get_gsettings
+from .lib.utils import get_gsettings, make_option
 from .lib.costants import APP_ID, APP_NAME, APP_DATA, FETCH_UPDATES_ARG
 from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
@@ -48,12 +48,24 @@ class GearleverApplication(Adw.Application):
         self.win = None
         self.version = version
 
+        entries = [
+            make_option(FETCH_UPDATES_ARG),
+        ]
+
+        self.add_main_option_entries(entries)
+
+    def do_handle_local_options(self, options):
+        if options.contains(FETCH_UPDATES_ARG):
+            BackgroudUpdatesFetcher.start()
+            return 0
+
+        return -1
+
     def do_startup(self):
         logging.info(f'\n\n---- Application startup | version {self.version}')
         Adw.Application.do_startup(self)
 
         settings = get_gsettings()
-        settings.set_boolean('updates-fetcher-running', False)
 
         logging.debug('::: Settings')
         for k in settings.props.settings_schema.list_keys():
@@ -71,8 +83,8 @@ class GearleverApplication(Adw.Application):
         We raise the application's main window, creating it if
         necessary.
         """
-        if FETCH_UPDATES_ARG in sys.argv[1:] or True:
-            BackgroudUpdatesFetcher.start()
+        if FETCH_UPDATES_ARG in sys.argv[1:]:
+            return
         else:
             self.win = self.props.active_window
 
@@ -140,7 +152,6 @@ class GearleverApplication(Adw.Application):
 
 def main(version, pkgdatadir):
     """The application's entry point."""
-
     APP_DATA['PKGDATADIR'] = pkgdatadir
 
     log_file = f'{LOG_FOLDER}/{APP_NAME}.log'

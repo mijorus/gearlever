@@ -163,12 +163,6 @@ class Preferences(Adw.PreferencesWindow):
         res = inter.RequestBackground('', {
             'reason': 'Gear Lever background updates fetch', 
             'autostart': value, 
-            'background': value, 
-            'commandline': DBusArray(['gearlever', FETCH_UPDATES_ARG])
+            'background': True, 
+            'commandline': DBusArray(['gearlever', f'--{FETCH_UPDATES_ARG}'])
         })
-
-        threading.Thread(
-            sandbox_sh(['gearlever', FETCH_UPDATES_ARG])
-        ).start()
-
-

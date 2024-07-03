@@ -14,19 +14,15 @@ class BackgroudUpdatesFetcher():
         return get_gsettings().get_boolean('fetch-updates-in-background')
     
     def start():
-        BackgroudUpdatesFetcher.fetch()
-        settings = get_gsettings()
+        logging.debug('Starting updates fetcher')
 
-        if settings.get_boolean('updates-fetcher-running'):
-            return
-
-        settings.set_boolean('updates-fetcher-running', True)
         while True:
             time.sleep(BackgroudUpdatesFetcher.INTERVAL)
             BackgroudUpdatesFetcher.fetch()
             
     def fetch():
         logging.warn('Fetching updates in the background')
+
         if not BackgroudUpdatesFetcher.is_enabled():
             logging.warn('Update fetching is disabled! Quitting...')
             return
@@ -52,7 +48,6 @@ class BackgroudUpdatesFetcher():
                 if status:
                     updates_available += 1
             except Exception as e:
-                print(e)
                 logging.error(e)
 
         if updates_available:
