@@ -1,25 +1,27 @@
 import time
 import logging
-from .lib.async_utils import _async
+from .lib.async_utils import _async_keepalive
 from .lib.utils import get_gsettings, send_notification
 from .lib.json_config import read_config_for_app
-from .lib.costants import UPDATES_AVAILABLE_LABEL, ONE_UPDATE_AVAILABLE_LABEL
+from .lib.terminal import sandbox_sh
+from .lib.costants import UPDATES_AVAILABLE_LABEL, ONE_UPDATE_AVAILABLE_LABEL, APP_ID
 from gi.repository import Gio
 from .providers.AppImageProvider import AppImageProvider
 from .models.UpdateManager import UpdateManagerChecker
 
 class BackgroudUpdatesFetcher():
-    INTERVAL = 3600 * 3
-    FIRST_RUN_INTERVAL = 60 * 5
+    # INTERVAL = 3600 * 3
+    # FIRST_RUN_INTERVAL = 60 * 5
 
     # Settings for debug
-    # INTERVAL = 10
-    # FIRST_RUN_INTERVAL = 5
+    INTERVAL = 10
+    FIRST_RUN_INTERVAL = 5
     _is_running = False
     
     def is_enabled():
         return get_gsettings().get_boolean('fetch-updates-in-background')
     
+    @_async_keepalive
     def start():
         if BackgroudUpdatesFetcher._is_running:
             return 
@@ -72,9 +74,7 @@ class BackgroudUpdatesFetcher():
             else:
                 content = UPDATES_AVAILABLE_LABEL.replace('{n}', str(updates_available))
 
-            send_notification(
-                Gio.Notification.new(content)
-            )
+            sandbox_sh(['notify-send', content])
         else:
             logging.warn('No available updates found')
             
