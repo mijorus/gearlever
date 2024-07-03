@@ -47,6 +47,7 @@ class GearleverApplication(Adw.Application):
         self.create_action('open_welcome_screen', self.on_open_welcome_screen)
         self.win = None
         self.version = version
+        self.options = None
 
         entries = [
             make_option(FETCH_UPDATES_ARG),
@@ -55,10 +56,7 @@ class GearleverApplication(Adw.Application):
         self.add_main_option_entries(entries)
 
     def do_handle_local_options(self, options):
-        if options.contains(FETCH_UPDATES_ARG):
-            BackgroudUpdatesFetcher.start()
-            return 0
-
+        self.options = options
         return -1
 
     def do_startup(self):
@@ -83,8 +81,8 @@ class GearleverApplication(Adw.Application):
         We raise the application's main window, creating it if
         necessary.
         """
-        if FETCH_UPDATES_ARG in sys.argv[1:]:
-            return
+        if self.options and self.options.contains(FETCH_UPDATES_ARG):
+            BackgroudUpdatesFetcher.start()
         else:
             self.win = self.props.active_window
 
