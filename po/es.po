@@ -3,20 +3,19 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Racsu <racsu.com>, 2023.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-16 16:56+0100\n"
-"PO-Revision-Date: 2024-03-17 22:00-0300\n"
+"POT-Creation-Date: 2024-06-28 11:46+0200\n"
+"PO-Revision-Date: 2024-06-28 19:49-0400\n"
 "Last-Translator: Racsu <racsufkoficial@gmail.com>\n"
 "Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.4.4\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 msgid "Gear Lever"
@@ -30,7 +29,7 @@ msgstr "¡Una utilidad para gestionar AppImages con facilidad!"
 msgid "AppImage;"
 msgstr "AppImage;"
 
-#: src/main.py:99
+#: src/main.py:102
 msgid "translator_credits"
 msgstr "racsu <racsu.com>"
 
@@ -50,63 +49,64 @@ msgstr "Por favor, verifique la fuente de esta aplicación antes de abrirla"
 msgid "Unlock"
 msgstr "Desbloquear"
 
-#: src/AppDetails.py:278
+#: src/AppDetails.py:286
 msgid "Launching..."
 msgstr "Lanzando..."
 
-#: src/AppDetails.py:319 src/AppDetails.py:339
-msgid "This app runs in the terminal"
-msgstr "Esta app corre via terminal"
-
-#: src/AppDetails.py:321 src/AppDetails.py:336 src/AppDetails.py:342
-msgid "Launch"
-msgstr "Lanzar"
-
-#: src/AppDetails.py:323 src/AppDetails.py:351
-msgid "Remove"
-msgstr "Eliminar"
-
-#: src/AppDetails.py:327
-msgid "Uninstalling..."
-msgstr "Desinstalando..."
-
-#: src/AppDetails.py:331
-msgid "Installing..."
-msgstr "Instalando..."
-
-#: src/AppDetails.py:344
-msgid "Move to the app menu"
-msgstr "Mover al menu de aplicaciones"
-
-#: src/AppDetails.py:348
-msgid "Update"
-msgstr "Actualizar"
-
-#: src/AppDetails.py:355
-msgid "Updating"
-msgstr "Actualizando"
-
-#: src/AppDetails.py:359
+#: src/AppDetails.py:293 src/AppDetails.py:372
+#: src/providers/AppImageProvider.py:618
 msgid "Error"
 msgstr "Error"
 
-#: src/AppDetails.py:505
+#: src/AppDetails.py:332 src/AppDetails.py:352
+msgid "This app runs in the terminal"
+msgstr "Esta app corre via terminal"
+
+#: src/AppDetails.py:334 src/AppDetails.py:349 src/AppDetails.py:355
+msgid "Launch"
+msgstr "Lanzar"
+
+#: src/AppDetails.py:336 src/AppDetails.py:364
+msgid "Remove"
+msgstr "Eliminar"
+
+#: src/AppDetails.py:340
+msgid "Uninstalling..."
+msgstr "Desinstalando..."
+
+#: src/AppDetails.py:344
+msgid "Installing..."
+msgstr "Instalando..."
+
+#: src/AppDetails.py:357
+msgid "Move to the app menu"
+msgstr "Mover al menu de aplicaciones"
+
+#: src/AppDetails.py:361
+msgid "Update"
+msgstr "Actualizar"
+
+#: src/AppDetails.py:368
+msgid "Updating"
+msgstr "Actualizando"
+
+#: src/AppDetails.py:520
 msgid "Website"
 msgstr "Sitio Web"
 
-#: src/AppDetails.py:505
+#: src/AppDetails.py:520
 msgid "Add a website"
 msgstr "Agregar un sitio web"
 
-#: src/AppDetails.py:514
+#: src/AppDetails.py:529
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: src/AppDetails.py:527
+#: src/AppDetails.py:542
 msgid "Reload metadata"
 msgstr "Recargar metada"
 
-#: src/AppDetails.py:528
+#: src/AppDetails.py:543
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -114,47 +114,47 @@ msgstr ""
 "Actualizar información como icono, versión y descripción.\n"
 "Útil si la aplicación se actualizó por si misma."
 
-#: src/AppDetails.py:540
+#: src/AppDetails.py:555
 msgid "Command line arguments"
 msgstr "Argumentos de la línea de comandos"
 
-#: src/AppDetails.py:556
+#: src/AppDetails.py:571
 msgid "Hash"
 msgstr "Hash"
 
-#: src/AppDetails.py:566
+#: src/AppDetails.py:581
 msgid "Path"
 msgstr "Directorio"
 
-#: src/AppDetails.py:568
+#: src/AppDetails.py:583
 msgid "Open Folder"
 msgstr "Abrir carpeta"
 
-#: src/AppDetails.py:578
+#: src/AppDetails.py:593
 msgid "Package type"
 msgstr "Tipo de paquete"
 
-#: src/AppDetails.py:596
+#: src/AppDetails.py:611
 msgid "Key"
 msgstr "Clave"
 
-#: src/AppDetails.py:597
+#: src/AppDetails.py:612
 msgid "Value"
 msgstr "Valor"
 
-#: src/AppDetails.py:616
+#: src/AppDetails.py:631
 msgid "Add"
 msgstr "Agregar"
 
-#: src/AppDetails.py:621
+#: src/AppDetails.py:636
 msgid "Save"
 msgstr "Guardar"
 
-#: src/AppDetails.py:636
+#: src/AppDetails.py:651
 msgid "Environment variables"
 msgstr "Variables de entorno"
 
-#: src/AppDetails.py:637
+#: src/AppDetails.py:652
 msgid "Add or customize environment for this application"
 msgstr "Añadir o personalizar el entorno para esta aplicación"
 
@@ -170,11 +170,11 @@ msgstr "Abrir"
 msgid "Open a file"
 msgstr "Abrir un archivo"
 
-#: src/InstalledAppsList.py:36
+#: src/InstalledAppsList.py:37
 msgid "Filter installed applications"
 msgstr "Filtrar aplicaciones instaladas"
 
-#: src/InstalledAppsList.py:41
+#: src/InstalledAppsList.py:42
 msgid "Installed applications"
 msgstr "Aplicaciones instaladas"
 
@@ -276,11 +276,11 @@ msgstr ""
 "afectando potencialmente a el rendimiento.\n"
 "Requiere un reinicio."
 
-#: src/preferences.py:124 src/WelcomeScreen.py:90
+#: src/preferences.py:124 src/WelcomeScreen.py:95
 msgid "The folder must be in your home directory"
 msgstr "La carpeta debe estar en tu directorio home"
 
-#: src/preferences.py:127 src/WelcomeScreen.py:93
+#: src/preferences.py:127 src/WelcomeScreen.py:98
 msgid "Select a folder"
 msgstr "Selecciona una carpeta"
 
@@ -340,6 +340,10 @@ msgstr ""
 "correcta."
 
 #: src/gtk/empty-list-placeholder.ui:46
+msgid "Show welcome screen"
+msgstr "Mostrar pantalla de bienvenida"
+
+#: src/gtk/empty-list-placeholder.ui:56
 msgid "Open Preferences"
 msgstr "Abrir Preferencias"
 
@@ -383,6 +387,7 @@ msgstr ""
 "mantiene organizadas."
 
 #: src/gtk/tutorial/2.ui:33
+#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
 msgstr "Por defecto, AppImages se guardan en: {location}"
 
@@ -432,6 +437,26 @@ msgstr "Cerrar tutorial"
 #: src/models/AppListElement.py:19
 msgid "No description provided"
 msgstr "Sin descripción"
+
+#: src/providers/AppImageProvider.py:600
+msgid "Running AppImages on NixOS requires appimage-run"
+msgstr "Ejecutar AppImages en NixOS requiere appimage-run"
+
+#: src/providers/AppImageProvider.py:619
+#, python-brace-format
+msgid ""
+"AppImages require FUSE to run. You might still be able to run it with --"
+"appimage-extract-and-run in the command line arguments. \n"
+"\n"
+"Click the link below for more information. \n"
+"{url}"
+msgstr ""
+"Las AppImages requieren FUSE para ejecutarse. Es posible que aún pueda "
+"ejecutarlo con --appimage-extract-and-run en los argumentos de la línea de "
+"comandos. \n"
+"\n"
+"Haga clic en el siguiente enlace para obtener más información. \n"
+"{url}"
 
 #~ msgid "App not opening? Go to Menu > Open Log File for more details"
 #~ msgstr ""
