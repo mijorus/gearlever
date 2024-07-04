@@ -31,8 +31,5 @@
         <key name="fetch-updates-in-background" type="b">
             <default>false</default>
         </key>
-        <key name="updates-fetcher-running" type="b">
-            <default>false</default>
-        </key>
     </schema>
 </schemalist>

@@ -5,6 +5,7 @@ import logging
 from .lib.costants import FETCH_UPDATES_ARG
 from .models.Models import InternalError
 from .lib.utils import get_gsettings, portal
+from .lib.json_config import read_json_config, set_json_config
 from .State import state
 from dbus import Array as DBusArray
 from .lib.terminal import sandbox_sh
@@ -157,7 +158,13 @@ class Preferences(Adw.PreferencesWindow):
         return row
         
     def on_background_fetchupdates_changed(self, *args):
-        value: bool = self.settings.get_boolean('fetch-updates-in-background')
+        key = 'fetch-updates-in-background'
+        value: bool = self.settings.get_boolean(key)
+
+        conf = read_json_config('settings')
+        conf[key] = value
+
+        set_json_config('settings', conf)
         
         inter = portal("org.freedesktop.portal.Background")
         res = inter.RequestBackground('', {

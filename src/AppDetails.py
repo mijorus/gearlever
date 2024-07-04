@@ -564,10 +564,10 @@ class AppDetails(Gtk.ScrolledWindow):
         selected_manager = list(filter(lambda m: m.label == manager_label, 
                                   UpdateManagerChecker.get_models()))[0]
         
-        if app_conf['update_url_manager'] != selected_manager.name:
+        if app_conf.get('update_url_manager', None) != selected_manager.name:
             has_changed = True
 
-        if app_conf['update_url'] != self.update_url_row.get_text():
+        if app_conf.get('update_url', None) != self.update_url_row.get_text():
             has_changed = True
 
         self.update_url_save_btn.set_sensitive(has_changed)
@@ -582,23 +582,30 @@ class AppDetails(Gtk.ScrolledWindow):
         GLib.idle_add(lambda: widget.remove_css_class('error'))
         GLib.idle_add(lambda: widget.remove_css_class('success'))
 
-        manager_label = self.update_url_source.get_model().get_string(
+        if text:
+            manager_label = self.update_url_source.get_model().get_string(
             self.update_url_source.get_selected())
     
-        selected_manager = list(filter(lambda m: m.label == manager_label, 
-                                  UpdateManagerChecker.get_models()))[0]
-        
-        manager = UpdateManagerChecker.check_url(text, model=selected_manager)
-        
-        if not manager:
-            GLib.idle_add(lambda: widget.add_css_class('error'))
-            return
+            selected_manager = list(filter(lambda m: m.label == manager_label, 
+                                    UpdateManagerChecker.get_models()))[0]
+            
+            manager = UpdateManagerChecker.check_url(text, model=selected_manager)
+            if not manager:
+                GLib.idle_add(lambda: widget.add_css_class('error'))
+                return
+            
+            app_conf['update_url'] = manager.url
+            app_conf['update_url_manager'] = manager.name
         else:
-            GLib.idle_add(lambda: widget.add_css_class('success'))
-
-        app_conf['update_url'] = manager.url
-        app_conf['update_url_manager'] = manager.name
+            if 'update_url' in app_conf:
+                del app_conf['update_url']
+            
+            if 'update_url_manager' in app_conf:
+                del app_conf['update_url_manager']
+        
         save_config_for_app(app_conf)
+        GLib.idle_add(lambda: widget.add_css_class('success'))
+
 
     def on_env_var_value_changed(self, widget, key_widget, value_widget):
         key = key_widget.get_text()

@@ -49,9 +49,7 @@ class UpdateManagerChecker():
 
     def check_url(url: str=Optional[str], el: Optional[AppImageListElement]=None,
                     model: Optional[UpdateManager]=None) -> Optional[UpdateManager]:
-        if not url:
-            return None
-        
+
         models = UpdateManagerChecker.get_models()
 
         if model:
@@ -191,7 +189,7 @@ class GithubUpdater(UpdateManager):
         self.url_data = GithubUpdater.get_url_data(url)
 
         self.url = f'https://github.com/{self.url_data["username"]}/{self.url_data["repo"]}'
-        self.url += f'/releases/dowload/{self.url_data["release"]}/{self.url_data["filename"]}'
+        self.url += f'/releases/download/{self.url_data["release"]}/{self.url_data["filename"]}'
         
         self.embedded = embedded
 

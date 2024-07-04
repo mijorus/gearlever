@@ -1,8 +1,8 @@
 import time
 import logging
-from .lib.async_utils import _async_keepalive
+from .lib.async_utils import _async_keepalive, idle
 from .lib.utils import get_gsettings, send_notification
-from .lib.json_config import read_config_for_app
+from .lib.json_config import read_config_for_app, read_json_config
 from .lib.terminal import sandbox_sh
 from .lib.costants import UPDATES_AVAILABLE_LABEL, ONE_UPDATE_AVAILABLE_LABEL, APP_ID
 from gi.repository import Gio
@@ -19,7 +19,10 @@ class BackgroudUpdatesFetcher():
     _is_running = False
     
     def is_enabled():
-        return get_gsettings().get_boolean('fetch-updates-in-background')
+        conf = read_json_config('settings')
+        value = conf.get('fetch-updates-in-background', False)
+
+        return value
     
     @_async_keepalive
     def start():
