@@ -33,7 +33,7 @@ class UpdateManager(ABC):
     @abstractmethod
     def download(self, status_update_sb: Callable[[float], None]) -> tuple[str, str]:
         pass
-    
+
     @abstractmethod
     def cancel_download(self):
         pass
@@ -73,10 +73,10 @@ class UpdateManagerChecker():
         return None
 
     def check_app(el: AppImageListElement) -> Optional[str]:
-        if not terminal.host_sh(['which', 'readelf']):
-            return
+        # if not terminal.sandbox_sh(['which', 'readelf']):
+        #     return
 
-        readelf_out = terminal.host_sh(['readelf', '--string-dump=.upd_info', '--wide', el.file_path])
+        readelf_out = terminal.sandbox_sh(['readelf', '--string-dump=.upd_info', '--wide', el.file_path])
         readelf_out = readelf_out.replace('\n', ' ') + ' '
 
         # Github url
@@ -85,7 +85,7 @@ class UpdateManagerChecker():
 
         if matches:
             return matches[0].strip()
-        
+
         # Static url
         pattern_link = r"^zsync\|http(.*)\s"
         matches = re.search(pattern_link, readelf_out)
@@ -190,7 +190,7 @@ class GithubUpdater(UpdateManager):
 
         self.url = f'https://github.com/{self.url_data["username"]}/{self.url_data["repo"]}'
         self.url += f'/releases/download/{self.url_data["release"]}/{self.url_data["filename"]}'
-        
+
         self.embedded = embedded
 
     def get_url_data(url: str):
@@ -202,15 +202,15 @@ class GithubUpdater(UpdateManager):
 
             if urldata.netloc != 'github.com':
                 return False
-            
+
             paths = urldata.path.split('/')
 
             if len(paths) != 7:
                 return False
-            
+
             if paths[3] != 'releases' or paths[4] != 'download':
                 return False
-            
+
             rel_name = 'latest'
             if paths[5] == 'continuous':
                 rel_name = 'continuous'
@@ -286,9 +286,9 @@ class GithubUpdater(UpdateManager):
         except Exception as e:
             logging.error(e)
             return
-        
+
         logging.debug(f'Found {len(rel_data["assets"])} assets from {rel_url}')
-        
+
         zsync_file = None
         target_re = re.compile(self.convert_glob_to_regex(self.url_data['filename']))
         for asset in rel_data['assets']:
@@ -316,7 +316,7 @@ class GithubUpdater(UpdateManager):
         target_asset = self.fetch_target_asset()
 
         if target_asset:
-            ct_supported = target_asset['content_type'] in [*AppImageProvider.supported_mimes, 
+            ct_supported = target_asset['content_type'] in [*AppImageProvider.supported_mimes,
                                                      'binary/octet-stream', 'application/octet-stream']
 
             if ct_supported:
