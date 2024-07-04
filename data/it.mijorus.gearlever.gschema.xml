@@ -10,17 +10,11 @@
         <key name="exec-as-name-for-terminal-apps" type="b">
             <default>false</default>
         </key>
-        <key name="simple-file-name-for-apps" type="b">
-            <default>false</default>
-        </key>
         <key name="debug-logs" type="b">
             <default>false</default>
         </key>
         <key name="first-run" type="b">
             <default>true</default>
-        </key>
-        <key name="last-run-version" type="s">
-            <default>"1.0.0"</default>
         </key>
         <key name="manage-files-outside-default-folder" type="b">
             <default>true</default>
