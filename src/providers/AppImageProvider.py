@@ -272,19 +272,14 @@ class AppImageProvider():
             else:
                 appimage_filename = f'gearlever_{dest_file_info.get_name()}'
                 if extracted_appimage.desktop_entry:
-                    appimage_filename = 'gearlever_' + extracted_appimage.desktop_entry.getName()
+                    appimage_filename = extracted_appimage.desktop_entry.getName()
+                    appimage_filename = appimage_filename.lower().replace(' ', '_')
                 
                 prefixed_filename = re.sub(r"[^A-Za-z0-9_]+", "", appimage_filename).lower() + '_' + extracted_appimage.md5[0:6]
                 appimage_filename = prefixed_filename
 
                 append_file_ext = True
                 gsettings = get_gsettings()
-
-                if extracted_appimage.desktop_entry and \
-                    gsettings.get_boolean('simple-file-name-for-apps'):
-
-                    appimage_filename = extracted_appimage.desktop_entry.getName()
-                    appimage_filename = appimage_filename.lower().replace(' ', '_')
 
                 if extracted_appimage.desktop_entry and \
                     gsettings.get_boolean('exec-as-name-for-terminal-apps') and \
@@ -322,7 +317,6 @@ class AppImageProvider():
 
                     i += 1
 
-            
             dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + appimage_filename)
 
             if not gio_copy(extracted_appimage.appimage_file, dest_appimage_file):

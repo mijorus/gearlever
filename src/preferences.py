@@ -99,14 +99,7 @@ class Preferences(Adw.PreferencesWindow):
             _('If enabled, apps that run in the terminal are renamed as their executable.\nYou would need to add the aforementioned folder to your $PATH manually.\n\nFor example, "golang_x86_64.appimage" will be saved as "go"')
         )
 
-        simple_filename_name_switch = self.create_boolean_settings_entry(
-            _('Save appimages files without prefixes'),
-            'simple-file-name-for-apps',
-            _('When enabled, every appimage will be renamed as a short, lowercase version of their app name, without the "gearlever" prefix.\n\nFor example, "kdenlive-24.02-x86_64.appimage" will be saved as "kdelive.appimage"')
-        )
-
         nconvention_group.add(exec_as_name_switch)
-        nconvention_group.add(simple_filename_name_switch)
 
         # debugging group
         debug_group = Adw.PreferencesGroup(name=_('Debugging'), title=_('Debugging'))
