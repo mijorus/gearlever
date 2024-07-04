@@ -5,18 +5,16 @@ import shutil
 import filecmp
 import shlex
 from xdg import DesktopEntry
-import subprocess
-import random
-import signal
 
 import dataclasses
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
-from ..lib.async_utils import idle
-from ..lib.utils import  get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
-    remove_special_chars, show_message_dialog, get_osinfo
-from ..models.Models import AppUpdateElement, InternalError
-from typing import Optional, List
+from ..lib.async_utils import _async, idle
+from ..lib.json_config import save_config_for_app, read_config_for_app
+from ..lib.utils import get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
+    remove_special_chars, get_random_string, show_message_dialog, get_osinfo
+from ..models.Models import AppUpdateElement, InternalError, DownloadInterruptedException
+from typing import Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, Gio, Adw
 from enum import Enum
 
@@ -35,21 +33,21 @@ class AppImageUpdateLogic(Enum):
 
 @dataclasses.dataclass
 class AppImageListElement():
-    name: str 
+    name: str
     description: str
     provider: str
     installed_status: InstalledStatus
     file_path: str
     trusted: bool = False
+    is_updatable_from_url = False
     env_variables: List[str] = dataclasses.field(default_factory=lambda: [])
     exec_arguments: List[str] = dataclasses.field(default_factory=lambda: [])
     desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
     update_logic: Optional[AppImageUpdateLogic] = None
-    updating_from: Optional[any] = None
+    updating_from: Optional[any] = None # AppImageListElement
     version: Optional[str] = None
     extracted: Optional[ExtractedAppImage] = None
     local_file: Optional[bool] = None
-    size: Optional[float] = None
     external_folder: bool = False
     desktop_file_path: Optional[str] = None
 
@@ -63,6 +61,8 @@ class AppImageListElement():
 
 
 class AppImageProvider():
+    supported_mimes = ['application/x-iso9660-appimage', 'application/vnd.appimage']
+    
     def __init__(self):
         self.name = 'AppImage'
         self.v2_detector_string = 'AppImages require FUSE to run.'
@@ -70,7 +70,6 @@ class AppImageProvider():
         self.desktop_exec_codes = ["%f", "%F",  "%u",  "%U",  "%i",  "%c", "%k"]
         logging.info(f'Activating {self.name} provider')
 
-        self.supported_mimes = ['application/x-iso9660-appimage', 'application/vnd.appimage']
 
         self.general_messages = []
         self.update_messages = []
@@ -439,7 +438,7 @@ class AppImageProvider():
             return
         
         logging.info(f'Reloading metadata for {el.file_path}')
-        random_str = ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))
+        random_str = get_random_string()
         dest_path = f'{self.extraction_folder}/gearlever_{random_str}'
 
         if not os.path.exists(dest_path):
@@ -564,6 +563,34 @@ class AppImageProvider():
 
         el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
 
+    def update_from_url(self, manager, el: AppImageListElement, status_cb: callable) -> AppImageListElement:
+        try:
+            update_file_path, f_hash = manager.download(status_cb)
+        except DownloadInterruptedException as de:
+            return el
+        except Exception as e:
+            raise e
+
+        update_gfile = Gio.file_new_for_path(update_file_path)
+
+        if not self.can_install_file(update_gfile):
+            raise Exception(_('The downloaded file is not a valid appimage, please check if the provided URL is correct'))
+        
+        list_element = self.create_list_element_from_file(update_gfile)
+        self.refresh_title(list_element)
+
+        if not self.is_updatable(list_element):
+            raise Exception(_(f'The downloaded appimage does not have the same app name and can\'t be updated\n{el.name} ➔ {list_element.name}'))
+        
+        list_element.update_logic = AppImageUpdateLogic.REPLACE
+        list_element.updating_from = el
+        self.install_file(list_element)
+
+        list_element.updating_from = None
+        list_element.update_logic = None
+
+        return list_element
+
     # Private methods
     def _run_filepath(self, el: AppImageListElement):
         is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) != None
@@ -619,8 +646,8 @@ class AppImageProvider():
                 )
 
     def _extract_appimage(self, el: AppImageListElement) -> str:
-        random_str = ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))
-        dest_path = f'{self.extraction_folder}/gearlever_{random_str}'
+        random_str = get_random_string()
+        dest_path = os.path.join(self.extraction_folder, f'gearlever_{random_str}')
 
         file = Gio.File.new_for_path(el.file_path)
 
@@ -641,9 +668,17 @@ class AppImageProvider():
         logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
         z7zoutput = '=== 7z log ==='
         z7zoutput = '\n\n' + terminal.sandbox_sh(['7z', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', 'bsp0', 
-                                                  '*.png', '*.svg', '*.desktop', '-r'], cwd=dest_path)
+                                                  '*.png', '*.svg', '*.desktop', 'AppRun', '-r'], cwd=dest_path)
 
         logging.debug(z7zoutput)
+
+        apprun_path = os.path.join(squashfs_root_folder, 'AppRun')
+        apprun_exists = os.path.exists(apprun_path)
+
+        if apprun_exists:
+            os.remove(apprun_path)
+        else:
+            raise Exception('This file does not look like an AppImage, AppRun is missing')
 
         return squashfs_root_folder
 

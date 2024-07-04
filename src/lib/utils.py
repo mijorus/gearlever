@@ -1,3 +1,4 @@
+import random
 import dbus
 import re
 import os
@@ -135,6 +136,8 @@ def url_is_valid(url: str) -> bool:
 
     return True if url_regex.match(url) else False
 
+def get_random_string():
+    return ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))
 
 def remove_special_chars(filename, replacement=""):
     """Removes special characters from a filename and replaces them with a chosen character.
@@ -168,3 +171,17 @@ def show_message_dialog(header, message, markup=False):
 
 def get_osinfo():
     return terminal.sandbox_sh(['cat', '/run/host/os-release'])
+
+# thank you mate ❤️
+# https://github.com/gtimelog/gtimelog/blob/6e4b07b58c730777dbdb00b3b85291139f8b10aa/src/gtimelog/main.py#L159
+def make_option(long_name, short_name=None, flags=0, arg=0, arg_data=None, description=None, arg_description=None):
+    # surely something like this should exist inside PyGObject itself?!
+    option = GLib.OptionEntry()
+    option.long_name = long_name.lstrip('-')
+    option.short_name = 0 if not short_name else short_name.lstrip('-')
+    option.flags = flags
+    option.arg = arg
+    option.arg_data = arg_data
+    option.description = description
+    option.arg_description = arg_description
+    return option

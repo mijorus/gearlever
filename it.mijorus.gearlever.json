@@ -1,11 +1,12 @@
 {
     "id" : "it.mijorus.gearlever",
     "runtime" : "org.gnome.Platform",
-    "runtime-version" : "45",
+    "runtime-version" : "46",
     "sdk" : "org.gnome.Sdk",
     "command" : "gearlever",
     "finish-args" : [
         "--share=ipc",
+        "--share=network",
         "--socket=wayland",
         "--socket=fallback-x11",
         "--device=dri",

@@ -20,12 +20,13 @@ import gi
 import logging
 import os
 
-from .lib.utils import get_gsettings
-from .lib.costants import APP_ID, APP_NAME, APP_DATA
+from .lib.utils import get_gsettings, make_option
+from .lib.costants import APP_ID, APP_NAME, APP_DATA, FETCH_UPDATES_ARG
 from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
 from  .WelcomeScreen import WelcomeScreen
 from .preferences import Preferences
+from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
@@ -46,12 +47,24 @@ class GearleverApplication(Adw.Application):
         self.create_action('open_welcome_screen', self.on_open_welcome_screen)
         self.win = None
         self.version = version
+        self.options = None
+
+        entries = [
+            make_option(FETCH_UPDATES_ARG),
+        ]
+
+        self.add_main_option_entries(entries)
+
+    def do_handle_local_options(self, options):
+        self.options = options
+        return -1
 
     def do_startup(self):
         logging.info(f'\n\n---- Application startup | version {self.version}')
         Adw.Application.do_startup(self)
 
         settings = get_gsettings()
+
         logging.debug('::: Settings')
         for k in settings.props.settings_schema.list_keys():
             logging.debug(k + ': ' + str(settings.get_value(k)))
@@ -68,15 +81,15 @@ class GearleverApplication(Adw.Application):
         We raise the application's main window, creating it if
         necessary.
         """
-        self.win = self.props.active_window
+        if self.options and self.options.contains(FETCH_UPDATES_ARG):
+            BackgroudUpdatesFetcher.start()
+        else:
+            self.win = self.props.active_window
 
-        if not self.win:
-            self.win = GearleverWindow(application=self, from_file=from_file)
+            if not self.win:
+                self.win = GearleverWindow(application=self, from_file=from_file)
 
-            if get_gsettings().get_boolean('first-run'):
-                get_gsettings().set_boolean('first-run', False)
-
-        self.win.present()
+            self.win.present()
 
     def do_open(self, files: list[Gio.File], n_files: int, data):
         if not files:
@@ -137,7 +150,6 @@ class GearleverApplication(Adw.Application):
 
 def main(version, pkgdatadir):
     """The application's entry point."""
-
     APP_DATA['PKGDATADIR'] = pkgdatadir
 
     log_file = f'{LOG_FOLDER}/{APP_NAME}.log'
@@ -167,4 +179,4 @@ def main(version, pkgdatadir):
         force=True
     )
 
-    return app.run(sys.argv)
+    app.run(sys.argv)

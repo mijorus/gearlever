@@ -16,6 +16,14 @@ def _async(func):
         return thread
     return wrapper
 
+def _async_keepalive(func):
+    def wrapper(*args, **kwargs):
+        thread = threading.Thread(target=func, args=args, kwargs=kwargs)
+        thread.daemon = False
+        thread.start()
+        return thread
+    return wrapper
+
 # Used as a decorator to run things in the main loop, from another thread
 def idle(func):
     def wrapper(*args, **kwargs):
