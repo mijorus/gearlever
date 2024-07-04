@@ -10,13 +10,13 @@ from .providers.AppImageProvider import AppImageProvider
 from .models.UpdateManager import UpdateManagerChecker
 
 class BackgroudUpdatesFetcher():
-    # INTERVAL = 3600 * 3
-    # FIRST_RUN_INTERVAL = 60 * 5
+    INTERVAL = 3600 * 3
+    FIRST_RUN_INTERVAL = 60 * 5
+    _is_running = False
 
     # Settings for debug
-    INTERVAL = 10
-    FIRST_RUN_INTERVAL = 5
-    _is_running = False
+    # INTERVAL = 10
+    # FIRST_RUN_INTERVAL = 5
     
     def is_enabled():
         conf = read_json_config('settings')
