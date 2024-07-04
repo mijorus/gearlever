@@ -19,6 +19,8 @@ from .lib.json_config import read_json_config, set_json_config, read_config_for_
 from .lib.async_utils import _async, idle
 from .models.UpdateManager import UpdateManager, UpdateManagerChecker
 
+fetch_updates_cache = None
+
 class InstalledAppsList(Gtk.ScrolledWindow):
     __gsignals__ = {
         "selected-app": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
@@ -118,12 +120,24 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.installed_apps_list.invalidate_sort()
 
         self.installed_apps_list.connect('row-activated', self.on_activated_row)
-
-        self.fetch_updates()
+        self.fetch_updates(cache=True)
 
     @_async
-    def fetch_updates(self):
+    def fetch_updates(self, cache=False):
+        global fetch_updates_cache
+
         logging.debug('Fetching for updates for all apps')
+
+        if cache and fetch_updates_cache:
+            logging.debug('Getting updates list from cache')
+
+            self.complete_updates_fetch(
+                fetch_updates_cache['final_rows'], 
+                fetch_updates_cache['updatable_apps'], 
+                fetch_updates_cache['updates_available']
+            )
+
+            return
 
         GLib.idle_add(lambda: self.updates_btn.set_label(self.CHECKING_FOR_UPDATES_LABEL))
         GLib.idle_add(lambda: self.updates_btn.set_sensitive(False))
@@ -153,6 +167,12 @@ class InstalledAppsList(Gtk.ScrolledWindow):
                 logging.error(e)
 
         self.updates_fetched = True
+        fetch_updates_cache = {
+            'final_rows': final_rows, 
+            'updatable_apps': updatable_apps, 
+            'updates_available': updates_available
+        }
+
         self.complete_updates_fetch(final_rows, updatable_apps, updates_available)
 
     @idle
