@@ -759,7 +759,7 @@ class AppDetails(Gtk.ScrolledWindow):
             header_suffix=btn_container,
         )
 
-        title = (_('Update URL') if app_config.get('update_url', False) else _('Add an update url'))
+        title = _('Update URL')
 
         combo_model = Gtk.StringList()
         combo_model._items_val = []
