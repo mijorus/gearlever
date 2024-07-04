@@ -573,7 +573,7 @@ class AppImageProvider():
         list_element = self.create_list_element_from_file(update_gfile)
         self.refresh_title(list_element)
 
-        if not self.is_updatable(list_element):
+        if not manager.embedded and not self.is_updatable(list_element):
             raise Exception(_(f'The downloaded appimage does not have the same app name and can\'t be updated\n{el.name} ➔ {list_element.name}'))
         
         list_element.update_logic = AppImageUpdateLogic.REPLACE
