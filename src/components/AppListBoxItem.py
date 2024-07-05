@@ -3,7 +3,8 @@ from gi.repository import Gtk, Pango, GObject
 from typing import Dict, List, Optional
 from ..lib.async_utils import idle, _async
 
-from ..models.AppListElement import AppListElement, InstalledStatus
+from ..models.AppListElement import InstalledStatus
+from ..providers.AppImageProvider import AppImageListElement
 from ..providers.providers_list import appimage_provider
 
 
@@ -12,10 +13,10 @@ class AppListBoxItem(Gtk.ListBoxRow):
         "details-clicked": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
     }
 
-    def __init__(self, list_element: AppListElement, show_details_btn=False, **kwargs):
+    def __init__(self, list_element: AppImageListElement, show_details_btn=False, **kwargs):
         super().__init__(**kwargs)
 
-        self._app: AppListElement = list_element
+        self._app: AppImageListElement = list_element
         self.details_btn: Optional[Gtk.Button] = None
 
         col = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)

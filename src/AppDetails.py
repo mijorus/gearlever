@@ -7,6 +7,7 @@ from typing import Optional, Callable
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
 
 from .State import state
+from .lib.terminal import sandbox_sh
 from .models.UpdateManager import UpdateManager, UpdateManagerChecker
 from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
@@ -189,7 +190,7 @@ class AppDetails(Gtk.ScrolledWindow):
         
         self.update_installation_status()
 
-        system_arch = os.environ.get('FLATPAK_ARCH', None)
+        system_arch = sandbox_sh(['arch'])
 
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
             # Exec arguments
