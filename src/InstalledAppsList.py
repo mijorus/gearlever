@@ -132,7 +132,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
             logging.debug('Getting updates list from cache')
 
             self.complete_updates_fetch(
-                fetch_updates_cache['final_rows'], 
+                fetch_updates_cache['updatable_filepaths'], 
                 fetch_updates_cache['updatable_apps'], 
                 fetch_updates_cache['updates_available']
             )
@@ -167,18 +167,20 @@ class InstalledAppsList(Gtk.ScrolledWindow):
                 logging.error(e)
 
         self.updates_fetched = True
+        updatable_filepaths = [f._app.file_path for f in final_rows]
         fetch_updates_cache = {
-            'final_rows': final_rows, 
+            'updatable_filepaths': updatable_filepaths, 
             'updatable_apps': updatable_apps, 
             'updates_available': updates_available
         }
 
-        self.complete_updates_fetch(final_rows, updatable_apps, updates_available)
+        self.complete_updates_fetch(updatable_filepaths, updatable_apps, updates_available)
 
     @idle
-    def complete_updates_fetch(self, rows, updatable_apps: int, updates_available: int):
-        for row in rows:
-            row.show_updatable_badge()
+    def complete_updates_fetch(self, updatable_filepaths: list[str], updatable_apps: int, updates_available: int):
+        for row in self.installed_apps_list_rows:
+            if row._app.file_path in updatable_filepaths:
+                row.show_updatable_badge()
 
         if updates_available == 0:
             self.updates_btn.set_label(self.CHECK_FOR_UPDATES_LABEL)
