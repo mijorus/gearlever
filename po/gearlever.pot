@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-04 14:21+0200\n"
+"POT-Creation-Date: 2024-07-05 09:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,8 +33,8 @@ msgstr ""
 msgid "translator_credits"
 msgstr ""
 
-#: src/AppDetails.py:27 src/AppDetails.py:73 src/AppDetails.py:370
-#: src/AppDetails.py:451
+#: src/AppDetails.py:27 src/AppDetails.py:73 src/AppDetails.py:381
+#: src/AppDetails.py:462
 msgid "Update"
 msgstr ""
 
@@ -42,7 +42,7 @@ msgstr ""
 msgid "Cancel update"
 msgstr ""
 
-#: src/AppDetails.py:29 src/InstalledAppsList.py:28
+#: src/AppDetails.py:29 src/InstalledAppsList.py:30
 msgid "Checking updates..."
 msgstr ""
 
@@ -58,144 +58,148 @@ msgstr ""
 msgid "Manage update details for this application"
 msgstr ""
 
-#: src/AppDetails.py:208
+#: src/AppDetails.py:212
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
 msgstr ""
 
-#: src/AppDetails.py:212
+#: src/AppDetails.py:223
 msgid "Please, verify the source of this app before opening it"
 msgstr ""
 
-#: src/AppDetails.py:213
+#: src/AppDetails.py:224
 msgid "Unlock"
 msgstr ""
 
-#: src/AppDetails.py:333
+#: src/AppDetails.py:344
 msgid "Launching..."
 msgstr ""
 
-#: src/AppDetails.py:340 src/AppDetails.py:465
-#: src/providers/AppImageProvider.py:641
+#: src/AppDetails.py:351 src/AppDetails.py:476
+#: src/providers/AppImageProvider.py:645
 msgid "Error"
 msgstr ""
 
-#: src/AppDetails.py:387
+#: src/AppDetails.py:398
 msgid "Update error"
 msgstr ""
 
-#: src/AppDetails.py:391
+#: src/AppDetails.py:402
 msgid "Close"
 msgstr ""
 
-#: src/AppDetails.py:422 src/AppDetails.py:442
+#: src/AppDetails.py:433 src/AppDetails.py:453
 msgid "This app runs in the terminal"
 msgstr ""
 
-#: src/AppDetails.py:424 src/AppDetails.py:439 src/AppDetails.py:445
+#: src/AppDetails.py:435 src/AppDetails.py:450 src/AppDetails.py:456
 msgid "Launch"
 msgstr ""
 
-#: src/AppDetails.py:426 src/AppDetails.py:454
+#: src/AppDetails.py:437 src/AppDetails.py:465
 msgid "Remove"
 msgstr ""
 
-#: src/AppDetails.py:430
+#: src/AppDetails.py:441
 msgid "Uninstalling..."
 msgstr ""
 
-#: src/AppDetails.py:434
+#: src/AppDetails.py:445
 msgid "Installing..."
 msgstr ""
 
-#: src/AppDetails.py:447
+#: src/AppDetails.py:458
 msgid "Move to the app menu"
 msgstr ""
 
-#: src/AppDetails.py:719
+#: src/AppDetails.py:487
+msgid "This app might not be compatible with your system architecture"
+msgstr ""
+
+#: src/AppDetails.py:734
 msgid "Website"
 msgstr ""
 
-#: src/AppDetails.py:719
+#: src/AppDetails.py:734
 msgid "Add a website"
 msgstr ""
 
-#: src/AppDetails.py:728
+#: src/AppDetails.py:743
 msgid "Open URL"
 msgstr ""
 
-#: src/AppDetails.py:744 src/AppDetails.py:905
+#: src/AppDetails.py:759 src/AppDetails.py:920
 msgid "Save"
 msgstr ""
 
-#: src/AppDetails.py:757
+#: src/AppDetails.py:772
 msgid "Update management"
 msgstr ""
 
-#: src/AppDetails.py:762
+#: src/AppDetails.py:777
 msgid "Update URL"
 msgstr ""
 
-#: src/AppDetails.py:769
+#: src/AppDetails.py:784
 msgid "Source"
 msgstr ""
 
-#: src/AppDetails.py:770
+#: src/AppDetails.py:785
 msgid "Select the source type"
 msgstr ""
 
-#: src/AppDetails.py:794
+#: src/AppDetails.py:809
 msgid "How it works"
 msgstr ""
 
-#: src/AppDetails.py:811
+#: src/AppDetails.py:826
 msgid "Reload metadata"
 msgstr ""
 
-#: src/AppDetails.py:812
+#: src/AppDetails.py:827
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
 msgstr ""
 
-#: src/AppDetails.py:824
+#: src/AppDetails.py:839
 msgid "Command line arguments"
 msgstr ""
 
-#: src/AppDetails.py:840
+#: src/AppDetails.py:855
 msgid "Hash"
 msgstr ""
 
-#: src/AppDetails.py:850
+#: src/AppDetails.py:865
 msgid "Path"
 msgstr ""
 
-#: src/AppDetails.py:852
+#: src/AppDetails.py:867
 msgid "Open Folder"
 msgstr ""
 
-#: src/AppDetails.py:862
+#: src/AppDetails.py:877
 msgid "Package type"
 msgstr ""
 
-#: src/AppDetails.py:880
+#: src/AppDetails.py:895
 msgid "Key"
 msgstr ""
 
-#: src/AppDetails.py:881
+#: src/AppDetails.py:896
 msgid "Value"
 msgstr ""
 
-#: src/AppDetails.py:900
+#: src/AppDetails.py:915
 msgid "Add"
 msgstr ""
 
-#: src/AppDetails.py:920
+#: src/AppDetails.py:935
 msgid "Environment variables"
 msgstr ""
 
-#: src/AppDetails.py:921
+#: src/AppDetails.py:936
 msgid "Add or customize environment for this application"
 msgstr ""
 
@@ -211,15 +215,15 @@ msgstr ""
 msgid "Open a file"
 msgstr ""
 
-#: src/InstalledAppsList.py:27
+#: src/InstalledAppsList.py:29
 msgid "Check for updates"
 msgstr ""
 
-#: src/InstalledAppsList.py:47
+#: src/InstalledAppsList.py:49
 msgid "Filter installed applications"
 msgstr ""
 
-#: src/InstalledAppsList.py:53
+#: src/InstalledAppsList.py:55
 msgid "Installed applications"
 msgstr ""
 
@@ -291,39 +295,26 @@ msgid ""
 "For example, \"golang_x86_64.appimage\" will be saved as \"go\""
 msgstr ""
 
-#: src/preferences.py:103
-msgid "Save appimages files without prefixes"
-msgstr ""
-
 #: src/preferences.py:105
-msgid ""
-"When enabled, every appimage will be renamed as a short, lowercase version "
-"of their app name, without the \"gearlever\" prefix.\n"
-"\n"
-"For example, \"kdenlive-24.02-x86_64.appimage\" will be saved as \"kdelive."
-"appimage\""
-msgstr ""
-
-#: src/preferences.py:112
 msgid "Debugging"
 msgstr ""
 
-#: src/preferences.py:114
+#: src/preferences.py:107
 msgid "Enable debug logs"
 msgstr ""
 
-#: src/preferences.py:116
+#: src/preferences.py:109
 msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
 "Requires a restart."
 msgstr ""
 
-#: src/preferences.py:140 src/WelcomeScreen.py:95
+#: src/preferences.py:133 src/WelcomeScreen.py:95
 msgid "The folder must be in your home directory"
 msgstr ""
 
-#: src/preferences.py:143 src/WelcomeScreen.py:98
+#: src/preferences.py:136 src/WelcomeScreen.py:98
 msgid "Select a folder"
 msgstr ""
 
@@ -473,13 +464,13 @@ msgstr ""
 msgid "No description provided"
 msgstr ""
 
-#: src/providers/AppImageProvider.py:577
+#: src/providers/AppImageProvider.py:581
 msgid ""
 "The downloaded file is not a valid appimage, please check if the provided "
 "URL is correct"
 msgstr ""
 
-#: src/providers/AppImageProvider.py:583
+#: src/providers/AppImageProvider.py:587
 #, python-brace-format
 msgid ""
 "The downloaded appimage does not have the same app name and can't be "
@@ -487,11 +478,11 @@ msgid ""
 "{el.name} ➔ {list_element.name}"
 msgstr ""
 
-#: src/providers/AppImageProvider.py:627
+#: src/providers/AppImageProvider.py:631
 msgid "Running AppImages on NixOS requires appimage-run"
 msgstr ""
 
-#: src/providers/AppImageProvider.py:642
+#: src/providers/AppImageProvider.py:646
 #, python-brace-format
 msgid ""
 "AppImages require FUSE to run. You might still be able to run it with --"

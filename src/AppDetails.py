@@ -485,7 +485,7 @@ class AppDetails(Gtk.ScrolledWindow):
     def show_invalid_arch_banner(self):
         self.window_banner.set_revealed(True)
         self.window_banner.set_title(_('This app might not be compatible with your system architecture'))
-        self.window_banner.set_button_label(_(''))
+        self.window_banner.set_button_label('')
 
     @idle
     def show_row_spinner(self, status: bool):
