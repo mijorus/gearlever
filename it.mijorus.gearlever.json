@@ -51,6 +51,17 @@
             ]
         },
         {
+            "name": "readelf-strings-binutils",
+            "buildsystem": "simple",
+            "build-commands": [
+                "install -Dm755 /usr/bin/readelf -t ${FLATPAK_DEST}/bin/",
+                "install -Dm755 /usr/bin/strings -t ${FLATPAK_DEST}/bin/",
+                "install -Dm755 /usr/lib/$(gcc -print-multiarch)/libctf*.so.* -t ${FLATPAK_DEST}/lib/",
+                "install -Dm755 /usr/lib/$(gcc -print-multiarch)/libbfd*.so -t ${FLATPAK_DEST}/lib/",
+                "install -Dm755 /usr/lib/$(gcc -print-multiarch)/libsframe*.so.* -t ${FLATPAK_DEST}/lib/"
+            ]
+        },
+        {
             "name" : "gearlever",
             "builddir" : true,
             "buildsystem" : "meson",

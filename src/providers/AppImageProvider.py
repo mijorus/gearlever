@@ -459,8 +459,8 @@ class AppImageProvider():
         if (generation == 2):
             # Thanks to https://github.com/ivan-hc/AM/blob/main/modules/files.am
             try:
-                if terminal.host_sh(['which', 'strings']):
-                    check = terminal.host_sh(['strings', '--data', '-n', str(len(self.v2_detector_string)), file.get_path()])
+                if terminal.sandbox_sh(['which', 'strings']):
+                    check = terminal.sandbox_sh(['strings', '--data', '-n', str(len(self.v2_detector_string)), file.get_path()])
 
                     if self.v2_detector_string not in check:
                         generation = 3
