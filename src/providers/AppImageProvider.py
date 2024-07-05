@@ -31,6 +31,11 @@ class AppImageUpdateLogic(Enum):
     REPLACE = 'REPLACE'
     KEEP = 'KEEP'
 
+class AppImageArchitecture:
+    UNKNOWN = 'UNKNOWN'
+    X86_64 = 'x86_64'
+    ARM_64 = 'aarch64'
+
 @dataclasses.dataclass
 class AppImageListElement():
     name: str
@@ -44,6 +49,7 @@ class AppImageListElement():
     exec_arguments: List[str] = dataclasses.field(default_factory=lambda: [])
     desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
     update_logic: Optional[AppImageUpdateLogic] = None
+    architecture: Optional[AppImageArchitecture] = None
     updating_from: Optional[any] = None # AppImageListElement
     version: Optional[str] = None
     extracted: Optional[ExtractedAppImage] = None
@@ -127,8 +133,10 @@ class AppImageProvider():
                                 trusted=True,
                                 external_folder=(not exec_in_defalut_folder),
                                 exec_arguments=exec_tokens,
-                                env_variables=env_variables
+                                env_variables=env_variables,
                             )
+
+                            list_element.architecture = self.get_elf_arch(list_element)
 
                             output.append(list_element)
                         else:
@@ -486,6 +494,8 @@ class AppImageProvider():
             local_file=True,
         )
 
+        el.architecture = self.get_elf_arch(el)
+
         if self.is_installed(el):
             for installed in self.list_installed():
                 if filecmp.cmp(installed.file_path, el.file_path, shallow=False):
@@ -786,3 +796,20 @@ class AppImageProvider():
             version = extracted_appimage.md5[0:6]
 
         return version
+    
+    def get_elf_arch(self, el: AppImageListElement) -> AppImageArchitecture:
+        file_brief = terminal.sandbox_sh(['file', '--brief', '--exclude-quiet=apptype', '--exclude-quiet=ascii',
+                                                     '--exclude-quiet=compress', '--exclude-quiet=csv', '--exclude-quiet=elf', 
+                                                     '--exclude-quiet=encoding', '--exclude-quiet=tar', '--exclude-quiet=cdf',
+                                                     '--exclude-quiet=json', '--exclude-quiet=simh', '--exclude-quiet=text', '--exclude-quiet=tokens',
+                                                     el.file_path])
+                        
+        aarch = AppImageArchitecture.UNKNOWN
+        file_brief = file_brief.lower()
+        
+        if 'aarch64' in file_brief or ' arm ' in file_brief:
+            aarch = AppImageArchitecture.ARM_64
+        elif 'x86-64' in file_brief or 'x86_64' in file_brief:
+            aarch = AppImageArchitecture.X86_64
+
+        return aarch

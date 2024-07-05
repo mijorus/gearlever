@@ -189,6 +189,8 @@ class AppDetails(Gtk.ScrolledWindow):
         
         self.update_installation_status()
 
+        system_arch = os.environ.get('FLATPAK_ARCH', None)
+
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
             # Exec arguments
             gtk_list.append(self.create_show_exec_args_row())
@@ -202,15 +204,24 @@ class AppDetails(Gtk.ScrolledWindow):
             self.extra_data.prepend(reload_data_listbox)
 
             # Show or hide window banner
-            self.window_banner.set_revealed(self.app_list_element.external_folder)
-            if self.app_list_element.external_folder:
+            if system_arch and system_arch != self.app_list_element.architecture:
+                self.show_invalid_arch_banner()
+            elif self.app_list_element.external_folder:
+                self.window_banner.set_revealed(True)
                 self.window_banner.set_button_label(None)
                 self.window_banner.set_title(_('This app is located outside the default folder\n<small>You can hide external apps in the settings</small>'))
-
+            else:
+                self.window_banner.set_revealed(False)
         else:
-            self.window_banner.set_revealed(not self.app_list_element.trusted)
-            self.window_banner.set_title(_('Please, verify the source of this app before opening it'))
-            self.window_banner.set_button_label(_('Unlock'))
+            if self.app_list_element.trusted:
+                if system_arch and system_arch != self.app_list_element.architecture:
+                    self.show_invalid_arch_banner()
+                else:
+                    self.window_banner.set_revealed(False)
+            else:
+                self.window_banner.set_revealed(True)
+                self.window_banner.set_title(_('Please, verify the source of this app before opening it'))
+                self.window_banner.set_button_label(_('Unlock'))
 
             if not self.app_list_element.trusted:
                 self.secondary_action_button.set_sensitive(False)
@@ -471,6 +482,11 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.update_installation_status()
 
+    def show_invalid_arch_banner(self):
+        self.window_banner.set_revealed(True)
+        self.window_banner.set_title(_('This app might not be compatible with your system architecture'))
+        self.window_banner.set_button_label(_(''))
+
     @idle
     def show_row_spinner(self, status: bool):
         self.desc_row_spinner.set_visible(status)
@@ -605,7 +621,6 @@ class AppDetails(Gtk.ScrolledWindow):
         
         save_config_for_app(app_conf)
         GLib.idle_add(lambda: widget.add_css_class('success'))
-
 
     def on_env_var_value_changed(self, widget, key_widget, value_widget):
         key = key_widget.get_text()
