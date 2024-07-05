@@ -12,8 +12,11 @@ def host_sh(command: List[str], return_stderr=False, **kwargs) -> str:
         output = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
         output.check_returncode()
     except subprocess.CalledProcessError as e:
+        d = e.stderr.decode()
         if return_stderr:
-            return e.stderr.decode()
+            return d
+        else:
+            print(d)
 
         raise e
 
@@ -32,8 +35,11 @@ def sandbox_sh(command: List[str], return_stderr=False, **kwargs) -> str:
         output = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
         output.check_returncode()
     except subprocess.CalledProcessError as e:
+        d = e.stderr.decode()
         if return_stderr:
-            return e.stderr.decode()
+            return d
+        else:
+            print(d)
 
         raise e
 
