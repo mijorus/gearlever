@@ -188,16 +188,16 @@ class GithubUpdater(UpdateManager):
         self.staticfile_manager = None
         self.url_data = GithubUpdater.get_url_data(url)
 
-        release_name_display = f'<{self.url_data["release"]}>'
-
         self.url = f'https://github.com/{self.url_data["username"]}/{self.url_data["repo"]}'
-        self.url += f'/releases/download/{release_name_display}/{self.url_data["filename"]}'
+        self.url += f'/releases/download/{self.url_data["tag_name"]}/{self.url_data["filename"]}'
 
         self.embedded = embedded
 
     def get_url_data(url: str):
         # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
         # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#github-releases
+
+        tag_name = '*'
         if url.startswith('https://'):
             logging.debug(f'GithubUpdater: found http url, trying to detect github data')
             urldata = urlsplit(url)
@@ -214,6 +214,8 @@ class GithubUpdater(UpdateManager):
                 return False
 
             rel_name = 'latest'
+            tag_name = paths[5]
+
             url = f'|{paths[1]}|{paths[2]}|{rel_name}|{paths[6]}'
             logging.debug(f'GithubUpdater: generated appimages-like update string "{url}"')
 
@@ -226,7 +228,8 @@ class GithubUpdater(UpdateManager):
             'username': items[1],
             'repo': items[2],
             'release': items[3],
-            'filename': items[4]
+            'filename': items[4],
+            'tag_name': tag_name
         }
 
     def can_handle_link(url: str):
@@ -290,6 +293,12 @@ class GithubUpdater(UpdateManager):
 
         zsync_file = None
         target_re = re.compile(self.convert_glob_to_regex(self.url_data['filename']))
+        target_tag = re.compile(self.convert_glob_to_regex(self.url_data['tag_name']))
+
+        if not re.match(target_tag, rel_data['tag_name']):
+            logging.debug(f'Release tag names do not match: {rel_data["tag_name"]} != {self.url_data["tag_name"]}')
+            return
+
         for asset in rel_data['assets']:
             if self.embedded:
                 if re.match(target_re, asset['name']) and asset['name'].endswith('.zsync'):
