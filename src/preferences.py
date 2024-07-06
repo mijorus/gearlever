@@ -112,7 +112,7 @@ class Preferences(Adw.PreferencesWindow):
         debug_group.add(debug_row)
 
         page1.add(general_preference_group)
-        page1.add(updates_management_group)
+        # page1.add(updates_management_group)
         page1.add(move_appimages_group)
         page1.add(nconvention_group)
         page1.add(debug_group)

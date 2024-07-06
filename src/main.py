@@ -81,15 +81,15 @@ class GearleverApplication(Adw.Application):
         We raise the application's main window, creating it if
         necessary.
         """
-        if self.options and self.options.contains(FETCH_UPDATES_ARG):
-            BackgroudUpdatesFetcher.start()
-        else:
-            self.win = self.props.active_window
+        # if self.options and self.options.contains(FETCH_UPDATES_ARG):
+        #     BackgroudUpdatesFetcher.start()
+        # else:
+        self.win = self.props.active_window
 
-            if not self.win:
-                self.win = GearleverWindow(application=self, from_file=from_file)
+        if not self.win:
+            self.win = GearleverWindow(application=self, from_file=from_file)
 
-            self.win.present()
+        self.win.present()
 
     def do_open(self, files: list[Gio.File], n_files: int, data):
         if not files:
