@@ -233,8 +233,13 @@ class AppImageProvider():
     def run(self, el: AppImageListElement):
         if el.trusted:
             if el.installed_status is InstalledStatus.INSTALLED:
-                gtk_launch = terminal.host_sh(['which', 'gtk-launch'])
-                gtk_launch = gtk_launch.strip()
+                gtk_launch = False
+
+                try:
+                    terminal.host_sh(['which', 'gtk-launch'])
+                    gtk_launch = True
+                except Exception as e:
+                    logging.warning('gtk-launch is missing, falling back to executable launch')
 
                 if gtk_launch and el.desktop_file_path:
                     desktop_file_name = os.path.basename(el.desktop_file_path)
