@@ -188,8 +188,10 @@ class GithubUpdater(UpdateManager):
         self.staticfile_manager = None
         self.url_data = GithubUpdater.get_url_data(url)
 
+        release_name_display = f'<{self.url_data["release"]}>'
+
         self.url = f'https://github.com/{self.url_data["username"]}/{self.url_data["repo"]}'
-        self.url += f'/releases/download/{self.url_data["release"]}/{self.url_data["filename"]}'
+        self.url += f'/releases/download/{release_name_display}/{self.url_data["filename"]}'
 
         self.embedded = embedded
 
@@ -212,9 +214,6 @@ class GithubUpdater(UpdateManager):
                 return False
 
             rel_name = 'latest'
-            if paths[5] == 'continuous':
-                rel_name = 'continuous'
-
             url = f'|{paths[1]}|{paths[2]}|{rel_name}|{paths[6]}'
             logging.debug(f'GithubUpdater: generated appimages-like update string "{url}"')
 
