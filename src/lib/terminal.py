@@ -25,6 +25,7 @@ def host_sh(command: List[str], return_stderr=False, **kwargs) -> str:
     if return_stderr:
         output_string += output.stderr.decode()
 
+    logging.debug(f'Done {cmd}')
     return re.sub(r'\n$', '', output_string)
 
 def sandbox_sh(command: List[str], return_stderr=False, **kwargs) -> str:
@@ -48,6 +49,7 @@ def sandbox_sh(command: List[str], return_stderr=False, **kwargs) -> str:
     if return_stderr:
         output_string += output.stderr.decode()
 
+    logging.debug(f'Done {cmd}')
     return re.sub(r'\n$', '', output_string)
 
 def host_threaded_sh(command: List[str], callback: Optional[Callable[[str], None]]=None, return_stderr=False):
