@@ -18,6 +18,14 @@
         <p>An utility to manage AppImages with ease! Gear lever will organize and manage AppImage files for you, generate desktop entries and app metadata, update apps in-place or keep multiple versions side-by-side.</p>
     </description>
     <releases>
+        <release type="stable" version="2.0.1" date="2024-07-04:00:00Z">
+            <description>
+                <p>- Accept globe characters in the release names of custom Github update links</p>
+                <p>- Fixed an issue causing crashes on systems that do not support gtk-launch</p>
+                <p>- Fixed an issue causing crashes when attempting to open apps with non-ascii characters in their names</p>
+                <p>- Fixed an issue causing some appimages to be considered invalid because of the lack of an AppRun file</p>
+            </description>
+        </release>
         <release type="stable" version="2.0.0" date="2024-07-04:00:00Z">
             <description>
                 <p>- BIG NEWS: Version 2.0 brings the update management! Gear Lever can now fetch updates from embedded or custom sources and update your apps automatically</p>
