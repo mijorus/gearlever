@@ -4,12 +4,14 @@
     <launchable type="desktop-id">it.mijorus.gearlever.desktop</launchable>
     <name>Gear Lever</name>
     <summary>Manage AppImages</summary>
-    <url type="homepage">https://mijorus.it/projects/gearlever</url>
+    <url type="homepage">https://mijorus.it/projects/gearlever/</url>
     <url type="donation">https://ko-fi.com/mijorus</url>
     <url type="bugtracker">https://github.com/mijorus/gearlever/issues</url>
     <metadata_license>CC0-1.0</metadata_license>
     <project_license>GPL-3.0-or-later</project_license>
-    <developer_name>Lorenzo Paderi</developer_name>
+    <developer id="mijorus.it">
+      <name translatable="no">Lorenzo Paderi</name>
+    </developer>
     <branding>
       <color type="primary" scheme_preference="light">#e6eaec</color>
       <color type="primary" scheme_preference="dark">#33373a</color>
