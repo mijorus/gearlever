@@ -1,21 +1,21 @@
 # Hindi translation for gearlever.
-# Copyright (C) 2024 Lorenzo Paderi
-# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) 2024 gearlever's COPYRIGHT HOLDER
+# This file is distributed under the same license as the gearlever package.
 # Scrambled777 <weblate.scrambled777@simplelogin.com>, 2024.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gearlever\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-28 11:46+0200\n"
-"PO-Revision-Date: 2024-07-01 00:13+0530\n"
+"POT-Creation-Date: 2024-07-05 09:39+0000\n"
+"PO-Revision-Date: 2024-07-07 09:28+0530\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <indlinux-hindi@lists.sourceforge.net>\n"
 "Language: hi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Gtranslator 46.1\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
@@ -30,11 +30,36 @@ msgstr "ऐपइमेज को आसानी से प्रबंधि�
 msgid "AppImage;"
 msgstr "AppImage;ऐपइमेज;"
 
-#: src/main.py:102
+#: src/main.py:115
 msgid "translator_credits"
 msgstr "Scrambled777 <weblate.scrambled777@simplelogin.com>"
 
-#: src/AppDetails.py:179
+#: src/AppDetails.py:27 src/AppDetails.py:73 src/AppDetails.py:381
+#: src/AppDetails.py:462
+msgid "Update"
+msgstr "अद्यतन"
+
+#: src/AppDetails.py:28
+msgid "Cancel update"
+msgstr "अद्यतन रद्द करें"
+
+#: src/AppDetails.py:29 src/InstalledAppsList.py:30
+msgid "Checking updates..."
+msgstr "अद्यतनों की जांच की जा रही है..."
+
+#: src/AppDetails.py:30
+msgid "No updates available"
+msgstr "कोई अद्यतन उपलब्ध नहीं"
+
+#: src/AppDetails.py:31
+msgid "This application includes update information provided by the developer"
+msgstr "इस अनुप्रयोग में डेवलपर द्वारा प्रदान की गई अद्यतन जानकारी शामिल है"
+
+#: src/AppDetails.py:32
+msgid "Manage update details for this application"
+msgstr "इस अनुप्रयोग के लिए अद्यतन विवरण प्रबंधित करें"
+
+#: src/AppDetails.py:212
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -42,72 +67,100 @@ msgstr ""
 "यह ऐप तयशुदा फोल्डर के बाहर स्थित है\n"
 "<small>आप सेटिंग में बाहरी ऐप्स छिपा सकते हैं</small>"
 
-#: src/AppDetails.py:183
+#: src/AppDetails.py:223
 msgid "Please, verify the source of this app before opening it"
 msgstr "कृपया इस ऐप को खोलने से पहले इसके स्रोत की पुष्टि कर लें"
 
-#: src/AppDetails.py:184
+#: src/AppDetails.py:224
 msgid "Unlock"
 msgstr "खोलें"
 
-#: src/AppDetails.py:286
+#: src/AppDetails.py:344
 msgid "Launching..."
 msgstr "शुरू हो रहा है..."
 
-#: src/AppDetails.py:293 src/AppDetails.py:372
-#: src/providers/AppImageProvider.py:618
+#: src/AppDetails.py:351 src/AppDetails.py:476
+#: src/providers/AppImageProvider.py:645
 msgid "Error"
 msgstr "त्रुटि"
 
-#: src/AppDetails.py:332 src/AppDetails.py:352
+#: src/AppDetails.py:398
+msgid "Update error"
+msgstr "अद्यतन त्रुटि"
+
+#: src/AppDetails.py:402
+msgid "Close"
+msgstr "बंद करें"
+
+#: src/AppDetails.py:433 src/AppDetails.py:453
 msgid "This app runs in the terminal"
 msgstr "यह ऐप टर्मिनल में चलता है"
 
-#: src/AppDetails.py:334 src/AppDetails.py:349 src/AppDetails.py:355
+#: src/AppDetails.py:435 src/AppDetails.py:450 src/AppDetails.py:456
 msgid "Launch"
 msgstr "शुरू करें"
 
-#: src/AppDetails.py:336 src/AppDetails.py:364
+#: src/AppDetails.py:437 src/AppDetails.py:465
 msgid "Remove"
 msgstr "हटाएं"
 
-#: src/AppDetails.py:340
+#: src/AppDetails.py:441
 msgid "Uninstalling..."
 msgstr "अस्थापित किया जा रहा है..."
 
-#: src/AppDetails.py:344
+#: src/AppDetails.py:445
 msgid "Installing..."
 msgstr "स्थापित किया जा रहा है..."
 
-#: src/AppDetails.py:357
+#: src/AppDetails.py:458
 msgid "Move to the app menu"
 msgstr "ऐप मेनू पर ले जाएं"
 
-#: src/AppDetails.py:361
-msgid "Update"
-msgstr "अद्यतन"
+#: src/AppDetails.py:487
+msgid "This app might not be compatible with your system architecture"
+msgstr "यह ऐप संभवतः आपके सिस्टम आर्किटेक्चर के साथ संगत नहीं है"
 
-#: src/AppDetails.py:368
-msgid "Updating"
-msgstr "अद्यतन किया जा रहा है"
-
-#: src/AppDetails.py:520
+#: src/AppDetails.py:734
 msgid "Website"
 msgstr "वेबसाइट"
 
-#: src/AppDetails.py:520
+#: src/AppDetails.py:734
 msgid "Add a website"
 msgstr "एक वेबसाइट जोड़ें"
 
-#: src/AppDetails.py:529
+#: src/AppDetails.py:743
 msgid "Open URL"
 msgstr "URL खोलें"
 
-#: src/AppDetails.py:542
+#: src/AppDetails.py:759 src/AppDetails.py:920
+msgid "Save"
+msgstr "सहेजें"
+
+#: src/AppDetails.py:772
+msgid "Update management"
+msgstr "अद्यतन प्रबंधन"
+
+#: src/AppDetails.py:777
+msgid "Update URL"
+msgstr "अद्यतन URL"
+
+#: src/AppDetails.py:784
+msgid "Source"
+msgstr "स्रोत"
+
+#: src/AppDetails.py:785
+msgid "Select the source type"
+msgstr "स्रोत प्रकार चुनें"
+
+#: src/AppDetails.py:809
+msgid "How it works"
+msgstr "यह कैसे काम करता है"
+
+#: src/AppDetails.py:826
 msgid "Reload metadata"
 msgstr "मेटाडेटा पुनः लोड करें"
 
-#: src/AppDetails.py:543
+#: src/AppDetails.py:827
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -115,47 +168,43 @@ msgstr ""
 "आइकन, संस्करण और विवरण जैसी जानकारी अद्यतन करें।\n"
 "यदि ऐप स्वयं अद्यतन होता है तो उपयोगी है।"
 
-#: src/AppDetails.py:555
+#: src/AppDetails.py:839
 msgid "Command line arguments"
 msgstr "कमांड लाइन तर्क"
 
-#: src/AppDetails.py:571
+#: src/AppDetails.py:855
 msgid "Hash"
 msgstr "हैश"
 
-#: src/AppDetails.py:581
+#: src/AppDetails.py:865
 msgid "Path"
 msgstr "पथ"
 
-#: src/AppDetails.py:583
+#: src/AppDetails.py:867
 msgid "Open Folder"
 msgstr "फोल्डर खोलें"
 
-#: src/AppDetails.py:593
+#: src/AppDetails.py:877
 msgid "Package type"
 msgstr "पैकेज प्रकार"
 
-#: src/AppDetails.py:611
+#: src/AppDetails.py:895
 msgid "Key"
 msgstr "कुंजी"
 
-#: src/AppDetails.py:612
+#: src/AppDetails.py:896
 msgid "Value"
 msgstr "मान"
 
-#: src/AppDetails.py:631
+#: src/AppDetails.py:915
 msgid "Add"
 msgstr "जोड़ें"
 
-#: src/AppDetails.py:636
-msgid "Save"
-msgstr "सहेजें"
-
-#: src/AppDetails.py:651
+#: src/AppDetails.py:935
 msgid "Environment variables"
 msgstr "पर्यावरण वेरिएबल"
 
-#: src/AppDetails.py:652
+#: src/AppDetails.py:936
 msgid "Add or customize environment for this application"
 msgstr "इस अनुप्रयोग के लिए पर्यावरण जोड़ें या अनुकूलित करें"
 
@@ -171,27 +220,31 @@ msgstr "खोलें"
 msgid "Open a file"
 msgstr "फाइल खोलें"
 
-#: src/InstalledAppsList.py:37
+#: src/InstalledAppsList.py:29
+msgid "Check for updates"
+msgstr "अद्यतनों के लिए जांचें"
+
+#: src/InstalledAppsList.py:49
 msgid "Filter installed applications"
 msgstr "स्थापित अनुप्रयोगों को छाने"
 
-#: src/InstalledAppsList.py:42
+#: src/InstalledAppsList.py:55
 msgid "Installed applications"
 msgstr "स्थापित अनुप्रयोग"
 
-#: src/preferences.py:22
+#: src/preferences.py:27
 msgid "General"
 msgstr "सामान्य"
 
-#: src/preferences.py:27
+#: src/preferences.py:32
 msgid "AppImage default location"
 msgstr "ऐपइमेज का तयशुदा स्थान"
 
-#: src/preferences.py:36
+#: src/preferences.py:41
 msgid "Show integrated AppImages outside the default folder"
 msgstr "तयशुदा फोल्डर के बाहर एकीकृत ऐपइमेज दिखाएं"
 
-#: src/preferences.py:38
+#: src/preferences.py:43
 msgid ""
 "List AppImages that have been integrated into the system menu but are "
 "located outside the default folder"
@@ -199,35 +252,49 @@ msgstr ""
 "उन ऐपइमेज की सूची बनाएं जिन्हें सिस्टम मेनू में एकीकृत किया गया है लेकिन तयशुदा फोल्डर के "
 "बाहर स्थित हैं"
 
-#: src/preferences.py:45
+#: src/preferences.py:50
+msgid "Updates management"
+msgstr "अद्यतन प्रबंधन"
+
+#: src/preferences.py:52
+msgid "Check updates in the backgroud"
+msgstr "पृष्ठभूमि में अद्यतन जांचें"
+
+#: src/preferences.py:54
+msgid ""
+"Receive a notification when a new update is detected; updates will not be "
+"installed automatically"
+msgstr "नया अद्यतन पता चलने पर सूचना प्राप्त करें; अद्यतन स्वचालित रूप से स्थापित नहीं होंगे"
+
+#: src/preferences.py:61
 msgid "File management"
 msgstr "फाइल प्रबंधन"
 
-#: src/preferences.py:47
+#: src/preferences.py:63
 msgid "Move AppImages into the destination folder"
 msgstr "ऐपइमेज को गंतव्य फोल्डर में ले जाएं"
 
-#: src/preferences.py:48
+#: src/preferences.py:64
 msgid "Reduce disk usage"
 msgstr "डिस्क उपयोग कम करें"
 
-#: src/preferences.py:52
+#: src/preferences.py:68
 msgid "Clone AppImages into the destination folder"
 msgstr "ऐपइमेज की गंतव्य फोल्डर में प्रतिरूपित करें"
 
-#: src/preferences.py:53
+#: src/preferences.py:69
 msgid "Keep the original file and create a copy in the destination folder"
 msgstr "मूल फाइल रखें और गंतव्य फोल्डर में प्रतिलिपि बनाएं"
 
-#: src/preferences.py:79
+#: src/preferences.py:95
 msgid "Naming conventions"
 msgstr "नामकरण परंपराएं"
 
-#: src/preferences.py:81
+#: src/preferences.py:97
 msgid "Use executable name for integrated terminal apps"
 msgstr "एकीकृत टर्मिनल ऐप्स के लिए निष्पादन योग्य नाम का उपयोग करें"
 
-#: src/preferences.py:83
+#: src/preferences.py:99
 msgid ""
 "If enabled, apps that run in the terminal are renamed as their executable.\n"
 "You would need to add the aforementioned folder to your $PATH manually.\n"
@@ -240,33 +307,15 @@ msgstr ""
 "\n"
 "उदाहरण के लिए, \"golang_x86_64.appimage\" को \"go\" के रूप में सहेजा जाएगा"
 
-#: src/preferences.py:87
-msgid "Save appimages files without prefixes"
-msgstr "उपसर्गों के बिना ऐपइमेज फाइलें सहेजें"
-
-#: src/preferences.py:89
-msgid ""
-"When enabled, every appimage will be renamed as a short, lowercase version "
-"of their app name, without the \"gearlever\" prefix.\n"
-"\n"
-"For example, \"kdenlive-24.02-x86_64.appimage\" will be saved as \"kdelive."
-"appimage\""
-msgstr ""
-"सक्षम होने पर, प्रत्येक ऐपइमेज का नाम \"gearlever\" उपसर्ग के बिना, उनके ऐप नाम के "
-"संक्षिप्त, छोटे-अक्षर संस्करण के रूप में बदल दिया जाएगा।\n"
-"\n"
-"उदाहरण के लिए, \"kdenlive-24.02-x86_64.appimage\" को \"kdelive.appimage\" के "
-"रूप में सहेजा जाएगा।"
-
-#: src/preferences.py:96
+#: src/preferences.py:105
 msgid "Debugging"
 msgstr "डिबगिंग"
 
-#: src/preferences.py:98
+#: src/preferences.py:107
 msgid "Enable debug logs"
 msgstr "डिबग लॉग सक्षम करें"
 
-#: src/preferences.py:100
+#: src/preferences.py:109
 msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
@@ -276,11 +325,11 @@ msgstr ""
 "करता है।\n"
 "पुनरारंभ की आवश्यकता है।"
 
-#: src/preferences.py:124 src/WelcomeScreen.py:95
+#: src/preferences.py:133 src/WelcomeScreen.py:95
 msgid "The folder must be in your home directory"
 msgstr "फोल्डर आपकी होम निर्देशिका में होना चाहिए"
 
-#: src/preferences.py:127 src/WelcomeScreen.py:98
+#: src/preferences.py:136 src/WelcomeScreen.py:98
 msgid "Select a folder"
 msgstr "फोल्डर चुनें"
 
@@ -434,11 +483,29 @@ msgstr "अनुशिक्षण बंद करें"
 msgid "No description provided"
 msgstr "कोई विवरण उपलब्ध नहीं कराया गया"
 
-#: src/providers/AppImageProvider.py:600
+#: src/providers/AppImageProvider.py:581
+msgid ""
+"The downloaded file is not a valid appimage, please check if the provided "
+"URL is correct"
+msgstr ""
+"डाउनलोड की गई फाइल मान्य एपिमेज नहीं है, कृपया जांचें कि प्रदान किया गया यूआरएल सही है "
+"या नहीं"
+
+#: src/providers/AppImageProvider.py:587
+#, python-brace-format
+msgid ""
+"The downloaded appimage does not have the same app name and can't be "
+"updated\n"
+"{el.name} ➔ {list_element.name}"
+msgstr ""
+"डाउनलोड की गई ऐप इमेज का ऐप नाम समान नहीं है और उसे अद्यतित नहीं किया जा सकता\n"
+"{el.name} ➔ {list_element.name}"
+
+#: src/providers/AppImageProvider.py:631
 msgid "Running AppImages on NixOS requires appimage-run"
 msgstr "NixOS पर ऐपइमेज चलाने के लिए appimage-run की आवश्यकता होती है"
 
-#: src/providers/AppImageProvider.py:619
+#: src/providers/AppImageProvider.py:646
 #, python-brace-format
 msgid ""
 "AppImages require FUSE to run. You might still be able to run it with --"
@@ -452,3 +519,22 @@ msgstr ""
 "\n"
 "अधिक जानकारी के लिए नीचे दिए गए लिंक पर क्लिक करें। \n"
 "{url}"
+
+#~ msgid "Updating"
+#~ msgstr "अद्यतन किया जा रहा है"
+
+#~ msgid "Save appimages files without prefixes"
+#~ msgstr "उपसर्गों के बिना ऐपइमेज फाइलें सहेजें"
+
+#~ msgid ""
+#~ "When enabled, every appimage will be renamed as a short, lowercase "
+#~ "version of their app name, without the \"gearlever\" prefix.\n"
+#~ "\n"
+#~ "For example, \"kdenlive-24.02-x86_64.appimage\" will be saved as "
+#~ "\"kdelive.appimage\""
+#~ msgstr ""
+#~ "सक्षम होने पर, प्रत्येक ऐपइमेज का नाम \"gearlever\" उपसर्ग के बिना, उनके ऐप नाम के "
+#~ "संक्षिप्त, छोटे-अक्षर संस्करण के रूप में बदल दिया जाएगा।\n"
+#~ "\n"
+#~ "उदाहरण के लिए, \"kdenlive-24.02-x86_64.appimage\" को \"kdelive.appimage\" "
+#~ "के रूप में सहेजा जाएगा।"
