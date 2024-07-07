@@ -677,18 +677,9 @@ class AppImageProvider():
         logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
         z7zoutput = '=== 7z log ==='
         z7zoutput = '\n\n' + terminal.sandbox_sh(['7z', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', 'bsp0', 
-                                                  '*.png', '*.svg', '*.desktop', 'AppRun', '-r'], cwd=dest_path)
+                                                  '*.png', '*.svg', '*.desktop', '-r'], cwd=dest_path)
 
         logging.debug(z7zoutput)
-
-        apprun_path = os.path.join(squashfs_root_folder, 'AppRun')
-        apprun_exists = os.path.exists(apprun_path)
-
-        if apprun_exists:
-            os.remove(apprun_path)
-        else:
-            raise Exception('This file does not look like an AppImage, AppRun is missing')
-
         return squashfs_root_folder
 
     def _load_appimage_metadata(self, el: AppImageListElement) -> ExtractedAppImage:
