@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-28 11:46+0200\n"
-"PO-Revision-Date: 2024-06-28 19:49-0400\n"
+"POT-Creation-Date: 2024-07-05 09:39+0000\n"
+"PO-Revision-Date: 2024-07-07 17:17-0400\n"
 "Last-Translator: Racsu <racsufkoficial@gmail.com>\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -29,11 +29,38 @@ msgstr "¡Una utilidad para gestionar AppImages con facilidad!"
 msgid "AppImage;"
 msgstr "AppImage;"
 
-#: src/main.py:102
+#: src/main.py:115
 msgid "translator_credits"
 msgstr "racsu <racsu.com>"
 
-#: src/AppDetails.py:179
+#: src/AppDetails.py:27 src/AppDetails.py:73 src/AppDetails.py:381
+#: src/AppDetails.py:462
+msgid "Update"
+msgstr "Actualizar"
+
+#: src/AppDetails.py:28
+msgid "Cancel update"
+msgstr "Cancelar actualización"
+
+#: src/AppDetails.py:29 src/InstalledAppsList.py:30
+msgid "Checking updates..."
+msgstr "Comprobando actualizaciones..."
+
+#: src/AppDetails.py:30
+msgid "No updates available"
+msgstr "No hay actualizaciones disponibles"
+
+#: src/AppDetails.py:31
+msgid "This application includes update information provided by the developer"
+msgstr ""
+"Esta aplicación incluye información actualizada proporcionada por el "
+"desarrollador"
+
+#: src/AppDetails.py:32
+msgid "Manage update details for this application"
+msgstr "Gestionar los datos de actualización de esta aplicación"
+
+#: src/AppDetails.py:212
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -41,72 +68,102 @@ msgstr ""
 "Esta aplicacion se encuentra fuera del directorio predeterminado\n"
 "<small>Puedes esconder aplicaciones externas en los ajustes</small>"
 
-#: src/AppDetails.py:183
+#: src/AppDetails.py:223
 msgid "Please, verify the source of this app before opening it"
 msgstr "Por favor, verifique la fuente de esta aplicación antes de abrirla"
 
-#: src/AppDetails.py:184
+#: src/AppDetails.py:224
 msgid "Unlock"
 msgstr "Desbloquear"
 
-#: src/AppDetails.py:286
+#: src/AppDetails.py:344
 msgid "Launching..."
 msgstr "Lanzando..."
 
-#: src/AppDetails.py:293 src/AppDetails.py:372
-#: src/providers/AppImageProvider.py:618
+#: src/AppDetails.py:351 src/AppDetails.py:476
+#: src/providers/AppImageProvider.py:645
 msgid "Error"
 msgstr "Error"
 
-#: src/AppDetails.py:332 src/AppDetails.py:352
+#: src/AppDetails.py:398
+msgid "Update error"
+msgstr "Error de actualización"
+
+#: src/AppDetails.py:402
+msgid "Close"
+msgstr "Cerrar"
+
+#: src/AppDetails.py:433 src/AppDetails.py:453
 msgid "This app runs in the terminal"
 msgstr "Esta app corre via terminal"
 
-#: src/AppDetails.py:334 src/AppDetails.py:349 src/AppDetails.py:355
+#: src/AppDetails.py:435 src/AppDetails.py:450 src/AppDetails.py:456
 msgid "Launch"
 msgstr "Lanzar"
 
-#: src/AppDetails.py:336 src/AppDetails.py:364
+#: src/AppDetails.py:437 src/AppDetails.py:465
 msgid "Remove"
 msgstr "Eliminar"
 
-#: src/AppDetails.py:340
+#: src/AppDetails.py:441
 msgid "Uninstalling..."
 msgstr "Desinstalando..."
 
-#: src/AppDetails.py:344
+#: src/AppDetails.py:445
 msgid "Installing..."
 msgstr "Instalando..."
 
-#: src/AppDetails.py:357
+#: src/AppDetails.py:458
 msgid "Move to the app menu"
 msgstr "Mover al menu de aplicaciones"
 
-#: src/AppDetails.py:361
-msgid "Update"
-msgstr "Actualizar"
+#: src/AppDetails.py:487
+msgid "This app might not be compatible with your system architecture"
+msgstr ""
+"Es posible que esta aplicación no sea compatible con la arquitectura de tu "
+"sistema"
 
-#: src/AppDetails.py:368
-msgid "Updating"
-msgstr "Actualizando"
-
-#: src/AppDetails.py:520
+#: src/AppDetails.py:734
 msgid "Website"
 msgstr "Sitio Web"
 
-#: src/AppDetails.py:520
+#: src/AppDetails.py:734
 msgid "Add a website"
 msgstr "Agregar un sitio web"
 
-#: src/AppDetails.py:529
+#: src/AppDetails.py:743
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: src/AppDetails.py:542
+#: src/AppDetails.py:759 src/AppDetails.py:920
+msgid "Save"
+msgstr "Guardar"
+
+#: src/AppDetails.py:772
+msgid "Update management"
+msgstr "Gestión de la actualización"
+
+#: src/AppDetails.py:777
+msgid "Update URL"
+msgstr "Actualizar URL"
+
+#: src/AppDetails.py:784
+msgid "Source"
+msgstr "Fuerte"
+
+#: src/AppDetails.py:785
+msgid "Select the source type"
+msgstr "Seleccione el tipo de fuente"
+
+#: src/AppDetails.py:809
+msgid "How it works"
+msgstr "Cómo funciona"
+
+#: src/AppDetails.py:826
 msgid "Reload metadata"
 msgstr "Recargar metada"
 
-#: src/AppDetails.py:543
+#: src/AppDetails.py:827
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -114,47 +171,43 @@ msgstr ""
 "Actualizar información como icono, versión y descripción.\n"
 "Útil si la aplicación se actualizó por si misma."
 
-#: src/AppDetails.py:555
+#: src/AppDetails.py:839
 msgid "Command line arguments"
 msgstr "Argumentos de la línea de comandos"
 
-#: src/AppDetails.py:571
+#: src/AppDetails.py:855
 msgid "Hash"
 msgstr "Hash"
 
-#: src/AppDetails.py:581
+#: src/AppDetails.py:865
 msgid "Path"
 msgstr "Directorio"
 
-#: src/AppDetails.py:583
+#: src/AppDetails.py:867
 msgid "Open Folder"
 msgstr "Abrir carpeta"
 
-#: src/AppDetails.py:593
+#: src/AppDetails.py:877
 msgid "Package type"
 msgstr "Tipo de paquete"
 
-#: src/AppDetails.py:611
+#: src/AppDetails.py:895
 msgid "Key"
 msgstr "Clave"
 
-#: src/AppDetails.py:612
+#: src/AppDetails.py:896
 msgid "Value"
 msgstr "Valor"
 
-#: src/AppDetails.py:631
+#: src/AppDetails.py:915
 msgid "Add"
 msgstr "Agregar"
 
-#: src/AppDetails.py:636
-msgid "Save"
-msgstr "Guardar"
-
-#: src/AppDetails.py:651
+#: src/AppDetails.py:935
 msgid "Environment variables"
 msgstr "Variables de entorno"
 
-#: src/AppDetails.py:652
+#: src/AppDetails.py:936
 msgid "Add or customize environment for this application"
 msgstr "Añadir o personalizar el entorno para esta aplicación"
 
@@ -170,27 +223,31 @@ msgstr "Abrir"
 msgid "Open a file"
 msgstr "Abrir un archivo"
 
-#: src/InstalledAppsList.py:37
+#: src/InstalledAppsList.py:29
+msgid "Check for updates"
+msgstr "Buscar actualizaciones"
+
+#: src/InstalledAppsList.py:49
 msgid "Filter installed applications"
 msgstr "Filtrar aplicaciones instaladas"
 
-#: src/InstalledAppsList.py:42
+#: src/InstalledAppsList.py:55
 msgid "Installed applications"
 msgstr "Aplicaciones instaladas"
 
-#: src/preferences.py:22
+#: src/preferences.py:27
 msgid "General"
 msgstr "General"
 
-#: src/preferences.py:27
+#: src/preferences.py:32
 msgid "AppImage default location"
 msgstr "Ubicación por defecto de la AppImage"
 
-#: src/preferences.py:36
+#: src/preferences.py:41
 msgid "Show integrated AppImages outside the default folder"
 msgstr "Muestra las AppImages integradas fuera de la carpeta por defecto"
 
-#: src/preferences.py:38
+#: src/preferences.py:43
 msgid ""
 "List AppImages that have been integrated into the system menu but are "
 "located outside the default folder"
@@ -198,35 +255,51 @@ msgstr ""
 "Lista de AppImages que han sido integradas en el menu del sistema, pero "
 "estan fuera de la carpeta por defecto"
 
-#: src/preferences.py:45
+#: src/preferences.py:50
+msgid "Updates management"
+msgstr "Gestión de actualizaciones"
+
+#: src/preferences.py:52
+msgid "Check updates in the backgroud"
+msgstr "Comprobar actualizaciones en segundo plano"
+
+#: src/preferences.py:54
+msgid ""
+"Receive a notification when a new update is detected; updates will not be "
+"installed automatically"
+msgstr ""
+"Recibir una notificación cuando se detecte una nueva actualización; las "
+"actualizaciones no se instalarán automáticamente"
+
+#: src/preferences.py:61
 msgid "File management"
 msgstr "Gestión de archivos"
 
-#: src/preferences.py:47
+#: src/preferences.py:63
 msgid "Move AppImages into the destination folder"
 msgstr "Mueve las AppImages a la carpeta destinada"
 
-#: src/preferences.py:48
+#: src/preferences.py:64
 msgid "Reduce disk usage"
 msgstr "Reducir uso del disco"
 
-#: src/preferences.py:52
+#: src/preferences.py:68
 msgid "Clone AppImages into the destination folder"
 msgstr "Clonar AppImages hacia la carpeta destinada"
 
-#: src/preferences.py:53
+#: src/preferences.py:69
 msgid "Keep the original file and create a copy in the destination folder"
 msgstr "Mantiene el archivo original y crea una copia en la otra carpeta"
 
-#: src/preferences.py:79
+#: src/preferences.py:95
 msgid "Naming conventions"
 msgstr "Convenciones de nomenclatura"
 
-#: src/preferences.py:81
+#: src/preferences.py:97
 msgid "Use executable name for integrated terminal apps"
 msgstr "Utilizar nombre ejecutable para aplicaciones de terminal integradas"
 
-#: src/preferences.py:83
+#: src/preferences.py:99
 msgid ""
 "If enabled, apps that run in the terminal are renamed as their executable.\n"
 "You would need to add the aforementioned folder to your $PATH manually.\n"
@@ -239,34 +312,15 @@ msgstr ""
 "\n"
 "Por ejemplo, \"golang_x86_64.appimage\" sera guardo como \"go\""
 
-#: src/preferences.py:87
-msgid "Save appimages files without prefixes"
-msgstr "Guardar archivos appimages sin prefijos"
-
-#: src/preferences.py:89
-msgid ""
-"When enabled, every appimage will be renamed as a short, lowercase version "
-"of their app name, without the \"gearlever\" prefix.\n"
-"\n"
-"For example, \"kdenlive-24.02-x86_64.appimage\" will be saved as \"kdelive."
-"appimage\""
-msgstr ""
-"Si se activa esta opción, todas las imágenes de aplicación se renombrarán "
-"como una versión abreviada en minúsculas del nombre de la aplicación, sin el "
-"prefijo \"gearlever\".\n"
-"\n"
-"Por ejemplo, \"kdenlive-24.02-x86_64.appimage\" se guardará como \"kdelive."
-"appimage\""
-
-#: src/preferences.py:96
+#: src/preferences.py:105
 msgid "Debugging"
 msgstr "Depurando"
 
-#: src/preferences.py:98
+#: src/preferences.py:107
 msgid "Enable debug logs"
 msgstr "Habilitar registros de depuración"
 
-#: src/preferences.py:100
+#: src/preferences.py:109
 msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
@@ -276,11 +330,11 @@ msgstr ""
 "afectando potencialmente a el rendimiento.\n"
 "Requiere un reinicio."
 
-#: src/preferences.py:124 src/WelcomeScreen.py:95
+#: src/preferences.py:133 src/WelcomeScreen.py:95
 msgid "The folder must be in your home directory"
 msgstr "La carpeta debe estar en tu directorio home"
 
-#: src/preferences.py:127 src/WelcomeScreen.py:98
+#: src/preferences.py:136 src/WelcomeScreen.py:98
 msgid "Select a folder"
 msgstr "Selecciona una carpeta"
 
@@ -438,11 +492,30 @@ msgstr "Cerrar tutorial"
 msgid "No description provided"
 msgstr "Sin descripción"
 
-#: src/providers/AppImageProvider.py:600
+#: src/providers/AppImageProvider.py:581
+msgid ""
+"The downloaded file is not a valid appimage, please check if the provided "
+"URL is correct"
+msgstr ""
+"El archivo descargado no es una appimage válida, por favor compruebe si la "
+"URL proporcionada es correcta"
+
+#: src/providers/AppImageProvider.py:587
+#, python-brace-format
+msgid ""
+"The downloaded appimage does not have the same app name and can't be "
+"updated\n"
+"{el.name} ➔ {list_element.name}"
+msgstr ""
+"La appimage descargada no tiene el mismo nombre de app y no se puede "
+"actualizar\n"
+"{el.name} ➔ {list_element.name}"
+
+#: src/providers/AppImageProvider.py:631
 msgid "Running AppImages on NixOS requires appimage-run"
 msgstr "Ejecutar AppImages en NixOS requiere appimage-run"
 
-#: src/providers/AppImageProvider.py:619
+#: src/providers/AppImageProvider.py:646
 #, python-brace-format
 msgid ""
 "AppImages require FUSE to run. You might still be able to run it with --"
@@ -457,6 +530,26 @@ msgstr ""
 "\n"
 "Haga clic en el siguiente enlace para obtener más información. \n"
 "{url}"
+
+#~ msgid "Save appimages files without prefixes"
+#~ msgstr "Guardar archivos appimages sin prefijos"
+
+#~ msgid ""
+#~ "When enabled, every appimage will be renamed as a short, lowercase "
+#~ "version of their app name, without the \"gearlever\" prefix.\n"
+#~ "\n"
+#~ "For example, \"kdenlive-24.02-x86_64.appimage\" will be saved as "
+#~ "\"kdelive.appimage\""
+#~ msgstr ""
+#~ "Si se activa esta opción, todas las imágenes de aplicación se renombrarán "
+#~ "como una versión abreviada en minúsculas del nombre de la aplicación, sin "
+#~ "el prefijo \"gearlever\".\n"
+#~ "\n"
+#~ "Por ejemplo, \"kdenlive-24.02-x86_64.appimage\" se guardará como "
+#~ "\"kdelive.appimage\""
+
+#~ msgid "Updating"
+#~ msgstr "Actualizando"
 
 #~ msgid "App not opening? Go to Menu > Open Log File for more details"
 #~ msgstr ""
