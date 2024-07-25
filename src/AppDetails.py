@@ -950,7 +950,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.env_variables_widgets = []
         for kv in self.app_list_element.env_variables:
-            k, v = kv.split('=')
+            k, v = kv.split('=', 1)
 
             row = self.create_edit_env_var_form(k, v)
             self.env_variables_group_container.append(row)
