@@ -677,7 +677,7 @@ class AppImageProvider():
         logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
         z7zoutput = '=== 7z log ==='
         z7zoutput = '\n\n' + terminal.sandbox_sh(['7z', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', 'bsp0', 
-                                                  '*.png', '*.svg', '*.desktop', '-r'], cwd=dest_path)
+                                                  '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path)
 
         logging.debug(z7zoutput)
         return squashfs_root_folder
@@ -737,7 +737,7 @@ class AppImageProvider():
                             tmp_icon_file = icon_xt_f
                             break
 
-                    if get_giofile_content_type(icon_xt_f) not in ['image/svg+xml', 'image/svg']:
+                    if (not icon_xt_f.query_exists()) or (get_giofile_content_type(icon_xt_f) not in ['image/svg+xml', 'image/svg']):
                         # always prefer svg(s) to png(s)
                         # if a png is not found in the root of the filesystem, try somewhere else
 
@@ -757,6 +757,25 @@ class AppImageProvider():
                             if icon_xt_f.query_exists():
                                 tmp_icon_file = icon_xt_f
                                 break
+                    if not tmp_icon_file:
+                        # if icon file is still not found, let's try with .DirIcon file
+                        diricon = Gio.File.new_for_path(
+                            os.path.join(extraction_folder.get_path(), '.DirIcon')
+                        )
+
+                        if diricon.query_exists():
+                            diricon_ct = get_giofile_content_type(diricon)
+
+                            if diricon_ct in ['image/png']:
+                                tmp_icon_file = diricon
+                            elif diricon_ct in ['text/plain']:
+                                with open(diricon.get_path(), 'r') as f:
+                                    possible_icon_path = f.read()
+                                    diricon_linked_to = Gio.File.new_for_path(possible_icon_path)
+
+                                    if diricon_linked_to.query_exists() and \
+                                        get_giofile_content_type(diricon_linked_to) in ['image/png']:
+                                        tmp_icon_file = diricon_linked_to
 
                     if tmp_icon_file:
                         i, tmp_icon_ext = os.path.splitext(tmp_icon_file.get_path())
