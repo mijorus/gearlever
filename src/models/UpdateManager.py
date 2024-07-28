@@ -117,11 +117,21 @@ class StaticFileUpdater(UpdateManager):
             # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#zsync-1
             url = re.sub(r"\.zsync$", "", url)
 
+        head_request_error = False
+
         try:
             resp = requests.head(url, allow_redirects=True)
             ct = resp.headers.get('content-type', '')
         except Exception as e:
             logging.error(e)
+            
+        if head_request_error:
+            # If something goes wrong with the Head request, try with stream mode
+            resp = requests.get(url, allow_redirects=True, stream=True)
+
+            with resp as r:
+                ct = r.headers.get('content-type', '')
+                r.close()
 
         logging.debug(f'{url} responded with content-type: {ct}')
         ct_supported = ct in [*AppImageProvider.supported_mimes, 'binary/octet-stream', 'application/octet-stream']
