@@ -117,21 +117,8 @@ class StaticFileUpdater(UpdateManager):
             # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#zsync-1
             url = re.sub(r"\.zsync$", "", url)
 
-        head_request_error = False
-
-        try:
-            resp = requests.head(url, allow_redirects=True)
-            ct = resp.headers.get('content-type', '')
-        except Exception as e:
-            logging.error(e)
-            
-        if head_request_error:
-            # If something goes wrong with the Head request, try with stream mode
-            resp = requests.get(url, allow_redirects=True, stream=True)
-
-            with resp as r:
-                ct = r.headers.get('content-type', '')
-                r.close()
+        headers = StaticFileUpdater.get_url_headers(url)
+        ct = headers.get('content-type', '')
 
         logging.debug(f'{url} responded with content-type: {ct}')
         ct_supported = ct in [*AppImageProvider.supported_mimes, 'binary/octet-stream', 'application/octet-stream']
@@ -179,14 +166,40 @@ class StaticFileUpdater(UpdateManager):
             shutil.rmtree(self.download_folder)
 
     def is_update_available(self, el: AppImageListElement):
-        resp = requests.head(self.url, allow_redirects=True)
-        resp_cl = int(resp.headers.get('content-length'))
+        headers = StaticFileUpdater.get_url_headers(self.url)
+        resp_cl = int(headers.get('content-length', '0'))
         old_size = os.path.getsize(el.file_path)
 
         logging.debug(f'StaticFileUpdater: new url has length {resp_cl}, old was {old_size}')
         is_size_different = resp_cl != old_size
         return is_size_different
+    
+    def get_url_headers(url):
+        headers = {}
+        head_request_error = False
 
+        try:
+            resp = requests.head(url, allow_redirects=True)
+            resp.raise_for_status()
+            headers = resp.headers
+        except Exception as e:
+            head_request_error = True
+            logging.error(str(e))
+            
+        if head_request_error:
+            # If something goes wrong with the Head request, try with stream mode
+            logging.warn('Head request failed, trying with stream mode...')
+
+            try:
+                resp = requests.get(url, allow_redirects=True, stream=True)
+                with resp as r:
+                    r.raise_for_status()
+                    headers = r.headers
+                    r.close()
+            except Exception as e:
+                logging.error(str(e))
+        
+        return headers
 
 class GithubUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
