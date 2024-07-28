@@ -288,7 +288,7 @@ class AppImageProvider():
                     appimage_filename = extracted_appimage.desktop_entry.getName()
                     appimage_filename = appimage_filename.lower().replace(' ', '_')
                 
-                prefixed_filename = re.sub(r"[^A-Za-z0-9_]+", "", appimage_filename).lower() + '_' + extracted_appimage.md5[0:6]
+                prefixed_filename = re.sub(r"[^A-Za-z0-9_]+", "", appimage_filename).lower()
                 appimage_filename = prefixed_filename
 
                 append_file_ext = True
