@@ -3,10 +3,16 @@ import re
 import threading
 from typing import Callable, List, Union, Optional
 import logging
+import os
 
 def host_sh(command: List[str], return_stderr=False, **kwargs) -> str:
     try:
-        cmd = ['flatpak-spawn', '--host', *command]
+        if os.path.isfile("/.flatpak-info"):
+            cmd = ['flatpak-spawn', '--host']
+        else:
+            cmd = []
+
+        cmd += [*command]
         
         logging.debug(f'Running {cmd}')
         output = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)

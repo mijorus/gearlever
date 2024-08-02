@@ -170,7 +170,12 @@ def show_message_dialog(header, message, markup=False):
 
 
 def get_osinfo():
-    return terminal.sandbox_sh(['cat', '/run/host/os-release'])
+    os_release_file = "/run/host/os-release"
+
+    if not os.path.isfile(os_release_file):
+        os_release_file = "/etc/os-release"
+
+    return terminal.sandbox_sh(['cat', os_release_file])
 
 # thank you mate ❤️
 # https://github.com/gtimelog/gtimelog/blob/6e4b07b58c730777dbdb00b3b85291139f8b10aa/src/gtimelog/main.py#L159
