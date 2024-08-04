@@ -357,6 +357,14 @@ class AppDetails(Gtk.ScrolledWindow):
                     logging.error(str(e))
 
     @_async
+    def post_launch_animation(self, restore_as):
+        GLib.idle_add(lambda: self.secondary_action_button.set_sensitive(False))
+        time.sleep(3)
+
+        GLib.idle_add(lambda: self.secondary_action_button.set_label(restore_as))
+        GLib.idle_add(lambda: self.secondary_action_button.set_sensitive(True))
+
+    @_async
     def update_action_button_clicked(self, w):
         self.app_list_element.set_installed_status(InstalledStatus.UPDATING)
         self.update_installation_status()
