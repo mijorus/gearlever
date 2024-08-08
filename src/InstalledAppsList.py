@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 import logging
 
 from .State import state
+from time import sleep
 from .lib.costants import APP_ID, ONE_UPDATE_AVAILABLE_LABEL, UPDATES_AVAILABLE_LABEL
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageListElement
@@ -27,6 +28,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
     }
 
     CHECK_FOR_UPDATES_LABEL = _('Check for updates')
+    NO_UPDATES_FOUND_LABEL = _('No updates found')
     CHECKING_FOR_UPDATES_LABEL = _('Checking updates...')
 
     def __init__(self):
@@ -120,7 +122,6 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.installed_apps_list.invalidate_sort()
 
         self.installed_apps_list.connect('row-activated', self.on_activated_row)
-        self.fetch_updates(cache=True)
 
     @_async
     def fetch_updates(self, cache=False):
@@ -174,6 +175,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
             'updates_available': updates_available
         }
 
+        sleep(1)
         self.complete_updates_fetch(updatable_filepaths, updatable_apps, updates_available)
 
     @idle
@@ -183,7 +185,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
                 row.show_updatable_badge()
 
         if updates_available == 0:
-            self.updates_btn.set_label(self.CHECK_FOR_UPDATES_LABEL)
+            self.updates_btn.set_label(self.NO_UPDATES_FOUND_LABEL)
         elif updates_available == 1:
             self.updates_btn.set_label(ONE_UPDATE_AVAILABLE_LABEL)
         else:
