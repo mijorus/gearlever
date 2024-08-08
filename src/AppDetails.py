@@ -251,7 +251,7 @@ class AppDetails(Gtk.ScrolledWindow):
     def load(self, load_completed_callback: Optional[Callable] = None):
         self.show_row_spinner(True)
         icon = Gtk.Image(icon_name='application-x-executable-symbolic')
-        generation = self.provider.get_appimage_generation(self.app_list_element)
+        generation = self.provider.get_appimage_type(self.app_list_element)
 
 
         if self.app_list_element.trusted:
@@ -277,7 +277,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.complete_load(
             self.provider.get_icon(self.app_list_element),
-            self.provider.get_appimage_generation(self.app_list_element),
+            self.provider.get_appimage_type(self.app_list_element),
         )
 
     def on_conflict_modal_close(self, widget, data: str):
@@ -395,7 +395,7 @@ class AppDetails(Gtk.ScrolledWindow):
         icon = self.provider.get_icon(self.app_list_element)
         self.provider.refresh_title(self.app_list_element)
 
-        generation = self.provider.get_appimage_generation(self.app_list_element)
+        generation = self.provider.get_appimage_type(self.app_list_element)
         self.complete_load(icon, generation)
         self.update_installation_status()
 
@@ -706,7 +706,7 @@ class AppDetails(Gtk.ScrolledWindow):
         icon = self.provider.get_icon(self.app_list_element)
         self.provider.refresh_title(self.app_list_element)
 
-        generation = self.provider.get_appimage_generation(self.app_list_element)
+        generation = self.provider.get_appimage_type(self.app_list_element)
 
         self.complete_load(icon, generation)
 
