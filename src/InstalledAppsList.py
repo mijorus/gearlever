@@ -96,6 +96,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         if self.installed_apps_list:
             self.installed_apps_list_slot.remove(self.installed_apps_list)
 
+        self.updates_btn.set_label(self.CHECK_FOR_UPDATES_LABEL)
         self.installed_apps_list= Gtk.ListBox(css_classes=["boxed-list"])
         self.installed_apps_list_rows = []
 
