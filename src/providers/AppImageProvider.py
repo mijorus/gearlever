@@ -464,6 +464,8 @@ class AppImageProvider():
         self.install_file(el)
 
     def get_appimage_type(self, el: AppImageListElement) -> str:
+        # https://github.com/AppImage/AppImageSpec/blob/fb05d9e1b8b8616dbeb7491303edc537dca573f3/draft.md#type-1-image-format
+
         appimage_type = 0
         with open(el.file_path, 'rb') as f:
             magic = f.read(11)[-3:]
