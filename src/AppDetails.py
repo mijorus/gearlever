@@ -328,9 +328,6 @@ class AppDetails(Gtk.ScrolledWindow):
                     self.provider.uninstall(old_version)
 
                 self.install_file(self.app_list_element)
-        elif self.app_list_element.installed_status == InstalledStatus.UPDATING:
-            if self.current_update_manager:
-                self.current_update_manager.cancel_download()
 
         self.update_installation_status()
 
@@ -355,6 +352,11 @@ class AppDetails(Gtk.ScrolledWindow):
 
                 except Exception as e:
                     logging.error(str(e))
+        elif self.app_list_element.installed_status == InstalledStatus.UPDATING:
+            if self.current_update_manager:
+                self.current_update_manager.cancel_download()
+                self.update_installation_status()
+
 
     @_async
     def post_launch_animation(self, restore_as):
@@ -468,24 +470,19 @@ class AppDetails(Gtk.ScrolledWindow):
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'suggested-action'])
 
         elif self.app_list_element.installed_status == InstalledStatus.UPDATE_AVAILABLE:
-            self.secondary_action_button.set_label(_('Update'))
-            self.secondary_action_button.set_css_classes([*self.common_btn_css_classes, 'suggested-action'])
-
-            self.primary_action_button.set_label(_('Remove'))
-            self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
-
+            pass
         elif self.app_list_element.installed_status == InstalledStatus.UPDATING:
-            self.primary_action_button.set_label(self.CANCEL_UPDATE)
-            self.primary_action_button.set_sensitive(True)
-            self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
-            self.secondary_action_button.set_sensitive(False)
+            self.primary_action_button.set_sensitive(False)
+            self.secondary_action_button.set_label(self.CANCEL_UPDATE)
+            self.secondary_action_button.set_sensitive(True)
+            self.secondary_action_button.set_css_classes([*self.common_btn_css_classes])
             self.update_action_button.set_sensitive(False)
 
         elif self.app_list_element.installed_status == InstalledStatus.ERROR:
             self.primary_action_button.set_label(_('Error'))
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
 
-    def provider_refresh_installed_status(self, status: Optional[InstalledStatus] = None, final=False):
+    def provider_refresh_installed_status(self, status: Optional[InstalledStatus] = None):
         if status:
             self.app_list_element.installed_status = status
 
