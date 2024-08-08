@@ -463,24 +463,17 @@ class AppImageProvider():
 
         self.install_file(el)
 
-    def get_appimage_generation(self, el: AppImageListElement) -> int:
-        file = Gio.File.new_for_path(el.file_path)
-        content_type = get_giofile_content_type(file)
-        generation = self.supported_mimes.index(content_type) + 1
+    def get_appimage_type(self, el: AppImageListElement) -> str:
+        appimage_type = 0
+        with open(el.file_path, 'rb') as f:
+            magic = f.read(11)[-3:]
 
-        # This means it can either be type 2 or 3
-        if (generation == 2):
-            # Thanks to https://github.com/ivan-hc/AM/blob/main/modules/files.am
-            try:
-                if terminal.sandbox_sh(['which', 'strings']):
-                    check = terminal.sandbox_sh(['strings', '--data', '-n', str(len(self.v2_detector_string)), file.get_path()])
+            if magic == b'\x41\x49\x01':  # 0x414901
+                appimage_type = 1
+            elif magic == b'\x41\x49\x02':  # 0x414902
+                appimage_type = 2
 
-                    if self.v2_detector_string not in check:
-                        generation = 3
-            except Exception as e:
-                logging.error(e)
-
-        return str(generation)
+        return str(appimage_type)
 
     def create_list_element_from_file(self, file: Gio.File) -> AppImageListElement:
         if not self.can_install_file(file):
