@@ -1,5 +1,13 @@
 pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
 moduledir = join_paths(pkgdatadir, 'gearlever')
+src_subdirs = [
+  'assets',
+  'components',
+  'gtk',
+  'lib',
+  'models',
+  'providers'
+]
 src_data = [
   'AppDetails.py',
   'BackgroudUpdatesFetcher.py',
@@ -11,14 +19,6 @@ src_data = [
   '__init__.py',
   'main.py',
   'preferences.py'
-]
-src_subdirs = [
-  'assets',
-  'components',
-  'gtk',
-  'lib',
-  'models',
-  'providers'
 ]
 
 gnome = import('gnome')
@@ -48,8 +48,8 @@ configure_file(
   install_dir: get_option('bindir')
 )
 
-install_data(src_data, install_dir: moduledir)
-
 foreach d: src_subdirs
   install_subdir(d, install_dir: moduledir)
 endforeach
+
+install_data(src_data, install_dir: moduledir)
