@@ -357,6 +357,9 @@ class AppImageProvider():
                 gio_copy(icon_file, dest_appimage_icon_file)
 
             # Move .desktop file to its default location
+            if not os.path.exists(self.user_desktop_files_path):
+                os.makedirs(self.user_desktop_files_path)
+
             dest_desktop_file_path = f'{self.user_desktop_files_path}/{prefixed_filename}.desktop'
             dest_desktop_file_path = dest_desktop_file_path.replace(' ', '_')
 
