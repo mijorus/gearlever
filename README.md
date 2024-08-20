@@ -8,7 +8,9 @@
 <p align="center"><a href="https://flatstat.mijorus.it/app/it.mijorus.gearlever"  align="center"><img width="150" src="https://img.shields.io/endpoint?url=https://flathub-stats-backend.vercel.app/badges/it.mijorus.gearlever/shields.io.json"></a></p>
 
 ##  Support me
+![image](https://github.com/user-attachments/assets/448c0d18-7024-4ca9-aee8-0a11604b0909)
 
+Do you agree? Here is a link:
 <a href="https://ko-fi.com/mijorus" align="center">
   <img width="250" src="https://mijorus.it/kofi-support.png">
 </a>
