@@ -12,7 +12,7 @@
   <img width="600" src="https://github.com/user-attachments/assets/448c0d18-7024-4ca9-aee8-0a11604b0909">
 </p>
 
-Do you agree? Here is a link: <br>
+Do you agree? Here is a link 🍺: <br>
 <a href="https://ko-fi.com/mijorus" align="center">
   <img width="250" src="https://mijorus.it/kofi-support.png">
 </a>
