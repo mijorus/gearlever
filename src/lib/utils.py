@@ -129,12 +129,14 @@ def get_element_without_overscroll(arr: list, index: int):
 def url_is_valid(url: str) -> bool:
     url_regex = re.compile(
         r'^(?:http|https)://'  # http:// or https://
-        r'[a-z0-9]+(?:-[a-z0-9]+)*'  # domain name
-        r'(?:\.[a-z]{2,})+'  # .com, .net, etc.
-        r'(?:/?|[/?]\S+)$'  # /, /path, or /path?query=string
     , re.IGNORECASE)
 
-    return True if url_regex.match(url) else False
+    is_valid = True if url_regex.match(url) else False
+
+    if not is_valid:
+        logging.warn(f'Provided url "{url}" is not a valid url')
+
+    return is_valid
 
 def get_random_string():
     return ''.join((random.choice('abcdxyzpqr123456789') for i in range(10)))

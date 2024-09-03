@@ -123,6 +123,9 @@ class StaticFileUpdater(UpdateManager):
         logging.debug(f'{url} responded with content-type: {ct}')
         ct_supported = ct in [*AppImageProvider.supported_mimes, 'binary/octet-stream', 'application/octet-stream']
 
+        if not ct_supported:
+            logging.warn(f'Provided url "{url}" does not return a valid content-type header')
+
         return ct_supported
 
     def download(self, status_update_cb) -> str:
