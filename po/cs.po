@@ -1,0 +1,528 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-07-05 09:39+0000\n"
+"PO-Revision-Date: 2024-09-03 17:10+0200\n"
+"Last-Translator: Jonáš Loskot <jonas.loskot@proton.me>\n"
+"Language-Team: \n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.4\n"
+
+#: data/it.mijorus.gearlever.desktop.in:3
+msgid "Gear Lever"
+msgstr "Gear Lever"
+
+#: data/it.mijorus.gearlever.desktop.in:4
+msgid "An utility to manage AppImages with ease!"
+msgstr "Nástroj pro jednoduchou správu AppImages!"
+
+#: data/it.mijorus.gearlever.desktop.in:12
+msgid "AppImage;"
+msgstr "AppImage;"
+
+#: src/main.py:115
+msgid "translator_credits"
+msgstr "Jonáš Loskot <osobni@jonasloskot.cz>, 2024"
+
+#: src/AppDetails.py:27 src/AppDetails.py:73 src/AppDetails.py:381
+#: src/AppDetails.py:462
+msgid "Update"
+msgstr "Aktualizovat"
+
+#: src/AppDetails.py:28
+msgid "Cancel update"
+msgstr "Zrušit aktualizaci"
+
+#: src/AppDetails.py:29 src/InstalledAppsList.py:30
+msgid "Checking updates..."
+msgstr "Kontrola aktualizací..."
+
+#: src/AppDetails.py:30
+msgid "No updates available"
+msgstr "Nejsou dostupné žádné aktualizace"
+
+#: src/AppDetails.py:31
+msgid "This application includes update information provided by the developer"
+msgstr "Tato aplikace obsahuje informace o aktualizaci poskytnuté vývojářem"
+
+#: src/AppDetails.py:32
+msgid "Manage update details for this application"
+msgstr "Spravovat podrobnosti o aktualizaci u této aplikace"
+
+#: src/AppDetails.py:212
+msgid ""
+"This app is located outside the default folder\n"
+"<small>You can hide external apps in the settings</small>"
+msgstr ""
+"Tato aplikace se nachází mimo výchozí složku\n"
+"<small>Externí aplikace můžete skrýt v nastavení</small>"
+
+#: src/AppDetails.py:223
+msgid "Please, verify the source of this app before opening it"
+msgstr "Před otevřením této aplikace prosím ověřte její zdroj"
+
+#: src/AppDetails.py:224
+msgid "Unlock"
+msgstr "Odemknout"
+
+#: src/AppDetails.py:344
+msgid "Launching..."
+msgstr "Spouštění..."
+
+#: src/AppDetails.py:351 src/AppDetails.py:476
+#: src/providers/AppImageProvider.py:645
+msgid "Error"
+msgstr "Chyba"
+
+#: src/AppDetails.py:398
+msgid "Update error"
+msgstr "Chyba aktualizace"
+
+#: src/AppDetails.py:402
+msgid "Close"
+msgstr "Zavřít"
+
+#: src/AppDetails.py:433 src/AppDetails.py:453
+msgid "This app runs in the terminal"
+msgstr "Tato aplikace běží v terminálu"
+
+#: src/AppDetails.py:435 src/AppDetails.py:450 src/AppDetails.py:456
+msgid "Launch"
+msgstr "Spustit"
+
+#: src/AppDetails.py:437 src/AppDetails.py:465
+msgid "Remove"
+msgstr "Odstranit"
+
+#: src/AppDetails.py:441
+msgid "Uninstalling..."
+msgstr "Odinstalace..."
+
+#: src/AppDetails.py:445
+msgid "Installing..."
+msgstr "Instalace..."
+
+#: src/AppDetails.py:458
+msgid "Move to the app menu"
+msgstr "Přesunout do nabídky aplikací"
+
+#: src/AppDetails.py:487
+msgid "This app might not be compatible with your system architecture"
+msgstr "Tato aplikace nemusí být kompatibilní s architekturou vašeho systému"
+
+#: src/AppDetails.py:734
+msgid "Website"
+msgstr "Webové stránky"
+
+#: src/AppDetails.py:734
+msgid "Add a website"
+msgstr "Přidat webové stránky"
+
+#: src/AppDetails.py:743
+msgid "Open URL"
+msgstr "Otevřít adresu URL"
+
+#: src/AppDetails.py:759 src/AppDetails.py:920
+msgid "Save"
+msgstr "Uložit"
+
+#: src/AppDetails.py:772
+msgid "Update management"
+msgstr "Správa aktualizací"
+
+#: src/AppDetails.py:777
+msgid "Update URL"
+msgstr "Adresa aktualizací"
+
+#: src/AppDetails.py:784
+msgid "Source"
+msgstr "Zdroj"
+
+#: src/AppDetails.py:785
+msgid "Select the source type"
+msgstr "Vyberte typ zdroje"
+
+#: src/AppDetails.py:809
+msgid "How it works"
+msgstr "Jak to funguje"
+
+#: src/AppDetails.py:826
+msgid "Reload metadata"
+msgstr "Znovu načíst metadata"
+
+#: src/AppDetails.py:827
+msgid ""
+"Update information like icon, version and description.\n"
+"Useful if the app updated itself."
+msgstr ""
+"Aktualizovat informace jako je ikona, verze a popis.\n"
+"Užitečné, pokud se aplikace sama aktualizovala."
+
+#: src/AppDetails.py:839
+msgid "Command line arguments"
+msgstr "Argumenty příkazového řádku"
+
+#: src/AppDetails.py:855
+msgid "Hash"
+msgstr "Hash"
+
+#: src/AppDetails.py:865
+msgid "Path"
+msgstr "Cesta"
+
+#: src/AppDetails.py:867
+msgid "Open Folder"
+msgstr "Otevřít složku"
+
+#: src/AppDetails.py:877
+msgid "Package type"
+msgstr "Typ balíčku"
+
+#: src/AppDetails.py:895
+msgid "Key"
+msgstr "Klíč"
+
+#: src/AppDetails.py:896
+msgid "Value"
+msgstr "Hodnota"
+
+#: src/AppDetails.py:915
+msgid "Add"
+msgstr "Přidat"
+
+#: src/AppDetails.py:935
+msgid "Environment variables"
+msgstr "Proměnné prostředí"
+
+#: src/AppDetails.py:936
+msgid "Add or customize environment for this application"
+msgstr "Přidat nebo upravit proměnné prostředí pro tuto aplikaci"
+
+#: src/GearleverWindow.py:37
+msgid "Open a new AppImage"
+msgstr "Otevřít nový AppImage"
+
+#: src/GearleverWindow.py:49
+msgid "Open"
+msgstr "Otevřít"
+
+#: src/GearleverWindow.py:253
+msgid "Open a file"
+msgstr "Otevřít soubor"
+
+#: src/InstalledAppsList.py:29
+msgid "Check for updates"
+msgstr "Zkontrolovat aktualizace"
+
+#: src/InstalledAppsList.py:49
+msgid "Filter installed applications"
+msgstr "Filtrovat nainstalované aplikace"
+
+#: src/InstalledAppsList.py:55
+msgid "Installed applications"
+msgstr "Nainstalované aplikace"
+
+#: src/preferences.py:27
+msgid "General"
+msgstr "Obecné"
+
+#: src/preferences.py:32
+msgid "AppImage default location"
+msgstr "Výchozí umístění AppImage"
+
+#: src/preferences.py:41
+msgid "Show integrated AppImages outside the default folder"
+msgstr "Zobrazit integrované AppImage mimo výchozí složku"
+
+#: src/preferences.py:43
+msgid ""
+"List AppImages that have been integrated into the system menu but are "
+"located outside the default folder"
+msgstr ""
+"Zobrazit soubory AppImage, které byly integrovány do systémové nabídky, ale "
+"nacházejí se mimo výchozí složku"
+
+#: src/preferences.py:50
+msgid "Updates management"
+msgstr "Správa aktualizací"
+
+#: src/preferences.py:52
+msgid "Check updates in the backgroud"
+msgstr "Zkontrolovat aktualizace na pozadí"
+
+#: src/preferences.py:54
+msgid ""
+"Receive a notification when a new update is detected; updates will not be "
+"installed automatically"
+msgstr ""
+"Obdržet oznámení po zjištění nové aktualizace; aktualizace nebudou "
+"instalovány automaticky"
+
+#: src/preferences.py:61
+msgid "File management"
+msgstr "Správa souborů"
+
+#: src/preferences.py:63
+msgid "Move AppImages into the destination folder"
+msgstr "Přesunout soubory AppImage do cílové složky"
+
+#: src/preferences.py:64
+msgid "Reduce disk usage"
+msgstr "Snížit využití disku"
+
+#: src/preferences.py:68
+msgid "Clone AppImages into the destination folder"
+msgstr "Klonovat soubory AppImage do cílové složky"
+
+#: src/preferences.py:69
+msgid "Keep the original file and create a copy in the destination folder"
+msgstr "Ponechat původní soubor a vytvořit kopii v cílové složce"
+
+#: src/preferences.py:95
+msgid "Naming conventions"
+msgstr "Pojmenovávání"
+
+#: src/preferences.py:97
+msgid "Use executable name for integrated terminal apps"
+msgstr "Použít název příkazu pro integrované terminálové aplikace"
+
+#: src/preferences.py:99
+msgid ""
+"If enabled, apps that run in the terminal are renamed as their executable.\n"
+"You would need to add the aforementioned folder to your $PATH manually.\n"
+"\n"
+"For example, \"golang_x86_64.appimage\" will be saved as \"go\""
+msgstr ""
+"Pokud povolíte tuto možnost, terminálové aplikace budou přejmenovány podle "
+"jejich příkazu.\n"
+"Zmíněnou složku budete muset ručně přidat do $PATH."
+
+#: src/preferences.py:105
+msgid "Debugging"
+msgstr "Ladění"
+
+#: src/preferences.py:107
+msgid "Enable debug logs"
+msgstr "Povolit ladicí protokoly"
+
+#: src/preferences.py:109
+msgid ""
+"Increases log verbosity, occupying more disk space and potentially impacting "
+"performance.\n"
+"Requires a restart."
+msgstr ""
+"Zvýší obsáhlost protokolu, čímž zabere více místa na disku a může mít vliv "
+"na výkon.\n"
+"Vyžaduje restart."
+
+#: src/preferences.py:133 src/WelcomeScreen.py:95
+msgid "The folder must be in your home directory"
+msgstr "Složka se musí nacházet ve vašem domovském adresáři"
+
+#: src/preferences.py:136 src/WelcomeScreen.py:98
+msgid "Select a folder"
+msgstr "Vyberte složku"
+
+#: src/gtk/main-menu.ui:6
+msgid "_Preferences"
+msgstr "_Předvolby"
+
+#: src/gtk/main-menu.ui:10
+msgid "_Open Log File"
+msgstr "_Otevřít soubor protokolu"
+
+#: src/gtk/main-menu.ui:14
+msgid "_Show tutorial"
+msgstr "_Zobrazit návod"
+
+#: src/gtk/main-menu.ui:18
+msgid "_About Gear lever"
+msgstr "_O aplikaci Gear Lever"
+
+#: src/components/AppDetailsConflictModal.py:10
+#, python-brace-format
+msgid "Conflict with \"{app_name}\""
+msgstr "Konflikt s aplikací „{app_name}“"
+
+#: src/components/AppDetailsConflictModal.py:11
+msgid "There is already an app with the same name, how do you want to proceed?"
+msgstr ""
+"Ve vašem systému se již nachází aplikace se stejným názvem, jak chcete "
+"pokračovat?"
+
+#: src/components/AppDetailsConflictModal.py:14
+msgid "Cancel"
+msgstr "Zrušit"
+
+#: src/components/AppDetailsConflictModal.py:17
+msgid "Keep both"
+msgstr "Ponechat obě"
+
+#: src/components/AppDetailsConflictModal.py:19
+msgid "Replace"
+msgstr "Nahradit"
+
+#: src/gtk/drag-drop.ui:18
+msgid "Drop your file here"
+msgstr "Sem přetáhněte váš soubor"
+
+#: src/gtk/empty-list-placeholder.ui:18
+msgid "Get started"
+msgstr "Začínáme"
+
+#: src/gtk/empty-list-placeholder.ui:30
+msgid "Drag and drop an AppImage here or click on the \"+\" icon."
+msgstr "Přesuňte sem AppImage nebo klikněte na ikonu „+“."
+
+#: src/gtk/empty-list-placeholder.ui:35
+msgid " If you don't see your apps, check if the selected folder is correct."
+msgstr ""
+" Pokud nevidíte své aplikace, zkontrolujte, zda je vybraná složka správná."
+
+#: src/gtk/empty-list-placeholder.ui:46
+msgid "Show welcome screen"
+msgstr "Zobrazit uvítací obrazovku"
+
+#: src/gtk/empty-list-placeholder.ui:56
+msgid "Open Preferences"
+msgstr "Otevřít předvolby"
+
+#: src/gtk/help-overlay.ui:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "Obecné"
+
+#: src/gtk/help-overlay.ui:14
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "Zobrazit zkratky"
+
+#: src/gtk/help-overlay.ui:20
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "Ukončit"
+
+#: src/gtk/tutorial/1.ui:21
+msgid "Hi, welcome to Gear lever"
+msgstr "Ahoj, vítejte v aplikaci Gear Lever"
+
+#: src/gtk/tutorial/1.ui:30
+msgid "An app that helps you integrating AppImages into you system."
+msgstr ""
+"Aplikace, která vám pomůže integrovat soubory AppImage do vašeho systému."
+
+#: src/gtk/tutorial/1.ui:36
+msgid "Click \"Next\" to follow this tutorial."
+msgstr "Klikněte na „Další“ pro pokračování v tomto tutoriálu."
+
+#: src/gtk/tutorial/2.ui:19
+msgid "Set the AppImage location"
+msgstr "Nastavte umístění AppImage"
+
+#: src/gtk/tutorial/2.ui:28
+msgid ""
+"Gear lever groups all your AppImages into a specific folder and keeps them "
+"organized."
+msgstr ""
+"Gear Lever seskupuje všechny vaše soubory AppImage do specifické složky a "
+"udržuje je organizované."
+
+#: src/gtk/tutorial/2.ui:33
+#, python-brace-format
+msgid "By default, AppImages are saved at: {location}"
+msgstr "Ve výchozím nastavení jsou soubory AppImage ukládány do: {location}"
+
+#: src/gtk/tutorial/2.ui:47
+msgid "Change AppImage location"
+msgstr "Změnit umístění AppImage"
+
+#: src/gtk/tutorial/2.ui:59
+msgid "You can customize it later in the preferences."
+msgstr "Toto nastavení později můžete změnit v předvolbách."
+
+#: src/gtk/tutorial/3.ui:19
+msgid "Set Gear lever as default"
+msgstr "Nastavte Gear Lever jako výchozí"
+
+#: src/gtk/tutorial/3.ui:28
+msgid ""
+"Click on the button to open a demo folder, containing a sample AppImage."
+msgstr ""
+"Klikněte na tlačítko pro otevření vzorové složky obsahující vzorový soubor "
+"AppImage."
+
+#: src/gtk/tutorial/3.ui:33
+msgid ""
+"Use the right-click menu to set Gear lever as the default app for \"."
+"appimage\" files"
+msgstr ""
+"Použijte nabídku po kliknutí pravým pro nastavení aplikace Gear Lever jako "
+"výchozí pro soubory „.appimage“"
+
+#: src/gtk/tutorial/3.ui:44
+msgid "Open demo folder"
+msgstr "Otevřít vzorovou složku"
+
+#: src/gtk/tutorial/3.ui:56
+msgid "This step is optional"
+msgstr "Tento krok je nepovinný"
+
+#: src/gtk/tutorial/last.ui:21
+msgid "All done, let's go!"
+msgstr "To je vše!"
+
+#: src/gtk/tutorial/last.ui:35
+msgid "Close tutorial"
+msgstr "Zavřít tutoriál"
+
+#: src/models/AppListElement.py:19
+msgid "No description provided"
+msgstr "Nebyl poskytnut žádný popis"
+
+#: src/providers/AppImageProvider.py:581
+msgid ""
+"The downloaded file is not a valid appimage, please check if the provided "
+"URL is correct"
+msgstr ""
+"Stažený soubor není platným souborem AppImage, zkontrolujte prosím, zda je "
+"zadaná adresa URL správná"
+
+#: src/providers/AppImageProvider.py:587
+#, python-brace-format
+msgid ""
+"The downloaded appimage does not have the same app name and can't be "
+"updated\n"
+"{el.name} ➔ {list_element.name}"
+msgstr ""
+"Stažený soubor AppImage nemá stejný název aplikace a nelze jej aktualizovat\n"
+"{el.name} ➔ {list_element.name}"
+
+#: src/providers/AppImageProvider.py:631
+msgid "Running AppImages on NixOS requires appimage-run"
+msgstr "Spuštění souborů AppImage na NixOS vyžaduje balíček appimage-run"
+
+#: src/providers/AppImageProvider.py:646
+#, python-brace-format
+msgid ""
+"AppImages require FUSE to run. You might still be able to run it with --"
+"appimage-extract-and-run in the command line arguments. \n"
+"\n"
+"Click the link below for more information. \n"
+"{url}"
+msgstr ""
+"Soubory AppImage vyžadují ke spuštění rozhraní FUSE. Je možné, že bez něj "
+"stále půjdou spustit pomocí argumentu --appimage-extract-and-run v "
+"příkazovém řádku.\n"
+"\n"
+"Pro více informací klikněte na odkaz níže.\n"
+"{url}"
