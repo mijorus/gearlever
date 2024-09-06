@@ -1,0 +1,556 @@
+# Turkish translation for Gear lever
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Mobilturka <03teknoloji@gmail.com>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-07-05 09:39+0000\n"
+"PO-Revision-Date: 2024-07-25 23:33+0300\n"
+"Last-Translator: Mobilturka <03teknoloji@gmail.com>\n"
+"Language-Team: \n"
+"Language: tr_TR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.4\n"
+
+#: data/it.mijorus.gearlever.desktop.in:3
+msgid "Gear Lever"
+msgstr "Gear Lever"
+
+#: data/it.mijorus.gearlever.desktop.in:4
+msgid "An utility to manage AppImages with ease!"
+msgstr "AppImages'ı kolaylıkla yönetmek için bir yardımcı program!"
+
+#: data/it.mijorus.gearlever.desktop.in:12
+msgid "AppImage;"
+msgstr "AppImage;"
+
+#: src/main.py:115
+msgid "translator_credits"
+msgstr "Mobilturka <03teknoloji@gmail.com>"
+
+#: src/AppDetails.py:27 src/AppDetails.py:73 src/AppDetails.py:381
+#: src/AppDetails.py:462
+msgid "Update"
+msgstr "Güncelle"
+
+#: src/AppDetails.py:28
+msgid "Cancel update"
+msgstr "Güncellemeyi iptal et"
+
+#: src/AppDetails.py:29 src/InstalledAppsList.py:30
+msgid "Checking updates..."
+msgstr "Güncellemeler kontrol ediliyor..."
+
+#: src/AppDetails.py:30
+msgid "No updates available"
+msgstr "Güncelleme yok"
+
+#: src/AppDetails.py:31
+msgid "This application includes update information provided by the developer"
+msgstr "Bu uygulama geliştirici tarafından sağlanan güncelleme bilgilerini içerir"
+
+
+#: src/AppDetails.py:32
+msgid "Manage update details for this application"
+msgstr "Bu uygulamaya ilişkin güncelleme ayrıntılarını yönetin"
+
+#: src/AppDetails.py:212
+msgid ""
+"This app is located outside the default folder\n"
+"<small>You can hide external apps in the settings</small>"
+msgstr ""
+"Bu uygulama varsayılan klasörün dışında bulunuyor.\n"
+"<small>Harici uygulamaları ayarlarda gizleyebilirsiniz</small>"
+
+#: src/AppDetails.py:223
+msgid "Please, verify the source of this app before opening it"
+msgstr ""
+"Lütfen açmadan önce bu uygulamanın kaynağını kontrol edin"
+
+#: src/AppDetails.py:224
+msgid "Unlock"
+msgstr "Engellemeyi kaldır"
+
+#: src/AppDetails.py:344
+msgid "Launching..."
+msgstr "Başlatılıyor..."
+
+#: src/AppDetails.py:351 src/AppDetails.py:476
+#: src/providers/AppImageProvider.py:645
+msgid "Error"
+msgstr "Hata"
+
+#: src/AppDetails.py:398
+msgid "Update error"
+msgstr "Güncelleme hatası"
+
+#: src/AppDetails.py:402
+msgid "Close"
+msgstr "Kapalı"
+
+#: src/AppDetails.py:433 src/AppDetails.py:453
+msgid "This app runs in the terminal"
+msgstr "Uygulamayı terminalde çalışır"
+
+#: src/AppDetails.py:435 src/AppDetails.py:450 src/AppDetails.py:456
+msgid "Launch"
+msgstr "Başlat"
+
+#: src/AppDetails.py:437 src/AppDetails.py:465
+msgid "Remove"
+msgstr "Sil"
+
+#: src/AppDetails.py:441
+msgid "Uninstalling..."
+msgstr "Kaldırılıyor..."
+
+#: src/AppDetails.py:445
+msgid "Installing..."
+msgstr "Yükleniyor..."
+
+#: src/AppDetails.py:458
+msgid "Move to the app menu"
+msgstr "Uygulama menüsüne git"
+
+#: src/AppDetails.py:487
+msgid "This app might not be compatible with your system architecture"
+msgstr "Bu uygulama sistem mimarinizle uyumlu olmayabilir"
+
+#: src/AppDetails.py:734
+msgid "Website"
+msgstr "Web sitesi"
+
+#: src/AppDetails.py:734
+msgid "Add a website"
+msgstr "Web sitesi ekle"
+
+#: src/AppDetails.py:743
+msgid "Open URL"
+msgstr "URL'yi aç"
+
+#: src/AppDetails.py:759 src/AppDetails.py:920
+msgid "Save"
+msgstr "Kaydet"
+
+#: src/AppDetails.py:772
+msgid "Update management"
+msgstr "Güncelleme yönetimi"
+
+#: src/AppDetails.py:777
+msgid "Update URL"
+msgstr "URL'yi güncelle"
+
+#: src/AppDetails.py:784
+msgid "Source"
+msgstr "Kaynak"
+
+#: src/AppDetails.py:785
+msgid "Select the source type"
+msgstr "Kaynak türünü seçin"
+
+#: src/AppDetails.py:809
+msgid "How it works"
+msgstr "Nasıl çalışır?"
+
+#: src/AppDetails.py:826
+msgid "Reload metadata"
+msgstr "Meta verileri yeniden yükle"
+
+#: src/AppDetails.py:827
+msgid ""
+"Update information like icon, version and description.\n"
+"Useful if the app updated itself."
+msgstr ""
+"Simge, sürüm ve açıklama gibi bilgileri güncelleyin.\n"
+"Uygulama kendini güncelliyorsa kullanışlıdır."
+
+#: src/AppDetails.py:839
+msgid "Command line arguments"
+msgstr "Komut satırı argümanları"
+
+#: src/AppDetails.py:855
+msgid "Hash"
+msgstr "Karıştır"
+
+#: src/AppDetails.py:865
+msgid "Path"
+msgstr "Yol"
+
+#: src/AppDetails.py:867
+msgid "Open Folder"
+msgstr "Dizini aç"
+
+#: src/AppDetails.py:877
+msgid "Package type"
+msgstr "Paket türü"
+
+#: src/AppDetails.py:895
+msgid "Key"
+msgstr "Anahtar"
+
+#: src/AppDetails.py:896
+msgid "Value"
+msgstr "Değer"
+
+#: src/AppDetails.py:915
+msgid "Add"
+msgstr "Ekle"
+
+#: src/AppDetails.py:935
+msgid "Environment variables"
+msgstr "Ortam değişkenleri"
+
+#: src/AppDetails.py:936
+msgid "Add or customize environment for this application"
+msgstr "Bu uygulama için ortam ekleyin veya özelleştirin"
+
+#: src/GearleverWindow.py:37
+msgid "Open a new AppImage"
+msgstr "Yeni AppImage açın"
+
+#: src/GearleverWindow.py:49
+msgid "Open"
+msgstr "Aç"
+
+#: src/GearleverWindow.py:253
+msgid "Open a file"
+msgstr "Dosya aç"
+
+#: src/InstalledAppsList.py:29
+msgid "Check for updates"
+msgstr "Güncellemeleri kontrol edin"
+
+#: src/InstalledAppsList.py:49
+msgid "Filter installed applications"
+msgstr "Yüklü uygulamaları filtrele"
+
+#: src/InstalledAppsList.py:55
+msgid "Installed applications"
+msgstr "Yüklü uygulamalar"
+
+#: src/preferences.py:27
+msgid "General"
+msgstr "Genel"
+
+#: src/preferences.py:32
+msgid "AppImage default location"
+msgstr "Varsayılan AppImage konumu"
+
+#: src/preferences.py:41
+msgid "Show integrated AppImages outside the default folder"
+msgstr "Entegre AppImages'ı varsayılan klasörün dışında göster"
+
+#: src/preferences.py:43
+msgid ""
+"List AppImages that have been integrated into the system menu but are "
+"located outside the default folder"
+msgstr ""
+"Sistem menüsüne entegre edilmiş AppImages'ın listesini gösterir, ancak "
+"varsayılan klasörün dışında bulunur"
+
+#: src/preferences.py:50
+msgid "Updates management"
+msgstr "Güncellemeleri yönet"
+
+#: src/preferences.py:52
+msgid "Check updates in the backgroud"
+msgstr "Arka planda güncellemeleri kontrol et"
+
+#: src/preferences.py:54
+msgid ""
+"Receive a notification when a new update is detected; updates will not be "
+"installed automatically"
+msgstr ""
+"Yeni güncellemeler bulunduğunda bildirim alın; güncellemeler yapılmayacaktır "
+"otomatik olarak yükle"
+
+#: src/preferences.py:61
+msgid "File management"
+msgstr "Dosya Yönetimi"
+
+#: src/preferences.py:63
+msgid "Move AppImages into the destination folder"
+msgstr "AppImage'ı hedef klasöre taşı"
+
+#: src/preferences.py:64
+msgid "Reduce disk usage"
+msgstr "Disk kullanımını azaltın"
+
+#: src/preferences.py:68
+msgid "Clone AppImages into the destination folder"
+msgstr "AppImage'ı hedef klasöre kopyala"
+
+#: src/preferences.py:69
+msgid "Keep the original file and create a copy in the destination folder"
+msgstr "Orijinal dosyayı kaydeder ve hedef klasörde bir kopya oluşturur"
+
+#: src/preferences.py:95
+msgid "Naming conventions"
+msgstr "Adlandırma kuralları"
+
+#: src/preferences.py:97
+msgid "Use executable name for integrated terminal apps"
+msgstr ""
+"Yerleşik terminal uygulamaları için yürütülebilir adı kullan"
+
+#: src/preferences.py:99
+msgid ""
+"If enabled, apps that run in the terminal are renamed as their executable.\n"
+"You would need to add the aforementioned folder to your $PATH manually.\n"
+"\n"
+"For example, \"golang_x86_64.appimage\" will be saved as \"go\""
+msgstr ""
+"Etkinleştirilirse terminalde çalışan uygulamalar yürütülebilir dosyalar olarak yeniden adlandırılır.\n"
+"Yukarıda belirtilen klasörü $PATH'inize manuel olarak eklemeniz gerekir.\n"
+"\n"
+"Örneğin, \"golang_x86_64.appimage\", \"go\" olarak kaydedilecektir"
+
+#: src/preferences.py:105
+msgid "Debugging"
+msgstr "Hata ayıklama"
+
+#: src/preferences.py:107
+msgid "Enable debug logs"
+msgstr "Enable debug logs"
+
+#: src/preferences.py:109
+msgid ""
+"Increases log verbosity, occupying more disk space and potentially impacting "
+"performance.\n"
+"Requires a restart."
+msgstr ""
+"Günlük ayrıntılarını artırır, daha fazla disk alanı kaplar ve potansiyel olarak etkilenir "
+"performans.\n"
+"Yeniden başlatma gerektirir."
+
+#: src/preferences.py:133 src/WelcomeScreen.py:95
+msgid "The folder must be in your home directory"
+msgstr "Klasör ana dizininizde olmalı"
+
+#: src/preferences.py:136 src/WelcomeScreen.py:98
+msgid "Select a folder"
+msgstr "Bir klasör seç"
+
+#: src/gtk/main-menu.ui:6
+msgid "_Preferences"
+msgstr "_Tercihler"
+
+#: src/gtk/main-menu.ui:10
+msgid "_Open Log File"
+msgstr "_Günlük Dosyasını Aç"
+
+#: src/gtk/main-menu.ui:14
+msgid "_Show tutorial"
+msgstr "_Eğiticiyi göster"
+
+#: src/gtk/main-menu.ui:18
+msgid "_About Gear lever"
+msgstr "_Gear lever hakkında"
+
+#: src/components/AppDetailsConflictModal.py:10
+#, python-brace-format
+msgid "Conflict with \"{app_name}\""
+msgstr "İle çakıştı \"{app_name}\""
+
+#: src/components/AppDetailsConflictModal.py:11
+msgid "There is already an app with the same name, how do you want to proceed?"
+msgstr "Aynı isimde bir uygulama zaten mevcut, nasıl devam etmek istiyorsunuz?"
+
+#: src/components/AppDetailsConflictModal.py:14
+msgid "Cancel"
+msgstr "İptal"
+
+#: src/components/AppDetailsConflictModal.py:17
+msgid "Keep both"
+msgstr "İkisini de sakla"
+
+#: src/components/AppDetailsConflictModal.py:19
+msgid "Replace"
+msgstr "Yer değiştir"
+
+#: src/gtk/drag-drop.ui:18
+msgid "Drop your file here"
+msgstr "Dosyanızı buraya bırakın"
+
+#: src/gtk/empty-list-placeholder.ui:18
+msgid "Get started"
+msgstr "Başlayın"
+
+#: src/gtk/empty-list-placeholder.ui:30
+msgid "Drag and drop an AppImage here or click on the \"+\" icon."
+msgstr "AppImage'ı buraya sürükleyin veya "+" simgesine tıklayın."
+
+#: src/gtk/empty-list-placeholder.ui:35
+msgid " If you don't see your apps, check if the selected folder is correct."
+msgstr ""
+" Uygulamalarınızı görmüyorsanız doğru klasörün seçilip seçilmediğini kontrol edin."
+
+#: src/gtk/empty-list-placeholder.ui:46
+msgid "Show welcome screen"
+msgstr "Karşılama ekranını göster"
+
+#: src/gtk/empty-list-placeholder.ui:56
+msgid "Open Preferences"
+msgstr "Ayarları aç"
+
+#: src/gtk/help-overlay.ui:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "Genel"
+
+#: src/gtk/help-overlay.ui:14
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "Kısayolları Göster"
+
+#: src/gtk/help-overlay.ui:20
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "Çıkış"
+
+#: src/gtk/tutorial/1.ui:21
+msgid "Hi, welcome to Gear lever"
+msgstr "Merhaba, Gear Lever'e hoş geldiniz"
+
+#: src/gtk/tutorial/1.ui:30
+msgid "An app that helps you integrating AppImages into you system."
+msgstr ""
+"AppImage uygulamalarını sisteminize entegre etmenize yardımcı olacak bir uygulama "
+"sistem."
+
+#: src/gtk/tutorial/1.ui:36
+msgid "Click \"Next\" to follow this tutorial."
+msgstr "Bu öğreticiyi takip etmek için \"İleri\"yi tıklayın."
+
+#: src/gtk/tutorial/2.ui:19
+msgid "Set the AppImage location"
+msgstr "AppImage konumunu ayarla"
+
+#: src/gtk/tutorial/2.ui:28
+msgid ""
+"Gear lever groups all your AppImages into a specific folder and keeps them "
+"organized."
+msgstr ""
+"Gear lever tüm AppImage'larınızı belirli bir klasörde gruplandırır ve bunları saklar "
+"organize."
+
+#: src/gtk/tutorial/2.ui:33
+#, python-brace-format
+msgid "By default, AppImages are saved at: {location}"
+msgstr "Varsayılan olarak AppImages şu konuma kaydedilir: {location}"
+
+#: src/gtk/tutorial/2.ui:47
+msgid "Change AppImage location"
+msgstr "AppImage konumunu değiştir"
+
+#: src/gtk/tutorial/2.ui:59
+msgid "You can customize it later in the preferences."
+msgstr "Daha sonra tercihlerde özelleştirebilirsiniz."
+
+#: src/gtk/tutorial/3.ui:19
+msgid "Set Gear lever as default"
+msgstr "Gear lever varsayılan olarak ayarla"
+
+#: src/gtk/tutorial/3.ui:28
+msgid ""
+"Click on the button to open a demo folder, containing a sample AppImage."
+msgstr ""
+"Örnek bir AppImage içeren demo klasörünü açmak için düğmeye tıklayın."
+
+#: src/gtk/tutorial/3.ui:33
+msgid ""
+"Use the right-click menu to set Gear lever as the default app for \"."
+"appimage\" files"
+msgstr ""
+"\" için Gear lever varsayılan uygulama olarak ayarlamak için sağ tıklama menüsünü kullanın."
+"appimage\" dosyaları"
+
+#: src/gtk/tutorial/3.ui:44
+msgid "Open demo folder"
+msgstr "Demo klasörünü aç"
+
+#: src/gtk/tutorial/3.ui:56
+msgid "This step is optional"
+msgstr "Bu adım isteğe bağlıdır"
+
+#: src/gtk/tutorial/last.ui:21
+msgid "All done, let's go!"
+msgstr "Her şey bitti, hadi gidelim!"
+
+#: src/gtk/tutorial/last.ui:35
+msgid "Close tutorial"
+msgstr "Eğiticiyi kapat"
+
+#: src/models/AppListElement.py:19
+msgid "No description provided"
+msgstr "Açıklama yapılmadı"
+
+#: src/providers/AppImageProvider.py:581
+msgid ""
+"The downloaded file is not a valid appimage, please check if the provided "
+"URL is correct"
+msgstr ""
+"İndirilen dosya geçerli bir uygulama görüntüsü değil, lütfen sağlanıp sağlanmadığını kontrol edin"
+"URL doğru"
+
+#: src/providers/AppImageProvider.py:587
+#, python-brace-format
+msgid ""
+"The downloaded appimage does not have the same app name and can't be "
+"updated\n"
+"{el.name} ➔ {list_element.name}"
+msgstr ""
+"İndirilen uygulama görüntüsü aynı uygulama adına sahip değil ve olamaz"
+"güncellendi\n"
+"{el.name} ➔ {list_element.name}"
+
+#: src/providers/AppImageProvider.py:631
+msgid "Running AppImages on NixOS requires appimage-run"
+msgstr msgstr "NixOS'te AppImages'ı çalıştırmak için appimage-run gerekiyor"
+
+#: src/providers/AppImageProvider.py:646
+#, python-brace-format
+msgid ""
+"AppImages require FUSE to run. You might still be able to run it with --"
+"appimage-extract-and-run in the command line arguments. \n"
+"\n"
+"Click the link below for more information. \n"
+"{url}"
+msgstr ""
+"AppImages'ın çalışması için FUSE gerekiyor. Şununla çalıştırabilirsiniz --"
+"komut satırı argümanlarında uygulama-çıkar ve çalıştır. \n"
+"\n"
+"Daha fazla bilgi için aşağıdaki bağlantıya tıklayın.\n"
+"{url}"
+
+#~ msgid "Updating"
+#~ msgstr "Güncelleniyor"
+
+#~ msgid "Cannot load an untrusted AppImage"
+#~ msgstr "Güvenilmeyen bir AppImage yüklenemiyor"
+
+#~ msgid "Lorenzo Paderi"
+#~ msgstr "Lorenzo Paderi"
+
+#~ msgid ""
+#~ "An utility to manage AppImages with ease! Gear lever will organize and "
+#~ "manage AppImage files for you, generate desktop entries and app metadata, "
+#~ "update apps in-place or keep multiple versions side-by-side."
+#~ msgstr ""
+#~ "AppImages'ı kolaylıkla yönetmek için bir yardımcı program! Gear lever organize edecek ve "
+#~ "AppImage dosyalarını sizin için yönetin, masaüstü girişleri ve uygulama meta verileri oluşturun, "
+#~ "uygulamaları yerinde güncelleyin veya birden fazla sürümü yan yana tutun."
+
+#~ msgid "Application showcase"
+#~ msgstr "Uygulama vitrini"
+
+#~ msgid "_Keyboard Shortcuts"
+#~ msgstr "_Klavye Kısayolları"
+
+#~ msgid "First release on Flathub"
+#~ msgstr "Flathub'daki ilk sürüm"
