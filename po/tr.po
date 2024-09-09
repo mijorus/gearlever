@@ -383,7 +383,7 @@ msgstr "Başlayın"
 
 #: src/gtk/empty-list-placeholder.ui:30
 msgid "Drag and drop an AppImage here or click on the \"+\" icon."
-msgstr "AppImage'ı buraya sürükleyin veya "+" simgesine tıklayın."
+msgstr "AppImage'ı buraya sürükleyin veya \"+\" simgesine tıklayın."
 
 #: src/gtk/empty-list-placeholder.ui:35
 msgid " If you don't see your apps, check if the selected folder is correct."
@@ -511,7 +511,7 @@ msgstr ""
 
 #: src/providers/AppImageProvider.py:631
 msgid "Running AppImages on NixOS requires appimage-run"
-msgstr msgstr "NixOS'te AppImages'ı çalıştırmak için appimage-run gerekiyor"
+msgstr "NixOS'te AppImages'ı çalıştırmak için appimage-run gerekiyor"
 
 #: src/providers/AppImageProvider.py:646
 #, python-brace-format
