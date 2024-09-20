@@ -1,6 +1,7 @@
 import gi
 import threading
 import logging
+import os
 
 from .lib.costants import FETCH_UPDATES_ARG
 from .models.Models import InternalError
@@ -119,18 +120,21 @@ class Preferences(Adw.PreferencesWindow):
         self.add(page1)
 
     def on_select_default_location_response(self, dialog, result):
+        file_path = ''
+
         try:
             selected_file = dialog.select_folder_finish(result)
+            file_path = selected_file.get_path()
         except Exception as e:
             logging.error(str(e))
             return
 
-        if selected_file.query_exists() and selected_file.get_path().startswith(GLib.get_home_dir()):
-            self.settings.set_string('appimages-default-folder', selected_file.get_path())
-            self.default_location_row.set_subtitle(selected_file.get_path())
-            state.set__('appimages-default-folder', selected_file.get_path())
+        if selected_file.query_exists() and os.access(file_path, os.W_OK):
+            self.settings.set_string('appimages-default-folder', file_path)
+            self.default_location_row.set_subtitle(file_path)
+            state.set__('appimages-default-folder', file_path)
         else:
-            raise InternalError(_('The folder must be in your home directory'))
+            raise InternalError(_('The folder must writeable'))
 
     def on_default_localtion_btn_clicked(self, widget):
         dialog = Gtk.FileDialog(title=_('Select a folder'), modal=True)
