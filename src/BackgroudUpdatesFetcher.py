@@ -10,43 +10,9 @@ from .providers.AppImageProvider import AppImageProvider
 from .models.UpdateManager import UpdateManagerChecker
 
 class BackgroudUpdatesFetcher():
-    INTERVAL = 3600 * 3
-    FIRST_RUN_INTERVAL = 60 * 5
-    _is_running = False
-
-    # Settings for debug
-    # INTERVAL = 10
-    # FIRST_RUN_INTERVAL = 5
-    
-    def is_enabled():
-        conf = read_json_config('settings')
-        value = conf.get('fetch-updates-in-background', False)
-
-        return value
-    
-    @_async_keepalive
-    def start():
-        if BackgroudUpdatesFetcher._is_running:
-            return 
-    
-        BackgroudUpdatesFetcher._is_running = True
-
-        logging.debug('Starting updates fetcher')
-
-        time.sleep(BackgroudUpdatesFetcher.FIRST_RUN_INTERVAL)
-        BackgroudUpdatesFetcher.fetch()
-
-        while True:
-            time.sleep(BackgroudUpdatesFetcher.INTERVAL)
-            BackgroudUpdatesFetcher.fetch()
-            
     def fetch():
         logging.warn('Fetching updates in the background')
 
-        if not BackgroudUpdatesFetcher.is_enabled():
-            logging.warn('Update fetching is disabled! Quitting...')
-            return
-        
         provider = AppImageProvider()
         installed = provider.list_installed()
         updates_available = 0

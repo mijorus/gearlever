@@ -50,7 +50,7 @@ class Preferences(Adw.PreferencesWindow):
         # updates management group
         updates_management_group = Adw.PreferencesGroup(name=_('Updates management'), title=_('Updates management'))
         autofetch_updates = self.create_boolean_settings_entry(
-            _('Check updates in the backgroud'),
+            _('Check updates on system startup'),
             'fetch-updates-in-background',
             _('Receive a notification when a new update is detected; updates will not be installed automatically')
         )
@@ -113,7 +113,7 @@ class Preferences(Adw.PreferencesWindow):
         debug_group.add(debug_row)
 
         page1.add(general_preference_group)
-        # page1.add(updates_management_group)
+        page1.add(updates_management_group)
         page1.add(move_appimages_group)
         page1.add(nconvention_group)
         page1.add(debug_group)
