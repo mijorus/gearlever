@@ -81,9 +81,11 @@ class GearleverApplication(Adw.Application):
         We raise the application's main window, creating it if
         necessary.
         """
-        # if self.options and self.options.contains(FETCH_UPDATES_ARG):
-        #     BackgroudUpdatesFetcher.start()
-        # else:
+        if self.options and self.options.contains(FETCH_UPDATES_ARG):
+            BackgroudUpdatesFetcher.fetch()
+            sys.exit(0)
+            return
+        
         self.win = self.props.active_window
 
         if not self.win:
