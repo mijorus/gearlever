@@ -115,7 +115,7 @@ msgstr "Yükleniyor..."
 
 #: src/AppDetails.py:458
 msgid "Move to the app menu"
-msgstr "Uygulama menüsüne git"
+msgstr "Uygulama menüsüne ekle"
 
 #: src/AppDetails.py:487
 msgid "This app might not be compatible with your system architecture"
@@ -316,7 +316,7 @@ msgstr "Hata ayıklama"
 
 #: src/preferences.py:107
 msgid "Enable debug logs"
-msgstr "Enable debug logs"
+msgstr "Hata ayıklama günlüklerini etkinleştirin"
 
 #: src/preferences.py:109
 msgid ""
@@ -419,9 +419,7 @@ msgstr "Merhaba, Gear Lever'e hoş geldiniz"
 
 #: src/gtk/tutorial/1.ui:30
 msgid "An app that helps you integrating AppImages into you system."
-msgstr ""
-"AppImage uygulamalarını sisteminize entegre etmenize yardımcı olacak bir uygulama "
-"sistem."
+msgstr "AppImage uygulamalarını sisteminize entegre etmenize yardımcı olur."
 
 #: src/gtk/tutorial/1.ui:36
 msgid "Click \"Next\" to follow this tutorial."
