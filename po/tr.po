@@ -421,7 +421,6 @@ msgid "An app that helps you integrating AppImages into you system."
 msgstr "AppImage uygulamalarını sisteminize entegre etmenize yardımcı "
 "olan bir uygulamadır."
 
-
 #: src/gtk/tutorial/1.ui:36
 msgid "Click \"Next\" to follow this tutorial."
 msgstr "Bu öğreticiyi takip etmek için \"İleri\"yi tıklayın."

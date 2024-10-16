@@ -29,7 +29,7 @@ Do you agree? Here is a link 🍺: <br>
 
 ## Download
 <a href="https://flathub.org/apps/details/it.mijorus.gearlever" align="center">
-  <img width="200" src="https://flathub.org/assets/badges/flathub-badge-i-en.png">
+  <img width="240" src="https://flathub.org/api/badge?svg&locale=en" alt="Get it on Flathub">
 </a>
 
 ___
