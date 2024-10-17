@@ -67,8 +67,3 @@ flatpak install --bundle --user gearlever.flatpak
   flatpak-builder build/ it.mijorus.gearlever.json --user --install --force-clean
   ```
 
-## ... And AppImageHub / AppImage Store?
-At the moment there are no plans to integrate any type of Hub/Store/Repository into Gear Lever.
-Why? Because the existing ones have a very poor selection of apps, and most of these apps are just unofficial ports
-
-
