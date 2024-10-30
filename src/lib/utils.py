@@ -85,6 +85,8 @@ def get_file_hash(file: Gio.File, alg='md5') -> str:
             return hashlib.md5(f.read()).hexdigest()
         elif alg == 'sha1':
             return hashlib.sha1(f.read()).hexdigest()
+        elif alg == 'sha256':
+            return hashlib.sha256(f.read()).hexdigest()
 
     raise Exception('Invalid hash requested')
 

@@ -856,8 +856,10 @@ class AppDetails(Gtk.ScrolledWindow):
     def create_app_hash_row(self) -> Adw.ActionRow:
         md5_hash = get_file_hash(Gio.File.new_for_path(self.app_list_element.file_path))
         sha1_hash = get_file_hash(Gio.File.new_for_path(self.app_list_element.file_path), 'sha1')
+        sha256_hash = get_file_hash(Gio.File.new_for_path(self.app_list_element.file_path), 'sha256')
+
         row = Adw.ActionRow(
-            subtitle=f'md5: {md5_hash}\nsha1: {sha1_hash}', 
+            subtitle=f'md5: {md5_hash}\nsha1: {sha1_hash}\nsha256: {sha256_hash}', 
             title=_('Hash'),
             selectable=True
         )
