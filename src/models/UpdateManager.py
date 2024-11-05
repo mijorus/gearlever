@@ -3,11 +3,11 @@ import requests
 import shutil
 import os
 import re
+import json
 from typing import Optional, Callable
 from abc import ABC, abstractmethod
 from gi.repository import GLib
 from urllib.parse import urlsplit
-
 
 from ..lib import terminal
 from ..lib.json_config import read_config_for_app
@@ -325,15 +325,35 @@ class GithubUpdater(UpdateManager):
             logging.debug(f'Release tag names do not match: {rel_data["tag_name"]} != {self.url_data["tag_name"]}')
             return
 
+        possible_targets = []
         for asset in rel_data['assets']:
             if self.embedded:
                 if re.match(target_re, asset['name']) and asset['name'].endswith('.zsync'):
-                    zsync_file = asset
+                    possible_targets = [asset]
                     break
             else:
                 if re.match(target_re, asset['name']):
-                    zsync_file = asset
-                    break
+                    possible_targets.append(asset)
+
+        if len(possible_targets) == 1:
+            zsync_file = possible_targets[0]
+        else:
+            logging.info(f'found {len(possible_targets)} possible file targets')
+            
+            for t in possible_targets:
+                logging.info(' - ' + t['name'])
+
+            # Check possible differences with system architecture in file name
+            system_arch = terminal.sandbox_sh(['arch'])
+            is_x86 = re.compile(r'(\-|\_|\.)x86(\-|\_|\.)')
+            is_arm = re.compile(r'(\-|\_|\.)(arm64|aarch64|armv7l)(\-|\_|\.)')
+
+            if system_arch == 'x86_64':
+                for t in possible_targets:
+                    if is_x86.search(t['name']) or not is_arm.search(t['name']):
+                        zsync_file = t
+                        logging.info('found possible target: ' + t['name'])
+                        break
 
         if not zsync_file:
             logging.debug(f'No matching assets found from {rel_url}')
