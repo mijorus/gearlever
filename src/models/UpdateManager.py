@@ -151,7 +151,9 @@ class StaticFileUpdater(UpdateManager):
                 f.write(chunk)
 
                 status += block_size
-                status_update_cb(status / total_size)
+
+                if total_size:
+                    status_update_cb(status / total_size)
 
         if os.path.getsize(fname) < total_size:
             raise DownloadInterruptedException()
@@ -174,6 +176,10 @@ class StaticFileUpdater(UpdateManager):
         old_size = os.path.getsize(el.file_path)
 
         logging.debug(f'StaticFileUpdater: new url has length {resp_cl}, old was {old_size}')
+
+        if resp_cl == 0:
+            return False
+
         is_size_different = resp_cl != old_size
         return is_size_different
     
