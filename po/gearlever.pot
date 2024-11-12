@@ -12,7 +12,7 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -23,7 +23,7 @@ msgstr ""
 
 #: data/it.mijorus.gearlever.desktop.in:4
 msgid "An utility to manage AppImages with ease!"
-msgstr ""
+msgstr "Apuohjelma AppImage-tiedostojen helppoon hallintaan!"
 
 #: data/it.mijorus.gearlever.desktop.in:12
 msgid "AppImage;"
@@ -35,11 +35,11 @@ msgstr ""
 
 #: src/AppDetails.py:28 src/AppDetails.py:74 src/AppDetails.py:392
 msgid "Update"
-msgstr ""
+msgstr "Päivitä"
 
 #: src/AppDetails.py:29
 msgid "Cancel update"
-msgstr ""
+msgstr "Peruuta päivitys"
 
 #: src/AppDetails.py:30 src/InstalledAppsList.py:32
 msgid "Checking updates..."
