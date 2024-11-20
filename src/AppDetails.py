@@ -290,21 +290,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
     def on_primary_action_button_clicked(self, button: Optional[Gtk.Button] = None):
         if self.app_list_element.installed_status == InstalledStatus.INSTALLED:
-            self.app_list_element.set_installed_status(InstalledStatus.UNINSTALLING)
-            self.update_installation_status()
-
-            self.provider.uninstall(self.app_list_element)
-            
-            app_config = self.get_config_for_app()
-            conf = read_json_config('apps')
-
-            if 'b64name' in app_config and app_config['b64name'] in conf:
-                del conf[app_config['b64name']]
-                set_json_config('apps', conf)
-            else:
-                logging.warn('Missing app key from app config')
-
-            self.emit('uninstalled-app', self)
+            self.show_remove_confirm_dialog()
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
             if self.provider.is_updatable(self.app_list_element) and not self.app_list_element.update_logic:
                 confirm_modal = AppDetailsConflictModal(app_name=self.app_list_element.name)
@@ -357,6 +343,23 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.current_update_manager.cancel_download()
                 self.update_installation_status()
 
+    def on_remove_app_clicked(self, dialog, response: str):
+        if response == 'remove':
+            self.app_list_element.set_installed_status(InstalledStatus.UNINSTALLING)
+            self.update_installation_status()
+
+            self.provider.uninstall(self.app_list_element)
+            
+            app_config = self.get_config_for_app()
+            conf = read_json_config('apps')
+
+            if 'b64name' in app_config and app_config['b64name'] in conf:
+                del conf[app_config['b64name']]
+                set_json_config('apps', conf)
+            else:
+                logging.warn('Missing app key from app config')
+
+            self.emit('uninstalled-app', self)
 
     @_async
     def post_launch_animation(self, restore_as):
@@ -411,6 +414,22 @@ class AppDetails(Gtk.ScrolledWindow):
         )
 
         dialog.add_response('okay', _('Close'))
+
+        dialog.present()
+
+    @idle
+    def show_remove_confirm_dialog(self):
+        dialog = Adw.MessageDialog(
+            transient_for=get_application_window(),
+            heading=_('Do you really want to remove this app?'),
+        )
+
+        dialog.add_response('cancel', _('Cancel'))
+        dialog.add_response('remove', _('Remove'))
+        dialog.set_response_appearance('remove', Adw.ResponseAppearance.DESTRUCTIVE)
+        dialog.set_close_response('cancel')
+        dialog.set_close_response('remove')
+        dialog.connect('response', self.on_remove_app_clicked)
 
         dialog.present()
 
