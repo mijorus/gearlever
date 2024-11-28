@@ -487,7 +487,7 @@ class AppImageProvider():
         app_name: str = file.get_parse_name().split('/')[-1]
 
         el = AppImageListElement(
-            name=re.sub('\.appimage$', '', app_name, 1, re.IGNORECASE),
+            name=re.sub(r'\.appimage$', '', app_name, 1, re.IGNORECASE),
             description='',
             version='',
             provider=self.name,
