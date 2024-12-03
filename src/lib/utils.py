@@ -179,7 +179,14 @@ def get_osinfo():
     if not terminal.is_flatpak():
         os_release_file = "/etc/os-release"
 
-    return terminal.sandbox_sh(['cat', os_release_file])
+    output = ''
+
+    try:
+        output = terminal.sandbox_sh(['cat', os_release_file])
+    except Exception as e:
+        logging.error(e)
+
+    return output
 
 # thank you mate ❤️
 # https://github.com/gtimelog/gtimelog/blob/6e4b07b58c730777dbdb00b3b85291139f8b10aa/src/gtimelog/main.py#L159
