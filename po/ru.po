@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-01 22:08+0200\n"
-"PO-Revision-Date: 2024-10-02 13:13+0300\n"
+"POT-Creation-Date: 2024-11-20 14:54+0100\n"
+"PO-Revision-Date: 2024-12-03 13:43+0300\n"
 "Last-Translator: Ворон <voron@duck.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -33,7 +33,7 @@ msgstr "AppImage;"
 msgid "translator_credits"
 msgstr "Ворон <voron@duck.com>"
 
-#: src/AppDetails.py:28 src/AppDetails.py:74 src/AppDetails.py:392
+#: src/AppDetails.py:28 src/AppDetails.py:74 src/AppDetails.py:395
 msgid "Update"
 msgstr "Обновить"
 
@@ -76,92 +76,100 @@ msgstr ""
 msgid "Unlock"
 msgstr "Разблокировать"
 
-#: src/AppDetails.py:342
+#: src/AppDetails.py:328
 msgid "Launching..."
 msgstr "Запуск..."
 
-#: src/AppDetails.py:349 src/AppDetails.py:482
+#: src/AppDetails.py:335 src/AppDetails.py:501
 #: src/providers/AppImageProvider.py:648
 msgid "Error"
 msgstr "Ошибка"
 
-#: src/AppDetails.py:409
+#: src/AppDetails.py:412
 msgid "Update error"
 msgstr "Ошибка обновления"
 
-#: src/AppDetails.py:413
+#: src/AppDetails.py:416
 msgid "Close"
 msgstr "Закрыть"
 
-#: src/AppDetails.py:444 src/AppDetails.py:464
-msgid "This app runs in the terminal"
-msgstr "Это приложение запускается в терминале"
+#: src/AppDetails.py:424
+msgid "Do you really want to remove this app?"
+msgstr "Вы действительно хотите удалить это приложение?"
 
-#: src/AppDetails.py:446 src/AppDetails.py:461 src/AppDetails.py:467
-msgid "Launch"
-msgstr "Запустить"
+#: src/AppDetails.py:427 src/components/AppDetailsConflictModal.py:14
+msgid "Cancel"
+msgstr "Отменить"
 
-#: src/AppDetails.py:448
+#: src/AppDetails.py:428 src/AppDetails.py:467
 msgid "Remove"
 msgstr "Удалить"
 
-#: src/AppDetails.py:452
+#: src/AppDetails.py:463 src/AppDetails.py:483
+msgid "This app runs in the terminal"
+msgstr "Это приложение запускается в терминале"
+
+#: src/AppDetails.py:465 src/AppDetails.py:480 src/AppDetails.py:486
+msgid "Launch"
+msgstr "Запустить"
+
+#: src/AppDetails.py:471
 msgid "Uninstalling..."
 msgstr "Удаление..."
 
-#: src/AppDetails.py:456
+#: src/AppDetails.py:475
 msgid "Installing..."
 msgstr "Установка..."
 
-#: src/AppDetails.py:469
+#: src/AppDetails.py:488
 msgid "Move to the app menu"
 msgstr "Добавить в меню приложений"
 
-#: src/AppDetails.py:493
+#: src/AppDetails.py:512
 msgid "This app might not be compatible with your system architecture"
 msgstr "Это приложение может быть несовместимо с архитектурой вашей системы"
 
-#: src/AppDetails.py:740
+#: src/AppDetails.py:759
 msgid "Website"
 msgstr "Веб-сайт"
 
-#: src/AppDetails.py:740
+#: src/AppDetails.py:759
 msgid "Add a website"
 msgstr "Добавить веб-сайт"
 
-#: src/AppDetails.py:749
+#: src/AppDetails.py:768
 msgid "Open URL"
 msgstr "Открыть URL-адрес"
 
-#: src/AppDetails.py:765 src/AppDetails.py:926
+#: src/AppDetails.py:784 src/AppDetails.py:947
 msgid "Save"
 msgstr "Сохранить"
 
-#: src/AppDetails.py:778
+#: src/AppDetails.py:797
 msgid "Update management"
 msgstr "Управление обновлениями"
 
-#: src/AppDetails.py:783
+#: src/AppDetails.py:802
 msgid "Update URL"
 msgstr "Обновить URL-адрес"
 
-#: src/AppDetails.py:790
+#: src/AppDetails.py:809
 msgid "Source"
 msgstr "Источник"
 
-#: src/AppDetails.py:791
+#: src/AppDetails.py:810
 msgid "Select the source type"
 msgstr "Выберите тип источника"
 
-#: src/AppDetails.py:815
+#: src/AppDetails.py:834
 msgid "How it works"
 msgstr "Как это работает"
 
-#: src/AppDetails.py:832
+#: src/AppDetails.py:851
 msgid "Reload metadata"
 msgstr "Обновить метаданные"
 
-#: src/AppDetails.py:833
+#: src/AppDetails.py:852
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -169,43 +177,43 @@ msgstr ""
 "Обновление информации, такой как значок, версия и описание.\n"
 "Полезно, если приложение обновлялось само."
 
-#: src/AppDetails.py:845
+#: src/AppDetails.py:864
 msgid "Command line arguments"
 msgstr "Аргументы командной строки"
 
-#: src/AppDetails.py:861
+#: src/AppDetails.py:882
 msgid "Hash"
 msgstr "Хэш"
 
-#: src/AppDetails.py:871
+#: src/AppDetails.py:892
 msgid "Path"
 msgstr "Путь"
 
-#: src/AppDetails.py:873
+#: src/AppDetails.py:894
 msgid "Open Folder"
 msgstr "Открыть папку"
 
-#: src/AppDetails.py:883
+#: src/AppDetails.py:904
 msgid "Package type"
 msgstr "Тип пакета"
 
-#: src/AppDetails.py:901
+#: src/AppDetails.py:922
 msgid "Key"
 msgstr "Ключ"
 
-#: src/AppDetails.py:902
+#: src/AppDetails.py:923
 msgid "Value"
 msgstr "Значение"
 
-#: src/AppDetails.py:921
+#: src/AppDetails.py:942
 msgid "Add"
 msgstr "Добавить"
 
-#: src/AppDetails.py:941
+#: src/AppDetails.py:962
 msgid "Environment variables"
 msgstr "Переменные среды"
 
-#: src/AppDetails.py:942
+#: src/AppDetails.py:963
 msgid "Add or customize environment for this application"
 msgstr "Добавьте или настройте среду для этого приложения"
 
@@ -223,7 +231,7 @@ msgstr "Открыть файл"
 
 #: src/InstalledAppsList.py:30
 msgid "Check for updates"
-msgstr "Проверить наличие обновлений"
+msgstr "Проверить обновления"
 
 #: src/InstalledAppsList.py:31
 msgid "No updates found"
@@ -370,10 +378,6 @@ msgstr "Конфликт с \"{app_name}\""
 msgid "There is already an app with the same name, how do you want to proceed?"
 msgstr "Приложение с таким названием уже существует, как вы хотите продолжить?"
 
-#: src/components/AppDetailsConflictModal.py:14
-msgid "Cancel"
-msgstr "Отменить"
-
 #: src/components/AppDetailsConflictModal.py:17
 msgid "Keep both"
 msgstr "Оставить оба"
@@ -449,6 +453,7 @@ msgstr ""
 "их."
 
 #: src/gtk/tutorial/2.ui:33
+#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
 msgstr "По умолчанию AppImage сохраняются по адресу: {location}"
 
