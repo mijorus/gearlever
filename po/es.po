@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-01 22:08+0200\n"
-"PO-Revision-Date: 2024-10-18 20:48-0300\n"
+"POT-Creation-Date: 2024-11-20 14:54+0100\n"
+"PO-Revision-Date: 2024-12-08 09:47-0300\n"
 "Last-Translator: Racsu <racsufkoficial@gmail.com>\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -33,7 +33,7 @@ msgstr "AppImage;"
 msgid "translator_credits"
 msgstr "racsu <racsu.com>"
 
-#: src/AppDetails.py:28 src/AppDetails.py:74 src/AppDetails.py:392
+#: src/AppDetails.py:28 src/AppDetails.py:74 src/AppDetails.py:395
 msgid "Update"
 msgstr "Actualizar"
 
@@ -75,94 +75,102 @@ msgstr "Por favor, verifique la fuente de esta aplicación antes de abrirla"
 msgid "Unlock"
 msgstr "Desbloquear"
 
-#: src/AppDetails.py:342
+#: src/AppDetails.py:328
 msgid "Launching..."
 msgstr "Lanzando..."
 
-#: src/AppDetails.py:349 src/AppDetails.py:482
+#: src/AppDetails.py:335 src/AppDetails.py:501
 #: src/providers/AppImageProvider.py:648
 msgid "Error"
 msgstr "Error"
 
-#: src/AppDetails.py:409
+#: src/AppDetails.py:412
 msgid "Update error"
 msgstr "Error de actualización"
 
-#: src/AppDetails.py:413
+#: src/AppDetails.py:416
 msgid "Close"
 msgstr "Cerrar"
 
-#: src/AppDetails.py:444 src/AppDetails.py:464
-msgid "This app runs in the terminal"
-msgstr "Esta app corre via terminal"
+#: src/AppDetails.py:424
+msgid "Do you really want to remove this app?"
+msgstr "¿Realmente desea eliminar esta aplicación?"
 
-#: src/AppDetails.py:446 src/AppDetails.py:461 src/AppDetails.py:467
-msgid "Launch"
-msgstr "Lanzar"
+#: src/AppDetails.py:427 src/components/AppDetailsConflictModal.py:14
+msgid "Cancel"
+msgstr "Cancelar"
 
-#: src/AppDetails.py:448
+#: src/AppDetails.py:428 src/AppDetails.py:467
 msgid "Remove"
 msgstr "Eliminar"
 
-#: src/AppDetails.py:452
+#: src/AppDetails.py:463 src/AppDetails.py:483
+msgid "This app runs in the terminal"
+msgstr "Esta app corre via terminal"
+
+#: src/AppDetails.py:465 src/AppDetails.py:480 src/AppDetails.py:486
+msgid "Launch"
+msgstr "Lanzar"
+
+#: src/AppDetails.py:471
 msgid "Uninstalling..."
 msgstr "Desinstalando..."
 
-#: src/AppDetails.py:456
+#: src/AppDetails.py:475
 msgid "Installing..."
 msgstr "Instalando..."
 
-#: src/AppDetails.py:469
+#: src/AppDetails.py:488
 msgid "Move to the app menu"
 msgstr "Mover al menu de aplicaciones"
 
-#: src/AppDetails.py:493
+#: src/AppDetails.py:512
 msgid "This app might not be compatible with your system architecture"
 msgstr ""
 "Es posible que esta aplicación no sea compatible con la arquitectura de tu "
 "sistema"
 
-#: src/AppDetails.py:740
+#: src/AppDetails.py:759
 msgid "Website"
 msgstr "Sitio Web"
 
-#: src/AppDetails.py:740
+#: src/AppDetails.py:759
 msgid "Add a website"
 msgstr "Agregar un sitio web"
 
-#: src/AppDetails.py:749
+#: src/AppDetails.py:768
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: src/AppDetails.py:765 src/AppDetails.py:926
+#: src/AppDetails.py:784 src/AppDetails.py:947
 msgid "Save"
 msgstr "Guardar"
 
-#: src/AppDetails.py:778
+#: src/AppDetails.py:797
 msgid "Update management"
 msgstr "Gestión de la actualización"
 
-#: src/AppDetails.py:783
+#: src/AppDetails.py:802
 msgid "Update URL"
 msgstr "Actualizar URL"
 
-#: src/AppDetails.py:790
+#: src/AppDetails.py:809
 msgid "Source"
 msgstr "Fuerte"
 
-#: src/AppDetails.py:791
+#: src/AppDetails.py:810
 msgid "Select the source type"
 msgstr "Seleccione el tipo de fuente"
 
-#: src/AppDetails.py:815
+#: src/AppDetails.py:834
 msgid "How it works"
 msgstr "Cómo funciona"
 
-#: src/AppDetails.py:832
+#: src/AppDetails.py:851
 msgid "Reload metadata"
 msgstr "Recargar metada"
 
-#: src/AppDetails.py:833
+#: src/AppDetails.py:852
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -170,43 +178,43 @@ msgstr ""
 "Actualizar información como icono, versión y descripción.\n"
 "Útil si la aplicación se actualizó por si misma."
 
-#: src/AppDetails.py:845
+#: src/AppDetails.py:864
 msgid "Command line arguments"
 msgstr "Argumentos de la línea de comandos"
 
-#: src/AppDetails.py:861
+#: src/AppDetails.py:882
 msgid "Hash"
 msgstr "Hash"
 
-#: src/AppDetails.py:871
+#: src/AppDetails.py:892
 msgid "Path"
 msgstr "Directorio"
 
-#: src/AppDetails.py:873
+#: src/AppDetails.py:894
 msgid "Open Folder"
 msgstr "Abrir carpeta"
 
-#: src/AppDetails.py:883
+#: src/AppDetails.py:904
 msgid "Package type"
 msgstr "Tipo de paquete"
 
-#: src/AppDetails.py:901
+#: src/AppDetails.py:922
 msgid "Key"
 msgstr "Clave"
 
-#: src/AppDetails.py:902
+#: src/AppDetails.py:923
 msgid "Value"
 msgstr "Valor"
 
-#: src/AppDetails.py:921
+#: src/AppDetails.py:942
 msgid "Add"
 msgstr "Agregar"
 
-#: src/AppDetails.py:941
+#: src/AppDetails.py:962
 msgid "Environment variables"
 msgstr "Variables de entorno"
 
-#: src/AppDetails.py:942
+#: src/AppDetails.py:963
 msgid "Add or customize environment for this application"
 msgstr "Añadir o personalizar el entorno para esta aplicación"
 
@@ -370,10 +378,6 @@ msgstr "Conflicto con \"{app_name}\""
 msgid "There is already an app with the same name, how do you want to proceed?"
 msgstr "Tienes una app con el mismo nombre ¿Como quieres proceder?"
 
-#: src/components/AppDetailsConflictModal.py:14
-msgid "Cancel"
-msgstr "Cancelar"
-
 #: src/components/AppDetailsConflictModal.py:17
 msgid "Keep both"
 msgstr "Mantener ambas"
@@ -448,6 +452,7 @@ msgstr ""
 "mantiene organizadas."
 
 #: src/gtk/tutorial/2.ui:33
+#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
 msgstr "Por defecto, AppImages se guardan en: {location}"
 
