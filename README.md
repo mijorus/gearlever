@@ -32,6 +32,10 @@ Do you agree? Here is a link 🍺: <br>
   <img width="240" src="https://flathub.org/api/badge?svg&locale=en" alt="Get it on Flathub">
 </a>
 
+### Unofficial AppImage build by @ivan-hc
+
+https://github.com/ivan-hc/Database-of-pkg2appimaged-packages/releases/tag/gearlever
+
 ___
 
 Get the [bundle from github](https://github.com/mijorus/gearlever/releases) (no auto-updates)
