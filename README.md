@@ -7,15 +7,6 @@
 
 <p align="center"><a href="https://flatstat.mijorus.it/app/it.mijorus.gearlever"  align="center"><img width="150" src="https://img.shields.io/endpoint?url=https://flathub-stats-backend.vercel.app/badges/it.mijorus.gearlever/shields.io.json"></a></p>
 
-##  Support me
-<p align="left">
-  <img width="600" src="https://github.com/user-attachments/assets/448c0d18-7024-4ca9-aee8-0a11604b0909">
-</p>
-
-Do you agree? Here is a link 🍺: <br>
-<a href="https://ko-fi.com/mijorus" align="center">
-  <img width="250" src="https://mijorus.it/kofi-support.png">
-</a>
 
 
 ## Features
@@ -32,9 +23,15 @@ Do you agree? Here is a link 🍺: <br>
   <img width="240" src="https://flathub.org/api/badge?svg&locale=en" alt="Get it on Flathub">
 </a>
 
-### Unofficial AppImage build by @ivan-hc
+### Unofficial AppImage build by [@ivan-hc](https://github.com/ivan-hc)
 
 https://github.com/ivan-hc/Database-of-pkg2appimaged-packages/releases/tag/gearlever
+
+##  Support me
+<a href="https://ko-fi.com/mijorus" align="center">
+  <img width="250" src="https://mijorus.it/kofi-support.png">
+</a>
+
 
 ___
 
