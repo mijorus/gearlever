@@ -68,3 +68,22 @@ flatpak install --bundle --user gearlever.flatpak
   flatpak-builder build/ it.mijorus.gearlever.json --user --install --force-clean
   ```
 
+- Option #3
+  ```sh
+  # Create docker container
+  docker run --privileged -it --rm \
+    -v "$(pwd):/workspace" \
+    -w /workspace \
+    -u $(id -u ${USER}):$(id -g ${USER}) \
+    bilelmoussaoui/flatpak-github-actions:gnome-47 bash
+
+  # Run the app
+  flatpak-builder build/ it.mijorus.gearlever.json --user --force-clean
+  flatpak-builder --run build/ it.mijorus.gearlever.json gearlever
+
+  # Exit the container
+  exit
+
+  # Install the app
+  flatpak-builder build/ it.mijorus.gearlever.json --user --install --force-clean
+  ```

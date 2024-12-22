@@ -554,6 +554,10 @@ class AppImageProvider():
 
             if env_vars:
                 env_vars = f'env {env_vars} '
+                
+            if exec_arguments.__contains__('%command%'):
+                exec_arguments = exec_arguments.replace('%command%', tryexec_command)
+                tryexec_command = ''
 
             exec_command = f'{env_vars}{tryexec_command}{exec_arguments}'
 
