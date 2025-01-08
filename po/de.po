@@ -225,7 +225,7 @@ msgstr "Nach Aktualisierungen suchen"
 #: src/InstalledAppsList.py:31
 #, fuzzy
 msgid "No updates found"
-msgstr "Keine Aktualisierung verfügbar"
+msgstr "Keine Aktualisierung gefunden"
 
 #: src/InstalledAppsList.py:51
 msgid "Filter installed applications"
