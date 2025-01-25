@@ -198,18 +198,21 @@ class AppImageProvider():
             el.name = extracted.desktop_entry.getName()
             el.version = el.desktop_entry.get('X-AppImage-Version')
 
-    def uninstall(self, el: AppImageListElement):
+    def uninstall(self, el: AppImageListElement, force_delete=False):
         logging.info(f'Removing {el.file_path}')
 
         gf = Gio.File.new_for_path(el.file_path)
 
-        try:
-            logging.info(f'Trashing {el.file_path}')
-            gf.trash(None)
-        except Exception as e:
-            logging.warn(f'Trashing {el.file_path} failed! Removing it instead...')
-            logging.warn(e)
+        if force_delete:
             os.remove(el.file_path)
+        else:
+            try:
+                logging.info(f'Trashing {el.file_path}')
+                gf.trash(None)
+            except Exception as e:
+                logging.warn(f'Trashing {el.file_path} failed! Removing it instead...')
+                logging.warn(e)
+                os.remove(el.file_path)
 
         if el.desktop_entry:
             logging.info(f'Removing {el.desktop_entry.getFileName()}')
@@ -226,9 +229,6 @@ class AppImageProvider():
 
     def get_long_description(self, el: AppListElement) -> str:
         return ''
-
-    def list_updatables(self) -> List[AppUpdateElement]:
-        return []
 
     def run(self, el: AppImageListElement):
         if el.trusted:

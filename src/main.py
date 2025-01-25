@@ -21,12 +21,13 @@ import logging
 import os
 
 from .lib.utils import get_gsettings, make_option
-from .lib.costants import APP_ID, APP_NAME, APP_DATA, FETCH_UPDATES_ARG
+from .lib.costants import APP_ID, APP_NAME, APP_DATA
 from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
 from  .WelcomeScreen import WelcomeScreen
 from .preferences import Preferences
 from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
+from  .Cli import Cli
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
@@ -34,7 +35,8 @@ gi.require_version('Adw', '1')
 from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GObject # noqa
 
 LOG_FILE_MAX_N_LINES = 5000
-LOG_FOLDER = GLib.get_user_cache_dir() + '/logs'
+LOG_FOLDER = os.path.join(GLib.get_user_cache_dir(), 'logs')
+LOG_FILE = os.path.join(LOG_FOLDER, f'{APP_NAME}.log')
 
 class GearleverApplication(Adw.Application):
     """The main application singleton class."""
@@ -47,17 +49,17 @@ class GearleverApplication(Adw.Application):
         self.create_action('open_welcome_screen', self.on_open_welcome_screen)
         self.win = None
         self.version = version
-        self.options = None
 
-        entries = [
-            make_option(FETCH_UPDATES_ARG),
-        ]
+        entries = []
+        for el in Cli.options:
+            ent = make_option(long_name=el[0], description=el[1])
+            entries.append(ent)
 
         self.add_main_option_entries(entries)
 
     def do_handle_local_options(self, options):
-        self.options = options
-        return -1
+        opt_handled = Cli.from_options(options)
+        return opt_handled
 
     def do_startup(self):
         logging.info(f'\n\n---- Application startup | version {self.version}')
@@ -81,16 +83,12 @@ class GearleverApplication(Adw.Application):
         We raise the application's main window, creating it if
         necessary.
         """
-        if self.options and self.options.contains(FETCH_UPDATES_ARG):
-            BackgroudUpdatesFetcher.fetch()
-            sys.exit(0)
-            return
-        
         self.win = self.props.active_window
 
         if not self.win:
             self.win = GearleverWindow(application=self, from_file=from_file)
 
+        print('Logging to file ' + LOG_FILE)
         self.win.present()
 
     def do_open(self, files: list[Gio.File], n_files: int, data):
@@ -142,7 +140,7 @@ class GearleverApplication(Adw.Application):
         if not self.win:
             return
 
-        log_gfile = Gio.File.new_for_path(f'{GLib.get_user_cache_dir()}/logs')
+        log_gfile = Gio.File.new_for_path(LOG_FOLDER)
         launcher = Gtk.FileLauncher.new(log_gfile)
         launcher.launch()
 
@@ -154,26 +152,24 @@ def main(version, pkgdatadir):
     """The application's entry point."""
     APP_DATA['PKGDATADIR'] = pkgdatadir
 
-    log_file = f'{LOG_FOLDER}/{APP_NAME}.log'
+    LOG_FILE = os.path.join(LOG_FOLDER, f'{APP_NAME}.log')
 
     if not os.path.exists(LOG_FOLDER):
          os.makedirs(LOG_FOLDER)
 
-    print('Logging to file ' + log_file)
-
     # Clear log file if it's too big
     log_file_size = 0
-    if os.path.exists(log_file): 
-        with open(log_file, 'r') as f:
+    if os.path.exists(LOG_FILE): 
+        with open(LOG_FILE, 'r') as f:
             log_file_size = len(f.readlines())
         
         if log_file_size > LOG_FILE_MAX_N_LINES:
-            with open(log_file, 'w+') as f:
+            with open(LOG_FILE, 'w+') as f:
                 f.write('')
 
     app = GearleverApplication(version, pkgdatadir)
     logging.basicConfig(
-        filename=log_file,
+        filename=LOG_FILE,
         filemode='a',
         encoding='utf-8',
         format='%(asctime)s %(levelname)-1s [%(filename)s:%(lineno)d] %(message)s',
