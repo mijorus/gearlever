@@ -196,7 +196,7 @@ def make_option(long_name, short_name=None, flags=0, arg=0, arg_data=None, descr
     option.long_name = long_name.lstrip('-')
     option.short_name = 0 if not short_name else short_name.lstrip('-')
     option.flags = flags
-    option.arg = arg
+    option.arg = int(arg)
     option.arg_data = arg_data
     option.description = description
     option.arg_description = arg_description

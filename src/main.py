@@ -49,17 +49,11 @@ class GearleverApplication(Adw.Application):
         self.create_action('open_welcome_screen', self.on_open_welcome_screen)
         self.win = None
         self.version = version
-
-        entries = []
-        for el in Cli.options:
-            ent = make_option(long_name=el[0], description=el[1])
-            entries.append(ent)
-
-        self.add_main_option_entries(entries)
+        self.add_main_option_entries(Cli.options)
 
     def do_handle_local_options(self, options):
-        opt_handled = Cli.from_options(options)
-        return opt_handled
+        # opt_handled = Cli.from_options(options)
+        return False
 
     def do_startup(self):
         logging.info(f'\n\n---- Application startup | version {self.version}')
@@ -167,7 +161,6 @@ def main(version, pkgdatadir):
             with open(LOG_FILE, 'w+') as f:
                 f.write('')
 
-    app = GearleverApplication(version, pkgdatadir)
     logging.basicConfig(
         filename=LOG_FILE,
         filemode='a',
@@ -177,4 +170,8 @@ def main(version, pkgdatadir):
         force=True
     )
 
+    if len(sys.argv) > 1 and Cli.from_options(sys.argv):
+        return
+
+    app = GearleverApplication(version, pkgdatadir)
     app.run(sys.argv)

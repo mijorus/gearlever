@@ -4,18 +4,22 @@ import os
 from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GObject # noqa
 from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
 from .lib.costants import FETCH_UPDATES_ARG
+from .lib.utils import make_option
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageUpdateLogic
 from .lib.json_config import read_config_for_app, read_json_config
 from .models.UpdateManager import UpdateManagerChecker
 
+def noop():
+    return 0
+
 class Cli():
     options = [
-        (FETCH_UPDATES_ARG, 'Fetch updates'),
-        ('integrate', 'Integrate an AppImage file'),
-        ('uninstall', 'Trashes an AppImage file, its .desktop file and its icons; add --delete to remove the file completely'),
-        ('list-installed', 'List integrated apps'),
-        ('list-updates', 'List app updates'),
+        make_option(FETCH_UPDATES_ARG, description='Fetch updates in the background and sends a desktop notification, used on system startup'),
+        make_option('integrate', description='Integrate an AppImage file'),
+        make_option('uninstall', description='Trashes an AppImage, its .desktop file and icons  '),
+        make_option('list-installed', description='List integrated apps; add -v to show more update info'),
+        make_option('list-updates', description='List available updates')
     ]
 
     def ask(message: str, options: list) -> str:
@@ -26,26 +30,28 @@ class Cli():
 
         return _input
 
-    def from_options(options):
+    def from_options(argv):
         for opt in Cli.options:
-            if options.contains(opt[0]):
-                name = opt[0].lower().replace('-', '_')
-                getattr(Cli, name)(options)
+            long_name = str(opt.long_name)
+            if f'--{long_name}' in argv:
+                name = long_name.replace('-', '_')
+                getattr(Cli, name)(argv)
                 sys.exit(0)
 
         return -1
 
-    def get_file_from_args(options):
-        args = sys.argv[1:]
-
+    def get_file_from_args(args):
         for a in args:
             if not a.startswith('-'):
                 g_file = Gio.File.new_for_path(a)
 
-                if os.path.exists(g_file.get_path()):
+                if os.path.exists(g_file.get_path()) \
+                    and os.path.isfile(g_file.get_path()) \
+                    and appimage_provider.can_install_file(g_file):
                     return g_file
 
-        return None
+        print('Error: please specify a valid AppImage file')
+        sys.exit(1)
 
     def get_list_element_from_gfile(g_file: Gio.File):
         el = None
@@ -60,11 +66,11 @@ class Cli():
     
         return el
 
-    def fetch_updates(options):
+    def fetch_updates(argv):
         BackgroudUpdatesFetcher.fetch()
 
-    def update(options):
-        g_file = Cli.get_file_from_args(options)
+    def update(argv):
+        g_file = Cli.get_file_from_args(argv)
         el = Cli.get_list_element_from_gfile(g_file)
 
         app_conf = read_config_for_app(el)
@@ -81,29 +87,17 @@ class Cli():
 
         # print('Update completed')
 
-    def uninstall(options):
-        g_file = Cli.get_file_from_args(options)
+    def uninstall(argv):
+        g_file = Cli.get_file_from_args(argv)
         force = ('--delete' in sys.argv)
-
-        if not g_file:
-            sys.exit(1)
 
         el = Cli.get_list_element_from_gfile(g_file)
         appimage_provider.uninstall(el, force_delete=force)
-        # print('Removed sucessfully')
 
-    def integrate(options):
-        g_file = Cli.get_file_from_args(options)
-
-        if not g_file:
-            sys.exit(1)
-
+    def integrate(argv):
+        g_file = Cli.get_file_from_args(argv)
         el = appimage_provider.create_list_element_from_file(g_file)
         manager = UpdateManagerChecker.check_url(None, el)
-
-        if not appimage_provider.can_install_file(g_file):
-            print('This file format is not supported!')
-            sys.exit(1)
 
         apps = appimage_provider.list_installed()
 
@@ -113,8 +107,8 @@ class Cli():
                 already_installed = True
                 break
 
-        if options.contains('--yes') == False \
-            and options.contains('-y') == False:
+        if '--yes' in argv == False \
+            and '-y' in argv == False:
 
             info_table = [
                 ['Name', el.name,],
@@ -146,7 +140,7 @@ class Cli():
         appimage_provider.install_file(el)
         print(f'{el.name} was integrated successfully')
 
-    def list_installed(options):
+    def list_installed(argv):
         apps = appimage_provider.list_installed()
 
         table = []
@@ -157,7 +151,7 @@ class Cli():
 
         Cli.print_table(table)
 
-    def list_updates(options):
+    def list_updates(argv):
         installed = appimage_provider.list_installed()
         table = []
 
@@ -171,14 +165,17 @@ class Cli():
 
             try:
                 if manager.is_update_available(el):
-                    table.append([el.name, f'[Update available, {manager.name}]', update_url])
+                    if '-v' in argv:
+                        table.append([el.name, f'[Update available, {manager.name}]', manager.url])
+                    else:
+                        table.append([el.name, f'[Update available, {manager.name}]'])
             except Exception as e:
                 pass
 
         if not table:
             print('No updates available')
             return
-        
+
         Cli.print_table(table)
 
     def print_table(table):
