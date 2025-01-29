@@ -59,7 +59,7 @@ class AppImageListElement():
 
     def set_installed_status(self, installed_status: InstalledStatus):
         self.installed_status = installed_status
-        
+
     def set_trusted(self):
         logging.debug('Chmod file ' + self.file_path)
         os.chmod(self.file_path, 0o755)

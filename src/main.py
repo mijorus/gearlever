@@ -52,8 +52,7 @@ class GearleverApplication(Adw.Application):
         self.add_main_option_entries(Cli.options)
 
     def do_handle_local_options(self, options):
-        # opt_handled = Cli.from_options(options)
-        return False
+        return -1
 
     def do_startup(self):
         logging.info(f'\n\n---- Application startup | version {self.version}')
@@ -77,6 +76,7 @@ class GearleverApplication(Adw.Application):
         We raise the application's main window, creating it if
         necessary.
         """
+        print('activating')
         self.win = self.props.active_window
 
         if not self.win:
@@ -170,8 +170,8 @@ def main(version, pkgdatadir):
         force=True
     )
 
-    if len(sys.argv) > 1 and Cli.from_options(sys.argv):
-        return
+    if len(sys.argv) > 1:
+        Cli.from_options(sys.argv)
 
     app = GearleverApplication(version, pkgdatadir)
     app.run(sys.argv)
