@@ -76,7 +76,6 @@ class GearleverApplication(Adw.Application):
         We raise the application's main window, creating it if
         necessary.
         """
-        print('activating')
         self.win = self.props.active_window
 
         if not self.win:
