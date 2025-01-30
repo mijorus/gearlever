@@ -1,6 +1,7 @@
 import sys
 import os
 
+from .lib.costants import APP_ID
 from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GObject # noqa
 from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
 from .lib.costants import FETCH_UPDATES_ARG
@@ -12,12 +13,12 @@ from .models.UpdateManager import UpdateManagerChecker
 
 class Cli():
     options = [
-        make_option(FETCH_UPDATES_ARG, description='Fetch updates in the background and sends a desktop notification, used on system startup'),
         make_option('integrate', description='Integrate an AppImage file'),
         make_option('update', description='Update an AppImage file'),
         make_option('remove', description='Trashes an AppImage, its .desktop file and icons  '),
         make_option('list-installed', description='List integrated apps; add -v to show more update info'),
-        make_option('list-updates', description='List available updates')
+        make_option('list-updates', description='List available updates'),
+        make_option(FETCH_UPDATES_ARG, description='Fetch updates in the background and sends a desktop notification, used on system startup'),
     ]
 
     def ask(message: str, options: list) -> str:
@@ -41,6 +42,13 @@ class Cli():
             getattr(Cli, name)(argv)
             sys.exit(0)
 
+
+        if '--help' in argv:
+            table = [[f'--{o.long_name}', o.description] for o in Cli.options]
+            text = f'Usage: flatpak run {APP_ID} [OPTION...]'
+            text += f'\nFor a better user experience, please set `alias gearlever=\'flatpak run {APP_ID}\'` in your .bashrc file'
+            Cli._print_help_if_requested(argv, table, text)
+
         return -1
 
     def fetch_updates(argv):
@@ -48,9 +56,8 @@ class Cli():
 
     def update(argv):
         Cli._print_help_if_requested(argv, [
-            ['Usage: --update <file_path>'],
             ['--yes | -y', 'Skips any interactive question'],
-        ])
+        ], text='Usage: --update <file_path>')
 
         assume_yes = ('-y' in argv) or ('--yes' in argv)
 
@@ -106,11 +113,10 @@ class Cli():
 
     def integrate(argv):
         Cli._print_help_if_requested(argv, [
-            ['Usage: --integrate <file_path>'],
             ['--keep-both', 'If a name conflict occurs, keeps both files (default behaviour)'],
             ['--replace', 'If a name conflict occurs, replaces the old file with the one that you are currently integrating'],
             ['--yes | -y', 'Skips any interactive question and integrates the file'],
-        ])
+        ], text='Usage: --integrate <file_path>')
 
         g_file = Cli._get_file_from_args(argv)
 
@@ -236,12 +242,14 @@ class Cli():
 
         return None
 
-    def _print_help_if_requested(argv, help: list[str]):
+    def _print_help_if_requested(argv, help: list[str], text=''):
         if '--help' in argv:
             opt = Cli._get_invoked_option(argv)
-
             if opt:
                 print(str(opt.description) + '\n')
+
+            if text:
+                print(text + '\n')
 
             Cli._print_table(help)
             sys.exit(0)
