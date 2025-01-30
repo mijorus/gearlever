@@ -15,7 +15,7 @@ class Cli():
         make_option(FETCH_UPDATES_ARG, description='Fetch updates in the background and sends a desktop notification, used on system startup'),
         make_option('integrate', description='Integrate an AppImage file'),
         make_option('update', description='Update an AppImage file'),
-        make_option('uninstall', description='Trashes an AppImage, its .desktop file and icons  '),
+        make_option('remove', description='Trashes an AppImage, its .desktop file and icons  '),
         make_option('list-installed', description='List integrated apps; add -v to show more update info'),
         make_option('list-updates', description='List available updates')
     ]
@@ -76,9 +76,9 @@ class Cli():
 
         print(f'\n{el.file_path} updated successfully')
 
-    def uninstall(argv):
+    def remove(argv):
         Cli._print_help_if_requested(argv, [
-            ['Usage: --uninstall <file_path>'],
+            ['Usage: --remove <file_path>'],
             ['--delete', 'Deletes the AppImage file from disk, instead of trashing it'],
             ['--yes | -y', 'Skips any interactive question'],
         ])
@@ -102,7 +102,7 @@ class Cli():
 
         if ans.lower() == 'y' or assume_yes:
             appimage_provider.uninstall(el, force_delete=force)
-            print(f'{el.file_path} was uninstalled sucessfully')
+            print(f'{el.file_path} was removed sucessfully')
 
     def integrate(argv):
         Cli._print_help_if_requested(argv, [
@@ -146,7 +146,7 @@ class Cli():
             ]
 
             Cli._print_table(info_table)
-            ans = Cli.ask('\nDo you really want to integrate this AppImage? (y/N) ', ['y', 'Y', 'n', 'N'])
+            ans = Cli.ask(f'\nDo you really want to integrate this AppImage? (y/N) ', ['y', 'Y', 'n', 'N'])
 
             if ans.lower() != 'y':
                 sys.exit(0)
@@ -160,7 +160,7 @@ class Cli():
                 el.updating_from = already_installed
 
         appimage_provider.install_file(el)
-        print(f'{el.name} was integrated successfully')
+        print(f'{el.file_path} was integrated successfully')
 
     def list_installed(argv):
         Cli._print_help_if_requested(argv, [])
