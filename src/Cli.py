@@ -16,7 +16,7 @@ class Cli():
         make_option('integrate', description='Integrate an AppImage file'),
         make_option('update', description='Update an AppImage file'),
         make_option('remove', description='Trashes an AppImage, its .desktop file and icons  '),
-        make_option('list-installed', description='List integrated apps; add -v to show more update info'),
+        make_option('list-installed', description='List integrated apps'),
         make_option('list-updates', description='List available updates'),
         make_option(FETCH_UPDATES_ARG, description='Fetch updates in the background and sends a desktop notification, used on system startup'),
     ]
@@ -169,7 +169,10 @@ class Cli():
         print(f'{el.file_path} was integrated successfully')
 
     def list_installed(argv):
-        Cli._print_help_if_requested(argv, [])
+        Cli._print_help_if_requested(argv, [
+            ['-v', ' Show more info']
+        ])
+
         apps = appimage_provider.list_installed()
 
         table = []
@@ -213,6 +216,9 @@ class Cli():
         Cli._print_table(table)
 
     def _print_table(table):
+        if (not table):
+            return
+
         longst_row = 0
 
         for r in table:
@@ -276,6 +282,7 @@ class Cli():
                 break
 
         if not el:
-            raise Exception('File not installed')
+            print('Error: AppImage not integrated')
+            sys.exit(1)
     
         return el
