@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-05 09:39+0000\n"
-"PO-Revision-Date: 2024-07-29 15:36+0100\n"
+"PO-Revision-Date: 2025-01-31 20:58+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pt_PT\n"
@@ -250,7 +250,7 @@ msgstr "Localização padrão das AppImage"
 #: src/preferences.py:41
 msgid "Show integrated AppImages outside the default folder"
 msgstr ""
-"Mostrar AppImage integradas que encontram-se fora da localização padrão"
+"Mostrar AppImages integradas que encontram-se fora da localização padrão"
 
 #: src/preferences.py:43
 msgid ""
@@ -381,7 +381,7 @@ msgstr "Cancelar"
 
 #: src/components/AppDetailsConflictModal.py:17
 msgid "Keep both"
-msgstr "Manter ambos"
+msgstr "Manter ambas"
 
 #: src/components/AppDetailsConflictModal.py:19
 msgid "Replace"
@@ -402,8 +402,8 @@ msgstr "Arraste e largue uma AppImage aqui ou clique no ícone \"+\"."
 #: src/gtk/empty-list-placeholder.ui:35
 msgid " If you don't see your apps, check if the selected folder is correct."
 msgstr ""
-" Se não vê as suas aplicações, verifique se a pasta selecionada encontra-se "
-"correta."
+"Caso não veja as suas aplicações, verifique se a pasta selecionada encontra-"
+"se correta."
 
 #: src/gtk/empty-list-placeholder.ui:46
 msgid "Show welcome screen"
@@ -455,7 +455,7 @@ msgstr ""
 #: src/gtk/tutorial/2.ui:33
 #, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
-msgstr "Por padrão, AppImages são guardadas em: {location}"
+msgstr "Por padrão, as AppImages são guardadas em: {location}"
 
 #: src/gtk/tutorial/2.ui:47
 msgid "Change AppImage location"
@@ -486,7 +486,7 @@ msgstr ""
 
 #: src/gtk/tutorial/3.ui:44
 msgid "Open demo folder"
-msgstr "Abrir pasta demonstração"
+msgstr "Abrir pasta de demonstração"
 
 #: src/gtk/tutorial/3.ui:56
 msgid "This step is optional"
