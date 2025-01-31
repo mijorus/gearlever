@@ -23,11 +23,32 @@
   <img width="240" src="https://flathub.org/api/badge?svg&locale=en" alt="Get it on Flathub">
 </a>
 
+## CLI
+Starting from version 3.0.0, Gear Lever includes some useful command line tools to manage your AppImages. The CLI uses the same logics as the UI.
+
+Please use `flatpak run it.mijorus.gearlever --help` to get an updated version of this help screen
+
+```sh
+Usage: flatpak run it.mijorus.gearlever [OPTION...]
+# OR gearlever [OPTION...] if using the alias
+
+--integrate        Integrate an AppImage file                                                                 
+--update           Update an AppImage file                                                                    
+--remove           Trashes an AppImage, its .desktop file and icons                                           
+--list-installed   List integrated apps                                                                       
+--list-updates     List available updates   
+```
+
+For an improved user experience, add the following line to your `.bashrc` file
+
+```sh
+alias gearlever='flatpak run it.mijorus.gearlever'
+```
+
 ##  Support me
 <a href="https://ko-fi.com/mijorus" align="center">
   <img width="250" src="https://mijorus.it/kofi-support.png">
 </a>
-
 
 ___
 
