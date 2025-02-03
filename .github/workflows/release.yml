@@ -18,7 +18,7 @@ jobs:
           echo "::set-output name=release_tag::$(cat meson.build | grep "\sversion.*" | grep -oE "'([^']+)'" | sed "s/'//g")"
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          bundle: gearlever-${{ steps.tag.outputs.release_tag }}.flatpak
+          bundle: gearlever-${{ steps.tag.outputs.release_tag }}-x86_64.flatpak
           manifest-path: it.mijorus.gearlever.json
       - name: Publish release package
         uses: softprops/action-gh-release@v1
@@ -26,4 +26,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
-          files: gearlever-${{ steps.tag.outputs.release_tag }}.flatpak
+          files: gearlever-${{ steps.tag.outputs.release_tag }}-x86_64.flatpak
