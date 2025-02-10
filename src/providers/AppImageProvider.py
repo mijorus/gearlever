@@ -675,7 +675,7 @@ class AppImageProvider():
         logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
         z7zoutput = '=== 7z log ==='
         z7zoutput = '\n\n' + terminal.sandbox_sh(['7z', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', 'bsp0', 
-                                                  '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path)
+                                                  '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path, return_stderr=True)
 
         logging.debug(z7zoutput)
         return squashfs_root_folder
