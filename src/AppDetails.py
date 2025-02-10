@@ -375,7 +375,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_installation_status()
 
         app_conf = self.get_config_for_app()
-        manager = UpdateManagerChecker.check_url(app_conf.get('update_url'), self.app_list_element)
+        manager = UpdateManagerChecker.check_url_for_app(self.app_list_element)
 
         if not manager:
             return
@@ -572,9 +572,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @_async
     def check_updates(self):
-        app_conf = self.get_config_for_app()
-        update_url = app_conf.get('update_url', None)
-        manager = UpdateManagerChecker.check_url(update_url, self.app_list_element)
+        manager = UpdateManagerChecker.check_url_for_app(self.app_list_element)
 
         if not manager:
             GLib.idle_add(lambda: self.update_url_save_btn.set_visible(True))
@@ -629,7 +627,7 @@ class AppDetails(Gtk.ScrolledWindow):
     
             selected_manager = list(filter(lambda m: m.label == manager_label, 
                                     UpdateManagerChecker.get_models()))[0]
-            
+
             manager = UpdateManagerChecker.check_url(text, model=selected_manager)
             if not manager:
                 GLib.idle_add(lambda: widget.add_css_class('error'))
@@ -810,7 +808,6 @@ class AppDetails(Gtk.ScrolledWindow):
             subtitle=_('Select the source type'),
             model=combo_model
         )
-
 
         for i, m in enumerate(UpdateManagerChecker.get_models()):
             combo_model.append(m.label)

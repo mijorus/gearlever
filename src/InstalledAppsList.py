@@ -148,10 +148,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         updates_available = 0
         final_rows = []
         for row in self.installed_apps_list_rows:
-            app_conf = read_config_for_app(row._app)
-            update_url = app_conf.get('update_url', None)
-
-            manager = UpdateManagerChecker.check_url(update_url, row._app)
+            manager = UpdateManagerChecker.check_url_for_app(row._app)
 
             updatable_apps += 1
             if not manager:

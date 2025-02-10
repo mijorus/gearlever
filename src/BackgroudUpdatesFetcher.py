@@ -18,10 +18,7 @@ class BackgroudUpdatesFetcher():
         updates_available = 0
 
         for el in installed:
-            app_conf = read_config_for_app(el)
-            update_url = app_conf.get('update_url', None)
-
-            manager = UpdateManagerChecker.check_url(update_url, el)
+            manager = UpdateManagerChecker.check_url_for_app(el)
 
             if not manager:
                 continue

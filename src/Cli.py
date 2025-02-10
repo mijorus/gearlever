@@ -63,10 +63,7 @@ class Cli():
 
         g_file = Cli._get_file_from_args(argv)
         el = Cli._get_list_element_from_gfile(g_file)
-
-        app_conf = read_config_for_app(el)
-        update_url = app_conf.get('update_url', None)
-        manager = UpdateManagerChecker.check_url(update_url, el)
+        manager = UpdateManagerChecker.check_url_for_app(el)
 
         if not manager:
             print('No update method was found for this AppImage')
@@ -179,7 +176,7 @@ class Cli():
         for a in apps:
             app_conf = read_config_for_app(a)
             update_url = app_conf.get('update_url', None)
-            manager = UpdateManagerChecker.check_url(update_url, a)
+            manager = UpdateManagerChecker.check_url_for_app(a)
             update_mng = f'[{manager.name}]' if manager else '[UpdatesNotAvailable]'
             table.append([a.name, f'[{a.version}]', update_mng, a.file_path])
 
@@ -194,7 +191,7 @@ class Cli():
         for el in installed:
             app_conf = read_config_for_app(el)
             update_url = app_conf.get('update_url', None)
-            manager = UpdateManagerChecker.check_url(update_url, el)
+            manager = UpdateManagerChecker.check_url_for_app(el)
 
             if not manager:
                 continue

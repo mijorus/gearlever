@@ -47,6 +47,22 @@ class UpdateManagerChecker():
     def get_models() -> list[UpdateManager]:
         return [StaticFileUpdater, GithubUpdater]
 
+    def get_model_by_name(manager_label: str) -> Optional[UpdateManager]:
+        item = list(filter(lambda m: m.name == manager_label, 
+                                    UpdateManagerChecker.get_models()))
+
+        if item:
+            return item[0]
+
+        return None
+
+    def check_url_for_app(el: AppImageListElement=None):
+        app_conf = read_config_for_app(el)
+        update_url = app_conf.get('update_url', None)
+        update_url_manager = app_conf.get('update_url_manager', None)
+        return UpdateManagerChecker.check_url(update_url, el, 
+            model=UpdateManagerChecker.get_model_by_name(update_url_manager))
+
     def check_url(url: str=Optional[str], el: Optional[AppImageListElement]=None,
                     model: Optional[UpdateManager]=None) -> Optional[UpdateManager]:
 
@@ -65,7 +81,7 @@ class UpdateManagerChecker():
                         return m(embedded_app_data, embedded=True)
 
         if url:
-             for m in models:
+            for m in models:
                 logging.debug(f'Checking url with {m.__name__}')
                 if m.can_handle_link(url):
                     return m(url)
@@ -376,11 +392,10 @@ class GithubUpdater(UpdateManager):
         target_asset = self.fetch_target_asset()
 
         if target_asset:
-            ct_supported = target_asset['content_type'] in [*AppImageProvider.supported_mimes,
-                                                     'binary/octet-stream', 'application/octet-stream']
+            ct_supported = target_asset['content_type'] in [*AppImageProvider.supported_mimes, 'raw',
+                                                    'binary/octet-stream', 'application/octet-stream']
 
             if ct_supported:
-                app_conf = read_config_for_app(el)
                 old_size = os.path.getsize(el.file_path)
                 is_size_different = target_asset['size'] != old_size
                 return is_size_different
