@@ -7,6 +7,7 @@ import shlex
 from xdg import DesktopEntry
 
 import dataclasses
+from ..lib.constants import APP_ID
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async, idle
@@ -80,9 +81,9 @@ class AppImageProvider():
         self.general_messages = []
         self.update_messages = []
 
-        self.extraction_folder = GLib.get_tmp_dir() + '/it.mijorus.gearlever/appimages'
-        self.user_desktop_files_path = f'{GLib.get_home_dir()}/.local/share/applications'
-        self.user_local_share_path = f'{GLib.get_home_dir()}/.local/share/'
+        self.extraction_folder = os.path.join(GLib.get_tmp_dir(), APP_ID, 'appimages')
+        self.user_desktop_files_path = os.path.join(GLib.get_home_dir(), '.local', 'share', 'applications')
+        self.user_local_share_path = os.path.join(GLib.get_home_dir(), '.local', 'share')
 
     def list_installed(self) -> list[AppImageListElement]:
         default_folder_path = self._get_appimages_default_destination_path()
@@ -330,7 +331,8 @@ class AppImageProvider():
 
                     i += 1
 
-            dest_appimage_file = Gio.File.new_for_path(appimages_destination_path + '/' + appimage_filename)
+            dest_appimage_file = Gio.File.new_for_path(
+                os.path.join(appimages_destination_path, appimage_filename))
 
             if not gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
                 raise InternalError('Error while moving appimage file to the destination folder')
@@ -347,12 +349,14 @@ class AppImageProvider():
                 icon_file = extracted_appimage.icon_file
 
             if icon_file and os.path.exists(icon_file.get_path()):
-                if not os.path.exists(f'{appimages_destination_path}/.icons'):
-                    os.mkdir(f'{appimages_destination_path}/.icons')
+                icons_folder = os.path.join(appimages_destination_path, '.icons')
+                if not os.path.exists(icons_folder):
+                    os.mkdir(icons_folder)
 
                 i, icon_file_ext = os.path.splitext(icon_file.get_path())
+                dest_appimage_icon_file_path = os.path.join(appimages_destination_path, '.icons', prefixed_filename)
                 dest_appimage_icon_file = Gio.File.new_for_path(
-                    f'{appimages_destination_path}/.icons/{prefixed_filename}{icon_file_ext}')
+                    f'{dest_appimage_icon_file_path}{icon_file_ext}')
 
                 gio_copy(icon_file, dest_appimage_icon_file)
 
@@ -360,7 +364,7 @@ class AppImageProvider():
             if not os.path.exists(self.user_desktop_files_path):
                 os.makedirs(self.user_desktop_files_path)
 
-            dest_desktop_file_path = f'{self.user_desktop_files_path}/{prefixed_filename}.desktop'
+            dest_desktop_file_path = f'{os.path.join(self.user_desktop_files_path, prefixed_filename)}.desktop'
             dest_desktop_file_path = dest_desktop_file_path.replace(' ', '_')
 
             # Get default exec arguments
@@ -438,7 +442,7 @@ class AppImageProvider():
             if not extracted_appimage.appimage_file.delete(None):
                 raise InternalError('Cannot delete original file')
 
-        update_dkt_db = terminal.host_sh(['update-desktop-database', self.user_desktop_files_path, '-v'], return_stderr=True)
+        update_dkt_db = terminal.host_sh(['update-desktop-database', self.user_desktop_files_path, '-q'], return_stderr=True)
         logging.debug(update_dkt_db)
 
         el.updating_from = None
