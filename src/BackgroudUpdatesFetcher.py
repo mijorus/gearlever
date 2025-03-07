@@ -4,7 +4,7 @@ from .lib.async_utils import _async_keepalive, idle
 from .lib.utils import get_gsettings, send_notification
 from .lib.json_config import read_config_for_app, read_json_config
 from .lib.terminal import sandbox_sh
-from .lib.costants import UPDATES_AVAILABLE_LABEL, ONE_UPDATE_AVAILABLE_LABEL, APP_ID
+from .lib.constants import UPDATES_AVAILABLE_LABEL, ONE_UPDATE_AVAILABLE_LABEL, APP_ID
 from gi.repository import Gio
 from .providers.AppImageProvider import AppImageProvider
 from .models.UpdateManager import UpdateManagerChecker

@@ -5,7 +5,7 @@ import logging
 
 from .State import state
 from time import sleep
-from .lib.costants import APP_ID, ONE_UPDATE_AVAILABLE_LABEL, UPDATES_AVAILABLE_LABEL
+from .lib.constants import APP_ID, ONE_UPDATE_AVAILABLE_LABEL, UPDATES_AVAILABLE_LABEL
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageListElement
 from .models.AppListElement import AppListElement, InstalledStatus

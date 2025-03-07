@@ -17,7 +17,7 @@
 
 import logging
 
-from .lib.costants import APP_ID
+from .lib.constants import APP_ID
 from .InstalledAppsList import InstalledAppsList
 from .AppDetails import AppDetails
 from .MultiInstall import MultiInstall

@@ -8,7 +8,7 @@ import gi
 import hashlib
 from . import terminal
 
-from .costants import APP_ID
+from .constants import APP_ID
 from .async_utils import idle
 
 gi.require_version('Gtk', '4.0')

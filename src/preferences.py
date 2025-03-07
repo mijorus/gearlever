@@ -3,7 +3,7 @@ import threading
 import logging
 import os
 
-from .lib.costants import FETCH_UPDATES_ARG
+from .lib.constants import FETCH_UPDATES_ARG
 from .models.Models import InternalError
 from .lib.utils import get_gsettings, portal
 from .lib.json_config import read_json_config, set_json_config

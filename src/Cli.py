@@ -1,10 +1,10 @@
 import sys
 import os
 
-from .lib.costants import APP_ID
+from .lib.constants import APP_ID
 from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GObject # noqa
 from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
-from .lib.costants import FETCH_UPDATES_ARG
+from .lib.constants import FETCH_UPDATES_ARG
 from .lib.utils import make_option
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageUpdateLogic

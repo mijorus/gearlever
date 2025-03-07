@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 
 from .State import state
 from .lib.utils import get_element_without_overscroll, get_gsettings, gio_copy
-from .lib.costants import APP_ID, APP_NAME, APP_DATA
+from .lib.constants import APP_ID, APP_NAME, APP_DATA
 
 class WelcomeScreen(Gtk.Window):
 

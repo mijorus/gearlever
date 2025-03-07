@@ -21,7 +21,7 @@ import logging
 import os
 
 from .lib.utils import get_gsettings, make_option
-from .lib.costants import APP_ID, APP_NAME, APP_DATA
+from .lib.constants import APP_ID, APP_NAME, APP_DATA
 from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
 from  .WelcomeScreen import WelcomeScreen
