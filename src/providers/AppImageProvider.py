@@ -289,8 +289,7 @@ class AppImageProvider():
                     appimage_filename = extracted_appimage.desktop_entry.getName()
                     appimage_filename = appimage_filename.lower().replace(' ', '_')
                 
-                prefixed_filename = re.sub(r"[^A-Za-z0-9_]+", "", appimage_filename).lower()
-                appimage_filename = prefixed_filename
+                appimage_filename = re.sub(r"[^A-Za-z0-9_]+", "", appimage_filename).lower()
 
                 append_file_ext = True
                 gsettings = get_gsettings()
@@ -314,9 +313,8 @@ class AppImageProvider():
                 if append_file_ext:
                     appimage_filename = appimage_filename + '.appimage'
 
-                app_name_without_ext = os.path.splitext(appimage_filename)[0]
-                app_name_without_ext = remove_special_chars(app_name_without_ext)
                 appimage_filename = remove_special_chars(appimage_filename)
+                app_name_without_ext = os.path.splitext(appimage_filename)[0]
 
                 i = 0
                 files_in_dest_dir = os.listdir(self._get_appimages_default_destination_path())
@@ -330,6 +328,8 @@ class AppImageProvider():
                         appimage_filename = appimage_filename + '.appimage'
 
                     i += 1
+
+                prefixed_filename = os.path.splitext(appimage_filename)[0]
 
             dest_appimage_file = Gio.File.new_for_path(
                 os.path.join(appimages_destination_path, appimage_filename))
