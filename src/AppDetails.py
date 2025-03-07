@@ -49,7 +49,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.icon_slot = Gtk.Box()
 
         title_col = CenteringBox(orientation=Gtk.Orientation.VERTICAL, hexpand=True, spacing=2)
-        self.title = Gtk.Label(label='', css_classes=['title-1'], hexpand=True, halign=Gtk.Align.CENTER)
+        self.title = Gtk.Label(label='', css_classes=['title-1'], hexpand=True, halign=Gtk.Align.CENTER, wrap=True)
         self.app_subtitle = Gtk.Label(
             label='',
             halign=Gtk.Align.CENTER,
