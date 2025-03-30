@@ -121,6 +121,7 @@
             "config-opts": [
                 "-DWITH_TOOLS=ON",
                 "-DWITH_LIBDWARFS=OFF",
+                "-GNinja",
                 "-DWITH_FUSE_DRIVER=OFF"
             ],
             "sources": [

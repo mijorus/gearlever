@@ -676,9 +676,22 @@ class AppImageProvider():
         ###############################################################################
 
         squashfs_root_folder = os.path.join(dest_path, 'squashfs-root')
-        logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
-        z7zoutput = '=== 7z log ==='
-        z7zoutput = '\n\n' + terminal.sandbox_sh(['7z', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', 'bsp0', 
+        is_dwarf = False
+
+        try:
+            terminal.sandbox_sh(['dwarfsck', f'--input={file.get_path()}', '-q', '-detail=0', '--no-check'])
+            is_dwarf = True
+        except:
+            pass
+
+        if is_dwarf_:
+            os.mkdir(squashfs_root_folder)
+            terminal.sandbox_sh(['dwarfsextract', f'-i={file.get_path()}', f'-o={squashfs_root_folder}',
+                                    '--pattern=*.png','--pattern=*.svg', '--pattern=*.desktop', '--pattern=*.DirIcon'])
+        else:
+            logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
+            z7zoutput = '=== 7z log ==='
+            z7zoutput = '\n\n' + terminal.sandbox_sh(['7z', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', 'bsp0', 
                                                   '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path)
 
         logging.debug(z7zoutput)
