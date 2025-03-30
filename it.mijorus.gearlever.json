@@ -51,84 +51,26 @@
             ]
         },
         {
-            "name": "range-v3",
-            "buildsystem": "cmake-ninja",
-            "config-opts": [
-                "-DCMAKE_BUILD_TYPE=Release",
-                "-DRANGE_V3_TESTS=OFF",
-                "-DRANGE_V3_EXAMPLES=OFF"
-            ],
-            "cleanup": [
-                "*"
-            ],
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://github.com/ericniebler/range-v3/archive/refs/tags/0.12.0.tar.gz",
-                    "sha256": "015adb2300a98edfceaf0725beec3337f542af4915cec4d0b89fa0886f4ba9cb"
-                }
-            ]
-        },
-        {
-            "name": "parallel-hashmap",
-            "buildsystem": "cmake",
-            "config-opts": [
-                "-DPHMAP_BUILD_TESTS=OFF",
-                "-DPHMAP_BUILD_EXAMPLES=OFF"
-            ],
-            "cleanup": [
-                "*"
-            ],
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://github.com/greg7mdp/parallel-hashmap/archive/refs/tags/v2.0.0.tar.gz",
-                    "sha256": "4f462f51a3468166ea4cf87c80e001dc1999093264cf55cbda3492ca39a7730b"
-                }
-            ]
-        },
-        {
-            "name": "boot",
-            "buildsystem": "cmake",
-            "cleanup": [
-                "*"
-            ],
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.gz",
-                    "sha256": "78fbf579e3caf0f47517d3fb4d9301852c3154bfecdc5eeebd9b2b0292366f5b"
-                }
-            ]
-        },
-        {
-            "name": "googletest",
-            "buildsystem": "cmake",
-            "cleanup": [
-                "*"
-            ],
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://github.com/google/googletest/archive/release-1.8.0.tar.gz",
-                    "sha256": "58a6f4277ca2bc8565222b3bbd58a177609e9c488e8a72649359ba51450db7d8"
-                }
-            ]
-        },
-        {
             "name": "dwarfs",
-            "buildsystem": "cmake",
-            "config-opts": [
-                "-DWITH_TOOLS=ON",
-                "-DWITH_LIBDWARFS=OFF",
-                "-GNinja",
-                "-DWITH_FUSE_DRIVER=OFF"
+            "buildsystem": "simple",
+            "build-commands": [
+                "install -Dm755 dwarfs/bin/dwarfsextract -t ${FLATPAK_DEST}/bin/",
+                "install -Dm755 dwarfs/bin/dwarfsck -t ${FLATPAK_DEST}/bin/"
             ],
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.11.2/dwarfs-0.11.2.tar.xz",
-                    "sha256": "1b38faf399a6d01cd0e5f919b176e1cab76e4a8507088d060a91b92c174d912b"
+                    "sha256": "3c82708e00af9d1622e78047efd216e4e29213a60aff3afa8326bade8353ea38",
+                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.11.2/dwarfs-0.11.2-Linux-x86_64-clang.tar.xz",
+                    "dest": "dwarfs",
+                    "only-arches": ["x86_64"]
+                },
+                {
+                    "type": "archive",
+                    "sha256": "3c82708e00af9d1622e78047efd216e4e29213a60aff3afa8326bade8353ea38",
+                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.11.2/dwarfs-0.11.2-Linux-aarch64-clang.tar.xz",
+                    "dest": "dwarfs",
+                    "only-arches": ["aarch64"]
                 }
             ]
         },

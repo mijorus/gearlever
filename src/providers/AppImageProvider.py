@@ -682,19 +682,20 @@ class AppImageProvider():
             terminal.sandbox_sh(['dwarfsck', f'--input={file.get_path()}', '-q', '-detail=0', '--no-check'])
             is_dwarf = True
         except:
-            pass
+            logging.info('Filesystem is not dwarfsck')
 
-        if is_dwarf_:
+        if is_dwarf:
             os.mkdir(squashfs_root_folder)
-            terminal.sandbox_sh(['dwarfsextract', f'-i={file.get_path()}', f'-o={squashfs_root_folder}',
-                                    '--pattern=*.png','--pattern=*.svg', '--pattern=*.desktop', '--pattern=*.DirIcon'])
+            logging.info(f'Exctracting with dwarfsextract to {squashfs_root_folder}')
+            terminal.sandbox_sh(['dwarfsextract', f'--input={file.get_path()}', f'--output={squashfs_root_folder}',
+                                    '--pattern=*.png','--pattern=*.svg', '--pattern=*.desktop', '--pattern=.DirIcon'])
         else:
             logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
             z7zoutput = '=== 7z log ==='
             z7zoutput = '\n\n' + terminal.sandbox_sh(['7z', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', 'bsp0', 
                                                   '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path)
+            logging.debug(z7zoutput)
 
-        logging.debug(z7zoutput)
         return squashfs_root_folder
 
     def _load_appimage_metadata(self, el: AppImageListElement) -> ExtractedAppImage:
@@ -780,8 +781,9 @@ class AppImageProvider():
 
                         if diricon.query_exists():
                             diricon_ct = get_giofile_content_type(diricon)
-
-                            if diricon_ct in ['image/png']:
+                            
+                            # https://docs.appimage.org/reference/appdir.html
+                            if diricon_ct in ['image/png', 'image/svg', 'image/svg+xml']:
                                 tmp_icon_file = diricon
                             elif diricon_ct in ['text/plain']:
                                 with open(diricon.get_path(), 'r') as f:

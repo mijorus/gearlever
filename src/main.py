@@ -20,6 +20,7 @@ import gi
 import logging
 import os
 
+from .lib.terminal import sandbox_sh
 from .lib.utils import get_gsettings, make_option
 from .lib.constants import APP_ID, APP_NAME, APP_DATA
 from .providers.providers_list import appimage_provider
