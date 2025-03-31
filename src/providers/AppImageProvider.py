@@ -696,6 +696,12 @@ class AppImageProvider():
                                                   '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path)
             logging.debug(z7zoutput)
 
+        logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
+        logging.info('\n\n=== 7z log ===')
+        z7zoutput = terminal.sandbox_sh(['7z', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', '-bsp0', 
+                                                  '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path, return_stderr=True)
+
+        logging.debug(f'{z7zoutput}=== end 7z log ===\n')
         return squashfs_root_folder
 
     def _load_appimage_metadata(self, el: AppImageListElement) -> ExtractedAppImage:
