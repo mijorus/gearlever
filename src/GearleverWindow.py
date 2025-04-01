@@ -48,6 +48,9 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.open_appimage_button_child = Adw.ButtonContent(icon_name='gl-plus-symbolic', 
                                                             tooltip_text=self.open_appimage_tooltip, label=_('Open'))
 
+        self.search_btn = Gtk.Button(child=Adw.ButtonContent(icon_name='gl-loupe-large'))
+        self.search_btn.connect('clicked', self.on_trigger_search_mode)
+
         self.left_button = Gtk.Button(
             child=self.open_appimage_button_child
         )
@@ -57,6 +60,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         self.titlebar.pack_start(self.left_button)
         self.titlebar.pack_end(self.menu_button)
+        self.titlebar.pack_end(self.search_btn)
         
         self.titlebar.set_title_widget(self.view_title_widget)
         self.set_titlebar(self.titlebar)
@@ -202,7 +206,9 @@ class GearleverWindow(Gtk.ApplicationWindow):
         if in_app_details or in_multi_install:
             self.left_button.set_icon_name('gl-left-symbolic')
             self.left_button.set_tooltip_text(None)
+            self.search_btn.set_visible(False)
         else:
+            self.search_btn.set_visible(True)
             self.left_button.set_child(self.open_appimage_button_child)
 
         self.view_title_widget.set_visible(not in_app_details)
@@ -263,3 +269,6 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
     def on_window_maximixed_changed(self, *args):
         self.settings.set_boolean('is-maximized', self.is_maximized())
+
+    def on_trigger_search_mode(self, *args):
+        self.installed_apps_list.trigger_search_mode()

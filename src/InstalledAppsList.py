@@ -50,6 +50,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.filter_query: str = ''
         self.filter_entry = FilterEntry(_('Filter installed applications'), capture=get_application_window(), maximum_size=clamp_size)
         self.filter_entry.search_entry.connect('search-changed', self.trigger_filter_list)
+        # self.filter_entry.set_search_mode(True)
 
         # title row
         title_row = Gtk.Box(margin_bottom=15, )
@@ -91,6 +92,11 @@ class InstalledAppsList(Gtk.ScrolledWindow):
     def on_activated_row(self, listbox, row: Gtk.ListBoxRow):
         self.filter_entry.set_search_mode(False)
         self.emit('selected-app', row._app)
+
+    def trigger_search_mode(self):
+        self.filter_entry.set_search_mode(
+            not self.filter_entry.get_search_mode()
+        )
 
     def refresh_list(self):
         if self.installed_apps_list:
