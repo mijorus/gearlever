@@ -7,7 +7,7 @@ from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
 from .lib.constants import FETCH_UPDATES_ARG
 from .lib.utils import make_option
 from .providers.providers_list import appimage_provider
-from .providers.AppImageProvider import AppImageUpdateLogic
+from .providers.AppImageProvider import AppImageUpdateLogic, AppImageListElement
 from .lib.json_config import read_config_for_app, read_json_config
 from .models.UpdateManager import UpdateManagerChecker
 
@@ -57,28 +57,55 @@ class Cli():
     def update(argv):
         Cli._print_help_if_requested(argv, [
             ['--yes | -y', 'Skips any interactive question'],
+            ['--all', 'Updates all AppImages'],
         ], text='Usage: --update <file_path>')
 
         assume_yes = ('-y' in argv) or ('--yes' in argv)
+        update_all = ('--all' in argv)
 
-        g_file = Cli._get_file_from_args(argv)
-        el = Cli._get_list_element_from_gfile(g_file)
-        manager = UpdateManagerChecker.check_url_for_app(el)
+        updates: list[AppImageListElement] = []
 
-        if not manager:
-            print('No update method was found for this AppImage')
+        if update_all:
+            Cli.list_updates([])
+            
+            if not assume_yes:
+                ans = Cli.ask('\nDo you really want to update all AppImages? (y/N)', ['y', 'Y', 'n', 'N'])
+                if ans.lower != 'y':
+                    sys.exit(0)
+
+            assume_yes = True
+            installed = appimage_provider.list_installed()
+            
+            for el in installed:
+                manager = UpdateManagerChecker.check_url_for_app(el)
+
+                if manager.is_update_available():
+                    updates.append(el)
+        else:
+            g_file = Cli._get_file_from_args(argv)
+            el = Cli._get_list_element_from_gfile(g_file)
+            updates = [el]
+
+        if not updates:
             sys.exit(0)
 
-        if not assume_yes:
-            ans = Cli.ask('Do you really want to update this AppImage? (y/N)', ['y', 'Y', 'n', 'N'])
-            if ans.lower() != 'y':
+        for el in updates:
+            manager = UpdateManagerChecker.check_url_for_app(el)
+
+            if not manager:
+                print('No update method was found for this AppImage')
                 sys.exit(0)
 
-        print(f'Downloading update from:\n{manager.url}')
-        appimage_provider.update_from_url(manager, el, 
-            lambda s: print("\rStatus: " + str(round(s * 100)) + "%", end=""))
+            if not assume_yes:
+                ans = Cli.ask('Do you really want to update this AppImage? (y/N)', ['y', 'Y', 'n', 'N'])
+                if ans.lower() != 'y':
+                    sys.exit(0)
 
-        print(f'\n{el.file_path} updated successfully')
+            print(f'Downloading update from:\n{manager.url}')
+            appimage_provider.update_from_url(manager, el, 
+                lambda s: print("\rStatus: " + str(round(s * 100)) + "%", end=""))
+
+            print(f'\n{el.file_path} updated successfully')
 
     def remove(argv):
         Cli._print_help_if_requested(argv, [
