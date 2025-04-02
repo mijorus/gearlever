@@ -8,15 +8,13 @@ from time import sleep
 from .lib.constants import APP_ID, ONE_UPDATE_AVAILABLE_LABEL, UPDATES_AVAILABLE_LABEL
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageListElement
-from .models.AppListElement import AppListElement, InstalledStatus
-from .models.Models import AppUpdateElement
+from .models.AppListElement import InstalledStatus
 from .components.FilterEntry import FilterEntry
 from .components.CustomComponents import NoAppsFoundRow
 from .components.AppListBoxItem import AppListBoxItem
 from .preferences import Preferences
 from .WelcomeScreen import WelcomeScreen
-from .lib.utils import set_window_cursor, get_application_window, get_gsettings
-from .lib.json_config import read_json_config, set_json_config, read_config_for_app
+from .lib.utils import get_application_window
 from .lib.async_utils import _async, idle
 from .models.UpdateManager import UpdateManager, UpdateManagerChecker
 
@@ -30,6 +28,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
     CHECK_FOR_UPDATES_LABEL = _('Check for updates')
     NO_UPDATES_FOUND_LABEL = _('No updates found')
     CHECKING_FOR_UPDATES_LABEL = _('Checking updates...')
+    UPDATE_ALL_LABEL = _('Update all')
 
     def __init__(self):
         super().__init__()
@@ -53,7 +52,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         # self.filter_entry.set_search_mode(True)
 
         # title row
-        title_row = Gtk.Box(margin_bottom=15, )
+        title_row = Gtk.Box(margin_bottom=15, spacing=10)
         title_row.append( Gtk.Label(
             label=_('Installed applications'), 
             css_classes=['title-2'],
@@ -66,8 +65,15 @@ class InstalledAppsList(Gtk.ScrolledWindow):
             label=self.CHECK_FOR_UPDATES_LABEL,
         )
 
-        self.updates_btn.connect('clicked', lambda w: self.fetch_updates())
+        self.update_all_btn = Gtk.Button(
+            label=self.UPDATE_ALL_LABEL,
+            visible=False,
+            css_classes=['suggested-action']
+        )
+
+        self.updates_btn.connect('clicked', self.on_fetch_updates_btn_clicked)
         title_row.append(self.updates_btn)
+        title_row.append(self.update_all_btn)
 
         [self.main_box.append(el) for el in [title_row, self.installed_apps_list_slot]]
 
@@ -188,15 +194,18 @@ class InstalledAppsList(Gtk.ScrolledWindow):
             if row._app.file_path in updatable_filepaths:
                 row.show_updatable_badge()
 
+        self.update_all_btn.set_visible(updates_available > 0)
         if updates_available == 0:
             self.updates_btn.set_label(self.NO_UPDATES_FOUND_LABEL)
-        elif updates_available == 1:
-            self.updates_btn.set_label(ONE_UPDATE_AVAILABLE_LABEL)
         else:
-            self.updates_btn.set_label(UPDATES_AVAILABLE_LABEL.replace('{n}', str(updates_available)))
+            self.updates_btn.set_icon_name('gl-arrow-circular-top-right')
 
         if updatable_apps:
             self.updates_btn.set_sensitive(True)
+
+    def on_fetch_updates_btn_clicked(self, *args):
+        self.update_all_btn.set_visible(False)
+        self.fetch_updates()
 
     def trigger_filter_list(self, widget):
         if not self.installed_apps_list:
