@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-08 15:39+0100\n"
-"PO-Revision-Date: 2024-01-12 15:34+0100\n"
+"POT-Creation-Date: 2024-11-20 14:54+0100\n"
+"PO-Revision-Date: 2025-04-02 22:34+0200\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.5\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 msgid "Gear Lever"
@@ -29,11 +29,35 @@ msgstr "Een toepassing voor het eenvoudig beheren van AppImages!"
 msgid "AppImage;"
 msgstr "AppImage;"
 
-#: src/main.py:93
+#: src/main.py:117
 msgid "translator_credits"
 msgstr "Heimen Stoffels <vistausss@fastmail.com>"
 
-#: src/AppDetails.py:176
+#: src/AppDetails.py:28 src/AppDetails.py:74 src/AppDetails.py:395
+msgid "Update"
+msgstr "Bĳwerken"
+
+#: src/AppDetails.py:29
+msgid "Cancel update"
+msgstr "Bijwerken afbreken"
+
+#: src/AppDetails.py:30 src/InstalledAppsList.py:32
+msgid "Checking updates..."
+msgstr "Bezig met controleren op updates…"
+
+#: src/AppDetails.py:31
+msgid "No updates available"
+msgstr "Er zijn geen updates beschikbaar"
+
+#: src/AppDetails.py:32
+msgid "This application includes update information provided by the developer"
+msgstr "Deze toepassing bevat update-informatie van de ontwikkelaar"
+
+#: src/AppDetails.py:33
+msgid "Manage update details for this application"
+msgstr "Update-informatie van deze toepassing beheren"
+
+#: src/AppDetails.py:213
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -42,158 +66,190 @@ msgstr ""
 "<small>U kunt in de voorkeuren kiezen om externe toepassingen te verbergen.</"
 "small>"
 
-#: src/AppDetails.py:180
+#: src/AppDetails.py:224
 msgid "Please, verify the source of this app before opening it"
 msgstr "Controleer de bron van deze toepassing"
 
-#: src/AppDetails.py:181
+#: src/AppDetails.py:225
 msgid "Unlock"
 msgstr "Ontgrendelen"
 
-#: src/AppDetails.py:273
+#: src/AppDetails.py:328
 msgid "Launching..."
 msgstr "Bezig met starten…"
 
-#: src/AppDetails.py:304 src/AppDetails.py:324
-msgid "This app runs in the terminal"
-msgstr "Deze toepassing draait in een terminalvenster"
-
-#: src/AppDetails.py:306 src/AppDetails.py:321 src/AppDetails.py:327
-msgid "Launch"
-msgstr "Starten"
-
-#: src/AppDetails.py:308 src/AppDetails.py:336
-msgid "Remove"
-msgstr "Verwijderen"
-
-#: src/AppDetails.py:312
-msgid "Uninstalling..."
-msgstr "Bezig met verwijderen…"
-
-#: src/AppDetails.py:316
-msgid "Installing..."
-msgstr "Bezig met installeren…"
-
-#: src/AppDetails.py:329
-msgid "Move to the app menu"
-msgstr "Verplaatsen naar toepassingsmenu"
-
-#: src/AppDetails.py:333
-msgid "Update"
-msgstr "Bĳwerken"
-
-#: src/AppDetails.py:340
-msgid "Updating"
-msgstr "Bezig met bĳwerken…"
-
-#: src/AppDetails.py:344
+#: src/AppDetails.py:335 src/AppDetails.py:501
+#: src/providers/AppImageProvider.py:648
 msgid "Error"
 msgstr "Foutmelding"
 
+#: src/AppDetails.py:412
+msgid "Update error"
+msgstr "Bĳwerkfout"
+
+#: src/AppDetails.py:416
+msgid "Close"
+msgstr "Sluiten"
+
+#: src/AppDetails.py:424
+msgid "Do you really want to remove this app?"
+msgstr "Weet u zeker dat u deze toepassing wilt verwijderen?"
+
+#: src/AppDetails.py:427 src/components/AppDetailsConflictModal.py:14
+msgid "Cancel"
+msgstr "Annuleren"
+
+#: src/AppDetails.py:428 src/AppDetails.py:467
+msgid "Remove"
+msgstr "Verwijderen"
+
+#: src/AppDetails.py:463 src/AppDetails.py:483
+msgid "This app runs in the terminal"
+msgstr "Deze toepassing draait in een terminalvenster"
+
+#: src/AppDetails.py:465 src/AppDetails.py:480 src/AppDetails.py:486
+msgid "Launch"
+msgstr "Starten"
+
+#: src/AppDetails.py:471
+msgid "Uninstalling..."
+msgstr "Bezig met verwijderen…"
+
+#: src/AppDetails.py:475
+msgid "Installing..."
+msgstr "Bezig met installeren…"
+
 #: src/AppDetails.py:488
+msgid "Move to the app menu"
+msgstr "Verplaatsen naar toepassingsmenu"
+
+#: src/AppDetails.py:512
+msgid "This app might not be compatible with your system architecture"
+msgstr "Deze toepassing is mogelijk niet geschikt voor uw systeemarchitectuur"
+
+#: src/AppDetails.py:759
 msgid "Website"
 msgstr "Website"
 
-#: src/AppDetails.py:488
+#: src/AppDetails.py:759
 msgid "Add a website"
 msgstr "Website toevoegen"
 
-#: src/AppDetails.py:497
+#: src/AppDetails.py:768
 msgid "Open URL"
 msgstr "Url openen"
 
-#: src/AppDetails.py:510
+#: src/AppDetails.py:784 src/AppDetails.py:947
+msgid "Save"
+msgstr "Opslaan"
+
+#: src/AppDetails.py:797
+msgid "Update management"
+msgstr "Updatebeheer"
+
+#: src/AppDetails.py:802
+msgid "Update URL"
+msgstr "Update-url"
+
+#: src/AppDetails.py:809
+msgid "Source"
+msgstr "Bron"
+
+#: src/AppDetails.py:810
+msgid "Select the source type"
+msgstr "Kies het soort bron"
+
+#: src/AppDetails.py:834
+msgid "How it works"
+msgstr "Hoe werkt dit?"
+
+#: src/AppDetails.py:851
 msgid "Reload metadata"
 msgstr "Metagegevens herladen"
 
-#: src/AppDetails.py:511
+#: src/AppDetails.py:852
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
 msgstr ""
 "Werk de metagegevens bĳ, zoals pictogram, versienummer en beschrĳving.\n"
-"Dit is nuttig na het installeren van een nieuwe versie."
+"Dit kan van pas komen na het installeren van een nieuwe versie."
 
-#: src/AppDetails.py:523
+#: src/AppDetails.py:864
 msgid "Command line arguments"
 msgstr "Opdrachtregelopties"
 
-#: src/AppDetails.py:539
+#: src/AppDetails.py:882
 msgid "Hash"
 msgstr "Controlesom"
 
-#: src/AppDetails.py:549
+#: src/AppDetails.py:892
 msgid "Path"
 msgstr "Locatie"
 
-#: src/AppDetails.py:551
+#: src/AppDetails.py:894
 msgid "Open Folder"
 msgstr "Map openen"
 
-#: src/AppDetails.py:561
+#: src/AppDetails.py:904
 msgid "Package type"
 msgstr "Pakkettype"
 
-#: src/AppDetails.py:581
+#: src/AppDetails.py:922
 msgid "Key"
 msgstr "Sleutel"
 
-#: src/AppDetails.py:582
+#: src/AppDetails.py:923
 msgid "Value"
 msgstr "Waarde"
 
-#: src/AppDetails.py:601
+#: src/AppDetails.py:942
 msgid "Add"
 msgstr "Toevoegen"
 
-#: src/AppDetails.py:606
+#: src/AppDetails.py:962
 msgid "Environment variables"
 msgstr "Omgevingsvariabelen"
 
-#: src/GearleverWindow.py:35
+#: src/AppDetails.py:963
+msgid "Add or customize environment for this application"
+msgstr "Bewerk de omgeving van deze toepassing of voeg een variabele toe"
+
+#: src/GearleverWindow.py:37
 msgid "Open a new AppImage"
 msgstr "AppImage openen"
 
-#: src/GearleverWindow.py:45
+#: src/GearleverWindow.py:49
 msgid "Open"
 msgstr "Openen"
 
-#: src/GearleverWindow.py:207
+#: src/GearleverWindow.py:253
 msgid "Open a file"
 msgstr "Bestand openen"
 
-#: src/InstalledAppsList.py:36
+#: src/InstalledAppsList.py:30
+msgid "Check for updates"
+msgstr "Controleren op updates"
+
+#: src/InstalledAppsList.py:31
+msgid "No updates found"
+msgstr "Er zijn geen updates beschikbaar"
+
+#: src/InstalledAppsList.py:51
 msgid "Filter installed applications"
 msgstr "Geïnstalleerde toepassingen filteren"
 
-#: src/InstalledAppsList.py:41
+#: src/InstalledAppsList.py:57
 msgid "Installed applications"
 msgstr "Geïnstalleerde toepassingen"
 
-#: src/preferences.py:22
+#: src/preferences.py:28
 msgid "General"
 msgstr "Algemeen"
 
-#: src/preferences.py:27
+#: src/preferences.py:33
 msgid "AppImage default location"
 msgstr "Standaard AppImagelocatie"
-
-#: src/preferences.py:36
-msgid "Use executable name for integrated terminal apps"
-msgstr "Naam van uitvoerbaar bestand gebruiken bĳ terminaltoepassingen"
-
-#: src/preferences.py:38
-msgid ""
-"If enabled, apps that run in the terminal are renamed as their executable.\n"
-"You would need to add the aforementioned folder to your $PATH manually.\n"
-"\n"
-"For example, \"golang_x86_64.appimage\" will be saved as \"go\""
-msgstr ""
-"Schakel in om toepassingen die in de terminal worden uitgevoerd de naam van "
-"het uitvoerbare bestand te geven.\n"
-"Hiervoor is het noodzakelĳk om de bĳbehorende map op te nemen in $PATH.\n"
-"\n"
-"Voorbeeld: ‘golang_x86_64.appimage’ wordt opgeslagen als ‘go’."
 
 #: src/preferences.py:42
 msgid "Show integrated AppImages outside the default folder"
@@ -207,35 +263,72 @@ msgstr ""
 "Toon AppImages die zĳn opgenomen in het systeemmenu, maar niet geïnstalleerd "
 "zĳn in de standaardmap."
 
-#: src/preferences.py:52
+#: src/preferences.py:51
+msgid "Updates management"
+msgstr "Updatebeheer"
+
+#: src/preferences.py:53
+msgid "Check updates on system startup"
+msgstr "Controleren op updates na opstarten"
+
+#: src/preferences.py:55
+msgid ""
+"Receive a notification when a new update is detected; updates will not be "
+"installed automatically"
+msgstr ""
+"Ontvang een melding als er een update beschikbaar is. Let op: updates worden "
+"niet automatisch geïnstalleerd."
+
+#: src/preferences.py:62
 msgid "File management"
 msgstr "Bestandsbeheer"
 
-#: src/preferences.py:54
+#: src/preferences.py:64
 msgid "Move AppImages into the destination folder"
 msgstr "AppImages verplaatsen naar bestemming"
 
-#: src/preferences.py:55
+#: src/preferences.py:65
 msgid "Reduce disk usage"
 msgstr "Beperk het schĳfgebruik"
 
-#: src/preferences.py:59
+#: src/preferences.py:69
 msgid "Clone AppImages into the destination folder"
 msgstr "AppImages klonen naar bestemming"
 
-#: src/preferences.py:60
+#: src/preferences.py:70
 msgid "Keep the original file and create a copy in the destination folder"
 msgstr "Bewaar het oorspronkelĳke bestand en maak een kopie op de bestemming"
 
-#: src/preferences.py:85
+#: src/preferences.py:96
+msgid "Naming conventions"
+msgstr "Naamsvoorschriften"
+
+#: src/preferences.py:98
+msgid "Use executable name for integrated terminal apps"
+msgstr "Naam van uitvoerbaar bestand gebruiken bĳ terminaltoepassingen"
+
+#: src/preferences.py:100
+msgid ""
+"If enabled, apps that run in the terminal are renamed as their executable.\n"
+"You would need to add the aforementioned folder to your $PATH manually.\n"
+"\n"
+"For example, \"golang_x86_64.appimage\" will be saved as \"go\""
+msgstr ""
+"Schakel in om toepassingen die in de terminal worden uitgevoerd de naam van "
+"het uitvoerbare bestand te geven.\n"
+"Hiervoor is het noodzakelĳk om de bĳbehorende map op te nemen in $PATH.\n"
+"\n"
+"Voorbeeld: ‘golang_x86_64.appimage’ wordt opgeslagen als ‘go’."
+
+#: src/preferences.py:106
 msgid "Debugging"
 msgstr "Foutopsporing"
 
-#: src/preferences.py:87
+#: src/preferences.py:108
 msgid "Enable debug logs"
 msgstr "Foutopsporing inschakelen"
 
-#: src/preferences.py:89
+#: src/preferences.py:110
 msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
@@ -245,13 +338,17 @@ msgstr ""
 "prestaties kan gaan.\n"
 "Herstart vereist."
 
-#: src/preferences.py:112 src/WelcomeScreen.py:90
-msgid "The folder must be in your home directory"
-msgstr "De map dient in uw persoonlĳke map te staan"
+#: src/preferences.py:137
+msgid "The folder must writeable"
+msgstr "De map moet beschrijfbaar zijn"
 
-#: src/preferences.py:115 src/WelcomeScreen.py:93
+#: src/preferences.py:140 src/WelcomeScreen.py:98
 msgid "Select a folder"
 msgstr "Kies een map"
+
+#: src/WelcomeScreen.py:95
+msgid "The folder must be in your home directory"
+msgstr "De map dient in uw persoonlĳke map te staan"
 
 #: src/gtk/main-menu.ui:6
 msgid "_Preferences"
@@ -277,10 +374,6 @@ msgstr "Conflict met ‘{app_name}’"
 #: src/components/AppDetailsConflictModal.py:11
 msgid "There is already an app with the same name, how do you want to proceed?"
 msgstr "Er is al een toepassing met deze naam. Wat wilt u doen?"
-
-#: src/components/AppDetailsConflictModal.py:14
-msgid "Cancel"
-msgstr "Annuleren"
 
 #: src/components/AppDetailsConflictModal.py:17
 msgid "Keep both"
@@ -309,6 +402,10 @@ msgstr ""
 "gekozen."
 
 #: src/gtk/empty-list-placeholder.ui:46
+msgid "Show welcome screen"
+msgstr "Welkomstscherm tonen"
+
+#: src/gtk/empty-list-placeholder.ui:56
 msgid "Open Preferences"
 msgstr "Voorkeuren openen"
 
@@ -375,8 +472,8 @@ msgstr "Klik op de knop om een voorbeeldmap met daarin een AppImage te openen."
 
 #: src/gtk/tutorial/3.ui:33
 msgid ""
-"Use the right-click menu to set Gear lever as the default app for \"."
-"appimage\" files"
+"Use the right-click menu to set Gear lever as the default app for "
+"\".appimage\" files"
 msgstr ""
 "Open het rechtermuisknopmenu om Versnellingspook in te stellen als "
 "standaardtoepassing van alle .appimage-bestanden."
@@ -401,6 +498,45 @@ msgstr "Instelhulp sluiten"
 msgid "No description provided"
 msgstr "Er is geen beschrĳving beschikbaar"
 
-#: src/providers/AppImageProvider.py:561
-msgid "Cannot load an untrusted AppImage"
-msgstr "Onvertrouwde AppImages kunnen niet worden gestart"
+#: src/providers/AppImageProvider.py:584
+msgid ""
+"The downloaded file is not a valid appimage, please check if the provided "
+"URL is correct"
+msgstr "Het gedownloade bestand is geen geldige AppImage - controleer de url"
+
+#: src/providers/AppImageProvider.py:590
+#, python-brace-format
+msgid ""
+"The downloaded appimage does not have the same app name and can't be "
+"updated\n"
+"{el.name} ➔ {list_element.name}"
+msgstr ""
+"De gedownloade AppImage heeft een afwijkende naam en kan daarom niet worden "
+"gebruikt\n"
+"{el.name} ➔ {list_element.name}"
+
+#: src/providers/AppImageProvider.py:634
+msgid "Running AppImages on NixOS requires appimage-run"
+msgstr "Op NixOS is ‘appimage-run’ vereist"
+
+#: src/providers/AppImageProvider.py:649
+#, python-brace-format
+msgid ""
+"AppImages require FUSE to run. You might still be able to run it with --"
+"appimage-extract-and-run in the command line arguments. \n"
+"\n"
+"Click the link below for more information. \n"
+"{url}"
+msgstr ""
+"Voor het gebruik van AppImages is FUSE vereist. Wellicht kunt u zonder FUSE "
+"af met behulp van de opdracht --appimage-extract-and-run in de "
+"opdrachtregelopties. \n"
+"\n"
+"Klik voor meer informatie op onderstaande link. \n"
+"{url}"
+
+#~ msgid "Updating"
+#~ msgstr "Bezig met bĳwerken…"
+
+#~ msgid "Cannot load an untrusted AppImage"
+#~ msgstr "Onvertrouwde AppImages kunnen niet worden gestart"
