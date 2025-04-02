@@ -2,13 +2,11 @@ import logging
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, GLib
 
 from .models.AppListElement import InstalledStatus
-from .providers.AppImageProvider import AppImageListElement
+from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
-from .lib.utils import url_is_valid, get_file_hash, get_application_window
+from .lib.utils import get_application_window
 from .components.AppListBoxItem import AppListBoxItem
-from .components.AppDetailsConflictModal import AppDetailsConflictModal
-
 
 class MultiInstall(Gtk.ScrolledWindow):
     __gsignals__ = {
@@ -153,6 +151,7 @@ class MultiInstall(Gtk.ScrolledWindow):
         for f in files:
             try:
                 el = appimage_provider.create_list_element_from_file(f)
+                el.update_logic = AppImageUpdateLogic.KEEP
                 self.app_list.append(el)
 
             except Exception as e:
