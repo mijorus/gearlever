@@ -23,6 +23,7 @@ fetch_updates_cache = None
 class InstalledAppsList(Gtk.ScrolledWindow):
     __gsignals__ = {
         "selected-app": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
+        "update-all": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
     }
 
     CHECK_FOR_UPDATES_LABEL = _('Check for updates')
@@ -72,6 +73,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         )
 
         self.updates_btn.connect('clicked', self.on_fetch_updates_btn_clicked)
+        self.update_all_btn.connect('clicked', self.on_update_all_btn_clicked)
         title_row.append(self.updates_btn)
         title_row.append(self.update_all_btn)
 
@@ -245,6 +247,9 @@ class InstalledAppsList(Gtk.ScrolledWindow):
     def open_preferences(self, widget):
         pref = Preferences()
         pref.present()
+
+    def on_update_all_btn_clicked(self, *args):
+        self.emit('update-all', None)
 
     def on_open_welcome_screen(self, widget):
         tutorial = WelcomeScreen()

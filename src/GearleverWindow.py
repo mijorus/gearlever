@@ -21,6 +21,7 @@ from .lib.constants import APP_ID
 from .InstalledAppsList import InstalledAppsList
 from .AppDetails import AppDetails
 from .MultiInstall import MultiInstall
+from .MultiUpdate import MultiUpdate
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageListElement
 from .models.AppListElement import AppListElement
@@ -77,13 +78,15 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         self.installed_apps_list = InstalledAppsList()
         self.installed_apps_list.refresh_list()
+        self.installed_apps_list.connect('update-all', self.on_update_all_event)
 
         self.multi_install = MultiInstall()
         self.multi_install.connect('show-details', self.on_multi_install_show_details)
-        self.multi_install.connect('go-back', lambda *_: self.on_left_button_clicked(self.left_button))
+        self.multi_install.connect('go-back', self.on_left_button_clicked)
+
+        self.multi_update = MultiUpdate()
 
         self.installed_stack.add_child(self.installed_apps_list)
-
         self.installed_stack.set_visible_child(self.installed_apps_list)
         
         # Add content to the main_stack
@@ -92,8 +95,8 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.container_stack.append(self.app_lists_stack)
         self.container_stack.append(self.app_details)
         self.container_stack.append(self.multi_install)
+        self.container_stack.append(self.multi_update)
 
-        
         # Show details of an installed app
         self.installed_apps_list.connect('selected-app', self.on_selected_installed_app)
 
@@ -177,13 +180,13 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.installed_apps_list.refresh_list()
         self.container_stack.set_visible_child(self.app_lists_stack)
 
-    def on_left_button_clicked(self, widget):
+    def on_left_button_clicked(self, *args):
         if self.app_lists_stack.get_visible_child() == self.installed_stack:
             container_visible = self.container_stack.get_visible_child()
 
             if container_visible == self.app_details:
                 if self.selected_files_count > 1:
-                   self.container_stack.set_visible_child(self.multi_install)
+                    self.container_stack.set_visible_child(self.multi_install)
 
                 else:
                     self.titlebar.set_title_widget(self.view_title_widget)
@@ -199,14 +202,21 @@ class GearleverWindow(Gtk.ApplicationWindow):
     def on_app_lists_stack_change(self, widget, data):
         pass
 
+    def on_update_all_event(self, *args):
+        self.container_stack.set_visible_child(self.multi_update)
+        self.multi_update.start()
+
     def on_container_stack_change(self, widget, data):
         in_app_details = self.container_stack.get_visible_child() is self.app_details
         in_multi_install = self.container_stack.get_visible_child() is self.multi_install
+        in_multi_update = self.container_stack.get_visible_child() is self.multi_update
 
         if in_app_details or in_multi_install:
             self.left_button.set_icon_name('gl-left-symbolic')
             self.left_button.set_tooltip_text(None)
             self.search_btn.set_visible(False)
+        elif in_multi_update:
+            self.left_button.set_visible(False)
         else:
             self.search_btn.set_visible(True)
             self.left_button.set_child(self.open_appimage_button_child)
