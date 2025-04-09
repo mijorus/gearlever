@@ -334,6 +334,9 @@ class GithubUpdater(UpdateManager):
             rel_data_resp.raise_for_status()
             rel_data = rel_data_resp.json()
         except Exception as e:
+            if 'rate limit exceeded' in str(e):
+                print(str(e))
+
             logging.error(e)
             return
 
