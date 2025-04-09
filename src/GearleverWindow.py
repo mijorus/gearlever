@@ -85,6 +85,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.multi_install.connect('go-back', self.on_left_button_clicked)
 
         self.multi_update = MultiUpdate()
+        self.multi_update.connect('go-back', self.on_left_button_clicked)
 
         self.installed_stack.add_child(self.installed_apps_list)
         self.installed_stack.set_visible_child(self.installed_apps_list)
@@ -193,6 +194,10 @@ class GearleverWindow(Gtk.ApplicationWindow):
                     self.on_show_installed_list()
 
             elif container_visible == self.multi_install:
+                self.titlebar.set_title_widget(self.view_title_widget)
+                self.on_show_installed_list()
+
+            elif container_visible == self.multi_update:
                 self.titlebar.set_title_widget(self.view_title_widget)
                 self.on_show_installed_list()
 

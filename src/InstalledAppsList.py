@@ -138,6 +138,8 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
         self.installed_apps_list.connect('row-activated', self.on_activated_row)
 
+        self.update_all_btn.set_visible(False)
+
     @_async
     def fetch_updates(self, cache=False):
         global fetch_updates_cache

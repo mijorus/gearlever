@@ -77,13 +77,24 @@ class MultiUpdate(Gtk.ScrolledWindow):
         self.app_list_box.append(row)
         self.app_list_box_items.append(row)
 
+    @idle
+    def on_update_end(self):
+        self.emit('go-back', None)
+
+    @idle
+    def mark_as_updated(self, el: AppImageListElement):
+        el.set_opacity(1)
+
     @_async
     def update_all(self):
-        try:
-            # update
-            pass
-        finally:
-            self.update_progress_fraction(1)
+        for i, el in enumerate(self.app_list):
+            manager = UpdateManagerChecker.check_url_for_app(el)
+            appimage_provider.update_from_url(manager, el, status_cb=lambda *args: None)
+            self.update_progress_fraction(i / len(self.app_list))
+            self.mark_as_updated(el)
+
+        self.update_progress_fraction(1)
+        self.on_update_end()
 
     def start(self):
         if self.progress_bar.get_fraction() != 1:
