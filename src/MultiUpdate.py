@@ -83,7 +83,10 @@ class MultiUpdate(Gtk.ScrolledWindow):
 
     @idle
     def mark_as_updated(self, el: AppImageListElement):
-        el.set_opacity(1)
+        for row in self.app_list_box_items:
+            if row._app.file_path == el.file_path:
+                row.set_opacity(1)
+                return
 
     @_async
     def update_all(self):
