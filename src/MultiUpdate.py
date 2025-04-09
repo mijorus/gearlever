@@ -101,7 +101,7 @@ class MultiUpdate(Gtk.ScrolledWindow):
             manager = UpdateManagerChecker.check_url_for_app(el)
             self.current_update_manager = manager
             appimage_provider.update_from_url(manager, el, 
-                status_cb=lambda s: self.update_progress_fraction((s / p) * i))
+                status_cb=lambda s: self.update_progress_fraction((s / p) * (i + 1)))
             self.mark_as_updated(el)
 
         self.update_progress_fraction(1)

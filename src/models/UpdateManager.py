@@ -162,6 +162,7 @@ class StaticFileUpdater(UpdateManager):
         if os.path.exists(fname):
             os.remove(fname)
 
+        d_notify_at = 0.1
         with open(fname, 'wb') as f:
             for chunk in self.currend_download.iter_content(block_size):
                 f.write(chunk)
@@ -170,7 +171,6 @@ class StaticFileUpdater(UpdateManager):
 
                 if total_size:
                     d_perc = (status / total_size)
-                    d_notify_at = 0.1
 
                     if d_perc > d_notify_at:
                         d_notify_at += 0.1
