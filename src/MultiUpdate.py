@@ -21,13 +21,18 @@ class MultiUpdate(Gtk.ScrolledWindow):
         self.app_list: list[AppImageListElement] = []
         self.app_list_box_items: list[AppListBoxItem] = []
         self.app_list_box = Gtk.ListBox(css_classes=['boxed-list'])
+        self.current_update_manager = None
+        self.green_light = True
 
         self.cancel_update_btn = Gtk.Button(
-            css_classes=['destructive-action'], label=_('Cancel update'), halign=Gtk.Align.CENTER)
+            label=_('Cancel update'), halign=Gtk.Align.CENTER)
         
-        self.cancel_update_btn.connect('clicked', self.on_cancel_update_btn_clicked)
+        view_box = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL, 
+            spacing=10
+        )
 
-        self.main_box = Gtk.Box(
+        main_box = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL, 
             margin_top=30, 
             margin_bottom=10, 
@@ -36,22 +41,20 @@ class MultiUpdate(Gtk.ScrolledWindow):
             spacing=20
         )
 
-        self.main_box.append(self.cancel_update_btn)
-        self.main_box.append(self.app_list_box)
+        main_box.append(self.cancel_update_btn)
+        main_box.append(self.app_list_box)
 
-        clamp = Adw.Clamp(child=self.main_box)
-        overlay = Gtk.Overlay(
-            child=clamp,
-        )
+        clamp = Adw.Clamp(child=main_box)
 
         self.progress_bar = Gtk.ProgressBar(
             css_classes=['osd', 'horizontal', 'top'], fraction=1
         )
 
-        overlay.add_overlay(self.progress_bar)
-        overlay.set_clip_overlay(self.progress_bar, True)
+        view_box.append(self.progress_bar)
+        view_box.append(clamp)
 
-        self.set_child(overlay)
+        self.cancel_update_btn.connect('clicked', self.on_cancel_update_btn)
+        self.set_child(view_box)
 
     @idle
     def update_progress_fraction(self, p):
@@ -90,10 +93,15 @@ class MultiUpdate(Gtk.ScrolledWindow):
 
     @_async
     def update_all(self):
+        p = len(self.app_list)
         for i, el in enumerate(self.app_list):
+            if not self.green_light:
+                break
+
             manager = UpdateManagerChecker.check_url_for_app(el)
-            appimage_provider.update_from_url(manager, el, status_cb=lambda *args: None)
-            self.update_progress_fraction(i / len(self.app_list))
+            self.current_update_manager = manager
+            appimage_provider.update_from_url(manager, el, 
+                status_cb=lambda s: self.update_progress_fraction((s / p) * i))
             self.mark_as_updated(el)
 
         self.update_progress_fraction(1)
@@ -127,6 +135,9 @@ class MultiUpdate(Gtk.ScrolledWindow):
 
         self.update_all()
 
-    def on_cancel_update_btn_clicked(self, *args):
-        print('asd')
-        # self.emit('go-back', None)
+    def on_cancel_update_btn(self, button):
+        self.green_light = False
+        if self.current_update_manager:
+            self.current_update_manager.cancel_download()
+
+        self.emit('go-back', None)
