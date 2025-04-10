@@ -139,5 +139,3 @@ class MultiUpdate(Gtk.ScrolledWindow):
         self.green_light = False
         if self.current_update_manager:
             self.current_update_manager.cancel_download()
-
-        self.emit('go-back', None)
