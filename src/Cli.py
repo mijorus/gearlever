@@ -70,7 +70,7 @@ class Cli():
             
             if not assume_yes:
                 ans = Cli.ask('\nDo you really want to update all AppImages? (y/N)', ['y', 'Y', 'n', 'N'])
-                if ans.lower != 'y':
+                if ans.lower() != 'y':
                     sys.exit(0)
 
             assume_yes = True
@@ -79,7 +79,7 @@ class Cli():
             for el in installed:
                 manager = UpdateManagerChecker.check_url_for_app(el)
 
-                if manager.is_update_available():
+                if manager and manager.is_update_available(el):
                     updates.append(el)
         else:
             g_file = Cli._get_file_from_args(argv)
@@ -101,7 +101,7 @@ class Cli():
                 if ans.lower() != 'y':
                     sys.exit(0)
 
-            print(f'Downloading update from:\n{manager.url}')
+            print(f'Downloading update from: {manager.url}')
             appimage_provider.update_from_url(manager, el, 
                 lambda s: print("\rStatus: " + str(round(s * 100)) + "%", end=""))
 
