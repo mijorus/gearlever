@@ -6,6 +6,7 @@ class TestGearLever(unittest.TestCase):
     def setUp(self):
         self.cwd = os.environ.get('GITHUB_WORKSPACE', '.')
         self.testfilesPath = os.path.join(self.cwd, 'tests', 'testfiles')
+        self.installPath = os.pardir.join('~', 'AppImages')
     
     def runCommand(self, command: list[str]):
         output = subprocess.run(['flatpak', 'run', 'it.mijorus.gearlever', *command], stdout=subprocess.PIPE)
@@ -20,5 +21,11 @@ class TestGearLever(unittest.TestCase):
         
     def test_install(self):
         self.runCommand(['--integrate', os.path.join(self.testfilesPath, 'demo.AppImage'), '-y'])
-        installed = self.runCommand(['--list-installed'])
-        self.assertEqual(('helloworldappimage.appimage' in installed), True)
+        installed = self.runCommand(['--list-installed', '-v'])
+        appimages = os.listdir(self.installPath)
+        self.assertIn('helloworldappimage.appimage', appimages)
+        self.assertIn('helloworldappimage.appimage', installed)
+
+        self.runCommand(['--remove', os.path.join(self.installPath, 'helloworldappimage.AppImage'), '-y'])
+        appimages = os.listdir(self.installPath)
+        self.assertNotIn('helloworldappimage.appimage', appimages)
