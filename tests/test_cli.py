@@ -21,4 +21,4 @@ class TestGearLever(unittest.TestCase):
     def test_install(self):
         self.runCommand(['--integrate', os.path.join(self.testfilesPath, 'demo.AppImage'), '-y'])
         installed = self.runCommand(['--list-installed'])
-        self.assertEqual(('demo.AppImage' in installed), True)
+        self.assertEqual(('helloworldappimage.appimage' in installed), True)
