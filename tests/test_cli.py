@@ -5,7 +5,7 @@ import os
 class TestGearLever(unittest.TestCase):
     def setUp(self):
         self.cwd = os.environ.get('GITHUB_WORKSPACE', '.')
-        self.testfilesPath = os.environ.join(self.cwd, 'tests', 'testfiles')
+        self.testfilesPath = os.path.join(self.cwd, 'tests', 'testfiles')
     
     def runCommand(self, command: list[str]):
         output = subprocess.run(['flatpak', 'run', 'it.mijorus.gearlever', *command], stdout=subprocess.PIPE)
