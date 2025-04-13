@@ -1,0 +1,37 @@
+name: Flatpak Build and Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install Flatpak
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y flatpak flatpak-builder
+        
+    - name: Add Flathub repository
+      run: |
+        sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+        
+    - name: Install Flatpak SDK
+      run: |
+        sudo flatpak install -y flathub org.gnome.Platform/47 org.gnome.Sdk/47
+        
+    - name: Build Flatpak package
+      run: |
+        flatpak-builder ./build ./it.mijorus.gearlever.json --user --install --force-clean
+        
+    - name: Run test script
+      run: |
+        python -m unittest tests/test_cli.py
