@@ -26,7 +26,7 @@ jobs:
         
     - name: Install Flatpak SDK
       run: |
-        sudo flatpak install -y flathub org.gnome.Platform/47 org.gnome.Sdk/47
+        sudo flatpak install -y flathub org.gnome.Platform//47 org.gnome.Sdk//47
         
     - name: Build Flatpak package
       run: |
