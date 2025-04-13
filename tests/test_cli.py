@@ -1,7 +1,12 @@
 import unittest
 import subprocess
+import os
 
 class TestGearLever(unittest.TestCase):
+    def setUp(self):
+        self.cwd = os.environ.get('GITHUB_WORKSPACE', '.')
+        self.testfilesPath = os.environ.join(self.cwd, 'tests', 'testfiles')
+    
     def runCommand(self, command: list[str]):
         output = subprocess.run(['flatpak', 'run', 'it.mijorus.gearlever', *command], stdout=subprocess.PIPE)
         output.check_returncode()
@@ -12,3 +17,8 @@ class TestGearLever(unittest.TestCase):
         
     def test_list_installed(self):
         self.runCommand(['--list-installed'])
+        
+    def test_install(self):
+        self.runCommand(['--integrate', os.path.join(self.testfilesPath, 'demo.AppImage')])
+        installed = self.runCommand(['--list-installed'])
+        self.assertEqual(('demo.AppImage' in installed), True)
