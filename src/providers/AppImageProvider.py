@@ -666,7 +666,7 @@ class AppImageProvider():
 
         ###############################################################################
 
-        # We use p7zip to extract the content of the appimage bundle
+        # We use 7zip to extract the content of the appimage bundle
         # Old versions of Gear Lever used the --appimage-extract command, which is not
         # supported by all the appimage packages
 
@@ -688,11 +688,30 @@ class AppImageProvider():
                                     '--pattern=**.png','--pattern=**.svg', '--pattern=**.desktop', '--pattern=.DirIcon'])
         else:
             logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
-            z7zoutput = terminal.sandbox_sh(['7zz', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', 'bsp0', 
-                                                '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path)
-            logging.debug('=== 7z log ===')
-            logging.debug(z7zoutput)
-            logging.debug(f'=== end 7z log ===')
+            use_appimage_extract = False
+
+            try:
+                terminal.sandbox_sh(['7zz', 't', file.get_path(), '-y', '-bso0', '-bsp0'])
+                z7zoutput = terminal.sandbox_sh(['7zz', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', '-bsp0', 
+                                                    '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path)
+                logging.debug('=== 7z log ===')
+                logging.debug(z7zoutput)
+                logging.debug(f'=== end 7z log ===')
+            except Exception as e:
+                logging.error('Extraction with 7zz failed')
+                logging.error(str(e))
+                use_appimage_extract = True
+
+            if use_appimage_extract:
+                logging.debug('Testing with appimage-extract')
+                strings_out = terminal.sandbox_sh(['strings', '-n18', '--data', file.get_path()])
+
+                if '--appimage-extract' in strings_out:
+                    cloned_file = Gio.File.new_for_path(f'{dest_path}/app.appimage')
+                    gio_copy(file, cloned_file)
+                    logging.info('Extracting with appimage-extract')
+                    os.chmod(cloned_file.get_path(), 0o755)
+                    terminal.sandbox_sh([cloned_file.get_path(), '--appimage-extract'])
 
         return squashfs_root_folder
 
