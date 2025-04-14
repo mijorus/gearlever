@@ -11,6 +11,7 @@
         "--socket=fallback-x11",
         "--device=dri",
         "--filesystem=host:rw",
+        "--filesystem=/tmp",
         "--talk-name=org.freedesktop.Flatpak"
     ],
     "cleanup": [
