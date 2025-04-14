@@ -85,3 +85,7 @@ flatpak install --bundle --user gearlever.flatpak
   flatpak-builder build/ it.mijorus.gearlever.json --user --install --force-clean
   ```
 
+## Run CLI tests
+```sh
+python3 -m unittest tests/test_cli.py
+```
