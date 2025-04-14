@@ -688,7 +688,7 @@ class AppImageProvider():
             os.mkdir(squashfs_root_folder)
             logging.info(f'Exctracting with dwarfsextract to {squashfs_root_folder}')
             terminal.sandbox_sh(['dwarfsextract', f'--input={file.get_path()}', f'--output={squashfs_root_folder}',
-                                    '--pattern=*.png','--pattern=*.svg', '--pattern=*.desktop', '--pattern=.DirIcon'])
+                                    '--pattern=**.png','--pattern=**.svg', '--pattern=**.desktop', '--pattern=.DirIcon'])
         else:
             logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
             z7zoutput = terminal.sandbox_sh(['7z', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', 'bsp0', 
