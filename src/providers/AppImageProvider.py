@@ -710,8 +710,8 @@ class AppImageProvider():
                     cloned_file = Gio.File.new_for_path(f'{dest_path}/app.appimage')
                     gio_copy(file, cloned_file)
                     logging.info('Extracting with appimage-extract')
-                    os.chmod(cloned_file.get_path(), 0o755)
-                    terminal.sandbox_sh([cloned_file.get_path(), '--appimage-extract'])
+                    terminal.sandbox_sh(['chmod', '+x', cloned_file.get_path()])
+                    terminal.sandbox_sh([cloned_file.get_path(), '--appimage-extract'], cwd=dest_path)
 
         return squashfs_root_folder
 
