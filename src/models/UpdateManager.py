@@ -162,6 +162,7 @@ class StaticFileUpdater(UpdateManager):
         if os.path.exists(fname):
             os.remove(fname)
 
+        d_notify_at = 0.1
         with open(fname, 'wb') as f:
             for chunk in self.currend_download.iter_content(block_size):
                 f.write(chunk)
@@ -169,7 +170,12 @@ class StaticFileUpdater(UpdateManager):
                 status += block_size
 
                 if total_size:
-                    status_update_cb(status / total_size)
+                    d_perc = (status / total_size)
+
+                    if d_perc > d_notify_at:
+                        d_notify_at += 0.1
+                        logging.info(f'Download status {d_perc * 100}')
+                        status_update_cb(status / total_size)
 
         if os.path.getsize(fname) < total_size:
             raise DownloadInterruptedException()
@@ -334,6 +340,9 @@ class GithubUpdater(UpdateManager):
             rel_data_resp.raise_for_status()
             rel_data = rel_data_resp.json()
         except Exception as e:
+            if 'rate limit exceeded' in str(e):
+                print(str(e))
+
             logging.error(e)
             return
 

@@ -590,9 +590,6 @@ class AppImageProvider():
         list_element = self.create_list_element_from_file(update_gfile)
         self.refresh_title(list_element)
 
-        if not manager.embedded and not self.is_updatable(list_element):
-            raise Exception(_(f'The downloaded appimage does not have the same app name and can\'t be updated\n{el.name} ➔ {list_element.name}'))
-        
         list_element.update_logic = AppImageUpdateLogic.REPLACE
         list_element.updating_from = el
         self.install_file(list_element)
@@ -679,7 +676,7 @@ class AppImageProvider():
         is_dwarf = False
 
         try:
-            terminal.sandbox_sh(['dwarfsck', f'--input={file.get_path()}', '-q', '-detail=0', '--no-check'])
+            terminal.sandbox_sh(['dwarfsck', f'--input={file.get_path()}', '-q', '-detail=0', '--no-check'], error_quiet=True)
             is_dwarf = True
         except:
             logging.info('Filesystem is not dwarfsck')
@@ -691,7 +688,7 @@ class AppImageProvider():
                                     '--pattern=**.png','--pattern=**.svg', '--pattern=**.desktop', '--pattern=.DirIcon'])
         else:
             logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
-            z7zoutput = terminal.sandbox_sh(['7z', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', 'bsp0', 
+            z7zoutput = terminal.sandbox_sh(['7zz', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', 'bsp0', 
                                                 '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path)
             logging.debug('=== 7z log ===')
             logging.debug(z7zoutput)

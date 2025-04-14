@@ -35,7 +35,7 @@ def host_sh(command: List[str], return_stderr=False, **kwargs) -> str:
     logging.debug(f'Done {cmd}')
     return re.sub(r'\n$', '', output_string)
 
-def sandbox_sh(command: List[str], return_stderr=False, **kwargs) -> str:
+def sandbox_sh(command: List[str], return_stderr=False, error_quiet=False, **kwargs) -> str:
     try:
         cmd = [*command]
         
@@ -47,7 +47,8 @@ def sandbox_sh(command: List[str], return_stderr=False, **kwargs) -> str:
         if return_stderr:
             return d
         else:
-            print(d)
+            if not error_quiet:
+                print(d)
 
         raise e
 

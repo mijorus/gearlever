@@ -3,8 +3,8 @@
 		{
 			"path": "."
 		}
-    ],
-    "settings": {
+	],
+	"settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
         "files.watcherExclude": {
             "**/.git/objects/**": true,
