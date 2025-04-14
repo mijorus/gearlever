@@ -126,3 +126,10 @@ class TestGearLever(unittest.TestCase):
         self.assertIn('citron.appimage', updates_list)
 
         self.runCommand(['--remove', os.path.join(self.installPath, 'citron.appimage'), '-y'])
+
+    def test_with_appimageextract(self):
+        # Test apps using appimage-extract
+        self.download_file('https://dn.navicat.com/download/navicat17-premium-lite-en-x86_64.AppImage', 'navicat_premium_lite_17.appimage')
+        self.runCommand(['--integrate', os.path.join(self.download_dir, 'navicat_premium_lite_17.appimage'), '-y'])
+        self.assertIn('navicat_premium_lite_17.appimage', self.get_installed_files())
+        self.runCommand(['--remove', os.path.join(self.installPath, 'navicat_premium_lite_17.appimage'), '-y'])
