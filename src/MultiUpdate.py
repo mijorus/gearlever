@@ -108,9 +108,7 @@ class MultiUpdate(Gtk.ScrolledWindow):
         self.on_update_end()
 
     def start(self):
-        if self.progress_bar.get_fraction() != 1:
-            return
-
+        self.green_light = True
         self.progress_bar.set_fraction(0)
         self.app_list_box.remove_all()
         self.app_list = []
