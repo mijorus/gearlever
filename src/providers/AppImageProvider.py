@@ -708,7 +708,7 @@ class AppImageProvider():
 
                 if '--appimage-extract' in strings_out:
                     cloned_file = Gio.File.new_for_path(f'{dest_path}/app.appimage')
-                    terminal.sandbox_sh(['cp', file.get_path(), cloned_file.get_path()])
+                    gio_copy(file, cloned_file)
                     logging.info('Extracting with appimage-extract')
                     terminal.sandbox_sh(['chmod', '+x', cloned_file.get_path()])
                     terminal.sandbox_sh([cloned_file.get_path(), '--appimage-extract'], cwd=dest_path)
