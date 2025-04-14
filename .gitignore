@@ -13,3 +13,4 @@ venv
 po/*.mo
 
 .idea
+__pycache__
