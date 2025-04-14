@@ -60,15 +60,15 @@
             "sources": [
                 {
                     "type": "archive",
-                    "sha256": "3c82708e00af9d1622e78047efd216e4e29213a60aff3afa8326bade8353ea38",
-                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.11.2/dwarfs-0.11.2-Linux-x86_64-clang.tar.xz",
+                    "sha256": "6685622e6bf1edea138023dfb5a84ec241c6a57619ec5d7ee86344057d89296b",
+                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.12.1/dwarfs-0.12.1-Linux-x86_64.tar.xz",
                     "dest": "dwarfs",
                     "only-arches": ["x86_64"]
                 },
                 {
                     "type": "archive",
-                    "sha256": "06fc4ed91ee5c348dbfc70771fe3e3ea6834277e4a58f1f99e0bc98cb16ed3d4",
-                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.11.2/dwarfs-0.11.2-Linux-aarch64-clang.tar.xz",
+                    "sha256": "f61d49436ad6b02e7e496f746ce09d69a3f050592286b5ff3d6e3edba765b82a",
+                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.12.1/dwarfs-0.12.1-Linux-aarch64.tar.xz",
                     "dest": "dwarfs",
                     "only-arches": ["aarch64"]
                 }
