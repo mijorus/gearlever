@@ -114,12 +114,15 @@ class TestGearLever(unittest.TestCase):
         self.download_file('https://github.com/pkgforge-dev/ghostty-appimage/releases/download/v1.1.3%2B1/Ghostty-1.1.3-x86_64.AppImage', 'ghostty.appimage')
         self.runCommand(['--integrate', os.path.join(self.download_dir, 'ghostty.appimage'), '-y'])
         self.assertIn('ghostty.appimage', self.get_installed_files())
+        self.runCommand(['--remove', os.path.join(self.installPath, 'ghostty.appimage'), '-y'])
 
 
     def test_fetch_updates(self):
-        self.download_file('https://github.com/pkgforge-dev/Citron-AppImage/releases/download/v0.6/Citron-v0.6-anylinux-x86_64.AppImage', appname)
-        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
+        self.download_file('https://github.com/pkgforge-dev/Citron-AppImage/releases/download/v0.6/Citron-v0.6-anylinux-x86_64.AppImage', 'citron.appimage')
+        self.runCommand(['--integrate', os.path.join(self.download_dir, 'citron.appimage'), '-y'])
         self.assertIn('citron.appimage', self.get_installed_files())
 
         updates_list = self.runCommand(['--list-updates'])
         self.assertIn('citron.appimage', updates_list)
+
+        self.runCommand(['--remove', os.path.join(self.installPath, 'citron.appimage'), '-y'])
