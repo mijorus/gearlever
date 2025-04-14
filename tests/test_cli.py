@@ -109,3 +109,17 @@ class TestGearLever(unittest.TestCase):
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
         self.assertNotIn(appname, self.get_installed_files())
         self.assertNotIn('citron', self.get_icon_files())
+
+        # Test dwarfs with symbolic links
+        self.download_file('https://github.com/pkgforge-dev/ghostty-appimage/releases/download/v1.1.3%2B1/Ghostty-1.1.3-x86_64.AppImage', 'ghostty.appimage')
+        self.runCommand(['--integrate', os.path.join(self.download_dir, 'ghostty.appimage'), '-y'])
+        self.assertIn('ghostty.appimage', self.get_installed_files())
+
+
+    def test_fetch_updates(self):
+        self.download_file('https://github.com/pkgforge-dev/Citron-AppImage/releases/download/v0.6/Citron-v0.6-anylinux-x86_64.AppImage', appname)
+        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
+        self.assertIn('citron.appimage', self.get_installed_files())
+
+        updates_list = self.runCommand(['--list-updates'])
+        self.assertIn('citron.appimage', updates_list)
