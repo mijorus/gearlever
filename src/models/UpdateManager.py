@@ -422,9 +422,6 @@ class GitlabUpdater(UpdateManager):
         self.url_data = GitlabUpdater.get_url_data(url)
         self.url = url
 
-        # self.url = f'https://github.com/{self.url_data["username"]}/{self.url_data["repo"]}'
-        # self.url += f'/releases/download/{self.url_data["tag_name"]}/{self.url_data["filename"]}'
-
         self.embedded = False
 
     def get_url_data(url: str):
