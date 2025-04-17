@@ -689,29 +689,39 @@ class AppImageProvider():
         else:
             logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
             use_appimage_extract = False
+            use_unsquashfs = False
 
             try:
                 terminal.sandbox_sh(['7zz', 't', file.get_path(), '-y', '-bso0', '-bsp0'])
                 z7zoutput = terminal.sandbox_sh(['7zz', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', '-bsp0', 
                                                     '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path)
-                logging.debug('=== 7z log ===')
+                logging.debug('=== 7zz log ===')
                 logging.debug(z7zoutput)
-                logging.debug(f'=== end 7z log ===')
+                logging.debug(f'=== end 7zz log ===')
             except Exception as e:
                 logging.error('Extraction with 7zz failed')
                 logging.error(str(e))
-                use_appimage_extract = True
+                use_unsquashfs = True
+
+            if use_unsquashfs:
+                logging.debug('Testing with unsquashfs')
+                appimage_offset = terminal.sandbox_sh(['get_appimage_offset', file.get_path()])
+
+                try:
+                    terminal.sandbox_sh(['unsquashfs', '-o', appimage_offset, '-l', file.get_path()])
+                    terminal.sandbox_sh(['unsquashfs', '-o', appimage_offset, '-d', squashfs_root_folder, file.get_path(),
+                                        '*.png', '*.svg', '*.desktop', '.DirIcon'])
+                except Exception as e:
+                    logging.error('Extraction with unsquashfs failed')
+                    logging.error(str(e))
+                    use_appimage_extract = True
 
             if use_appimage_extract:
-                logging.debug('Testing with appimage-extract')
-                strings_out = terminal.sandbox_sh(['strings', '-n18', '--data', file.get_path()])
-
-                if '--appimage-extract' in strings_out:
-                    cloned_file = Gio.File.new_for_path(f'{dest_path}/app.appimage')
-                    gio_copy(file, cloned_file)
-                    logging.info('Extracting with appimage-extract')
-                    terminal.sandbox_sh(['chmod', '+x', cloned_file.get_path()])
-                    terminal.sandbox_sh([cloned_file.get_path(), '--appimage-extract'], cwd=dest_path)
+                logging.info('Extracting with appimage-extract')
+                cloned_file = Gio.File.new_for_path(f'{dest_path}/app.appimage')
+                gio_copy(file, cloned_file)
+                terminal.sandbox_sh(['chmod', '+x', cloned_file.get_path()])
+                terminal.sandbox_sh([cloned_file.get_path(), '--appimage-extract'], cwd=dest_path)
 
         return squashfs_root_folder
 
@@ -739,7 +749,7 @@ class AppImageProvider():
 
             try:
                 if not extraction_folder.query_exists():
-                    raise InternalError('Missing mounted extraction folder', mounted_appimage_path)
+                    raise InternalError('Missing mounted extraction folder ' + mounted_appimage_path)
 
                 for d in  os.listdir(f'{extraction_folder.get_path()}'):
                     if not d.endswith('.desktop'):

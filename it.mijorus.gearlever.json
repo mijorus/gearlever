@@ -28,6 +28,37 @@
     "modules": [
         "./python3-requirements.json",
         {
+            "name": "get_appimage_offset",
+            "buildsystem": "simple",
+            "build-commands": [
+                "install -Dm 755 get_appimage_offset.sh /app/bin/get_appimage_offset"
+            ],
+            "sources": [
+                {
+                    "type": "file",
+                    "path": "./build-aux/get_appimage_offset.sh"
+                }
+            ]
+        },
+        {
+            "name": "unsquashfs",
+            "buildsystem": "simple",
+            "cleanup": [
+                "*"
+            ],
+            "build-commands": [
+                "XZ_SUPPORT=1 ZSTD_SUPPORT=1 LZ4_SUPPORT=1 make -C squashfs-tools -j ${FLATPAK_BUILDER_N_JOBS} unsquashfs",
+                "install -Dpm755 -t ${FLATPAK_DEST}/bin squashfs-tools/unsquashfs"
+            ],
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/plougher/squashfs-tools.git",
+                    "tag": "4.6.1"
+                }
+            ]
+        },
+        {
             "name": "7zip",
             "buildsystem": "simple",
             "build-commands": [
