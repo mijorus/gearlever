@@ -390,7 +390,7 @@ class GithubUpdater(UpdateManager):
             logging.debug(f'No matching assets found from {rel_url}')
             return
 
-        is_zsync = zsync_file['name'].endswith('.zsync')
+        is_zsync = self.embedded and zsync_file['name'].endswith('.zsync')
         target_file = re.sub(r'\.zsync$', '', zsync_file['name'])
 
         for asset in rel_data['assets']:
