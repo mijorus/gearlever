@@ -412,6 +412,7 @@ class GithubUpdater(UpdateManager):
 
             if ct_supported:
                 if target_asset['zsync']:
+                    logging.debug('GithubUpdated: checking zsync file at ' + target_asset['zsync']['browser_download_url'])
                     zsync_file = requests.get(target_asset['zsync']['browser_download_url']).text
                     zsync_file_header = zsync_file.split('\n\n', 1)[0]
                     sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
