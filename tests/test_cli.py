@@ -28,7 +28,7 @@ class TestGearLever(unittest.TestCase):
         output_str = output.stdout.decode()        
         return output_str
 
-    def testInstallApp(self, appname, app_url):
+    def installApp(self, appname, app_url):
         self.download_file(app_url, appname)
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         installed = self.runCommand(['--list-installed', '-v'])
@@ -95,7 +95,7 @@ class TestGearLever(unittest.TestCase):
         self.runCommand(['--list-installed'])
     
     def test_generic_apps(self):
-        self.testInstallApp('zen_browser.appimage', 'https://github.com/zen-browser/desktop/releases/latest/download/zen-x86_64.AppImage')
+        self.installApp('zen_browser.appimage', 'https://github.com/zen-browser/desktop/releases/latest/download/zen-x86_64.AppImage')
 
     def test_install(self):
         appname = 'todoist.appimage'
