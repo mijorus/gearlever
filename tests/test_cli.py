@@ -28,6 +28,16 @@ class TestGearLever(unittest.TestCase):
         output_str = output.stdout.decode()        
         return output_str
 
+    def testInstallApp(self, appname, app_url):
+        self.download_file(app_url, appname)
+        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
+        installed = self.runCommand(['--list-installed', '-v'])
+        self.assertIn(appname, self.get_installed_files())
+        self.assertIn(appname, installed)
+
+        self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
+        self.assertNotIn(appname, self.get_installed_files())
+
     def download_file(self, url, filename):
         """
         Downloads a file from a given URL and saves it to /tmp/gearlever with the specified filename.
@@ -83,7 +93,10 @@ class TestGearLever(unittest.TestCase):
 
     def test_list_installed(self):
         self.runCommand(['--list-installed'])
-        
+    
+    def test_generic_apps(self):
+        self.testInstallApp('zen', 'https://github.com/zen-browser/desktop/releases/latest/download/zen-x86_64.AppImage')
+
     def test_install(self):
         appname = 'todoist.appimage'
         self.download_file('https://todoist.com/linux_app/appimage', appname)
