@@ -80,7 +80,7 @@
                     ]
                 },
                 {
-                    "type": "archive",
+                    "type": "file",
                     "url": "https://github.com/ip7z/7zip/releases/download/24.09/7z2409-linux-arm64.tar.xz",
                     "sha256": "fbe331697c9417bbc06fc92d3f4576dca6a5a1442fad7ae810304446a9153e2c",
                     "dest": "7z",
