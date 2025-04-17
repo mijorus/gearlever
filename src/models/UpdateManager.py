@@ -6,12 +6,12 @@ import re
 import json
 from typing import Optional, Callable
 from abc import ABC, abstractmethod
-from gi.repository import GLib
+from gi.repository import GLib, Gio
 from urllib.parse import urlsplit
 
 from ..lib import terminal
 from ..lib.json_config import read_config_for_app
-from ..lib.utils import get_random_string, url_is_valid
+from ..lib.utils import get_random_string, url_is_valid, get_file_hash
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 from .Models import DownloadInterruptedException
 
@@ -295,12 +295,12 @@ class GithubUpdater(UpdateManager):
             logging.warn('Missing target_asset for GithubUpdater instance')
             return
 
-        dwnl = target_asset['browser_download_url']
+        dwnl = target_asset['asset']['browser_download_url']
         self.staticfile_manager = StaticFileUpdater(dwnl)
         fname, etag = self.staticfile_manager.download(status_update_cb)
 
         self.staticfile_manager = None
-        return fname, target_asset['id']
+        return fname, target_asset['asset']['id']
 
     def cancel_download(self):
         if self.staticfile_manager:
@@ -390,24 +390,41 @@ class GithubUpdater(UpdateManager):
             logging.debug(f'No matching assets found from {rel_url}')
             return
 
+        is_zsync = zsync_file['name'].endswith('.zsync')
         target_file = re.sub(r'\.zsync$', '', zsync_file['name'])
 
         for asset in rel_data['assets']:
             if asset['name'] == target_file:
                 logging.debug(f'Found 1 matching asset: {asset["name"]}')
-                return asset
+
+                if is_zsync:
+                    return {'asset': asset, 'zsync': zsync_file}
+
+                return {'asset': asset, 'zsync': None}
+
 
     def is_update_available(self, el: AppImageListElement):
         target_asset = self.fetch_target_asset()
 
         if target_asset:
-            ct_supported = target_asset['content_type'] in [*AppImageProvider.supported_mimes, 'raw',
+            ct_supported = target_asset['asset']['content_type'] in [*AppImageProvider.supported_mimes, 'raw',
                                                     'binary/octet-stream', 'application/octet-stream']
 
             if ct_supported:
-                old_size = os.path.getsize(el.file_path)
-                is_size_different = target_asset['size'] != old_size
-                return is_size_different
+                if target_asset['zsync']:
+                    zsync_file = requests.get(target_asset['zsync']['browser_download_url']).text
+                    zsync_file_header = zsync_file.split('\n\n', 1)[0]
+                    sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
+                    curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path))
+
+                    match = re.search(sha_pattern, zsync_file_header)
+                    if match:
+                        return match.group(1) != curr_version_hash
+
+                else:
+                    old_size = os.path.getsize(el.file_path)
+                    is_size_different = target_asset['asset']['size'] != old_size
+                    return is_size_different
 
         return False
 
