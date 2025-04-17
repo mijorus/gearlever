@@ -48,7 +48,7 @@
             ],
             "build-commands": [
                 "XZ_SUPPORT=1 ZSTD_SUPPORT=1 LZ4_SUPPORT=1 make -C squashfs-tools -j ${FLATPAK_BUILDER_N_JOBS} unsquashfs",
-                "install -Dpm755 -t ${FLATPAK_DEST}/bin squashfs-tools/unsquashfs"
+                "install -Dm755 squashfs-tools/unsquashfs -t ${FLATPAK_DEST}/bin"
             ],
             "sources": [
                 {

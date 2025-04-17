@@ -95,7 +95,7 @@ class TestGearLever(unittest.TestCase):
         self.runCommand(['--list-installed'])
     
     def test_generic_apps(self):
-        self.testInstallApp('zen', 'https://github.com/zen-browser/desktop/releases/latest/download/zen-x86_64.AppImage')
+        self.testInstallApp('zen_browser.appimage', 'https://github.com/zen-browser/desktop/releases/latest/download/zen-x86_64.AppImage')
 
     def test_install(self):
         appname = 'todoist.appimage'
