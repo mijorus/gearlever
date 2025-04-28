@@ -709,8 +709,7 @@ class AppImageProvider():
 
                 try:
                     terminal.sandbox_sh(['unsquashfs', '-o', appimage_offset, '-l', file.get_path()])
-                    terminal.sandbox_sh(['unsquashfs', '-o', appimage_offset, '-d', squashfs_root_folder, file.get_path(),
-                                        '*.png', '*.svg', '*.desktop', '.DirIcon'])
+                    terminal.sandbox_sh(['unsquashfs', '-o', appimage_offset, '-d', squashfs_root_folder, file.get_path()])
                 except Exception as e:
                     logging.error('Extraction with unsquashfs failed')
                     logging.error(str(e))
