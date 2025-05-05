@@ -433,6 +433,16 @@ class AppImageProvider():
                 el.env_variables = el.updating_from.env_variables
                 self.update_desktop_file(el)
 
+            has_desktop_integration = False
+            for v in el.env_variables:
+                if v.startswith('DESKTOPINTEGRATION='):
+                    has_desktop_integration = True
+                    break
+
+            if not has_desktop_integration:
+                el.env_variables.append('DESKTOPINTEGRATION=1')
+                self.update_desktop_file(el)
+
         except Exception as e:
             logging.error('Appimage installation error: ' + str(e))
             raise e
