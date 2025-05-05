@@ -68,7 +68,7 @@ class AppImageListElement():
 
 
 class AppImageProvider():
-    supported_mimes = ['application/x-iso9660-appimage', 'application/vnd.appimage']
+    supported_mimes = ['application/x-iso9660-appimage', 'application/vnd.appimage', 'application/x-appimage']
     
     def __init__(self):
         self.name = 'AppImage'
