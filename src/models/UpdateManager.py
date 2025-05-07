@@ -17,6 +17,7 @@ from .Models import DownloadInterruptedException
 
 class UpdateManager(ABC):
     name = ''
+    url = ''
     system_arch = terminal.sandbox_sh(['arch'])
     is_x86 = re.compile(r'(\-|\_|\.)x86(\-|\_|\.)')
     is_arm = re.compile(r'(\-|\_|\.)(arm64|aarch64|armv7l)(\-|\_|\.)')
@@ -74,6 +75,12 @@ class UpdateManagerChecker():
         if model:
             models = list(filter(lambda m: m is model, models))
 
+        if url:
+            for m in models:
+                logging.debug(f'Checking url with {m.__name__}')
+                if m.can_handle_link(url):
+                    return m(url)
+        
         if el:
             embedded_app_data = UpdateManagerChecker.check_app(el)
 
@@ -82,12 +89,6 @@ class UpdateManagerChecker():
                     logging.debug(f'Checking embedded url with {m.__name__}')
                     if m.can_handle_link(embedded_app_data):
                         return m(embedded_app_data, embedded=True)
-
-        if url:
-            for m in models:
-                logging.debug(f'Checking url with {m.__name__}')
-                if m.can_handle_link(url):
-                    return m(url)
 
         return None
 
