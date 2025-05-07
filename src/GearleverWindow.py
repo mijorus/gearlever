@@ -27,7 +27,7 @@ from .providers.AppImageProvider import AppImageListElement
 from .models.AppListElement import AppListElement
 from .lib import utils
 
-from gi.repository import Gtk, Adw, Gio, Gdk
+from gi.repository import Gtk, Adw, Gio, Gdk, GLib
 
 
 class GearleverWindow(Gtk.ApplicationWindow):
@@ -179,7 +179,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
     def on_show_installed_list(self, source: Gtk.Widget=None, data=None):
         self.container_stack.set_transition_type(Adw.LeafletTransitionType.OVER)
 
-        self.installed_apps_list.refresh_list()
+        # self.installed_apps_list.refresh_list()
         self.container_stack.set_visible_child(self.app_lists_stack)
 
     def on_left_button_clicked(self, *args):
@@ -216,6 +216,7 @@ class GearleverWindow(Gtk.ApplicationWindow):
         in_app_details = self.container_stack.get_visible_child() is self.app_details
         in_multi_install = self.container_stack.get_visible_child() is self.multi_install
         in_multi_update = self.container_stack.get_visible_child() is self.multi_update
+        in_apps_list = self.container_stack.get_visible_child() is self.app_lists_stack
 
         if in_app_details or in_multi_install:
             self.left_button.set_icon_name('gl-left-symbolic')
@@ -226,6 +227,9 @@ class GearleverWindow(Gtk.ApplicationWindow):
         else:
             self.search_btn.set_visible(True)
             self.left_button.set_child(self.open_appimage_button_child)
+
+        if in_apps_list:
+            self.installed_apps_list.refresh_list()
 
         self.view_title_widget.set_visible(not in_app_details)
 

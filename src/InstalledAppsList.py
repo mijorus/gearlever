@@ -42,7 +42,9 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.updates_fetched = False
 
         self.installed_apps_list_slot = Gtk.Box()
-        self.installed_apps_list: Optional[Gtk.ListBox] = None
+        self.installed_apps_list = Gtk.ListBox(css_classes=["boxed-list"])
+        self.installed_apps_list_slot.append(self.installed_apps_list)
+
         self.installed_apps_list_rows: List[AppListBoxItem] = []
         self.no_apps_found_row = NoAppsFoundRow(visible=False)
 
@@ -107,11 +109,12 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         )
 
     def refresh_list(self):
-        if self.installed_apps_list:
-            self.installed_apps_list_slot.remove(self.installed_apps_list)
+        self.installed_apps_list.remove_all()
+        # if self.installed_apps_list:
+        #     self.installed_apps_list_slot.remove(self.installed_apps_list)
 
         self.updates_btn.set_label(self.CHECK_FOR_UPDATES_LABEL)
-        self.installed_apps_list= Gtk.ListBox(css_classes=["boxed-list"])
+        # self.installed_apps_list= Gtk.ListBox(css_classes=["boxed-list"])
         self.installed_apps_list_rows = []
 
         installed: List[AppImageListElement] = appimage_provider.list_installed()
@@ -131,7 +134,6 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
         self.installed_apps_list.append(self.no_apps_found_row)
         self.no_apps_found_row.set_visible(False)
-        self.installed_apps_list_slot.append(self.installed_apps_list)
         
         self.installed_apps_list.set_sort_func(lambda r1, r2: self.sort_installed_apps_list(r1, r2))
         self.installed_apps_list.invalidate_sort()
