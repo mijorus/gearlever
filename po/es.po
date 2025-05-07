@@ -156,7 +156,7 @@ msgstr "Actualizar URL"
 
 #: src/AppDetails.py:809
 msgid "Source"
-msgstr "Fuerte"
+msgstr "Fuente"
 
 #: src/AppDetails.py:810
 msgid "Select the source type"
