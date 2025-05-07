@@ -86,6 +86,7 @@ class AppImageProvider():
         self.user_local_share_path = os.path.join(GLib.get_home_dir(), '.local', 'share')
 
     def list_installed(self) -> list[AppImageListElement]:
+        print('qwe')
         default_folder_path = self._get_appimages_default_destination_path()
         manage_from_outside = get_gsettings().get_boolean('manage-files-outside-default-folder')
         output = []

@@ -49,7 +49,7 @@ class UpdateManager(ABC):
 
 class UpdateManagerChecker():
     def get_models() -> list[UpdateManager]:
-        return [StaticFileUpdater, GithubUpdater]
+        return [StaticFileUpdater, GithubUpdater, GitlabUpdater, CodebergUpdater]
 
     def get_model_by_name(manager_label: str) -> Optional[UpdateManager]:
         item = list(filter(lambda m: m.name == manager_label, 
