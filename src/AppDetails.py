@@ -752,7 +752,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
     def create_edit_custom_website_row(self) -> Adw.EntryRow:
         app_config = self.get_config_for_app()
-            
+
         row = Adw.EntryRow(
             title=(_('Website') if ('website' in app_config and app_config['website']) else _('Add a website')),
             selectable=False,
