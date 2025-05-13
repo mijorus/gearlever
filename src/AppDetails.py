@@ -858,16 +858,14 @@ class AppDetails(Gtk.ScrolledWindow):
         return row
     
     def create_show_exec_args_row(self) -> Adw.ActionRow:
-        row = Adw.EntryRow(
+        row = AdwEntryRowDefault(
             title=(_('Command line arguments')),
-            selectable=False,
-            text=' '.join(self.app_list_element.exec_arguments)
+            icon_name='gearlever-cmd-args',
+            default_text=' '.join(self.app_list_element.exec_arguments),
+            text=' '.join(self.app_list_element.exec_arguments),
         )
 
-        row_img = Gtk.Image(icon_name='gearlever-cmd-args', pixel_size=self.ACTION_ROW_ICON_SIZE)
         row.connect('changed', self.on_cmd_arguments_changed)
-        row.add_prefix(row_img)
-
         return row
 
     def create_app_hash_row(self) -> Adw.ActionRow:
