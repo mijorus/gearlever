@@ -557,8 +557,11 @@ class AppDetails(Gtk.ScrolledWindow):
     @idle
     def set_update_information(self, manager: UpdateManager):
         if manager.embedded:
-            self.update_url_row.set_default_text(manager.url)
-            self.update_url_row.set_text(manager.url)
+            self.update_url_row.set_default_text(manager.embedded)
+
+            if not self.update_url_row.get_text():
+                self.update_url_row.set_text(manager.url)
+
             self.update_url_source.set_selected(
                 self.update_url_source.get_model()._items_val.index(manager.label)
             )

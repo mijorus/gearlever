@@ -36,3 +36,4 @@ class AdwEntryRowDefault(Adw.EntryRow):
     def set_default_text(self, text: str | None):
         self.default_text = text
         self.row_btn.set_visible(text != None)
+        self.row_btn.set_sensitive(self.default_text != self.get_text())

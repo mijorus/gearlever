@@ -18,6 +18,7 @@ from .Models import DownloadInterruptedException
 class UpdateManager(ABC):
     name = ''
     url = ''
+    embedded = False
     system_arch = terminal.sandbox_sh(['arch'])
     is_x86 = re.compile(r'(\-|\_|\.)x86(\-|\_|\.)')
     is_arm = re.compile(r'(\-|\_|\.)(arm64|aarch64|armv7l)(\-|\_|\.)')
@@ -75,11 +76,16 @@ class UpdateManagerChecker():
         if model:
             models = list(filter(lambda m: m is model, models))
 
+        model_url: UpdateManager | None = None
+        embedded_url = None
+
         if url:
             for m in models:
                 logging.debug(f'Checking url with {m.__name__}')
                 if m.can_handle_link(url):
-                    return m(url)
+                    model_url = url
+                    model = m
+                    break
         
         if el:
             embedded_app_data = UpdateManagerChecker.check_app(el)
@@ -88,7 +94,16 @@ class UpdateManagerChecker():
                 for m in models:
                     logging.debug(f'Checking embedded url with {m.__name__}')
                     if m.can_handle_link(embedded_app_data):
-                        return m(embedded_app_data, embedded=True)
+                        embedded_url = embedded_app_data
+                        model = m
+                        break
+                        # return m(embedded_app_data, embedded=True)
+
+        if model:
+            if model_url and embedded_url:
+                return model(model_url, embedded_url)
+            if model_url or embedded_url:
+                return model(model_url or embedded_url, embedded_url)
 
         return None
 
@@ -245,11 +260,21 @@ class GithubUpdater(UpdateManager):
         super().__init__(url)
         self.staticfile_manager = None
         self.url_data = GithubUpdater.get_url_data(url)
+        self.url = self.get_url_string_from_data(self.url_data)
 
         self.url = f'https://github.com/{self.url_data["username"]}/{self.url_data["repo"]}'
         self.url += f'/releases/download/{self.url_data["tag_name"]}/{self.url_data["filename"]}'
 
-        self.embedded = embedded
+        self.embedded = False
+        if embedded:
+            self.get_url_string_from_data(
+                GithubUpdater.get_url_data(embedded)
+            )
+
+    def get_url_string_from_data(self, url_data):
+        url = f'https://github.com/{url_data["username"]}/{url_data["repo"]}'
+        url += f'/releases/download/{url_data["tag_name"]}/{url_data["filename"]}'
+        return url
 
     def get_url_data(url: str):
         # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
