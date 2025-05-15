@@ -140,7 +140,10 @@ class StaticFileUpdater(UpdateManager):
         super().__init__(url)
         self.url = re.sub(r"\.zsync$", "", url)
         self.currend_download = None
-        self.embedded = embedded
+        self.embedded = False
+
+        if embedded:
+            self.embedded = re.sub(r"\.zsync$", "", url)
 
     def can_handle_link(url: str):
         if not url_is_valid(url):
@@ -267,9 +270,11 @@ class GithubUpdater(UpdateManager):
 
         self.embedded = False
         if embedded:
-            self.get_url_string_from_data(
+            self.embedded = self.get_url_string_from_data(
                 GithubUpdater.get_url_data(embedded)
             )
+
+            self.embedded = re.sub(r"\.zsync$", "", self.embedded)
 
     def get_url_string_from_data(self, url_data):
         url = f'https://github.com/{url_data["username"]}/{url_data["repo"]}'
