@@ -1,4 +1,5 @@
-# Updated to use the Dockerfile from .docker directory
+# File: .github/workflows/appimage-build.yml
+
 name: AppImage Build
 
 on:
@@ -21,10 +22,16 @@ jobs:
 
       - name: Run Docker container to build AppImage
         run: |
-          docker run --rm -v $(pwd):/host gearlever-appimage
+          mkdir -p build
+          docker run --rm -v $(pwd)/build:/output:rw gearlever-appimage
+
+      - name: Debug - List files
+        run: |
+          ls -al
+          ls -al build
 
       - name: Upload AppImage artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: GearLever-x86_64.AppImage
-          path: GearLever-x86_64.AppImage
+          path: ./build/GearLever-x86_64.AppImage

@@ -89,7 +89,7 @@ flatpak install --bundle --user gearlever.flatpak
   ```sh
   # Build the AppImage using Docker
   docker build -t gearlever-appimage .
-  docker run --rm -v $(pwd)/build:/host gearlever-appimage
+  docker run --rm -v $(pwd)/build:/output:rw gearlever-appimage
   # The AppImage will be copied to the current directory
   ```
 
