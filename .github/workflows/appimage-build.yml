@@ -1,0 +1,30 @@
+# Updated to use the Dockerfile from .docker directory
+name: AppImage Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-appimage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t gearlever-appimage -f .docker/Dockerfile .
+
+      - name: Run Docker container to build AppImage
+        run: |
+          docker run --rm -v $(pwd):/host gearlever-appimage
+
+      - name: Upload AppImage artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: GearLever-x86_64.AppImage
+          path: GearLever-x86_64.AppImage
