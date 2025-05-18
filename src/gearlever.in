@@ -27,6 +27,25 @@ VERSION = '@VERSION@'
 pkgdatadir = '@pkgdatadir@'
 localedir = '@localedir@'
 
+# --- PATCH: Try to resolve pkgdatadir relative to AppImage/AppDir ---
+def find_pkgdatadir():
+    # 1. Check if running in AppImage/AppDir context
+    appdir = os.environ.get('APPDIR')
+    if appdir:
+        candidate = os.path.join(appdir, 'usr', 'share', 'gearlever')
+        if os.path.exists(os.path.join(candidate, 'gearlever.gresource')):
+            return candidate
+    # 2. Try relative to executable
+    exe_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    candidate = os.path.join(exe_dir, '..', 'share', 'gearlever')
+    candidate = os.path.abspath(candidate)
+    if os.path.exists(os.path.join(candidate, 'gearlever.gresource')):
+        return candidate
+    # 3. Fallback to original pkgdatadir
+    return pkgdatadir
+
+pkgdatadir = find_pkgdatadir()
+
 sys.path.insert(1, pkgdatadir)
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 locale.bindtextdomain('gearlever', localedir)

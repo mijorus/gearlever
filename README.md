@@ -89,6 +89,17 @@ flatpak install --bundle --user gearlever.flatpak
   flatpak-builder build/ it.mijorus.gearlever.json --user --install --force-clean
   ```
 
+- Option #3 (AppImage)
+  ```sh
+  # Build the AppImage using Docker
+  docker build -t gearlever-appimage -f .docker/Dockerfile .
+  docker run --rm --volume ./build:/output:rw gearlever-appimage
+  
+  # The AppImage and .zsync will be available in ./build/GearLever-x86_64.AppImage
+  # You probably need to chown the build directory, since docker creates it as root
+  sudo chown -R $USER:$USER ./build
+  ```
+
 ## Run CLI tests
 ```sh
 python3 -m unittest tests/test_cli.py
