@@ -85,6 +85,14 @@ flatpak install --bundle --user gearlever.flatpak
   flatpak-builder build/ it.mijorus.gearlever.json --user --install --force-clean
   ```
 
+- Option #3 (AppImage)
+  ```sh
+  # Build the AppImage using Docker
+  docker build -t gearlever-appimage .
+  docker run --rm -v $(pwd)/build:/output:rw gearlever-appimage
+  # The AppImage will be copied to the current directory
+  ```
+
 ## Run CLI tests
 ```sh
 python3 -m unittest tests/test_cli.py
