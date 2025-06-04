@@ -101,9 +101,9 @@ class UpdateManagerChecker():
 
         if model:
             if model_url and embedded_url:
-                return model(model_url, embedded_url)
+                return model(model_url, embedded=embedded_url)
             if model_url or embedded_url:
-                return model(model_url or embedded_url, embedded_url)
+                return model(model_url or embedded_url, embedded=embedded_url)
 
         return None
 
@@ -226,7 +226,7 @@ class StaticFileUpdater(UpdateManager):
 
         is_size_different = resp_cl != old_size
         return is_size_different
-    
+
     def get_url_headers(url):
         headers = {}
         head_request_error = False
@@ -264,9 +264,6 @@ class GithubUpdater(UpdateManager):
         self.staticfile_manager = None
         self.url_data = GithubUpdater.get_url_data(url)
         self.url = self.get_url_string_from_data(self.url_data)
-
-        self.url = f'https://github.com/{self.url_data["username"]}/{self.url_data["repo"]}'
-        self.url += f'/releases/download/{self.url_data["tag_name"]}/{self.url_data["filename"]}'
 
         self.embedded = False
         if embedded:
@@ -464,7 +461,7 @@ class GitlabUpdater(UpdateManager):
     label = 'Gitlab'
     name = 'GitlabUpdater'
 
-    def __init__(self, url) -> None:
+    def __init__(self, url, **kwargs) -> None:
         super().__init__(url)
         self.staticfile_manager = None
         self.url_data = GitlabUpdater.get_url_data(url)
@@ -609,7 +606,7 @@ class CodebergUpdater(UpdateManager):
     label = 'Codeberg'
     name = 'CodebergUpdater'
 
-    def __init__(self, url) -> None:
+    def __init__(self, url, **kwargs) -> None:
         super().__init__(url)
         self.staticfile_manager = None
         self.url_data = CodebergUpdater.get_url_data(url)
@@ -684,7 +681,6 @@ class CodebergUpdater(UpdateManager):
         return regex
 
     def fetch_target_asset(self):
-        rel_url = f'https://gitlab.com/api/v4/projects/{self.url_data["username"]}/releases'
         rel_url = f'https://codeberg.org/api/v1/repos/{self.url_data["username"]}/{self.url_data["repo"]}/releases?pre-release=exclude&draft=exclude'
 
         try:
