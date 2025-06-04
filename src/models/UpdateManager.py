@@ -97,7 +97,6 @@ class UpdateManagerChecker():
                         embedded_url = embedded_app_data
                         model = m
                         break
-                        # return m(embedded_app_data, embedded=True)
 
         if model:
             if model_url and embedded_url:
