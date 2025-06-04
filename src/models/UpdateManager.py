@@ -428,7 +428,6 @@ class GithubUpdater(UpdateManager):
 
                 return {'asset': asset, 'zsync': None}
 
-
     def is_update_available(self, el: AppImageListElement):
         target_asset = self.fetch_target_asset()
 
@@ -486,7 +485,7 @@ class GitlabUpdater(UpdateManager):
                 return False
 
         return {
-            'username': paths[1],
+            'username': paths[4],
             'filename': paths[9],
         }
 
@@ -537,7 +536,6 @@ class GitlabUpdater(UpdateManager):
 
     def fetch_target_asset(self):
         rel_url = f'https://gitlab.com/api/v4/projects/{self.url_data["username"]}/releases'
-
         try:
             rel_data_resp = requests.get(rel_url)
             rel_data_resp.raise_for_status()
@@ -555,9 +553,9 @@ class GitlabUpdater(UpdateManager):
         target_re = re.compile(self.convert_glob_to_regex(self.url_data['filename']))
 
         possible_targets = []
-        asset = rel_data[0]
-        for link_data in asset['links']:
-            link_res_name = link_data['url'].split('/')[-1]
+        assets = rel_data[0]['assets']
+        for asset in assets['links']:
+            link_res_name = asset['url'].split('/')[-1]
             if re.match(target_re, link_res_name):
                 asset['name'] = link_res_name
                 possible_targets.append(asset)
@@ -589,13 +587,20 @@ class GitlabUpdater(UpdateManager):
         target_asset = self.fetch_target_asset()
 
         if target_asset:
-            content_type = requests.head(target_asset['direct_asset_url']).headers.get('content-type', None)
+            asset_head_req = requests.head(target_asset['direct_asset_url'])
+            content_type = asset_head_req.headers.get('content-type', None)
             ct_supported = content_type in [*AppImageProvider.supported_mimes, 'raw',
                                                     'binary/octet-stream', 'application/octet-stream']
 
             if ct_supported:
+                is_size_different = False
                 old_size = os.path.getsize(el.file_path)
-                is_size_different = target_asset['size'] != old_size
+                asset_size = asset_head_req.headers.get('content-length', None)
+
+                if asset_size:
+                    asset_size = int(asset_size)
+                    is_size_different = asset_size != old_size
+
                 return is_size_different
 
         return False
