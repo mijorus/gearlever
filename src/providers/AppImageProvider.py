@@ -264,6 +264,7 @@ class AppImageProvider():
         logging.info('Installing appimage: ' + el.file_path)
         el.installed_status = InstalledStatus.INSTALLING
         extracted_appimage: Optional[ExtractedAppImage] = None
+            appimages_destination_path = self._get_appimages_default_destination_path()
 
         try:
             extracted_appimage = self._load_appimage_metadata(el)
@@ -271,8 +272,6 @@ class AppImageProvider():
             dest_file_info = extracted_appimage.appimage_file.query_info('*', Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS)
 
             # Move .appimage to its default location
-            appimages_destination_path = self._get_appimages_default_destination_path()
-
             if not os.path.exists(f'{appimages_destination_path}'):
                 os.mkdir(f'{appimages_destination_path}')
 
@@ -448,9 +447,10 @@ class AppImageProvider():
             raise e
 
         if get_gsettings().get_boolean('move-appimage-on-integration'):
-            logging.info('Deleting original appimage file from: '  + extracted_appimage.appimage_file.get_path())
-            if not extracted_appimage.appimage_file.delete(None):
-                raise InternalError('Cannot delete original file')
+            if os.path.dirname(extracted_appimage.appimage_file.get_path()) != appimages_destination_path:
+                logging.info('Deleting original appimage file from: '  + extracted_appimage.appimage_file.get_path())
+                if not extracted_appimage.appimage_file.delete(None):
+                    raise InternalError('Cannot delete original file')
 
         update_dkt_db = terminal.host_sh(['update-desktop-database', self.user_desktop_files_path, '-q'], return_stderr=True)
         logging.debug(update_dkt_db)
