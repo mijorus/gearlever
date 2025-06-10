@@ -494,7 +494,7 @@ class AppImageProvider():
 
         return str(appimage_type)
 
-    def create_list_element_from_file(self, file: Gio.File, return_new_el) -> AppImageListElement:
+    def create_list_element_from_file(self, file: Gio.File, return_new_el=False) -> AppImageListElement:
         if not self.can_install_file(file):
             raise InternalError(message='This file type is not supported')
         

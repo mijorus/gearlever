@@ -441,7 +441,7 @@ class GithubUpdater(UpdateManager):
                     zsync_file = requests.get(target_asset['zsync']['browser_download_url']).text
                     zsync_file_header = zsync_file.split('\n\n', 1)[0]
                     sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
-                    curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path))
+                    curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha1')
 
                     match = re.search(sha_pattern, zsync_file_header)
                     if match:
