@@ -494,11 +494,11 @@ class AppImageProvider():
 
         return str(appimage_type)
 
-    def create_list_element_from_file(self, file: Gio.File) -> AppImageListElement:
+    def create_list_element_from_file(self, file: Gio.File, return_new_el) -> AppImageListElement:
         if not self.can_install_file(file):
             raise InternalError(message='This file type is not supported')
         
-        app_name: str = file.get_parse_name().split('/')[-1]
+        app_name: str = os.path.basename(file.get_parse_name())
 
         el = AppImageListElement(
             name=re.sub(r'\.appimage$', '', app_name, 1, re.IGNORECASE),
@@ -512,6 +512,9 @@ class AppImageProvider():
         )
 
         el.architecture = self.get_elf_arch(el)
+
+        if return_new_el:
+            return el
 
         if self.is_installed(el):
             for installed in self.list_installed():
@@ -597,8 +600,7 @@ class AppImageProvider():
         if not self.can_install_file(update_gfile):
             raise Exception(_('The downloaded file is not a valid appimage, please check if the provided URL is correct'))
         
-        list_element = self.create_list_element_from_file(update_gfile)
-        self.refresh_title(list_element)
+        list_element = self.create_list_element_from_file(update_gfile, return_new_el=True)
 
         list_element.update_logic = AppImageUpdateLogic.REPLACE
         list_element.updating_from = el
