@@ -264,7 +264,7 @@ class AppImageProvider():
         logging.info('Installing appimage: ' + el.file_path)
         el.installed_status = InstalledStatus.INSTALLING
         extracted_appimage: Optional[ExtractedAppImage] = None
-            appimages_destination_path = self._get_appimages_default_destination_path()
+        appimages_destination_path = self._get_appimages_default_destination_path()
 
         try:
             extracted_appimage = self._load_appimage_metadata(el)
