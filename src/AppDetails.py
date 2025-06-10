@@ -17,6 +17,7 @@ from .lib.json_config import read_json_config, set_json_config, read_config_for_
 from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
+from .components.AdwEntryRowDefault import AdwEntryRowDefault
 
 
 class AppDetails(Gtk.ScrolledWindow):
@@ -125,7 +126,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         # Update url entry
         self.update_url_group: Optional[Adw.PreferencesGroup] = None
-        self.update_url_row: Optional[Adw.EntryRow] = None
+        self.update_url_row: Optional[AdwEntryRowDefault] = None
         self.update_url_save_btn: Optional[Gtk.Button] = None
         self.update_url_source: Optional[Adw.ComboRow] = None
         self.update_url_group: Optional[Adw.PreferenciesGroup] = None
@@ -556,14 +557,14 @@ class AppDetails(Gtk.ScrolledWindow):
     @idle
     def set_update_information(self, manager: UpdateManager):
         if manager.embedded:
-            self.update_url_row.set_text(manager.url)
+            self.update_url_row.set_default_text(manager.embedded)
+
+            if not self.update_url_row.get_text():
+                self.update_url_row.set_text(manager.url)
+
             self.update_url_source.set_selected(
                 self.update_url_source.get_model()._items_val.index(manager.label)
             )
-        
-        self.update_url_row.set_editable(not manager.embedded)
-        self.update_url_source.set_sensitive(not manager.embedded)
-        self.update_url_save_btn.set_visible(not manager.embedded)
 
         if manager.embedded:
             self.update_url_group.set_description(self.UPDATE_INFO_EMBEDDED)
@@ -752,7 +753,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
     def create_edit_custom_website_row(self) -> Adw.EntryRow:
         app_config = self.get_config_for_app()
-            
+
         row = Adw.EntryRow(
             title=(_('Website') if ('website' in app_config and app_config['website']) else _('Add a website')),
             selectable=False,
@@ -816,10 +817,14 @@ class AppDetails(Gtk.ScrolledWindow):
             if selected_model == m.name:
                 self.update_url_source.set_selected(i)
 
-        self.update_url_row = Adw.EntryRow(
-            title=title,
-            selectable=True,
-            text=(app_config.get('update_url', ''))
+        # self.update_url_row = Adw.EntryRow(
+        #     title=title,
+        #     selectable=True,
+        #     text=(app_config.get('update_url', ''))
+        # )
+        self.update_url_row = AdwEntryRowDefault(
+            text=(app_config.get('update_url', '')),
+            title=title
         )
 
         row_img = Gtk.Image(icon_name='gl-software-update-available-symbolic', 

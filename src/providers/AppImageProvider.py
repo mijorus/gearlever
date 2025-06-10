@@ -264,6 +264,7 @@ class AppImageProvider():
         logging.info('Installing appimage: ' + el.file_path)
         el.installed_status = InstalledStatus.INSTALLING
         extracted_appimage: Optional[ExtractedAppImage] = None
+        appimages_destination_path = self._get_appimages_default_destination_path()
 
         try:
             extracted_appimage = self._load_appimage_metadata(el)
@@ -271,8 +272,6 @@ class AppImageProvider():
             dest_file_info = extracted_appimage.appimage_file.query_info('*', Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS)
 
             # Move .appimage to its default location
-            appimages_destination_path = self._get_appimages_default_destination_path()
-
             if not os.path.exists(f'{appimages_destination_path}'):
                 os.mkdir(f'{appimages_destination_path}')
 
@@ -433,14 +432,25 @@ class AppImageProvider():
                 el.env_variables = el.updating_from.env_variables
                 self.update_desktop_file(el)
 
+            has_desktop_integration = False
+            for v in el.env_variables:
+                if v.startswith('DESKTOPINTEGRATION='):
+                    has_desktop_integration = True
+                    break
+
+            if not has_desktop_integration:
+                el.env_variables.append('DESKTOPINTEGRATION=1')
+                self.update_desktop_file(el)
+
         except Exception as e:
             logging.error('Appimage installation error: ' + str(e))
             raise e
 
         if get_gsettings().get_boolean('move-appimage-on-integration'):
-            logging.info('Deleting original appimage file from: '  + extracted_appimage.appimage_file.get_path())
-            if not extracted_appimage.appimage_file.delete(None):
-                raise InternalError('Cannot delete original file')
+            if os.path.dirname(extracted_appimage.appimage_file.get_path()) != appimages_destination_path:
+                logging.info('Deleting original appimage file from: '  + extracted_appimage.appimage_file.get_path())
+                if not extracted_appimage.appimage_file.delete(None):
+                    raise InternalError('Cannot delete original file')
 
         update_dkt_db = terminal.host_sh(['update-desktop-database', self.user_desktop_files_path, '-q'], return_stderr=True)
         logging.debug(update_dkt_db)
@@ -484,11 +494,11 @@ class AppImageProvider():
 
         return str(appimage_type)
 
-    def create_list_element_from_file(self, file: Gio.File) -> AppImageListElement:
+    def create_list_element_from_file(self, file: Gio.File, return_new_el) -> AppImageListElement:
         if not self.can_install_file(file):
             raise InternalError(message='This file type is not supported')
         
-        app_name: str = file.get_parse_name().split('/')[-1]
+        app_name: str = os.path.basename(file.get_parse_name())
 
         el = AppImageListElement(
             name=re.sub(r'\.appimage$', '', app_name, 1, re.IGNORECASE),
@@ -502,6 +512,9 @@ class AppImageProvider():
         )
 
         el.architecture = self.get_elf_arch(el)
+
+        if return_new_el:
+            return el
 
         if self.is_installed(el):
             for installed in self.list_installed():
@@ -587,8 +600,7 @@ class AppImageProvider():
         if not self.can_install_file(update_gfile):
             raise Exception(_('The downloaded file is not a valid appimage, please check if the provided URL is correct'))
         
-        list_element = self.create_list_element_from_file(update_gfile)
-        self.refresh_title(list_element)
+        list_element = self.create_list_element_from_file(update_gfile, return_new_el=True)
 
         list_element.update_logic = AppImageUpdateLogic.REPLACE
         list_element.updating_from = el
