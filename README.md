@@ -33,7 +33,8 @@ Usage: flatpak run it.mijorus.gearlever [OPTION...]
 # OR gearlever [OPTION...] if using the alias
 
 --integrate        Integrate an AppImage file                                                                 
---update           Update an AppImage file                                                                    
+--update           Update an AppImage file       
+--update --all     Update all apps                                                           
 --remove           Trashes an AppImage, its .desktop file and icons                                           
 --list-installed   List integrated apps                                                                       
 --list-updates     List available updates   
