@@ -283,13 +283,13 @@ class AppImageProvider():
                 desktop_file_path = os.path.basename(el.updating_from.desktop_file_path)
                 prefixed_filename = os.path.splitext(desktop_file_path)[0]
             else:
-                appimage_filename = f'gearlever_{dest_file_info.get_name()}'
+                dest_file_info_name = os.path.splitext(dest_file_info.get_name())[0]
+                appimage_filename = f'gearlever_{dest_file_info_name}'
+
                 if extracted_appimage.desktop_entry:
                     appimage_filename = extracted_appimage.desktop_entry.getName()
                     appimage_filename = appimage_filename.lower().replace(' ', '_')
                 
-                appimage_filename = re.sub(r"[^A-Za-z0-9_]+", "", appimage_filename).lower()
-
                 append_file_ext = True
                 gsettings = get_gsettings()
 
@@ -297,26 +297,21 @@ class AppImageProvider():
                     gsettings.get_boolean('exec-as-name-for-terminal-apps') and \
                         extracted_appimage.desktop_entry.getTerminal():
 
-                    exec_name = shlex.split(extracted_appimage.desktop_entry.getExec())[0]
-                    appimage_filename = exec_name
-
+                    append_file_ext = False
                     if appimage_filename == 'AppDir':
                         appimage_filename = extracted_appimage.desktop_entry.getName()
-                        appimage_filename = appimage_filename.lower()
-
-                    append_file_ext = False
-
-                # if there is already an app with the same name, 
-                # we try not to overwrite
 
                 if append_file_ext:
-                    appimage_filename = appimage_filename + '.appimage'
+                    appimage_filename = f'{appimage_filename}.appimage'
 
-                appimage_filename = remove_special_chars(appimage_filename)
-                app_name_without_ext = os.path.splitext(appimage_filename)[0]
+                app_name_without_ext = appimage_filename
+                appimage_filename = remove_special_chars(appimage_filename).lower()
 
                 i = 0
                 files_in_dest_dir = os.listdir(self._get_appimages_default_destination_path())
+
+                # if there is already an app with the same name, 
+                # we try not to overwrite
                 while appimage_filename in files_in_dest_dir:
                     if i == 0:
                         appimage_filename = app_name_without_ext + '_' + version.replace('.', '_')
