@@ -4,6 +4,7 @@ import re
 import os
 import time
 import logging
+import shlex
 import gi
 import hashlib
 from . import terminal
@@ -201,3 +202,57 @@ def make_option(long_name, short_name=None, flags=0, arg=0, arg_data=None, descr
     option.description = description
     option.arg_description = arg_description
     return option
+
+
+def avoid_file_conflicts(filename, directory):
+    i = 0
+    files_in_dest_dir = os.listdir(directory)
+    
+    name, ext = os.path.splitext(filename)
+
+    # if there is already an app with the same name, 
+    # we try not to overwrite
+    while filename in files_in_dest_dir:
+        filename = name + f'_{i}'
+
+        if ext:
+            filename = filename + ext
+
+    return filename
+
+def extract_terminal_arguments(command):
+    """
+    Extract all terminal arguments from a command string.
+    Handles environment variables, quoted paths, and flags.
+    """
+    
+    # Parse the command using shlex to handle quotes and escaping properly
+    tokens = shlex.split(command)
+    
+    result = {
+        'env_vars': [],
+        'executable': '',
+        'arguments': []
+    }
+    
+    i = 0
+    while i < len(tokens):
+        token = tokens[i]
+        
+        # Check if it's an environment variable (starts with 'env' or has '=' in it)
+        if token == 'env':
+            i += 1
+            continue
+        elif '=' in token and not token.startswith('/') and not token.startswith('-'):
+            # This is an environment variable
+            result['env_vars'].append(token)
+        elif not result['executable'] and not token.startswith('-'):
+            # This is the executable (first non-flag, non-env-var token)
+            result['executable'] = token
+        else:
+            # This is an argument
+            result['arguments'].append(token)
+        
+        i += 1
+    
+    return result

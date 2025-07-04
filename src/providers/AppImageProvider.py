@@ -13,7 +13,7 @@ from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async, idle
 from ..lib.json_config import save_config_for_app, read_config_for_app
 from ..lib.utils import get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
-    remove_special_chars, get_random_string, show_message_dialog, get_osinfo
+    remove_special_chars, get_random_string, show_message_dialog, get_osinfo, extract_terminal_arguments
 from ..models.Models import AppUpdateElement, InternalError, DownloadInterruptedException
 from typing import Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, Gio, Adw
@@ -101,19 +101,7 @@ class AppImageProvider():
                 if os.path.isfile(gfile.get_path()) and get_giofile_content_type(gfile) == 'application/x-desktop':
                     entry = DesktopEntry.DesktopEntry(filename=gfile.get_path())
                     exec_location = entry.getTryExec()
-                    exec_index = entry.getExec().find(exec_location)
-
-                    exec_tokens = []
-                    env_variables = []
-                    if exec_index >= 0:
-                        after_exec = entry.getExec()[exec_index:]
-                        before_exec = entry.getExec()[:exec_index]
-
-                        exec_tokens = shlex.split(after_exec)[1:]
-                        before_exec_tokens = shlex.split(before_exec)
-
-                        if before_exec and before_exec_tokens[0] == 'env':
-                            [env_variables.append(v) for v in before_exec_tokens[1:]]
+                    exec_command_data = extract_terminal_arguments(entry.getExec())
 
                     if os.path.isfile(exec_location):
                         exec_gfile = Gio.File.new_for_path(exec_location)
@@ -133,8 +121,8 @@ class AppImageProvider():
                                 desktop_entry=entry,
                                 trusted=True,
                                 external_folder=(not exec_in_defalut_folder),
-                                exec_arguments=exec_tokens,
-                                env_variables=env_variables,
+                                exec_arguments=exec_command_data['arguments'],
+                                env_variables=exec_command_data['env_vars'],
                             )
 
                             list_element.architecture = self.get_elf_arch(list_element)
@@ -369,17 +357,19 @@ class AppImageProvider():
                 desktop_file_content = dskt_file.read()
                 desktop_file_content = re.sub(r'^TryExec=.*$', "", desktop_file_content, flags=re.MULTILINE)
                 desktop_file_content = re.sub(r'^Icon=.*$', "", desktop_file_content, flags=re.MULTILINE)
+                desktop_file_content = re.sub(r'^X-AppImage-Version=.*$', "", desktop_file_content, flags=re.MULTILINE)
 
                 # replace executable path
                 exec_command = ['Exec=' + shlex.join([dest_appimage_file.get_path(), *exec_arguments])]
                 # replace try exec executable path
-                exec_command.append(f'TryExec={dest_appimage_file.get_path()}')
+                exec_command.append(f'TryExec=' + dest_appimage_file.get_path())
 
                 if dest_appimage_icon_file:
                     exec_command.append(f"Icon={dest_appimage_icon_file.get_path()}")
                 else:
                     exec_command.append(f'Icon=applications-other')
 
+                print(exec_command)
                 desktop_file_content = re.sub(
                     r'^Exec=.*$',
                     '\n'.join(exec_command),
@@ -567,7 +557,11 @@ class AppImageProvider():
             if env_vars:
                 env_vars = f'env {env_vars} '
 
-            exec_command = f'{env_vars}{tryexec_command}{exec_arguments}'
+            exec_command = ''.join([
+                env_vars,
+                shlex.quote(tryexec_command),
+                exec_arguments
+            ])
 
             # replace executable path
             desktop_file_content = re.sub(
@@ -849,7 +843,8 @@ class AppImageProvider():
         return result
 
     def _get_appimages_default_destination_path(self) -> str:
-        return get_gsettings().get_string('appimages-default-folder').replace('~', GLib.get_home_dir())
+        folder = get_gsettings().get_string('appimages-default-folder')
+        return re.sub(r'^~', GLib.get_home_dir(), folder)
 
     def _get_app_version(self, extracted_appimage: ExtractedAppImage):
         version = None
