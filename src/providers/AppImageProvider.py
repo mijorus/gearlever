@@ -369,7 +369,6 @@ class AppImageProvider():
                 else:
                     exec_command.append(f'Icon=applications-other')
 
-                print(exec_command)
                 desktop_file_content = re.sub(
                     r'^Exec=.*$',
                     '\n'.join(exec_command),
