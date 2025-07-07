@@ -3,19 +3,22 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Ворон <voron@duck.com>, 2023.
 #
+# SPDX-FileCopyrightText: 2025 Sergey Kazorin <translation-team@basealt.ru>
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-20 14:54+0100\n"
-"PO-Revision-Date: 2024-12-03 13:43+0300\n"
-"Last-Translator: Ворон <voron@duck.com>\n"
-"Language-Team: \n"
+"PO-Revision-Date: 2025-07-07 15:42+0300\n"
+"Last-Translator: Sergey Kazorin <translation-team@basealt.ru>\n"
+"Language-Team: Russian <kde-russian@lists.kde.ru>\n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Lokalize 24.12.3\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 msgid "Gear Lever"
@@ -23,7 +26,7 @@ msgstr "Gear Lever"
 
 #: data/it.mijorus.gearlever.desktop.in:4
 msgid "An utility to manage AppImages with ease!"
-msgstr "Утилита для простого управления приложениями AppImage!"
+msgstr "Утилита позволяет с лёгкостью управлять приложениями AppImage!"
 
 #: data/it.mijorus.gearlever.desktop.in:12
 msgid "AppImage;"
@@ -43,7 +46,7 @@ msgstr "Отменить обновление"
 
 #: src/AppDetails.py:30 src/InstalledAppsList.py:32
 msgid "Checking updates..."
-msgstr "Проверка обновлений..."
+msgstr "Проверка обновлений…"
 
 #: src/AppDetails.py:31
 msgid "No updates available"
@@ -65,12 +68,11 @@ msgid ""
 "<small>You can hide external apps in the settings</small>"
 msgstr ""
 "Это приложение находится вне папки по умолчанию.\n"
-"<small>Вы можете скрыть внешние приложения в настройках</small>"
+"<small>Внешние приложения можно скрыть в настройке параметров</small>"
 
 #: src/AppDetails.py:224
 msgid "Please, verify the source of this app before opening it"
-msgstr ""
-"Пожалуйста, проверьте источник этого приложения, прежде чем открывать его"
+msgstr "Проверьте источник этого приложения, прежде чем открывать его"
 
 #: src/AppDetails.py:225
 msgid "Unlock"
@@ -78,7 +80,7 @@ msgstr "Разблокировать"
 
 #: src/AppDetails.py:328
 msgid "Launching..."
-msgstr "Запуск..."
+msgstr "Запуск…"
 
 #: src/AppDetails.py:335 src/AppDetails.py:501
 #: src/providers/AppImageProvider.py:648
@@ -95,11 +97,11 @@ msgstr "Закрыть"
 
 #: src/AppDetails.py:424
 msgid "Do you really want to remove this app?"
-msgstr "Вы действительно хотите удалить это приложение?"
+msgstr "Удалить это приложение?"
 
 #: src/AppDetails.py:427 src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
-msgstr "Отменить"
+msgstr "Отмена"
 
 #: src/AppDetails.py:428 src/AppDetails.py:467
 msgid "Remove"
@@ -115,11 +117,11 @@ msgstr "Запустить"
 
 #: src/AppDetails.py:471
 msgid "Uninstalling..."
-msgstr "Удаление..."
+msgstr "Удаление…"
 
 #: src/AppDetails.py:475
 msgid "Installing..."
-msgstr "Установка..."
+msgstr "Установка…"
 
 #: src/AppDetails.py:488
 msgid "Move to the app menu"
@@ -151,7 +153,7 @@ msgstr "Управление обновлениями"
 
 #: src/AppDetails.py:802
 msgid "Update URL"
-msgstr "Обновить URL-адрес"
+msgstr "URL-адрес обновления"
 
 #: src/AppDetails.py:809
 msgid "Source"
@@ -239,7 +241,7 @@ msgstr "Обновлений не найдено"
 
 #: src/InstalledAppsList.py:51
 msgid "Filter installed applications"
-msgstr "Фильтр установленных приложений"
+msgstr "Фильтровать установленные приложения"
 
 #: src/InstalledAppsList.py:57
 msgid "Installed applications"
@@ -278,7 +280,7 @@ msgid ""
 "Receive a notification when a new update is detected; updates will not be "
 "installed automatically"
 msgstr ""
-"Получать уведомление, когда обнаружено новое обновление; обновления не будут "
+"Получать уведомление при обнаружении нового обновления; обновления не будут "
 "устанавливаться автоматически"
 
 #: src/preferences.py:62
@@ -317,11 +319,11 @@ msgid ""
 "\n"
 "For example, \"golang_x86_64.appimage\" will be saved as \"go\""
 msgstr ""
-"Если включено, приложения, которые запускаются в терминале, "
-"переименовываются как их исполняемые файлы.\n"
-"Вам нужно будет вручную добавить вышеупомянутую папку в $PATH.\n"
+"Если включено, запускаемые в терминале приложения "
+"получают имена исполняемых файлов.\n"
+"При этом вышеупомянутую папку необходимо вручную добавить в $PATH.\n"
 "\n"
-"Например, \"golang_x86_64.appimage\" будет сохранено как \"go\""
+"Например, «golang_x86_64.appimage» будет сохранено как «go»"
 
 #: src/preferences.py:106
 msgid "Debugging"
@@ -355,11 +357,11 @@ msgstr "Папка должна находиться в вашем домашн�
 
 #: src/gtk/main-menu.ui:6
 msgid "_Preferences"
-msgstr "_Настройки"
+msgstr "_Параметры"
 
 #: src/gtk/main-menu.ui:10
 msgid "_Open Log File"
-msgstr "_Открыть файл лога"
+msgstr "_Открыть файл журнала"
 
 #: src/gtk/main-menu.ui:14
 msgid "_Show tutorial"
@@ -367,7 +369,7 @@ msgstr "_Показать руководство"
 
 #: src/gtk/main-menu.ui:18
 msgid "_About Gear lever"
-msgstr "_О приложении"
+msgstr "_О приложении Gear lever"
 
 #: src/components/AppDetailsConflictModal.py:10
 #, python-brace-format
@@ -376,7 +378,7 @@ msgstr "Конфликт с \"{app_name}\""
 
 #: src/components/AppDetailsConflictModal.py:11
 msgid "There is already an app with the same name, how do you want to proceed?"
-msgstr "Приложение с таким названием уже существует, как вы хотите продолжить?"
+msgstr "Приложение с таким именем уже существует. Что делать дальше?"
 
 #: src/components/AppDetailsConflictModal.py:17
 msgid "Keep both"
@@ -392,7 +394,7 @@ msgstr "Перетащите файл сюда"
 
 #: src/gtk/empty-list-placeholder.ui:18
 msgid "Get started"
-msgstr "Начать"
+msgstr "Начало работы"
 
 #: src/gtk/empty-list-placeholder.ui:30
 msgid "Drag and drop an AppImage here or click on the \"+\" icon."
@@ -400,16 +402,15 @@ msgstr "Перетащите сюда AppImage или нажмите на зна
 
 #: src/gtk/empty-list-placeholder.ui:35
 msgid " If you don't see your apps, check if the selected folder is correct."
-msgstr ""
-" Если вы не видите своих приложений, проверьте, правильно ли выбрана папка."
+msgstr " Если приложения не отображаются, проверьте правильность выбора папки."
 
 #: src/gtk/empty-list-placeholder.ui:46
 msgid "Show welcome screen"
-msgstr "Показывать экран приветствия"
+msgstr "Показать экран приветствия"
 
 #: src/gtk/empty-list-placeholder.ui:56
 msgid "Open Preferences"
-msgstr "Открыть настройки"
+msgstr "Открыть настройку параметров"
 
 #: src/gtk/help-overlay.ui:11
 msgctxt "shortcut window"
@@ -432,13 +433,11 @@ msgstr "Привет, добро пожаловать в Gear lever"
 
 #: src/gtk/tutorial/1.ui:30
 msgid "An app that helps you integrating AppImages into you system."
-msgstr ""
-"Приложение, которое поможет вам интегрировать приложения AppImage в вашу "
-"систему."
+msgstr "Приложение для интеграции приложений AppImage в систему."
 
 #: src/gtk/tutorial/1.ui:36
 msgid "Click \"Next\" to follow this tutorial."
-msgstr "Нажмите \"Далее\", чтобы продолжить это руководство."
+msgstr "Нажмите «Далее» для продолжения просмотра этого руководства."
 
 #: src/gtk/tutorial/2.ui:19
 msgid "Set the AppImage location"
@@ -449,13 +448,12 @@ msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
 msgstr ""
-"Gear lever группирует все ваши AppImage в определенную папку и упорядочивает "
-"их."
+"Gear lever группирует все AppImage в определенную папку и упорядочивает их."
 
 #: src/gtk/tutorial/2.ui:33
 #, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
-msgstr "По умолчанию AppImage сохраняются по адресу: {location}"
+msgstr "По умолчанию приложения AppImage сохраняются по адресу: {location}"
 
 #: src/gtk/tutorial/2.ui:47
 msgid "Change AppImage location"
@@ -463,7 +461,7 @@ msgstr "Изменить расположение AppImage"
 
 #: src/gtk/tutorial/2.ui:59
 msgid "You can customize it later in the preferences."
-msgstr "Вы можете настроить это позже в настройках."
+msgstr "Это можно изменить в настройках параметров."
 
 #: src/gtk/tutorial/3.ui:19
 msgid "Set Gear lever as default"
@@ -472,16 +470,15 @@ msgstr "Установить Gear lever по умолчанию"
 #: src/gtk/tutorial/3.ui:28
 msgid ""
 "Click on the button to open a demo folder, containing a sample AppImage."
-msgstr ""
-"Нажмите на кнопку, чтобы открыть демо-папку, содержащую пример AppImage."
+msgstr "Нажмите на кнопку для открытия демо-папки с примером AppImage."
 
 #: src/gtk/tutorial/3.ui:33
 msgid ""
 "Use the right-click menu to set Gear lever as the default app for \"."
 "appimage\" files"
 msgstr ""
-"Используйте меню правой кнопки мыши, чтобы установить Gear lever в качестве "
-"приложения по умолчанию для файлов \".appimage\""
+"Используйте контекстное меню для установки Gear lever в качестве "
+"приложения по умолчанию для файлов «.appimage»"
 
 #: src/gtk/tutorial/3.ui:44
 msgid "Open demo folder"
@@ -518,8 +515,8 @@ msgid ""
 "updated\n"
 "{el.name} ➔ {list_element.name}"
 msgstr ""
-"Загруженный AppImage не имеет того же имени приложения и не может быть "
-"обновлен\n"
+"Загруженный AppImage имеет другое имя приложения и не может "
+"обновляться\n"
 "{el.name} ➔ {list_element.name}"
 
 #: src/providers/AppImageProvider.py:634
@@ -535,8 +532,8 @@ msgid ""
 "Click the link below for more information. \n"
 "{url}"
 msgstr ""
-"AppImage требует FUSE для запуска. Вы все равно можете запустить его с "
-"помощью --appimage-extract-and-run в аргументах командной строки. \n"
+"Для запуска AppImage необходим FUSE. Тем не менее, запуск возможен при указани"
+"и аргумента командной строки --appimage-extract-and-run. \n"
 "\n"
 "Для получения более подробной информации, нажмите на ссылку ниже. \n"
 "{url}"
