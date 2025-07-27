@@ -139,6 +139,16 @@ class TestGearLever(unittest.TestCase):
 
         self.runCommand(['--remove', os.path.join(self.installPath, 'citron.appimage'), '-y'])
 
+    def test_fetch_updates_explicit_url(self):
+        self.download_file('https://beeper-desktop.download.beeper.com/builds/Beeper-4.1.1.AppImage', 'beeper.appimage')
+        self.runCommand(['--integrate', '--update-url', 'https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop', os.path.join(self.download_dir, 'beeper.appimage'), '-y'])
+        self.assertIn('beeper.appimage', self.get_installed_files())
+
+        updates_list = self.runCommand(['--list-updates'])
+        self.assertIn('beeper.appimage', updates_list)
+
+        self.runCommand(['--remove', os.path.join(self.installPath, 'beeper.appimage'), '-y'])
+
     def test_with_appimageextract(self):
         # Test apps using appimage-extract
         self.download_file('https://dn.navicat.com/download/navicat17-premium-lite-en-x86_64.AppImage', 'navicat_premium_lite_17.appimage')

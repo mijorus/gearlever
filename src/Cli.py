@@ -5,10 +5,10 @@ from .lib.constants import APP_ID
 from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GObject # noqa
 from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
 from .lib.constants import FETCH_UPDATES_ARG
-from .lib.utils import make_option
+from .lib.utils import make_option, url_is_valid
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageUpdateLogic, AppImageListElement
-from .lib.json_config import read_config_for_app, read_json_config
+from .lib.json_config import read_config_for_app, save_config_for_app
 from .models.UpdateManager import UpdateManagerChecker
 
 class Cli():
@@ -140,7 +140,23 @@ class Cli():
             ['--keep-both', 'If a name conflict occurs, keeps both files (default behaviour)'],
             ['--replace', 'If a name conflict occurs, replaces the old file with the one that you are currently integrating'],
             ['--yes | -y', 'Skips any interactive question and integrates the file'],
+            ['--update-url <url>', 'Set a custom URL for updates'],
         ], text='Usage: --integrate <file_path>')
+
+        update_url = None
+        if '--update-url' in argv:
+            try:
+                index = argv.index('--update-url')
+                update_url = argv[index + 1]
+                argv.pop(index)
+                argv.pop(index)
+            except (ValueError, IndexError):
+                print('Error: --update-url requires a URL')
+                sys.exit(1)
+            
+            if not url_is_valid(update_url):
+                print('Error: "%s" is not a valid URL' % update_url)
+                sys.exit(1)
 
         g_file = Cli._get_file_from_args(argv)
 
@@ -155,7 +171,7 @@ class Cli():
         if '--replace' in argv:
             el.update_logic = AppImageUpdateLogic.REPLACE
 
-        manager = UpdateManagerChecker.check_url(None, el)
+        manager = UpdateManagerChecker.check_url(update_url, el)
 
         apps = appimage_provider.list_installed()
 
@@ -190,6 +206,15 @@ class Cli():
                 el.updating_from = already_installed
 
         appimage_provider.install_file(el)
+
+        if update_url:
+            if el.desktop_entry:
+                el.name = el.desktop_entry.getName()
+            app_conf = read_config_for_app(el)
+            app_conf['update_url'] = update_url
+            app_conf['update_url_manager'] = manager.name
+            save_config_for_app(app_conf)
+
         print(f'{el.file_path} was integrated successfully')
 
     def list_installed(argv):
