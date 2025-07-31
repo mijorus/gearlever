@@ -32,12 +32,15 @@ Please use `flatpak run it.mijorus.gearlever --help` to get an updated version o
 Usage: flatpak run it.mijorus.gearlever [OPTION...]
 # OR gearlever [OPTION...] if using the alias
 
---integrate        Integrate an AppImage file                                                                 
---update           Update an AppImage file       
---update --all     Update all apps                                                           
---remove           Trashes an AppImage, its .desktop file and icons                                           
---list-installed   List integrated apps                                                                       
---list-updates     List available updates   
+
+--integrate        Integrate an AppImage file
+--update           Update an AppImage file
+--remove           Trashes an AppImage, its .desktop file and icons
+--list-installed   List integrated apps
+--list-updates     List available updates
+--set-update-url   Set a custom update url
+--fetch-updates    Fetch updates in the background and sends a desktop notification, used on system startup
+
 ```
 
 For an improved user experience, add the following line to your `.bashrc` file
