@@ -141,7 +141,8 @@ class TestGearLever(unittest.TestCase):
 
     def test_fetch_updates_explicit_url(self):
         self.download_file('https://beeper-desktop.download.beeper.com/builds/Beeper-4.1.1.AppImage', 'beeper.appimage')
-        self.runCommand(['--integrate', '--update-url', 'https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop', os.path.join(self.download_dir, 'beeper.appimage'), '-y'])
+        self.runCommand(['--integrate', 'https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop', os.path.join(self.download_dir, 'beeper.appimage'), '-y'])
+        self.runCommand(['--set-update-url', os.path.join(self.installPath, 'beeper.appimage'), '--url', 'https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop'])
         self.assertIn('beeper.appimage', self.get_installed_files())
 
         updates_list = self.runCommand(['--list-updates'])
