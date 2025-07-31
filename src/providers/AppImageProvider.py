@@ -266,7 +266,7 @@ class AppImageProvider():
             # how the appimage will be called
             appimage_filename = ''
             prefixed_filename = ''
-            if el.update_logic == AppImageUpdateLogic.REPLACE:
+            if el.update_logic == AppImageUpdateLogic.REPLACE and el.updating_from is not None:
                 appimage_filename = os.path.basename(el.updating_from.file_path)
                 desktop_file_path = os.path.basename(el.updating_from.desktop_file_path)
                 prefixed_filename = os.path.splitext(desktop_file_path)[0]
