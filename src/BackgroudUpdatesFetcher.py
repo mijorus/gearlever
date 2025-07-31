@@ -10,6 +10,7 @@ from .providers.AppImageProvider import AppImageProvider
 from .models.UpdateManager import UpdateManagerChecker
 
 class BackgroudUpdatesFetcher():
+    @staticmethod
     def fetch():
         logging.warn('Fetching updates in the background')
 

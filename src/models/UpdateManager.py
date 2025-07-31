@@ -49,9 +49,11 @@ class UpdateManager(ABC):
 
 
 class UpdateManagerChecker():
+    @staticmethod
     def get_models() -> list[UpdateManager]:
         return [StaticFileUpdater, GithubUpdater, GitlabUpdater, CodebergUpdater]
 
+    @staticmethod
     def get_model_by_name(manager_label: str) -> Optional[UpdateManager]:
         item = list(filter(lambda m: m.name == manager_label, 
                                     UpdateManagerChecker.get_models()))
@@ -61,6 +63,7 @@ class UpdateManagerChecker():
 
         return None
 
+    @staticmethod
     def check_url_for_app(el: AppImageListElement=None):
         app_conf = read_config_for_app(el)
         update_url = app_conf.get('update_url', None)
@@ -68,6 +71,7 @@ class UpdateManagerChecker():
         return UpdateManagerChecker.check_url(update_url, el, 
             model=UpdateManagerChecker.get_model_by_name(update_url_manager))
 
+    @staticmethod
     def check_url(url: str=Optional[str], el: Optional[AppImageListElement]=None,
                     model: Optional[UpdateManager]=None) -> Optional[UpdateManager]:
 
@@ -106,6 +110,7 @@ class UpdateManagerChecker():
 
         return None
 
+    @staticmethod
     def check_app(el: AppImageListElement) -> Optional[str]:
         # if not terminal.sandbox_sh(['which', 'readelf']):
         #     return

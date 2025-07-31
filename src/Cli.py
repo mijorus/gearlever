@@ -18,9 +18,11 @@ class Cli():
         make_option('remove', description='Trashes an AppImage, its .desktop file and icons  '),
         make_option('list-installed', description='List integrated apps'),
         make_option('list-updates', description='List available updates'),
+        make_option('set-update-url', description='Set a custom update url'),
         make_option(FETCH_UPDATES_ARG, description='Fetch updates in the background and sends a desktop notification, used on system startup'),
     ]
 
+    @staticmethod
     def ask(message: str, options: list) -> str:
         _input = None
 
@@ -31,6 +33,7 @@ class Cli():
 
         return _input
 
+    @staticmethod
     def from_options(argv):
         if len(argv) < 2:
             return -1
@@ -51,9 +54,11 @@ class Cli():
 
         return -1
 
+    @staticmethod
     def fetch_updates(argv):
         BackgroudUpdatesFetcher.fetch()
 
+    @staticmethod
     def update(argv):
         Cli._print_help_if_requested(argv, [
             ['--yes | -y', 'Skips any interactive question'],
@@ -107,6 +112,7 @@ class Cli():
 
             print(f'\n{el.file_path} updated successfully')
 
+    @staticmethod
     def remove(argv):
         Cli._print_help_if_requested(argv, [
             ['Usage: --remove <file_path>'],
@@ -135,6 +141,43 @@ class Cli():
             appimage_provider.uninstall(el, force_delete=force)
             print(f'{el.file_path} was removed sucessfully')
 
+    @staticmethod
+    def set_update_url(argv):
+        u_managers = ', '.join([n.name for n in UpdateManagerChecker.get_models()])
+
+        Cli._print_help_if_requested(argv, [
+            ['--manager <manager>', f'Optional: specify an update manager between: {u_managers}'],
+        ], text='Usage: --set-update-url <file_path> --url <url>')
+
+        update_url = None
+        update_url = Cli._get_arg_value(argv, '--url')
+        manager_name = Cli._get_arg_value(argv, '--manager')
+
+        if (not update_url) or (not url_is_valid(update_url)):
+            print('Error: "%s" is not a valid URL' % update_url)
+            sys.exit(1)
+
+        g_file = Cli._get_file_from_args(argv)
+        el = appimage_provider.create_list_element_from_file(g_file)
+
+        selected_manager = None
+        if manager_name:
+            selected_manager = UpdateManagerChecker.get_model_by_name(manager_name)
+
+        manager = UpdateManagerChecker.check_url(update_url, el, model=selected_manager)
+
+        if manager:
+            app_conf = read_config_for_app(el)
+            app_conf['update_url'] = update_url
+            app_conf['update_url_manager'] = manager.name
+            save_config_for_app(app_conf)
+
+            print(f'Saved update url for: {manager.name}')
+        else:
+            print(f'The provided url is not supported by any of the following providers: {u_managers}')
+            sys.exit(1)
+
+    @staticmethod
     def integrate(argv):
         Cli._print_help_if_requested(argv, [
             ['--keep-both', 'If a name conflict occurs, keeps both files (default behaviour)'],
@@ -142,21 +185,6 @@ class Cli():
             ['--yes | -y', 'Skips any interactive question and integrates the file'],
             ['--update-url <url>', 'Set a custom URL for updates'],
         ], text='Usage: --integrate <file_path>')
-
-        update_url = None
-        if '--update-url' in argv:
-            try:
-                index = argv.index('--update-url')
-                update_url = argv[index + 1]
-                argv.pop(index)
-                argv.pop(index)
-            except (ValueError, IndexError):
-                print('Error: --update-url requires a URL')
-                sys.exit(1)
-            
-            if not url_is_valid(update_url):
-                print('Error: "%s" is not a valid URL' % update_url)
-                sys.exit(1)
 
         g_file = Cli._get_file_from_args(argv)
 
@@ -170,8 +198,6 @@ class Cli():
 
         if '--replace' in argv:
             el.update_logic = AppImageUpdateLogic.REPLACE
-
-        manager = UpdateManagerChecker.check_url(update_url, el)
 
         apps = appimage_provider.list_installed()
 
@@ -206,17 +232,9 @@ class Cli():
                 el.updating_from = already_installed
 
         appimage_provider.install_file(el)
-
-        if update_url:
-            if el.desktop_entry:
-                el.name = el.desktop_entry.getName()
-            app_conf = read_config_for_app(el)
-            app_conf['update_url'] = update_url
-            app_conf['update_url_manager'] = manager.name
-            save_config_for_app(app_conf)
-
         print(f'{el.file_path} was integrated successfully')
 
+    @staticmethod
     def list_installed(argv):
         Cli._print_help_if_requested(argv, [
             ['-v', ' Show more info']
@@ -234,6 +252,7 @@ class Cli():
 
         Cli._print_table(table)
 
+    @staticmethod
     def list_updates(argv):
         Cli._print_help_if_requested(argv, [['-v', 'Prints update URL information']])
 
@@ -262,6 +281,21 @@ class Cli():
 
         Cli._print_table(table)
 
+    @staticmethod
+    def _get_arg_value(argv: list[str], arg_name: str):
+        if not arg_name in argv:
+            return None
+
+        i = argv.index(arg_name)
+
+        if len(argv) < (i + 2):
+            print(f'Error: {arg_name} requires a value')
+            sys.exit(1)
+
+        val = argv[i + 1]
+        return val
+
+    @staticmethod
     def _print_table(table):
         if (not table):
             return
@@ -286,7 +320,8 @@ class Cli():
         row_format = "".join(["{:<" + str(longest_col) + "}" for longest_col in longest_cols])
         for row in table:
             print(row_format.format(*row))
-    
+
+    @staticmethod
     def _get_invoked_option(argv):
         for opt in Cli.options:
             long_name = str(opt.long_name)
@@ -295,7 +330,8 @@ class Cli():
 
         return None
 
-    def _print_help_if_requested(argv, help: list[str], text=''):
+    @staticmethod
+    def _print_help_if_requested(argv, help: list, text=''):
         if '--help' in argv:
             opt = Cli._get_invoked_option(argv)
             if opt:
@@ -307,6 +343,7 @@ class Cli():
             Cli._print_table(help)
             sys.exit(0)
 
+    @staticmethod
     def _get_file_from_args(args):
         for a in args:
             if not a.startswith('-'):
@@ -320,6 +357,7 @@ class Cli():
         print('Error: please specify a valid AppImage file')
         sys.exit(1)
 
+    @staticmethod
     def _get_list_element_from_gfile(g_file: Gio.File):
         el = None
 
