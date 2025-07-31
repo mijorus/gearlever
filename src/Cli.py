@@ -174,7 +174,10 @@ class Cli():
 
             print(f'Saved update url for: {manager.name}')
         else:
-            print(f'The provided url is not supported by any of the following providers: {u_managers}')
+            if selected_manager:
+                print(f'The provided url is not supported by: {manager_name}')
+            else:
+                print(f'The provided url is not supported by any of the following providers: {u_managers}')
             sys.exit(1)
 
     @staticmethod
