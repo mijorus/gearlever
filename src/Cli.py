@@ -147,6 +147,7 @@ class Cli():
 
         Cli._print_help_if_requested(argv, [
             ['--manager <manager>', f'Optional: specify an update manager between: {u_managers}'],
+            ['--unset', f'Unset a custom config for an app'],
         ], text='Usage: --set-update-url <file_path> --url <url>')
 
         update_url = None
@@ -159,6 +160,18 @@ class Cli():
 
         g_file = Cli._get_file_from_args(argv)
         el = appimage_provider.create_list_element_from_file(g_file)
+
+        if '--unset' in argv:
+            app_conf = read_config_for_app(el)
+
+            if 'update_url' in app_conf:
+                del app_conf['update_url']
+
+            if 'update_url_manager' in app_conf:
+                del app_conf['update_url_manager']
+
+            save_config_for_app(app_conf)
+            sys.exit(0)
 
         selected_manager = None
         if manager_name:
