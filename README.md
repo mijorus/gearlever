@@ -38,7 +38,7 @@ Usage: flatpak run it.mijorus.gearlever [OPTION...]
 --remove           Trashes an AppImage, its .desktop file and icons
 --list-installed   List integrated apps
 --list-updates     List available updates
---set-update-url   Set a custom update url
+--set-update-url   Set/Unset a custom update url
 --fetch-updates    Fetch updates in the background and sends a desktop notification, used on system startup
 
 ```
