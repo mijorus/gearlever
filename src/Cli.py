@@ -215,6 +215,8 @@ class Cli():
         if '--replace' in argv:
             el.update_logic = AppImageUpdateLogic.REPLACE
 
+        manager = UpdateManagerChecker.check_url(None, el)
+
         apps = appimage_provider.list_installed()
 
         already_installed = None
