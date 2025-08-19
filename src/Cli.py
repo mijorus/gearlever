@@ -230,7 +230,6 @@ class Cli():
                 ['Name', el.name,],
                 ['Version', el.version or 'Not specified',],
                 ['Description', el.description or 'None',],
-                ['Update Source', 'None' if not manager else manager.name],
             ]
 
             Cli._print_table(info_table)
