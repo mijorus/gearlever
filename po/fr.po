@@ -8,16 +8,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unnamed project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-01 22:08+0200\n"
-"PO-Revision-Date: 2024-11-10 19:18+0100\n"
-"Last-Translator: Irénée THIRION <irenee.thirion@e.email>\n"
+"POT-Creation-Date: 2024-11-20 14:54+0100\n"
+"PO-Revision-Date: 2025-08-30 18:51+0200\n"
+"Last-Translator: p-sage\n"
 "Language-Team: French <gnomefr@traduc.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.7\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 msgid "Gear Lever"
@@ -35,7 +35,7 @@ msgstr "AppImage;application;"
 msgid "translator_credits"
 msgstr "Irénée Thirion <irenee.thirion@e.email>"
 
-#: src/AppDetails.py:28 src/AppDetails.py:74 src/AppDetails.py:392
+#: src/AppDetails.py:28 src/AppDetails.py:74 src/AppDetails.py:395
 msgid "Update"
 msgstr "Mettre à jour"
 
@@ -78,92 +78,100 @@ msgstr "Veuillez vérifier la source de cette application avant de l’ouvrir"
 msgid "Unlock"
 msgstr "Déverrouiller"
 
-#: src/AppDetails.py:342
+#: src/AppDetails.py:328
 msgid "Launching..."
 msgstr "Lancement…"
 
-#: src/AppDetails.py:349 src/AppDetails.py:482
+#: src/AppDetails.py:335 src/AppDetails.py:501
 #: src/providers/AppImageProvider.py:648
 msgid "Error"
 msgstr "Erreur"
 
-#: src/AppDetails.py:409
+#: src/AppDetails.py:412
 msgid "Update error"
 msgstr "Erreur de mise à jour"
 
-#: src/AppDetails.py:413
+#: src/AppDetails.py:416
 msgid "Close"
 msgstr "Fermer"
 
-#: src/AppDetails.py:444 src/AppDetails.py:464
-msgid "This app runs in the terminal"
-msgstr "Cette application s’exécute dans le terminal"
+#: src/AppDetails.py:424
+msgid "Do you really want to remove this app?"
+msgstr "Voulez-vous vraiment supprimer cette application ?"
 
-#: src/AppDetails.py:446 src/AppDetails.py:461 src/AppDetails.py:467
-msgid "Launch"
-msgstr "Lancer"
+#: src/AppDetails.py:427 src/components/AppDetailsConflictModal.py:14
+msgid "Cancel"
+msgstr "Annuler"
 
-#: src/AppDetails.py:448
+#: src/AppDetails.py:428 src/AppDetails.py:467
 msgid "Remove"
 msgstr "Désinstaller"
 
-#: src/AppDetails.py:452
+#: src/AppDetails.py:463 src/AppDetails.py:483
+msgid "This app runs in the terminal"
+msgstr "Cette application s’exécute dans le terminal"
+
+#: src/AppDetails.py:465 src/AppDetails.py:480 src/AppDetails.py:486
+msgid "Launch"
+msgstr "Lancer"
+
+#: src/AppDetails.py:471
 msgid "Uninstalling..."
 msgstr "Désinstallation…"
 
-#: src/AppDetails.py:456
+#: src/AppDetails.py:475
 msgid "Installing..."
 msgstr "Installation…"
 
-#: src/AppDetails.py:469
+#: src/AppDetails.py:488
 msgid "Move to the app menu"
 msgstr "Déplacer vers le menu des applications"
 
-#: src/AppDetails.py:493
+#: src/AppDetails.py:512
 msgid "This app might not be compatible with your system architecture"
 msgstr "Cette application risque de ne pas fonctionner avec votre système"
 
-#: src/AppDetails.py:740
+#: src/AppDetails.py:759
 msgid "Website"
 msgstr "Site web"
 
-#: src/AppDetails.py:740
+#: src/AppDetails.py:759
 msgid "Add a website"
 msgstr "Ajouter un site web"
 
-#: src/AppDetails.py:749
+#: src/AppDetails.py:768
 msgid "Open URL"
 msgstr "Ouvrir l’URL"
 
-#: src/AppDetails.py:765 src/AppDetails.py:926
+#: src/AppDetails.py:784 src/AppDetails.py:947
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: src/AppDetails.py:778
+#: src/AppDetails.py:797
 msgid "Update management"
 msgstr "Gestion des mises à jour"
 
-#: src/AppDetails.py:783
+#: src/AppDetails.py:802
 msgid "Update URL"
 msgstr "Mettre à jour l’URL"
 
-#: src/AppDetails.py:790
+#: src/AppDetails.py:809
 msgid "Source"
 msgstr "Source"
 
-#: src/AppDetails.py:791
+#: src/AppDetails.py:810
 msgid "Select the source type"
 msgstr "Sélectionnez le type de source"
 
-#: src/AppDetails.py:815
+#: src/AppDetails.py:834
 msgid "How it works"
 msgstr "Fonctionnement"
 
-#: src/AppDetails.py:832
+#: src/AppDetails.py:851
 msgid "Reload metadata"
 msgstr "Recharger les métadonnées"
 
-#: src/AppDetails.py:833
+#: src/AppDetails.py:852
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -171,43 +179,43 @@ msgstr ""
 "Mettre à jour des informations comme l’icône, la version et la description.\n"
 "Utile si l’application se met à jour elle-même."
 
-#: src/AppDetails.py:845
+#: src/AppDetails.py:864
 msgid "Command line arguments"
 msgstr "Arguments en ligne de commande"
 
-#: src/AppDetails.py:861
+#: src/AppDetails.py:882
 msgid "Hash"
 msgstr "Hachage"
 
-#: src/AppDetails.py:871
+#: src/AppDetails.py:892
 msgid "Path"
 msgstr "Chemin d’accès"
 
-#: src/AppDetails.py:873
+#: src/AppDetails.py:894
 msgid "Open Folder"
 msgstr "Ouvrir le dossier"
 
-#: src/AppDetails.py:883
+#: src/AppDetails.py:904
 msgid "Package type"
 msgstr "Type de paquet"
 
-#: src/AppDetails.py:901
+#: src/AppDetails.py:922
 msgid "Key"
 msgstr "Clé"
 
-#: src/AppDetails.py:902
+#: src/AppDetails.py:923
 msgid "Value"
 msgstr "Valeur"
 
-#: src/AppDetails.py:921
+#: src/AppDetails.py:942
 msgid "Add"
 msgstr "Ajouter"
 
-#: src/AppDetails.py:941
+#: src/AppDetails.py:962
 msgid "Environment variables"
 msgstr "Variables d’environnement"
 
-#: src/AppDetails.py:942
+#: src/AppDetails.py:963
 msgid "Add or customize environment for this application"
 msgstr "Éditer les variables d’environnement de cette application"
 
@@ -377,10 +385,6 @@ msgstr ""
 "Il y a déjà une application avec le même nom, comment souhaitez-vous "
 "procéder ?"
 
-#: src/components/AppDetailsConflictModal.py:14
-msgid "Cancel"
-msgstr "Annuler"
-
 #: src/components/AppDetailsConflictModal.py:17
 msgid "Keep both"
 msgstr "Conserver les deux"
@@ -456,6 +460,7 @@ msgstr ""
 "en les gardant organisées."
 
 #: src/gtk/tutorial/2.ui:33
+#, python-brace-format
 msgid "By default, AppImages are saved at: {location}"
 msgstr "Par défaut, les AppImages sont enregistrées dans : {location}"
 
@@ -480,8 +485,8 @@ msgstr ""
 
 #: src/gtk/tutorial/3.ui:33
 msgid ""
-"Use the right-click menu to set Gear lever as the default app for \"."
-"appimage\" files"
+"Use the right-click menu to set Gear lever as the default app for "
+"\".appimage\" files"
 msgstr ""
 "Utilisez le menu du clic droit pour définir Levier de vitesse comme "
 "application par défaut pour les fichiers « .appimage »"
@@ -544,9 +549,8 @@ msgstr ""
 "Cliquez sur le lien ci-dessous pour obtenir plus d’information.\n"
 "{url}"
 
-#: src/models/UpdateManager.py:100
-msgid "Static URL"
-msgstr "URL statique"
+#~ msgid "Static URL"
+#~ msgstr "URL statique"
 
 #~ msgid "Updating"
 #~ msgstr "Mise à jour"
