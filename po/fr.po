@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: unnamed project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-20 14:54+0100\n"
-"PO-Revision-Date: 2025-08-30 18:51+0200\n"
+"PO-Revision-Date: 2025-08-30 18:55+0200\n"
 "Last-Translator: p-sage\n"
 "Language-Team: French <gnomefr@traduc.org>\n"
 "Language: fr\n"
@@ -97,7 +97,7 @@ msgstr "Fermer"
 
 #: src/AppDetails.py:424
 msgid "Do you really want to remove this app?"
-msgstr "Voulez-vous vraiment supprimer cette application ?"
+msgstr "Voulez-vous vraiment désinstaller cette application ?"
 
 #: src/AppDetails.py:427 src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
