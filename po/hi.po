@@ -414,7 +414,7 @@ msgid "Hi, welcome to Gear lever"
 msgstr "नमस्ते, गियर लीवर में आपका स्वागत है"
 
 #: src/gtk/tutorial/1.ui:30
-msgid "An app that helps you integrating AppImages into you system."
+msgid "An app that helps you integrate AppImages into your system."
 msgstr "एक ऐप जो आपके सिस्टम में ऐपइमेज को एकीकृत करने में आपकी मदद करता है।"
 
 #: src/gtk/tutorial/1.ui:36

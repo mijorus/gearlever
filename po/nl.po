@@ -429,7 +429,7 @@ msgid "Hi, welcome to Gear lever"
 msgstr "Hallo, welkom in Versnellingspook"
 
 #: src/gtk/tutorial/1.ui:30
-msgid "An app that helps you integrating AppImages into you system."
+msgid "An app that helps you integrate AppImages into your system."
 msgstr "Deze toepassing helpt u om AppImages te integreren in het systeem."
 
 #: src/gtk/tutorial/1.ui:36
