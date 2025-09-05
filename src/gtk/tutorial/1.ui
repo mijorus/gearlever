@@ -27,7 +27,7 @@
         </child>
         <child>
             <object class="GtkLabel">
-                <property name="label" translatable="yes">An app that helps you integrating AppImages into you system.</property>
+                <property name="label" translatable="yes">An app that helps you integrate AppImages into your system.</property>
                 <property name="margin-bottom">30</property>
             </object>
         </child>
