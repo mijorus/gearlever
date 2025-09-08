@@ -410,7 +410,7 @@ msgid "Hi, welcome to Gear lever"
 msgstr ""
 
 #: src/gtk/tutorial/1.ui:30
-msgid "An app that helps you integrating AppImages into you system."
+msgid "An app that helps you integrate AppImages into your system."
 msgstr ""
 
 #: src/gtk/tutorial/1.ui:36

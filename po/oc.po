@@ -435,7 +435,7 @@ msgid "Hi, welcome to Gear lever"
 msgstr "Adieu, la benvenguda dins Maneta"
 
 #: src/gtk/tutorial/1.ui:30
-msgid "An app that helps you integrating AppImages into you system."
+msgid "An app that helps you integrate AppImages into your system."
 msgstr ""
 "Una aplicacion que vos ajuda a integrar los AppImages a vòstre sistèma."
 
