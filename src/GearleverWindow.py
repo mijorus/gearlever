@@ -30,7 +30,7 @@ from .lib import utils
 from gi.repository import Gtk, Adw, Gio, Gdk, GLib
 
 
-class GearleverWindow(Gtk.ApplicationWindow):
+class GearleverWindow(Adw.Window):
     def __init__(self, from_file=False, **kwargs):
         super().__init__(**kwargs)
         self.from_file = from_file
@@ -64,7 +64,9 @@ class GearleverWindow(Gtk.ApplicationWindow):
         self.titlebar.pack_end(self.search_btn)
         
         self.titlebar.set_title_widget(self.view_title_widget)
-        self.set_titlebar(self.titlebar)
+
+        toolbar_view = Adw.ToolbarView()
+        toolbar_view.add_top_bar(self.titlebar)
 
         self.set_title('Gear lever')
         self.set_default_size(700, 700)
@@ -128,7 +130,8 @@ class GearleverWindow(Gtk.ApplicationWindow):
 
         toast_overlay.set_child(self.container_stack)
 
-        self.set_child(toast_overlay)
+        toolbar_view.set_content(toast_overlay)
+        self.set_content(toolbar_view)
 
         if self.settings.get_boolean('is-maximized'):
             self.maximize()

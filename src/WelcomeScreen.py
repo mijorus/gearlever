@@ -8,28 +8,47 @@ from .State import state
 from .lib.utils import get_element_without_overscroll, get_gsettings, gio_copy
 from .lib.constants import APP_ID, APP_NAME, APP_DATA
 
-class WelcomeScreen(Gtk.Window):
+class WelcomeScreen(Adw.Dialog):
 
     def __init__(self):
         super().__init__()
-        self.set_default_size(700, 700)
-        self.set_resizable(False)
 
         pkgdatadir = APP_DATA['PKGDATADIR']
 
-        container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, valign=Gtk.Align.CENTER)
-        self.carousel = Adw.Carousel()
+        self.set_content_height(600)
+        self.set_content_width(600)
+
+        toolbar_view = Adw.ToolbarView()
+
+        self.titlebar = Adw.HeaderBar()
+        toolbar_view.add_top_bar(self.titlebar)
+
+        overlay = Gtk.Overlay()
+
+        self.carousel = Adw.Carousel(spacing=200)
         self.carousel.connect('page-changed', self.on_page_changed)
-
-        self.titlebar = Adw.HeaderBar(show_end_title_buttons=False)
-        self.left_button = Gtk.Button(icon_name='go-previous', visible=True, sensitive=False)
-        self.right_button = Gtk.Button(label='Next', visible=True, css_classes=['suggested-action'])
-
-        self.titlebar.set_title_widget(Gtk.Label(label='Tutorial'))
-        self.titlebar.pack_start(self.left_button)
-        self.titlebar.pack_end(self.right_button)
         
-        self.set_titlebar(self.titlebar)
+        dots = Adw.CarouselIndicatorDots()
+        dots.set_carousel(self.carousel)
+        self.titlebar.set_title_widget(dots)
+
+        overlay.set_child(self.carousel)
+
+        self.left_button = Gtk.Button(icon_name='go-previous')
+        self.left_button.add_css_class('circular')
+        self.left_button.set_sensitive(False)
+        self.left_button.set_halign(Gtk.Align.START)
+        self.left_button.set_valign(Gtk.Align.CENTER)
+        self.left_button.set_margin_start(20)
+
+        self.right_button = Gtk.Button(icon_name='go-next')
+        self.right_button.add_css_class('circular')
+        self.right_button.set_halign(Gtk.Align.END)
+        self.right_button.set_valign(Gtk.Align.CENTER)
+        self.right_button.set_margin_end(20)
+
+        overlay.add_overlay(self.left_button)
+        overlay.add_overlay(self.right_button)
 
         first_page = Gtk.Builder.new_from_resource(f'/it/mijorus/{APP_NAME}/gtk/tutorial/1.ui')
         second_page = Gtk.Builder.new_from_resource(f'/it/mijorus/{APP_NAME}/gtk/tutorial/2.ui')
@@ -46,7 +65,7 @@ class WelcomeScreen(Gtk.Window):
         self.left_button.connect('clicked', lambda w: self.carousel.scroll_to(get_element_without_overscroll(pages, int(self.carousel.get_position()) - 1), True))
         self.right_button.connect('clicked', lambda w: self.carousel.scroll_to(get_element_without_overscroll(pages, int(self.carousel.get_position()) + 1), True))
 
-        container.append(self.carousel)
+        toolbar_view.set_content(overlay)
 
         self.demo_folder = os.path.join(GLib.get_user_cache_dir(), APP_ID, 'demo')
         demo_app = Gio.File.new_for_path(os.path.join(pkgdatadir, APP_NAME, 'assets', 'demo.AppImage'))
@@ -63,7 +82,7 @@ class WelcomeScreen(Gtk.Window):
         third_page.get_object('open-demo-folder').connect('clicked', self.on_open_demo_folder_clicked)
         second_page.get_object('open-preferences').connect('clicked', self.on_default_localtion_btn_clicked)
 
-        self.set_child(container)
+        self.set_child(toolbar_view)
 
 
     def on_page_changed(self, widget, index):
@@ -98,7 +117,7 @@ class WelcomeScreen(Gtk.Window):
         dialog = Gtk.FileDialog(title=_('Select a folder'), modal=True)
 
         dialog.select_folder(
-            parent=self,
+            parent=self.get_root(),
             cancellable=None,
             callback=self.on_select_default_location_response
         )

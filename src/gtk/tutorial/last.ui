@@ -1,48 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-    <requires lib="gtk" version="4.0" />
-    <object class="GtkBox" id="target">
-        <property name="orientation">1</property>
-        <property name="valign">3</property>
-        <property name="halign">3</property>
-        <property name="hexpand">1</property>
-        <child>
-            <object class="GtkLabel">
-                <property name="label" translatable="no">✅</property>
-                <property name="margin-bottom">30</property>
-                <style>
-                    <class name="title-xl">
-                    </class>
-                </style>
-            </object>
-        </child>
-        <child>
-            <object class="GtkLabel">
-                <property name="label" translatable="yes">All done, let's go!</property>
-                <property name="margin-bottom">30</property>
-                <style>
-                    <class name="title-1" />
-                </style>
-            </object>
-        </child>
-        <child>
-            <object class="GtkBox">
-                <property name="orientation">1</property>
-                <property name="valign">3</property>
-                <property name="halign">3</property>
-                <child>
-                    <object class="GtkButton" id="close-window">
-                        <property name="label" translatable="yes">Close tutorial</property>
-                        <property name="margin-bottom">10</property>
-                        <property name="vexpand">0</property>
-                        <style>
-                            <class name="pill" />
-                        </style>
-                    </object>
-                </child>
-            </object>
-        </child>
-    </object>
-
-
+  <requires lib="gtk" version="4.0" />
+  <requires lib="libadwaita" version="1.0" />
+  <object class="GtkBox" id="target">
+      <property name="orientation">1</property>
+      <property name="width-request">400</property>
+      <property name="valign">3</property>
+      <child>
+          <object class="GtkLabel">
+              <property name="halign">3</property>
+              <property name="valign">1</property>
+              <property name="label" translatable="no">✅</property>
+              <style>
+                  <class name="title-xl" />
+              </style>
+          </object>
+      </child>
+      <child>
+          <object class="AdwStatusPage">
+              <property name="title" translatable="yes">All done, let's go!</property>
+              <child>
+                  <object class="GtkButton" id="close-window">
+                      <property name="label" translatable="yes">Close tutorial</property>
+                      <property name="halign">3</property>
+                      <style>
+                          <class name="pill" />
+                          <class name="suggested-action" />
+                      </style>
+                  </object>
+              </child>
+          </object>
+      </child>
+  </object>
 </interface>

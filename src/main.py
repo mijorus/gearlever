@@ -45,9 +45,9 @@ class GearleverApplication(Adw.Application):
     def __init__(self, version, pkgdatadir):
         super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.HANDLES_OPEN)
         self.create_action('about', self.on_about_action)
-        self.create_action('preferences', self.on_preferences_action)
+        self.create_action('preferences', self.on_preferences_action, ['<primary>comma'])
         self.create_action('open_log_file', self.on_open_log_file)
-        self.create_action('open_welcome_screen', self.on_open_welcome_screen)
+        self.create_action('open_welcome_screen', self.on_open_welcome_screen, ['F1'])
         self.win = None
         self.version = version
         self.add_main_option_entries(Cli.options)
@@ -97,7 +97,7 @@ class GearleverApplication(Adw.Application):
         self.win.on_selected_local_file(list(files))
 
     def on_about_action(self, widget, data):
-        about = Adw.AboutWindow(
+        about = Adw.AboutDialog(
             application_name='Gear Lever',
             version=self.version,
             developers=['Lorenzo Paderi'],
@@ -107,13 +107,14 @@ class GearleverApplication(Adw.Application):
         )
 
         about.set_translator_credits(_("translator_credits"))
-        about.present()
+        if self.win:
+            about.present(self.win)
 
     def on_preferences_action(self, widget, _):
         """Callback for the app.preferences action."""
         pref = Preferences()
-        pref.connect('close-request', lambda w: self.win.on_show_installed_list() if self.win else None)
-        pref.present()
+        pref.connect('closed', lambda w: self.win.on_show_installed_list() if self.win else None)
+        pref.present(self.win)
 
     def create_action(self, name, callback, shortcuts=None):
         """Add an application action.
@@ -140,7 +141,8 @@ class GearleverApplication(Adw.Application):
 
     def on_open_welcome_screen(self, widget, event):
         tutorial = WelcomeScreen()
-        tutorial.present()
+        if self.win:
+            tutorial.present(self.win)
 
 def main(version, pkgdatadir):
     """The application's entry point."""
