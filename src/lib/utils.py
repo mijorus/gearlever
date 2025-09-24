@@ -61,9 +61,9 @@ def set_window_cursor(cursor: str):
             break
 
 
-def get_application_window() -> Gtk.ApplicationWindow:
+def get_application_window() -> Adw.Window:
     for w in Gtk.Window.list_toplevels():
-        if isinstance(w, Gtk.ApplicationWindow):
+        if isinstance(w, Adw.Window):
             return w
 
 
