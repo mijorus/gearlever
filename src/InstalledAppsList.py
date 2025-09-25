@@ -257,4 +257,4 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
     def on_open_welcome_screen(self, widget):
         tutorial = WelcomeScreen()
-        tutorial.present()
+        tutorial.present(self)
