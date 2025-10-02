@@ -15,7 +15,7 @@ gi.require_version('Gtk', '4.0')
 
 from gi.repository import Adw, Gtk, Gio, GLib  # noqa
 
-class Preferences(Adw.PreferencesDialog):
+class Preferences(Adw.PreferencesWindow):
     def __init__(self, **kwargs) :
         super().__init__(**kwargs)
 
