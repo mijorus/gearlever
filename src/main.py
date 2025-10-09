@@ -18,11 +18,12 @@
 import sys
 import gi
 import logging
+import shutil
 import os
 
 from .lib.terminal import sandbox_sh
 from .lib.utils import get_gsettings, make_option
-from .lib.constants import APP_ID, APP_NAME, APP_DATA
+from .lib.constants import APP_ID, APP_NAME, APP_DATA, TMP_DIR
 from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
 from  .WelcomeScreen import WelcomeScreen
@@ -81,6 +82,7 @@ class GearleverApplication(Adw.Application):
 
         if not self.win:
             self.win = GearleverWindow(application=self, from_file=from_file)
+            self.win.connect('close-request', self.on_close_request)
 
         print('Logging to file ' + LOG_FILE)
         self.win.present()
@@ -139,6 +141,11 @@ class GearleverApplication(Adw.Application):
         launcher = Gtk.FileLauncher.new(log_gfile)
         launcher.launch()
 
+    def on_close_request(self, *args):
+        if os.path.exists(TMP_DIR):
+            shutil.rmtree(TMP_DIR)
+        return False
+
     def on_open_welcome_screen(self, widget, event):
         tutorial = WelcomeScreen()
         if self.win:
@@ -151,7 +158,7 @@ def main(version, pkgdatadir):
     LOG_FILE = os.path.join(LOG_FOLDER, f'{APP_NAME}.log')
 
     if not os.path.exists(LOG_FOLDER):
-         os.makedirs(LOG_FOLDER)
+        os.makedirs(LOG_FOLDER)
 
     # Clear log file if it's too big
     log_file_size = 0

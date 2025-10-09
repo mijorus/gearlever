@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 from gi.repository import GLib, Gio
 from urllib.parse import urlsplit
 
+from ..lib.constants import TMP_DIR
 from ..lib import terminal
 from ..lib.json_config import read_config_for_app
 from ..lib.utils import get_random_string, url_is_valid, get_file_hash
@@ -25,8 +26,7 @@ class UpdateManager(ABC):
 
     @abstractmethod
     def __init__(self, url: str, embedded=False) -> None:
-        self.download_folder = GLib.get_tmp_dir() + '/it.mijorus.gearlever/downloads'
-        pass
+        self.download_folder = os.path.join(TMP_DIR, 'downloads')
 
     def cleanup(self):
         pass

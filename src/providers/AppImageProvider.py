@@ -7,7 +7,7 @@ import shlex
 from xdg import DesktopEntry
 
 import dataclasses
-from ..lib.constants import APP_ID
+from ..lib.constants import APP_ID, TMP_DIR
 from ..lib import terminal
 from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.async_utils import _async, idle
@@ -81,7 +81,7 @@ class AppImageProvider():
         self.general_messages = []
         self.update_messages = []
 
-        self.extraction_folder = os.path.join(GLib.get_tmp_dir(), APP_ID, 'appimages')
+        self.extraction_folder = os.path.join(TMP_DIR, 'appimages')
         self.user_desktop_files_path = os.path.join(GLib.get_home_dir(), '.local', 'share', 'applications')
         self.user_local_share_path = os.path.join(GLib.get_home_dir(), '.local', 'share')
 
