@@ -89,6 +89,22 @@ flatpak install --bundle --user gearlever.flatpak
   flatpak-builder build/ it.mijorus.gearlever.json --user --install --force-clean
   ```
 
+## Building a .deb package
+
+Prerequisites:
+- meson
+- ninja (ninja-build)
+- dpkg-deb (part of dpkg)
+
+Basic steps (from the repository root):
+
+```bash
+chmod +x scripts/make_deb.sh
+
+# build and create a .deb (this will create a file like gearlever_3.4.5_amd64.deb)
+./scripts/make_deb.sh
+```
+
 ## Run CLI tests
 ```sh
 python3 -m unittest tests/test_cli.py
