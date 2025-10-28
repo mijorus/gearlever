@@ -7,7 +7,7 @@ from .lib.terminal import sandbox_sh
 from .lib.constants import UPDATES_AVAILABLE_LABEL, ONE_UPDATE_AVAILABLE_LABEL, APP_ID
 from gi.repository import Gio
 from .providers.AppImageProvider import AppImageProvider
-from .models.UpdateManager import UpdateManagerChecker
+from .models.UpdateManagerChecker import UpdateManagerChecker
 
 class BackgroudUpdatesFetcher():
     @staticmethod

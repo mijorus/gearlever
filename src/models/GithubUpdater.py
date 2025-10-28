@@ -24,8 +24,16 @@ class GithubUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
     label = 'Github'
     name = 'GithubUpdater'
-    repo_url_row = None
-    repo_filename_row = None
+    repo_url_row = AdwEntryRowDefault(
+        text='',
+        title=_('Repo URL')
+    )
+
+    repo_filename_row = AdwEntryRowDefault(
+        text='',
+        title=_('File name')
+    )
+
 
     def __init__(self, url, embedded=False) -> None:
         super().__init__(url)
@@ -226,17 +234,16 @@ class GithubUpdater(UpdateManager):
         return False
     
     @staticmethod
-    def get_form_rows(update_url):
-        url_data = GithubUpdater.get_url_data(update_url) or {}
+    def load_form_rows(update_url, embedded=False):
+        url_data = GithubUpdater.get_url_data(update_url)
+        repo_url = ''
+        filename = ''
 
-        GithubUpdater.repo_url_row = AdwEntryRowDefault(
-            text=url_data.get('repo', ''),
-            title=_('Repo URL')
-        )
+        if url_data:
+            repo_url = '/'.join(['https://github.com', url_data['username'], url_data['repo']])
+            filename = url_data['filename']
 
-        GithubUpdater.repo_filename_row = AdwEntryRowDefault(
-            text=url_data.get('filename', ''),
-            title=_('File name')
-        )
+        GithubUpdater.repo_url_row.set_text(repo_url)
+        GithubUpdater.repo_filename_row.set_text(filename)
 
         return [GithubUpdater.repo_url_row, GithubUpdater.repo_filename_row]

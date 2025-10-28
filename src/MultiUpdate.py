@@ -6,7 +6,7 @@ from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
 from .lib.utils import get_application_window
-from .models.UpdateManager import UpdateManagerChecker
+from .models.UpdateManagerChecker import UpdateManagerChecker
 from .components.AppListBoxItem import AppListBoxItem
 
 class MultiUpdate(Gtk.ScrolledWindow):

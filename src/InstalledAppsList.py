@@ -16,7 +16,7 @@ from .preferences import Preferences
 from .WelcomeScreen import WelcomeScreen
 from .lib.utils import get_application_window
 from .lib.async_utils import _async, idle
-from .models.UpdateManager import UpdateManager, UpdateManagerChecker
+from .models.UpdateManagerChecker import UpdateManagerChecker
 
 fetch_updates_cache = None
 

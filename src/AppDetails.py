@@ -8,7 +8,8 @@ from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
 
 from .State import state
 from .lib.terminal import sandbox_sh
-from .models.UpdateManager import UpdateManager, UpdateManagerChecker
+from .models.UpdateManager import UpdateManager
+from .models.UpdateManagerChecker import UpdateManagerChecker
 from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
@@ -129,6 +130,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_url_row: Optional[AdwEntryRowDefault] = None
         self.update_url_save_btn: Optional[Gtk.Button] = None
         self.update_url_source: Optional[Adw.ComboRow] = None
+        self.update_url_form_rows: list = []
         self.update_url_group: Optional[Adw.PreferenciesGroup] = None
 
         self.set_child(container_box)
@@ -556,15 +558,22 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @idle
     def set_update_information(self, manager: UpdateManager):
-        if manager.embedded:
-            self.update_url_row.set_default_text(manager.embedded)
+        # for r in self.update_url_form_rows:
+        #     self.update_url_group.remove(r)
+        
+        manager.load_form_rows(manager.url)
+        # for r in rows:
 
-            if not self.update_url_row.get_text():
-                self.update_url_row.set_text(manager.url)
 
-            self.update_url_source.set_selected(
-                self.update_url_source.get_model()._items_val.index(manager.label)
-            )
+        # if manager.embedded:
+            # self.update_url_row.set_default_text(manager.embedded)
+
+            # if not self.update_url_row.get_text():
+            #     self.update_url_row.set_text(manager.url)
+
+            # self.update_url_source.set_selected(
+            #     self.update_url_source.get_model()._items_val.index(manager.label)
+            # )
 
         if manager.embedded:
             self.update_url_group.set_description(self.UPDATE_INFO_EMBEDDED)
@@ -850,11 +859,12 @@ class AppDetails(Gtk.ScrolledWindow):
 
         if selected_model:
             update_url = app_config.get('update_url', '')
-            for r in selected_model.get_form_rows(update_url):
-                group.add(self.update_url_row)
+            for r in selected_model.load_form_rows(update_url):
+                self.update_url_form_rows.append(r)
+                group.add(r)
 
         return group
-    
+
     def create_reload_metadata_row(self) -> Adw.EntryRow:
         row = Adw.ActionRow(selectable=False, activatable=True,
             title=(_('Reload metadata')), 
@@ -867,7 +877,7 @@ class AppDetails(Gtk.ScrolledWindow):
         row.connect('activated', self.on_refresh_metadata_btn_clicked)
 
         return row
-    
+
     def create_show_exec_args_row(self) -> Adw.ActionRow:
         row = Adw.EntryRow(
             title=(_('Command line arguments')),
