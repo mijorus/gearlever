@@ -802,7 +802,8 @@ class AppDetails(Gtk.ScrolledWindow):
 
         combo_model = Gtk.StringList()
         combo_model._items_val = []
-        selected_model = app_config.get('update_url_manager', None)
+        selected_model_name = app_config.get('update_url_manager', None)
+        selected_model: Optional[UpdateManager] = None
 
         self.update_url_source = Adw.ComboRow(
             title=_('Source'),
@@ -814,37 +815,43 @@ class AppDetails(Gtk.ScrolledWindow):
             combo_model.append(m.label)
             combo_model._items_val.append(m.label)
 
-            if selected_model == m.name:
+            if selected_model_name == m.name:
+                selected_model = m
                 self.update_url_source.set_selected(i)
+                break
 
         # self.update_url_row = Adw.EntryRow(
         #     title=title,
         #     selectable=True,
         #     text=(app_config.get('update_url', ''))
         # )
-        self.update_url_row = AdwEntryRowDefault(
-            text=(app_config.get('update_url', '')),
-            title=title
-        )
+        # self.update_url_row = AdwEntryRowDefault(
+        #     text=(app_config.get('update_url', '')),
+        #     title=title
+        # )
 
-        row_img = Gtk.Image(icon_name='gl-software-update-available-symbolic', 
-                            pixel_size=self.ACTION_ROW_ICON_SIZE)
+        # row_img = Gtk.Image(icon_name='gl-software-update-available-symbolic', 
+        #                     pixel_size=self.ACTION_ROW_ICON_SIZE)
 
-        row_btn = Gtk.Button(
-            icon_name='gl-info-symbolic', 
-            valign=Gtk.Align.CENTER, 
-            tooltip_text=_('How it works'),
-        )
+        # row_btn = Gtk.Button(
+        #     icon_name='gl-info-symbolic', 
+        #     valign=Gtk.Align.CENTER, 
+        #     tooltip_text=_('How it works'),
+        # )
 
-        row_btn.connect('clicked', self.on_update_url_info_btn_clicked)
-        self.update_url_source.connect('notify::selected', self.on_app_update_url_change)
-        self.update_url_row.connect('changed', self.on_app_update_url_change)
+        # row_btn.connect('clicked', self.on_update_url_info_btn_clicked)
+        # self.update_url_source.connect('notify::selected', self.on_app_update_url_change)
+        # self.update_url_row.connect('changed', self.on_app_update_url_change)
 
-        self.update_url_row.add_prefix(row_img)
-        self.update_url_row.add_suffix(row_btn)
+        # self.update_url_row.add_prefix(row_img)
+        # self.update_url_row.add_suffix(row_btn)
 
         group.add(self.update_url_source)
-        group.add(self.update_url_row)
+
+        if selected_model:
+            update_url = app_config.get('update_url', '')
+            for r in selected_model.get_form_rows(update_url):
+                group.add(self.update_url_row)
 
         return group
     
