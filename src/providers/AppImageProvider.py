@@ -358,6 +358,10 @@ class AppImageProvider():
                 desktop_file_content = dskt_file.read()
 
             escaped_exec_filepath = self._escape_exec_argument(dest_appimage_file.get_path())
+            icon_key = 'Icon=applications-other'
+            if dest_appimage_icon_file:
+                icon_key = dest_appimage_icon_file.get_path()
+            
             for g in extracted_appimage.desktop_entry.groups():
                 if g == DesktopEntry.defaultGroup:
                     exec_key = extracted_appimage.desktop_entry.get('Exec', group=g)
@@ -370,11 +374,11 @@ class AppImageProvider():
 
                     desktop_file_content = self._desktop_file_replace_key(desktop_file_content, g, 'Exec', exec_line)
                     desktop_file_content = self._desktop_file_replace_key(desktop_file_content, g, 'TryExec', dest_appimage_file.get_path())
-                    desktop_file_content = self._desktop_file_replace_key(desktop_file_content, g, 'Icon', 'Icon=applications-other')
-
-                    if dest_appimage_icon_file:
-                        desktop_file_content = self._desktop_file_replace_key(desktop_file_content, g, 'Icon', dest_appimage_icon_file.get_path())
+                    desktop_file_content = self._desktop_file_replace_key(desktop_file_content, g, 'Icon', icon_key)
                 else:
+                    if extracted_appimage.desktop_entry.hasKey('Icon', group=g):
+                        desktop_file_content = self._desktop_file_replace_key(desktop_file_content, g, 'Icon', icon_key)
+
                     if extracted_appimage.desktop_entry.hasKey('Exec', group=g):
                         exec_key = extracted_appimage.desktop_entry.get('Exec', group=g)
                         exec_kg_arguments = shlex.split(exec_key)[1:]
