@@ -123,6 +123,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.env_variables_widgets = []
         self.env_variables_group_container = None
         self.save_vars_btn: Optional[Gtk.Button] = None
+        self.command_line_arguments_row = None
 
         # Update url entry
         self.update_url_group: Optional[Adw.PreferencesGroup] = None
@@ -164,7 +165,6 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_subtitle.set_text(self.app_list_element.version)
         self.app_subtitle.set_visible(len(self.app_list_element.version))
         self.app_subtitle.set_selectable(self.app_list_element.installed_status is not InstalledStatus.INSTALLED)
-        self.command_line_arguments_row = None
 
         self.description.set_label(
             self.provider.get_description(self.app_list_element)
