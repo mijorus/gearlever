@@ -160,6 +160,9 @@ def main(version, pkgdatadir):
     if not os.path.exists(LOG_FOLDER):
         os.makedirs(LOG_FOLDER)
 
+    if not os.path.exists(TMP_DIR):
+        os.makedirs(TMP_DIR)
+
     # Clear log file if it's too big
     log_file_size = 0
     if os.path.exists(LOG_FILE): 
