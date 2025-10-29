@@ -164,6 +164,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_subtitle.set_text(self.app_list_element.version)
         self.app_subtitle.set_visible(len(self.app_list_element.version))
         self.app_subtitle.set_selectable(self.app_list_element.installed_status is not InstalledStatus.INSTALLED)
+        self.command_line_arguments_row = None
 
         self.description.set_label(
             self.provider.get_description(self.app_list_element)
@@ -195,7 +196,8 @@ class AppDetails(Gtk.ScrolledWindow):
 
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
             # Exec arguments
-            gtk_list.append(self.create_show_exec_args_row())
+            self.command_line_arguments_row = self.create_show_exec_args_row()
+            gtk_list.append(self.command_line_arguments_row)
 
             # A custom link to a website
             gtk_list.append(self.create_edit_custom_website_row())
@@ -251,6 +253,10 @@ class AppDetails(Gtk.ScrolledWindow):
     @_async
     def load(self, load_completed_callback: Optional[Callable] = None):
         self.show_row_spinner(True)
+
+        if self.command_line_arguments_row:
+            self.command_line_arguments_row.remove_css_class('error')
+
         icon = Gtk.Image(icon_name='application-x-executable-symbolic')
         generation = self.provider.get_appimage_type(self.app_list_element)
 
@@ -691,9 +697,14 @@ class AppDetails(Gtk.ScrolledWindow):
     def on_cmd_arguments_changed(self, widget):
         text = widget.get_text().strip()
         text = text.replace('\n', '')
+        widget.remove_css_class('error')
 
         self.app_list_element.exec_arguments = text
-        self.provider.update_desktop_file(self.app_list_element)
+
+        try:
+            self.provider.update_desktop_file(self.app_list_element)
+        except:
+            widget.add_css_class('error')
 
     # Returns the configuration from the json for this specific app
     def get_config_for_app(self) -> dict:

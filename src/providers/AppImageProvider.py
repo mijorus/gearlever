@@ -393,8 +393,7 @@ class AppImageProvider():
             # generate a new app name
             final_app_name = extracted_appimage.appimage_file.get_basename()
             if extracted_appimage.desktop_entry:
-                final_app_name = extracted_appimage.desktop_entry.getName()
-                # desktop_file_content += f'\nX-AppImage-Version={version}'
+                final_app_name = extracted_appimage.desktop_entry.get('Name', group=DesktopEntry.defaultGroup)
 
                 if el.update_logic is AppImageUpdateLogic.KEEP:
                     final_app_name += f' ({version})'
@@ -530,39 +529,43 @@ class AppImageProvider():
     def update_desktop_file(self, el: AppImageListElement):
         if not el.desktop_file_path:
             raise Exception('desktop_file_path not specified')
-    
-        desktop_file_content = ''
+
         entry = DesktopEntry(filename=el.desktop_file_path)
+        tryexec_command = entry.getTryExec()
+        exec_arguments = el.exec_arguments
+        env_vars = ' '.join(el.env_variables)
+
+        if exec_arguments:
+            exec_arguments = f' {exec_arguments}'
+
+        if env_vars:
+            env_vars = f'env {env_vars} '
+
+        exec_command = ''.join([
+            env_vars,
+            self._escape_exec_argument(tryexec_command),
+            exec_arguments
+        ])
+
+        desktop_file_content = ''
         with open(el.desktop_file_path, 'r') as desktop_file:
             desktop_file_content = desktop_file.read()
 
-            tryexec_command = entry.getTryExec()
-            exec_arguments = el.exec_arguments
-            env_vars = ' '.join(el.env_variables)
+        # replace executable path
+        desktop_file_content = self._desktop_file_replace_key(
+            desktop_file_content,
+            group_name=DesktopEntry.defaultGroup,
+            key='Exec',
+            replacement=exec_command
+        )
 
-            if exec_arguments:
-                exec_arguments = f' {exec_arguments}'
-
-            if env_vars:
-                env_vars = f'env {env_vars} '
-
-            exec_command = ''.join([
-                env_vars,
-                shlex.quote(tryexec_command),
-                exec_arguments
-            ])
-
-            # replace executable path
-            desktop_file_content = self._desktop_file_replace_key(
-                desktop_file_content,
-                group_name=DesktopEntry.defaultGroup,
-                key='Exec',
-                replacement=exec_command
-            )
-
-        with open(el.desktop_file_path, 'w') as desktop_file:
+        tmp_desktop_file = os.path.join(TMP_DIR, get_random_string() + '.desktop')
+        with open(tmp_desktop_file, 'w+') as desktop_file:
             desktop_file.write(desktop_file_content)
 
+        terminal.host_sh(['desktop-file-validate', '--no-hints', '--no-warn-deprecated', tmp_desktop_file])
+
+        shutil.move(tmp_desktop_file, el.desktop_file_path)
         el.desktop_entry = DesktopEntry(filename=el.desktop_file_path)
 
     def update_from_url(self, manager, el: AppImageListElement, status_cb: callable) -> AppImageListElement:
