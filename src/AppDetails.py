@@ -269,10 +269,10 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @_async
     def install_file(self, el: AppImageListElement):
-        try:
-            self.provider.install_file(el)
-        except Exception as e:
-            logging.error(str(e))
+        self.provider.install_file(el)
+        # try:
+        # except Exception as e:
+        #     logging.error(str(e))
 
         self.update_installation_status()
 
@@ -692,7 +692,7 @@ class AppDetails(Gtk.ScrolledWindow):
         text = widget.get_text().strip()
         text = text.replace('\n', '')
 
-        self.app_list_element.exec_arguments = shlex.split(text)
+        self.app_list_element.exec_arguments = text
         self.provider.update_desktop_file(self.app_list_element)
 
     # Returns the configuration from the json for this specific app
@@ -865,7 +865,7 @@ class AppDetails(Gtk.ScrolledWindow):
         row = Adw.EntryRow(
             title=(_('Command line arguments')),
             selectable=False,
-            text=' '.join(self.app_list_element.exec_arguments)
+            text=self.app_list_element.exec_arguments
         )
 
         row_img = Gtk.Image(icon_name='gearlever-cmd-args', pixel_size=self.ACTION_ROW_ICON_SIZE)
