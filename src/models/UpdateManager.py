@@ -640,11 +640,13 @@ class CodebergUpdater(UpdateManager):
             if len(paths) != 7:
                 return False
 
-        return {
-            'username': paths[1],
-            'repo': paths[2],
-            'filename': paths[6],
-        }
+            return {
+                'username': paths[1],
+                'repo': paths[2],
+                'filename': paths[6],
+            }
+
+        return False
 
     def can_handle_link(url: str):
         return CodebergUpdater.get_url_data(url) != False
