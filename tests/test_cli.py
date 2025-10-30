@@ -97,19 +97,19 @@ class TestGearLever(unittest.TestCase):
         self.runCommand(['--list-installed'])
     
     def test_generic_apps(self):
-        self.installApp('zen.AppImage')
+        self.installApp('zen_browser.appimage')
 
     def test_install(self):
         appname = 'mudlet.appimage'
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         installed = self.runCommand(['--list-installed', '-v'])
         self.assertIn(appname, self.get_installed_files())
-        self.assertIn('mudlet.png', self.get_icon_files())
+        self.assertIn('mudlet.svg', self.get_icon_files())
         self.assertIn(appname, installed)
 
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
         self.assertNotIn(appname, self.get_installed_files())
-        self.assertNotIn('mudlet.png', self.get_icon_files())
+        self.assertNotIn('mudlet.svg', self.get_icon_files())
 
     def test_install_dwarfs(self):
         appname = 'citron.appimage'
@@ -130,12 +130,12 @@ class TestGearLever(unittest.TestCase):
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
 
     def test_fetch_updates(self):
-        appname = 'citron-old.appimage'
-        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
+        appname = 'citron.appimage'
+        self.runCommand(['--integrate', os.path.join(self.download_dir, 'citron-old.appimage'), '-y'])
         self.assertIn(appname, self.get_installed_files())
 
         updates_list = self.runCommand(['--list-updates'])
-        self.assertIn(appname, updates_list)
+        self.assertIn('citron.appimage', updates_list)
 
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
 
@@ -152,7 +152,7 @@ class TestGearLever(unittest.TestCase):
 
     def test_with_appimageextract(self):
         # Test apps using appimage-extract
-        appname = 'navicat.appimage'
+        appname = 'navicat_premium_lite_17.appimage'
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         self.assertIn(appname, self.get_installed_files())
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
