@@ -116,7 +116,7 @@ class TestGearLever(unittest.TestCase):
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         installed = self.runCommand(['--list-installed', '-v'])
         self.assertIn(appname, self.get_installed_files())
-        self.assertIn('citron', self.get_icon_files())
+        self.assertIn('citron.svg', self.get_icon_files())
         self.assertIn(appname, installed)
 
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
