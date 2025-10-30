@@ -13,7 +13,7 @@ class TestGearLever(unittest.TestCase):
         self.download_dir = os.path.join(self.cwd, 'testfiles')
 
     def tearDown(self):
-        shutil.rmtree(self.download_dir, ignore_errors=True)
+        pass
     
     def runCommand(self, command: list[str]):
         print('Running ' + ' '.join(['flatpak', 'run', 'it.mijorus.gearlever', *command]))
@@ -25,11 +25,13 @@ class TestGearLever(unittest.TestCase):
             print('Error:', output.stderr.decode())
 
         output.check_returncode()
-        output_str = output.stdout.decode()        
+        output_str = output.stdout.decode()
         return output_str
 
-    def installApp(self, appname, app_url):
-        self.download_file(app_url, appname)
+    def installApp(self, appname, app_url=None):
+        if app_url:
+            self.download_file(app_url, appname)
+
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         installed = self.runCommand(['--list-installed', '-v'])
         self.assertIn(appname, self.get_installed_files())
@@ -95,24 +97,22 @@ class TestGearLever(unittest.TestCase):
         self.runCommand(['--list-installed'])
     
     def test_generic_apps(self):
-        self.installApp('zen_browser.appimage', 'https://github.com/zen-browser/desktop/releases/latest/download/zen-x86_64.AppImage')
+        self.installApp('zen.AppImage')
 
     def test_install(self):
-        appname = 'todoist.appimage'
-        self.download_file('https://todoist.com/linux_app/appimage', appname)
+        appname = 'mudlet.appimage'
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         installed = self.runCommand(['--list-installed', '-v'])
         self.assertIn(appname, self.get_installed_files())
-        self.assertIn('todoist.png', self.get_icon_files())
+        self.assertIn('mudlet.png', self.get_icon_files())
         self.assertIn(appname, installed)
 
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
         self.assertNotIn(appname, self.get_installed_files())
-        self.assertNotIn('todoist.png', self.get_icon_files())
+        self.assertNotIn('mudlet.png', self.get_icon_files())
 
     def test_install_dwarfs(self):
         appname = 'citron.appimage'
-        self.download_file('https://github.com/pkgforge-dev/Citron-AppImage/releases/download/v0.6.1/Citron-v0.6.1-anylinux-x86_64.AppImage', appname)
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         installed = self.runCommand(['--list-installed', '-v'])
         self.assertIn(appname, self.get_installed_files())
@@ -124,35 +124,35 @@ class TestGearLever(unittest.TestCase):
         self.assertNotIn('citron', self.get_icon_files())
 
         # Test dwarfs with symbolic links
-        self.download_file('https://github.com/pkgforge-dev/ghostty-appimage/releases/download/v1.1.3%2B1/Ghostty-1.1.3-x86_64.AppImage', 'ghostty.appimage')
-        self.runCommand(['--integrate', os.path.join(self.download_dir, 'ghostty.appimage'), '-y'])
-        self.assertIn('ghostty.appimage', self.get_installed_files())
-        self.runCommand(['--remove', os.path.join(self.installPath, 'ghostty.appimage'), '-y'])
+        appname = 'ghostty.appimage'
+        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
+        self.assertIn(appname, self.get_installed_files())
+        self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
 
     def test_fetch_updates(self):
-        self.download_file('https://github.com/pkgforge-dev/Citron-AppImage/releases/download/v0.6/Citron-v0.6-anylinux-x86_64.AppImage', 'citron.appimage')
-        self.runCommand(['--integrate', os.path.join(self.download_dir, 'citron.appimage'), '-y'])
-        self.assertIn('citron.appimage', self.get_installed_files())
+        appname = 'citron-old.appimage'
+        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
+        self.assertIn(appname, self.get_installed_files())
 
         updates_list = self.runCommand(['--list-updates'])
-        self.assertIn('citron.appimage', updates_list)
+        self.assertIn(appname, updates_list)
 
-        self.runCommand(['--remove', os.path.join(self.installPath, 'citron.appimage'), '-y'])
+        self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
 
     def test_fetch_updates_explicit_url(self):
-        self.download_file('https://beeper-desktop.download.beeper.com/builds/Beeper-4.1.1.AppImage', 'beeper.appimage')
-        self.runCommand(['--integrate', 'https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop', os.path.join(self.download_dir, 'beeper.appimage'), '-y'])
-        self.runCommand(['--set-update-url', os.path.join(self.installPath, 'beeper.appimage'), '--url', 'https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop'])
-        self.assertIn('beeper.appimage', self.get_installed_files())
+        appname = 'beeper.appimage'
+        self.runCommand(['--integrate', 'https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop', os.path.join(self.download_dir, appname), '-y'])
+        self.runCommand(['--set-update-url', os.path.join(self.installPath, appname), '--url', 'https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop'])
+        self.assertIn(appname, self.get_installed_files())
 
         updates_list = self.runCommand(['--list-updates'])
-        self.assertIn('beeper.appimage', updates_list)
+        self.assertIn(appname, updates_list)
 
-        self.runCommand(['--remove', os.path.join(self.installPath, 'beeper.appimage'), '-y'])
+        self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
 
     def test_with_appimageextract(self):
         # Test apps using appimage-extract
-        self.download_file('https://dn.navicat.com/download/navicat17-premium-lite-en-x86_64.AppImage', 'navicat_premium_lite_17.appimage')
-        self.runCommand(['--integrate', os.path.join(self.download_dir, 'navicat_premium_lite_17.appimage'), '-y'])
-        self.assertIn('navicat_premium_lite_17.appimage', self.get_installed_files())
-        self.runCommand(['--remove', os.path.join(self.installPath, 'navicat_premium_lite_17.appimage'), '-y'])
+        appname = 'navicat.appimage'
+        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
+        self.assertIn(appname, self.get_installed_files())
+        self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
