@@ -602,7 +602,7 @@ class AppImageProvider():
         - Double quote (")
         - Backtick (`)
         - Dollar sign ($)
-        - Backslash (\)
+        - Backslash (\\)
 
         Returns the escaped string, enclosed in double quotes if needed.
         """
