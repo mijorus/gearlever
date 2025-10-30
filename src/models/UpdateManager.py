@@ -489,10 +489,12 @@ class GitlabUpdater(UpdateManager):
             if paths[1] != 'api' or paths[2] != 'v4' or paths[5] != 'packages':
                 return False
 
-        return {
-            'username': paths[4],
-            'filename': paths[9],
-        }
+            return {
+                'username': paths[4],
+                'filename': paths[9],
+            }
+
+        return False
 
     def can_handle_link(url: str):
         return GitlabUpdater.get_url_data(url) != False
