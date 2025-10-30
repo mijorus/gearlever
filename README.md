@@ -5,7 +5,7 @@
   <img width="150" src="data/icons/hicolor/scalable/apps/it.mijorus.gearlever.svg">
 </p>
 
-<p align="center"><a href="https://flatstat.mijorus.it/app/it.mijorus.gearlever"  align="center"><img width="150" src="https://img.shields.io/endpoint?url=https://flathub-stats-backend.vercel.app/badges/it.mijorus.gearlever/shields.io.json"></a></p>
+<p align="center"><img width="100" src="https://img.shields.io/flathub/downloads/it.mijorus.gearlever"></p>
 
 
 
