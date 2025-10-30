@@ -90,6 +90,11 @@ flatpak install --bundle --user gearlever.flatpak
   ```
 
 ## Run CLI tests
+1. Download the latest release here:
+   https://github.com/mijorus/gearlever-test-files
+2. Pleace if under test/
+3. Extract it `tar -xzvf testfiles.tar.gz`
+4. Run:
 ```sh
 python3 -m unittest tests/test_cli.py
 ```
