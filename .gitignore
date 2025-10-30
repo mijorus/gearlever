@@ -16,3 +16,8 @@ po/*.mo
 **/__pycache__
 tests/__pycache__
 
+
+# Ignore local package build artifacts
+pkgroot
+*.deb
+
