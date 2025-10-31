@@ -5,7 +5,8 @@ import os
 
 from .lib.constants import FETCH_UPDATES_ARG
 from .models.Models import InternalError
-from .lib.utils import get_gsettings, portal
+from .models.Settings import Settings
+from .lib.utils import portal
 from .lib.json_config import read_json_config, set_json_config
 from .State import state
 from dbus import Array as DBusArray
@@ -19,8 +20,8 @@ class Preferences(Adw.PreferencesWindow):
     def __init__(self, **kwargs) :
         super().__init__(**kwargs)
 
-        self.settings = get_gsettings()
- 
+        self.settings = Settings.settings
+
         # page 1
         page1 = Adw.PreferencesPage()
 

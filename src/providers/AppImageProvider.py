@@ -7,16 +7,16 @@ import shlex
 from xdg import DesktopEntry
 
 import dataclasses
-from ..lib.constants import APP_ID, TMP_DIR
-from ..lib import terminal
+from ..models.Settings import Settings
 from ..models.AppListElement import AppListElement, InstalledStatus
-from ..lib.async_utils import _async, idle
-from ..lib.json_config import save_config_for_app, read_config_for_app
-from ..lib.utils import get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
+from ..lib.constants import TMP_DIR
+from ..lib import terminal
+from ..lib.async_utils import idle
+from ..lib.utils import get_giofile_content_type, gio_copy, get_file_hash, \
     remove_special_chars, get_random_string, show_message_dialog, get_osinfo, extract_terminal_arguments
 from ..models.Models import AppUpdateElement, InternalError, DownloadInterruptedException
 from typing import Optional, List, TypedDict
-from gi.repository import GLib, Gtk, Gdk, Gio, Adw
+from gi.repository import GLib, Gtk, Gdk, Gio
 from enum import Enum
 
 
@@ -77,7 +77,6 @@ class AppImageProvider():
         self.desktop_exec_codes = ["%f", "%F",  "%u",  "%U",  "%i",  "%c", "%k"]
         logging.info(f'Activating {self.name} provider')
 
-
         self.general_messages = []
         self.update_messages = []
 
@@ -87,7 +86,7 @@ class AppImageProvider():
 
     def list_installed(self) -> list[AppImageListElement]:
         default_folder_path = self._get_appimages_default_destination_path()
-        manage_from_outside = get_gsettings().get_boolean('manage-files-outside-default-folder')
+        manage_from_outside = Settings.settings.get_boolean('manage-files-outside-default-folder')
         output = []
 
         if not os.path.exists(self.user_desktop_files_path):
@@ -279,7 +278,7 @@ class AppImageProvider():
                     appimage_filename = appimage_filename.lower().replace(' ', '_')
                 
                 append_file_ext = True
-                gsettings = get_gsettings()
+                gsettings = Settings.settings
 
                 if extracted_appimage.desktop_entry and \
                     gsettings.get_boolean('exec-as-name-for-terminal-apps') and \
@@ -430,7 +429,7 @@ class AppImageProvider():
             logging.error('Appimage installation error: ' + str(e))
             raise e
 
-        if get_gsettings().get_boolean('move-appimage-on-integration'):
+        if Settings.settings.get_boolean('move-appimage-on-integration'):
             if os.path.dirname(extracted_appimage.appimage_file.get_path()) != appimages_destination_path:
                 logging.info('Deleting original appimage file from: '  + extracted_appimage.appimage_file.get_path())
                 if not extracted_appimage.appimage_file.delete(None):
@@ -842,7 +841,7 @@ class AppImageProvider():
         return result
 
     def _get_appimages_default_destination_path(self) -> str:
-        folder = get_gsettings().get_string('appimages-default-folder')
+        folder = Settings.settings.get_string('appimages-default-folder')
         return re.sub(r'^~', GLib.get_home_dir(), folder)
 
     def _get_app_version(self, extracted_appimage: ExtractedAppImage):

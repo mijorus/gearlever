@@ -25,6 +25,7 @@ from .MultiUpdate import MultiUpdate
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageListElement
 from .models.AppListElement import AppListElement
+from .models.Settings import Settings
 from .lib import utils
 
 from gi.repository import Gtk, Adw, Gio, Gdk, GLib
@@ -36,7 +37,7 @@ class GearleverWindow(Adw.Window):
         self.from_file = from_file
         self.selected_files_count = 0
         self.open_appimage_tooltip = _('Open a new AppImage')
-        self.settings = utils.get_gsettings()
+        self.settings = Settings.settings
 
         # Create a container stack 
         self.container_stack = Adw.Leaflet(can_unfold=False, can_navigate_back=True, can_navigate_forward=False)

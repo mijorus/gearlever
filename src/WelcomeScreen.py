@@ -5,7 +5,8 @@ from typing import Dict, List, Optional
 
 
 from .State import state
-from .lib.utils import get_element_without_overscroll, get_gsettings, gio_copy
+from .models.Settings import Settings
+from .lib.utils import get_element_without_overscroll, gio_copy
 from .lib.constants import APP_ID, APP_NAME, APP_DATA
 
 class WelcomeScreen(Adw.Dialog):
@@ -108,7 +109,7 @@ class WelcomeScreen(Adw.Dialog):
             return
 
         if selected_file.query_exists() and selected_file.get_path().startswith(GLib.get_home_dir()):
-            get_gsettings().set_string('appimages-default-folder', selected_file.get_path())
+            Settings.settings.set_string('appimages-default-folder', selected_file.get_path())
             state.set__('appimages-default-folder', selected_file.get_path())
         else:
             raise InternalError(_('The folder must be in your home directory'))
