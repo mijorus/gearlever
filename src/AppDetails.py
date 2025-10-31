@@ -126,6 +126,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.save_vars_btn: Optional[Gtk.Button] = None
 
         # Update url entry
+        self.update_manager: Optional[UpdateManager] = None
         self.update_url_group: Optional[Adw.PreferencesGroup] = None
         self.update_url_row: Optional[AdwEntryRowDefault] = None # TODO
         self.update_url_save_btn: Optional[Gtk.Button] = None
@@ -556,29 +557,32 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_action_button.set_label(self.UPDATE_FETCHING)
         self.update_action_button.set_sensitive(False)
 
-    @idle
-    def set_update_information(self, manager: UpdateManager):
-        # for r in self.update_url_form_rows:
-        #     self.update_url_group.remove(r)
+    # @idle
+    # def set_update_information_old(self, manager: UpdateManager):
+    #     # for r in self.update_url_form_rows:
+    #     #     self.update_url_group.remove(r)
         
-        # manager.load_form_rows(manager.url)
-        # for r in rows:
+    #     # manager.load_form_rows(manager.url)
+    #     # for r in rows:
 
 
-        # if manager.embedded:
-            # self.update_url_row.set_default_text(manager.embedded)
+    #     # if manager.embedded:
+    #         # self.update_url_row.set_default_text(manager.embedded)
 
-            # if not self.update_url_row.get_text():
-            #     self.update_url_row.set_text(manager.url)
+    #         # if not self.update_url_row.get_text():
+    #         #     self.update_url_row.set_text(manager.url)
 
-            # self.update_url_source.set_selected(
-            #     self.update_url_source.get_model()._items_val.index(manager.label)
-            # )
+    #         # self.update_url_source.set_selected(
+    #         #     self.update_url_source.get_model()._items_val.index(manager.label)
+    #         # )
 
-        if manager.embedded:
-            self.update_url_group.set_description(self.UPDATE_INFO_EMBEDDED)
-        else:
-            self.update_url_group.set_description(self.UPDATE_INFO_NOT_EMBEDDED)
+    #     if manager.embedded:
+    #         self.update_url_group.set_description(self.UPDATE_INFO_EMBEDDED)
+    #     else:
+    #         self.update_url_group.set_description(self.UPDATE_INFO_NOT_EMBEDDED)
+
+    #     for i, m in enumerate(UpdateManagerChecker.get_models()):
+    #         pass
 
     @_async
     def check_updates(self):
@@ -603,28 +607,44 @@ class AppDetails(Gtk.ScrolledWindow):
         GLib.idle_add(lambda: self.update_action_button.set_sensitive(True))
         GLib.idle_add(lambda: self.update_action_button.set_sensitive(is_updatable))
 
-    def on_app_update_url_change(self, *props):
+    @idle
+    def set_update_information(self, manager: Optional[UpdateManager]=None):
         app_conf = self.get_config_for_app()
         has_changed = False
 
-        manager_label = self.update_url_source.get_model().get_string(
-            self.update_url_source.get_selected())
-    
-        selected_manager = list(filter(lambda m: m.label == manager_label, 
-                                UpdateManagerChecker.get_models()))[0]
+        if manager:
+            self.update_manager = manager
+        else:
+            manager_label = self.update_url_source.get_model().get_string(
+                self.update_url_source.get_selected())
         
-        if app_conf.get('update_url_manager', None) != selected_manager.name:
-            has_changed = True
+            self.update_manager = list(filter(lambda m: m.label == manager_label, 
+                                    UpdateManagerChecker.get_models()))[0]
 
-        self.update_url_save_btn.set_sensitive(has_changed)
+        if self.update_manager:
+            if app_conf.get('update_url_manager', None) != self.update_manager.name:
+                has_changed = True
 
-        [self.update_url_group.remove(r) for r in 
-            self.update_url_form_rows]
-        self.update_url_form_rows = []
+            self.update_url_save_btn.set_sensitive(has_changed)
 
-        for r in selected_manager.load_form_rows(''):
-            self.update_url_form_rows.append(r)
-            self.update_url_group.add(r)
+            [self.update_url_group.remove(r) for r in 
+                self.update_url_form_rows]
+            self.update_url_form_rows = []
+
+            rows = self.update_manager.load_form_rows(
+                update_url=self.update_manager.url,
+                embedded=self.update_manager.embedded
+            )
+
+            for r in rows:
+                self.update_url_form_rows.append(r)
+                self.update_url_group.add(r)
+
+            if self.update_manager.embedded:
+                self.update_url_group.set_description(self.UPDATE_INFO_EMBEDDED)
+            else:
+                self.update_url_group.set_description(self.UPDATE_INFO_NOT_EMBEDDED)
+
 
     @_async
     def on_app_update_url_apply(self, ev):
@@ -636,14 +656,11 @@ class AppDetails(Gtk.ScrolledWindow):
         GLib.idle_add(lambda: widget.remove_css_class('error'))
         GLib.idle_add(lambda: widget.remove_css_class('success'))
 
-        if text:
-            manager_label = self.update_url_source.get_model().get_string(
-            self.update_url_source.get_selected())
-    
-            selected_manager = list(filter(lambda m: m.label == manager_label, 
-                                    UpdateManagerChecker.get_models()))[0]
+        # if self.update_mana
 
-            manager = UpdateManagerChecker.check_url(text, model=selected_manager)
+        if text:
+            manager = UpdateManagerChecker.check_url(text, model=self.update_manager)
+
             if not manager:
                 GLib.idle_add(lambda: widget.add_css_class('error'))
                 return
@@ -763,25 +780,24 @@ class AppDetails(Gtk.ScrolledWindow):
         edit_form = self.create_edit_env_var_form()
         self.env_variables_group_container.append(edit_form)
 
-    def load_selected_update_model(self, widget, *args):
-        available_models = UpdateManagerChecker.get_models()
-        manager_label = self.update_url_source.get_model().get_string(
-            self.update_url_source.get_selected())
-        print(manager_label)
+    # def load_selected_update_model(self, widget, *args):
+    #     available_models = UpdateManagerChecker.get_models()
+    #     manager_label = self.update_url_source.get_model().get_string(
+    #         self.update_url_source.get_selected())
 
-        selected_manager = list(filter(lambda m: m.label == manager_label, 
-                            UpdateManagerChecker.get_models()))[0]
+    #     selected_manager = list(filter(lambda m: m.label == manager_label, 
+    #                         UpdateManagerChecker.get_models()))[0]
 
-        app_config = self.get_config_for_app()
-        update_url = app_config.get('update_url', '')
+    #     app_config = self.get_config_for_app()
+    #     update_url = app_config.get('update_url', '')
 
-        [self.update_url_group.remove(r) for r in 
-            self.update_url_form_rows]
-        self.update_url_form_rows = []
+    #     [self.update_url_group.remove(r) for r in 
+    #         self.update_url_form_rows]
+    #     self.update_url_form_rows = []
 
-        for r in selected_manager.load_form_rows(update_url):
-            self.update_url_form_rows.append(r)
-            self.update_url_group.add(r)
+    #     for r in selected_manager.load_form_rows(update_url):
+    #         self.update_url_form_rows.append(r)
+    #         self.update_url_group.add(r)
 
     # Create widgets methods
 
@@ -812,6 +828,14 @@ class AppDetails(Gtk.ScrolledWindow):
     def create_edit_update_url_row(self) -> Adw.EntryRow:
         app_config = self.get_config_for_app()
 
+        row_btn = Gtk.Button(
+            icon_name='gl-info-symbolic', 
+            valign=Gtk.Align.CENTER, 
+            tooltip_text=_('How it works'),
+        )
+
+        row_btn.connect('clicked', self.on_update_url_info_btn_clicked)
+
         save_btn_content = Adw.ButtonContent(
             icon_name='gearlever-check-plain-symbolic',
             label=_('Save')
@@ -824,6 +848,8 @@ class AppDetails(Gtk.ScrolledWindow):
 
         btn_container = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5, 
                                 valign=Gtk.Align.CENTER)
+
+        btn_container.append(row_btn)
         btn_container.append(self.update_url_save_btn)
 
         group = Adw.PreferencesGroup(
@@ -835,7 +861,11 @@ class AppDetails(Gtk.ScrolledWindow):
         title = _('Update URL')
 
         combo_model = Gtk.StringList()
-        combo_model._items_val = []
+        # combo_model._items_val = []
+
+        combo_model.append(_('Default'))
+        # combo_model._items_val.append('None')
+
         selected_model_name = app_config.get('update_url_manager', None)
         selected_model: Optional[UpdateManager] = None
 
@@ -849,25 +879,27 @@ class AppDetails(Gtk.ScrolledWindow):
 
         for i, m in enumerate(available_models):
             combo_model.append(m.label)
-            combo_model._items_val.append(m.label)
+            # combo_model._items_val.append(m.label)
 
             if selected_model_name == m.name:
-                selected_model = m
+                # selected_model = m
                 self.update_url_source.set_selected(i)
                 break
 
-        if not selected_model:
-            selected_model = available_models[0]
-            self.update_url_source.set_selected(0)
+        # if not selected_model:
+        self.update_url_source.set_selected(0)
 
-        self.update_url_source.connect('notify::selected', self.on_app_update_url_change)
+        self.update_manager = selected_model
+        self.update_url_source.connect('notify::selected', lambda *args: self.set_update_information())
+        self.update_url_form_rows = []
+
         group.add(self.update_url_source)
 
-        if selected_model:
-            update_url = app_config.get('update_url', '')
-            for r in selected_model.load_form_rows(update_url):
-                self.update_url_form_rows.append(r)
-                group.add(r)
+        # if self.update_manager:
+        #     update_url = app_config.get('update_url', '')
+        #     for r in self.update_manager.load_form_rows(update_url):
+        #         self.update_url_form_rows.append(r)
+        #         group.add(r)
 
         return group
 

@@ -46,7 +46,7 @@ class UpdateManager(ABC):
 
     @staticmethod
     @abstractmethod
-    def load_form_rows(update_url: str) -> list:
+    def load_form_rows(update_url: str, embedded: bool) -> list:
         pass
 
     @staticmethod

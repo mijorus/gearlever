@@ -48,14 +48,15 @@ class StaticFileUpdater(UpdateManager):
         return ct_supported
 
     @staticmethod
-    def load_form_rows(update_url):
+    def load_form_rows(update_url, embedded):
         StaticFileUpdater.form_row = AdwEntryRowDefault(
             text=update_url,
-            title=_('Update URL')
+            icon_name='gl-earth',
+            title=_('Update URL'),
+            sensitive=(not embedded)
         )
 
         return [StaticFileUpdater.form_row]
-
 
     def __init__(self, url, embedded=False) -> None:
         super().__init__(url)
@@ -126,7 +127,7 @@ class StaticFileUpdater(UpdateManager):
         is_size_different = resp_cl != old_size
         return is_size_different
 
-    def get_url_headers(url):
+    def get_url_headers(self, url):
         headers = {}
         head_request_error = False
 

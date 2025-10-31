@@ -66,7 +66,7 @@ class GithubUpdater(UpdateManager):
         return GithubUpdater.get_url_data(url) != False
 
     @staticmethod
-    def load_form_rows(update_url, embedded=False):
+    def load_form_rows(update_url, embedded=False): 
         url_data = GithubUpdater.get_url_data(update_url)
         repo_url = ''
         filename = ''
@@ -77,12 +77,16 @@ class GithubUpdater(UpdateManager):
 
         GithubUpdater.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
+            icon_name='gl-git',
+            sensitive=(not embedded),
             title=_('Repo URL')
         )
 
         GithubUpdater.repo_filename_row = AdwEntryRowDefault(
             text=filename,
-            title=_('File name')
+            icon_name='gl-paper',
+            sensitive=(not embedded),
+            title=_('Release file name')
         )
 
         return [GithubUpdater.repo_url_row, GithubUpdater.repo_filename_row]
