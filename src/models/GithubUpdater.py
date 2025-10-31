@@ -1,18 +1,12 @@
 import logging
 import requests
-import shutil
 import os
 import re
-import json
 from typing import Optional, Callable
-from abc import ABC, abstractmethod
 from gi.repository import GLib, Gio
 from urllib.parse import urlsplit
 
-from ..lib.constants import TMP_DIR
-from ..lib import terminal
-from ..lib.json_config import read_config_for_app
-from ..lib.utils import get_random_string, url_is_valid, get_file_hash
+from ..lib.utils import get_file_hash
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 from .Models import DownloadInterruptedException
 
@@ -24,35 +18,8 @@ class GithubUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
     label = 'Github'
     name = 'GithubUpdater'
-    repo_url_row = AdwEntryRowDefault(
-        text='',
-        title=_('Repo URL')
-    )
-
-    repo_filename_row = AdwEntryRowDefault(
-        text='',
-        title=_('File name')
-    )
-
-
-    def __init__(self, url, embedded=False) -> None:
-        super().__init__(url)
-        self.staticfile_manager = None
-        self.url_data = GithubUpdater.get_url_data(url)
-        self.url = self.get_url_string_from_data(self.url_data)
-
-        self.embedded = False
-        if embedded:
-            self.embedded = self.get_url_string_from_data(
-                GithubUpdater.get_url_data(embedded)
-            )
-
-            self.embedded = re.sub(r"\.zsync$", "", self.embedded)
-
-    def get_url_string_from_data(self, url_data):
-        url = f'https://github.com/{url_data["username"]}/{url_data["repo"]}'
-        url += f'/releases/download/{url_data["tag_name"]}/{url_data["filename"]}'
-        return url
+    repo_url_row = None
+    repo_filename_row = None
 
     @staticmethod
     def get_url_data(url: str):
@@ -97,6 +64,47 @@ class GithubUpdater(UpdateManager):
     @staticmethod
     def can_handle_link(url: str):
         return GithubUpdater.get_url_data(url) != False
+
+    @staticmethod
+    def load_form_rows(update_url, embedded=False):
+        url_data = GithubUpdater.get_url_data(update_url)
+        repo_url = ''
+        filename = ''
+
+        if url_data:
+            repo_url = '/'.join(['https://github.com', url_data['username'], url_data['repo']])
+            filename = url_data['filename']
+
+        GithubUpdater.repo_url_row = AdwEntryRowDefault(
+            text=repo_url,
+            title=_('Repo URL')
+        )
+
+        GithubUpdater.repo_filename_row = AdwEntryRowDefault(
+            text=filename,
+            title=_('File name')
+        )
+
+        return [GithubUpdater.repo_url_row, GithubUpdater.repo_filename_row]
+
+    def __init__(self, url, embedded=False) -> None:
+        super().__init__(url)
+        self.staticfile_manager = None
+        self.url_data = GithubUpdater.get_url_data(url)
+        self.url = self.get_url_string_from_data(self.url_data)
+
+        self.embedded = False
+        if embedded:
+            self.embedded = self.get_url_string_from_data(
+                GithubUpdater.get_url_data(embedded)
+            )
+
+            self.embedded = re.sub(r"\.zsync$", "", self.embedded)
+
+    def get_url_string_from_data(self, url_data):
+        url = f'https://github.com/{url_data["username"]}/{url_data["repo"]}'
+        url += f'/releases/download/{url_data["tag_name"]}/{url_data["filename"]}'
+        return url
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -232,18 +240,3 @@ class GithubUpdater(UpdateManager):
                     return is_size_different
 
         return False
-    
-    @staticmethod
-    def load_form_rows(update_url, embedded=False):
-        url_data = GithubUpdater.get_url_data(update_url)
-        repo_url = ''
-        filename = ''
-
-        if url_data:
-            repo_url = '/'.join(['https://github.com', url_data['username'], url_data['repo']])
-            filename = url_data['filename']
-
-        GithubUpdater.repo_url_row.set_text(repo_url)
-        GithubUpdater.repo_filename_row.set_text(filename)
-
-        return [GithubUpdater.repo_url_row, GithubUpdater.repo_filename_row]

@@ -15,23 +15,17 @@ from ..lib.json_config import read_config_for_app
 from ..lib.utils import get_random_string, url_is_valid, get_file_hash
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 from .Models import DownloadInterruptedException
+from ..components.AdwEntryRowDefault import AdwEntryRowDefault
 
 from .UpdateManager import UpdateManager
 
 class StaticFileUpdater(UpdateManager):
     label = _('Static URL')
     name = 'StaticFileUpdater'
+    form_row = None
     currend_download: Optional[requests.Response]
 
-    def __init__(self, url, embedded=False) -> None:
-        super().__init__(url)
-        self.url = re.sub(r"\.zsync$", "", url)
-        self.currend_download = None
-        self.embedded = False
-
-        if embedded:
-            self.embedded = re.sub(r"\.zsync$", "", url)
-
+    @staticmethod
     def can_handle_link(url: str):
         if not url_is_valid(url):
             return False
@@ -53,9 +47,21 @@ class StaticFileUpdater(UpdateManager):
 
         return ct_supported
 
-    def download(self, status_update_cb) -> str:
+    @staticmethod
+    def load_form_rows(update_url):
+        StaticFileUpdater.form_row = AdwEntryRowDefault(
+            text=update_url,
+            title=_('Update URL')
+        )
+
+        return [StaticFileUpdater.form_row]
+
+
+    def __init__(self, url, embedded=False) -> None:
+        super().__init__(url)
         logging.info(f'Downloading file from {self.url}')
 
+    def download(self, status_update_cb) -> tuple[str, str]:
         self.currend_download = requests.get(self.url, stream=True)
         random_name = get_random_string()
         fname = f'{self.download_folder}/{random_name}.appimage'
@@ -91,6 +97,12 @@ class StaticFileUpdater(UpdateManager):
 
         self.currend_download = None
         return fname, etag
+        self.url = re.sub(r"\.zsync$", "", url)
+        self.currend_download = None
+        self.embedded = False
+
+        if embedded:
+            self.embedded = re.sub(r"\.zsync$", "", url)
 
     def cancel_download(self):
         if self.currend_download:

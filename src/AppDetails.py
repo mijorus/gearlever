@@ -127,7 +127,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         # Update url entry
         self.update_url_group: Optional[Adw.PreferencesGroup] = None
-        self.update_url_row: Optional[AdwEntryRowDefault] = None
+        self.update_url_row: Optional[AdwEntryRowDefault] = None # TODO
         self.update_url_save_btn: Optional[Gtk.Button] = None
         self.update_url_source: Optional[Adw.ComboRow] = None
         self.update_url_form_rows: list = []
@@ -561,7 +561,7 @@ class AppDetails(Gtk.ScrolledWindow):
         # for r in self.update_url_form_rows:
         #     self.update_url_group.remove(r)
         
-        manager.load_form_rows(manager.url)
+        # manager.load_form_rows(manager.url)
         # for r in rows:
 
 
@@ -611,15 +611,20 @@ class AppDetails(Gtk.ScrolledWindow):
             self.update_url_source.get_selected())
     
         selected_manager = list(filter(lambda m: m.label == manager_label, 
-                                  UpdateManagerChecker.get_models()))[0]
+                                UpdateManagerChecker.get_models()))[0]
         
         if app_conf.get('update_url_manager', None) != selected_manager.name:
             has_changed = True
 
-        if app_conf.get('update_url', None) != self.update_url_row.get_text():
-            has_changed = True
-
         self.update_url_save_btn.set_sensitive(has_changed)
+
+        [self.update_url_group.remove(r) for r in 
+            self.update_url_form_rows]
+        self.update_url_form_rows = []
+
+        for r in selected_manager.load_form_rows(''):
+            self.update_url_form_rows.append(r)
+            self.update_url_group.add(r)
 
     @_async
     def on_app_update_url_apply(self, ev):
@@ -758,6 +763,26 @@ class AppDetails(Gtk.ScrolledWindow):
         edit_form = self.create_edit_env_var_form()
         self.env_variables_group_container.append(edit_form)
 
+    def load_selected_update_model(self, widget, *args):
+        available_models = UpdateManagerChecker.get_models()
+        manager_label = self.update_url_source.get_model().get_string(
+            self.update_url_source.get_selected())
+        print(manager_label)
+
+        selected_manager = list(filter(lambda m: m.label == manager_label, 
+                            UpdateManagerChecker.get_models()))[0]
+
+        app_config = self.get_config_for_app()
+        update_url = app_config.get('update_url', '')
+
+        [self.update_url_group.remove(r) for r in 
+            self.update_url_form_rows]
+        self.update_url_form_rows = []
+
+        for r in selected_manager.load_form_rows(update_url):
+            self.update_url_form_rows.append(r)
+            self.update_url_group.add(r)
+
     # Create widgets methods
 
     def create_edit_custom_website_row(self) -> Adw.EntryRow:
@@ -820,7 +845,9 @@ class AppDetails(Gtk.ScrolledWindow):
             model=combo_model
         )
 
-        for i, m in enumerate(UpdateManagerChecker.get_models()):
+        available_models = UpdateManagerChecker.get_models()
+
+        for i, m in enumerate(available_models):
             combo_model.append(m.label)
             combo_model._items_val.append(m.label)
 
@@ -829,32 +856,11 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.update_url_source.set_selected(i)
                 break
 
-        # self.update_url_row = Adw.EntryRow(
-        #     title=title,
-        #     selectable=True,
-        #     text=(app_config.get('update_url', ''))
-        # )
-        # self.update_url_row = AdwEntryRowDefault(
-        #     text=(app_config.get('update_url', '')),
-        #     title=title
-        # )
+        if not selected_model:
+            selected_model = available_models[0]
+            self.update_url_source.set_selected(0)
 
-        # row_img = Gtk.Image(icon_name='gl-software-update-available-symbolic', 
-        #                     pixel_size=self.ACTION_ROW_ICON_SIZE)
-
-        # row_btn = Gtk.Button(
-        #     icon_name='gl-info-symbolic', 
-        #     valign=Gtk.Align.CENTER, 
-        #     tooltip_text=_('How it works'),
-        # )
-
-        # row_btn.connect('clicked', self.on_update_url_info_btn_clicked)
-        # self.update_url_source.connect('notify::selected', self.on_app_update_url_change)
-        # self.update_url_row.connect('changed', self.on_app_update_url_change)
-
-        # self.update_url_row.add_prefix(row_img)
-        # self.update_url_row.add_suffix(row_btn)
-
+        self.update_url_source.connect('notify::selected', self.on_app_update_url_change)
         group.add(self.update_url_source)
 
         if selected_model:
