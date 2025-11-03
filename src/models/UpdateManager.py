@@ -54,6 +54,11 @@ class UpdateManager(ABC):
     def can_handle_link(url: str) -> bool:
         pass
 
+    @staticmethod
+    @abstractmethod
+    def get_form_url() -> str:
+        pass
+
 
 
 # class GitlabUpdater(UpdateManager):

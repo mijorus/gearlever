@@ -57,6 +57,42 @@ class StaticFileUpdater(UpdateManager):
         )
 
         return [StaticFileUpdater.form_row]
+    
+    @staticmethod
+    def get_form_url() -> str:
+        if (not StaticFileUpdater.form_row):
+            return ''
+        
+        return StaticFileUpdater.form_row.get_text().strip()
+
+    @staticmethod
+    def get_url_headers(url):
+        headers = {}
+        head_request_error = False
+
+        try:
+            resp = requests.head(url, allow_redirects=True)
+            resp.raise_for_status()
+            headers = resp.headers
+        except Exception as e:
+            head_request_error = True
+            logging.error(str(e))
+            
+        if head_request_error:
+            # If something goes wrong with the Head request, try with stream mode
+            logging.warn('Head request failed, trying with stream mode...')
+
+            try:
+                resp = requests.get(url, allow_redirects=True, stream=True)
+                with resp as r:
+                    r.raise_for_status()
+                    headers = r.headers
+                    r.close()
+            except Exception as e:
+                logging.error(str(e))
+        
+        return headers
+
 
     def __init__(self, url, embedded=False) -> None:
         super().__init__(url)
@@ -126,30 +162,3 @@ class StaticFileUpdater(UpdateManager):
 
         is_size_different = resp_cl != old_size
         return is_size_different
-
-    def get_url_headers(self, url):
-        headers = {}
-        head_request_error = False
-
-        try:
-            resp = requests.head(url, allow_redirects=True)
-            resp.raise_for_status()
-            headers = resp.headers
-        except Exception as e:
-            head_request_error = True
-            logging.error(str(e))
-            
-        if head_request_error:
-            # If something goes wrong with the Head request, try with stream mode
-            logging.warn('Head request failed, trying with stream mode...')
-
-            try:
-                resp = requests.get(url, allow_redirects=True, stream=True)
-                with resp as r:
-                    r.raise_for_status()
-                    headers = r.headers
-                    r.close()
-            except Exception as e:
-                logging.error(str(e))
-        
-        return headers

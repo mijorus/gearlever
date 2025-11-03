@@ -91,6 +91,17 @@ class GithubUpdater(UpdateManager):
 
         return [GithubUpdater.repo_url_row, GithubUpdater.repo_filename_row]
 
+    @staticmethod
+    def get_form_url() -> str:
+        if (not GithubUpdater.repo_filename_row) or (not GithubUpdater.repo_url_row):
+            return ''
+        
+        return '/'.join([
+            GithubUpdater.repo_url_row.get_text(),
+            '/releases/download/*',
+            GithubUpdater.repo_filename_row.get_text()
+        ]).strip()
+
     def __init__(self, url, embedded=False) -> None:
         super().__init__(url)
         self.staticfile_manager = None

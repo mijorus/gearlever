@@ -28,6 +28,8 @@ class AppDetails(Gtk.ScrolledWindow):
     }
 
     UPDATE_BTN_LABEL = _('Update')
+    BTN_SAVE = _('Save')
+    BTN_SAVED = _('Saved')
     CANCEL_UPDATE = _('Cancel update')
     UPDATE_FETCHING = _('Checking updates...')
     UPDATE_NOT_AVAIL_BTN_LABEL = _('No updates available')
@@ -647,35 +649,38 @@ class AppDetails(Gtk.ScrolledWindow):
 
 
     @_async
-    def on_app_update_url_apply(self, ev):
+    def on_app_update_url_apply(self, button):
         app_conf = self.get_config_for_app()
-        widget = self.update_url_row
+        # widget = self.update_url_row
+        widget = self.update_url_group
 
-        text = widget.get_text().strip()
+        if not self.update_manager:
+            return
 
-        GLib.idle_add(lambda: widget.remove_css_class('error'))
-        GLib.idle_add(lambda: widget.remove_css_class('success'))
+        text = self.update_manager.get_form_url()
 
-        # if self.update_mana
+        GLib.idle_add(lambda: (widget.remove_css_class('error') and
+                                widget.remove_css_class('success') and
+                                button.set_label(self.BTN_SAVE)))
 
         if text:
-            manager = UpdateManagerChecker.check_url(text, model=self.update_manager)
-
-            if not manager:
+            print(text)
+            if not self.update_manager.can_handle_link(url=text):
                 GLib.idle_add(lambda: widget.add_css_class('error'))
                 return
             
-            app_conf['update_url'] = manager.url
-            app_conf['update_url_manager'] = manager.name
+            app_conf['update_url'] = self.update_manager.url
+            app_conf['update_url_manager'] = self.update_manager.name
         else:
             if 'update_url' in app_conf:
                 del app_conf['update_url']
             
             if 'update_url_manager' in app_conf:
                 del app_conf['update_url_manager']
-        
+
         save_config_for_app(app_conf)
-        GLib.idle_add(lambda: widget.add_css_class('success'))
+        GLib.idle_add(lambda: (widget.add_css_class('success') and
+                            button.set_label(self.BTN_SAVED)))
 
     def on_env_var_value_changed(self, widget, key_widget, value_widget):
         key = key_widget.get_text()
@@ -838,7 +843,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         save_btn_content = Adw.ButtonContent(
             icon_name='gearlever-check-plain-symbolic',
-            label=_('Save')
+            label=_(self.BTN_SAVE)
         )
 
         self.update_url_save_btn = Gtk.Button(child=save_btn_content, sensitive=False,
@@ -1001,7 +1006,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         save_btn_content = Adw.ButtonContent(
             icon_name='gearlever-check-plain-symbolic',
-            label=_('Save')
+            label=_(self.BTN_SAVE)
         )
 
         add_item_btn = Gtk.Button(child=add_btn_content)
