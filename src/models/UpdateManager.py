@@ -20,6 +20,7 @@ from .Models import DownloadInterruptedException
 class UpdateManager(ABC):
     name = ''
     url = ''
+    label = ''
     embedded = False
     system_arch = terminal.sandbox_sh(['arch'])
     is_x86 = re.compile(r'(\-|\_|\.)x86(\-|\_|\.)')
@@ -27,6 +28,7 @@ class UpdateManager(ABC):
 
     @abstractmethod
     def __init__(self, url: str, embedded=False) -> None:
+        self.url = url
         self.download_folder = os.path.join(TMP_DIR, 'downloads')
 
     def cleanup(self):
