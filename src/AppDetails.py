@@ -242,9 +242,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
             edit_env_vars_widget = self.create_edit_env_vars_row()
             self.extra_data.append(edit_env_vars_widget)
-
             self.update_action_button.set_visible(False)
-            self.check_updates()
 
         self.show_row_spinner(False)
 
@@ -399,7 +397,6 @@ class AppDetails(Gtk.ScrolledWindow):
         manager.cleanup()
 
         GLib.idle_add(lambda: self.update_action_button.set_label(_('Update')))
-        self.check_updates()
 
         self.provider.reload_metadata(self.app_list_element)
 
@@ -559,43 +556,15 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_action_button.set_label(self.UPDATE_FETCHING)
         self.update_action_button.set_sensitive(False)
 
-    # @idle
-    # def set_update_information_old(self, manager: UpdateManager):
-    #     # for r in self.update_url_form_rows:
-    #     #     self.update_url_group.remove(r)
-        
-    #     # manager.load_form_rows(manager.url)
-    #     # for r in rows:
-
-
-    #     # if manager.embedded:
-    #         # self.update_url_row.set_default_text(manager.embedded)
-
-    #         # if not self.update_url_row.get_text():
-    #         #     self.update_url_row.set_text(manager.url)
-
-    #         # self.update_url_source.set_selected(
-    #         #     self.update_url_source.get_model()._items_val.index(manager.label)
-    #         # )
-
-    #     if manager.embedded:
-    #         self.update_url_group.set_description(self.UPDATE_INFO_EMBEDDED)
-    #     else:
-    #         self.update_url_group.set_description(self.UPDATE_INFO_NOT_EMBEDDED)
-
-    #     for i, m in enumerate(UpdateManagerChecker.get_models()):
-    #         pass
-
     @_async
     def check_updates(self):
-        manager = UpdateManagerChecker.check_url_for_app(self.app_list_element)
+        manager = self.update_manager
 
         if not manager:
             GLib.idle_add(lambda: self.update_url_save_btn.set_visible(True))
             return
 
         self.set_app_as_updatable()
-        self.set_update_information(manager)
 
         is_updatable = manager.is_update_available(self.app_list_element)
         self.app_list_element.is_updatable_from_url = is_updatable
@@ -611,16 +580,12 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @idle
     def set_update_information(self, manager: Optional[UpdateManager]=None):
-        app_conf = self.get_config_for_app()
-        has_changed = False
-
         if manager:
             self.update_manager = manager
         else:
             manager_label = self.update_url_source.get_model().get_string(
                 self.update_url_source.get_selected())
             
-            print(manager_label)
             selected_manager = None
             for m in UpdateManagerChecker.get_models():
                 if m.label == manager_label:
@@ -628,7 +593,15 @@ class AppDetails(Gtk.ScrolledWindow):
                     break
 
             if (not selected_manager):
-                selected_manager = UpdateManagerChecker.check_url(el=self.app_list_element)
+                app_conf = self.get_config_for_app()
+                if 'update_url' in app_conf:
+                    del app_conf['update_url']
+                
+                if 'update_url_manager' in app_conf:
+                    del app_conf['update_url_manager']
+
+                save_config_for_app(app_conf)
+                selected_manager = UpdateManagerChecker.check_url(url='', el=self.app_list_element)
             
             self.update_manager = selected_manager
 
@@ -651,40 +624,41 @@ class AppDetails(Gtk.ScrolledWindow):
             else:
                 self.update_url_group.set_description(self.UPDATE_INFO_NOT_EMBEDDED)
 
+            self.check_updates()
+
 
     @_async
     def on_app_update_url_apply(self, button):
         app_conf = self.get_config_for_app()
         widget = self.update_url_group
 
+        GLib.idle_add(lambda: (widget.remove_css_class('error')))
+        GLib.idle_add(lambda: (widget.remove_css_class('success')))
+
+        time.sleep(.5)
+
         if not self.update_manager:
             return
 
         text = self.update_manager.get_form_url()
 
-        GLib.idle_add(lambda: (widget.remove_css_class('error') and
-                                widget.remove_css_class('success') and
-                                button.set_label(self.BTN_SAVE)))
+        if not text:
+            GLib.idle_add(lambda: widget.add_css_class('error'))
+            return
 
-        if text:
-            if not self.update_manager.can_handle_link(url=text):
-                GLib.idle_add(lambda: widget.add_css_class('error'))
-                return
+        if not self.update_manager.can_handle_link(url=text):
+            GLib.idle_add(lambda: widget.add_css_class('error'))
+            return
 
-            self.update_manager = UpdateManagerChecker.check_url(text, model=self.update_manager)
-            if self.update_manager:
-                app_conf['update_url'] = self.update_manager.url
-                app_conf['update_url_manager'] = self.update_manager.name
-        else:
-            if 'update_url' in app_conf:
-                del app_conf['update_url']
-            
-            if 'update_url_manager' in app_conf:
-                del app_conf['update_url_manager']
+        self.update_manager = UpdateManagerChecker.check_url(text, model=self.update_manager)
+        if self.update_manager:
+            app_conf['update_url'] = self.update_manager.url
+            app_conf['update_url_manager'] = self.update_manager.name
 
         save_config_for_app(app_conf)
-        GLib.idle_add(lambda: (widget.add_css_class('success') and
-                            button.set_label(self.BTN_SAVED)))
+        GLib.idle_add(lambda:  (widget.add_css_class('success')))
+
+        self.check_updates()
 
     def on_env_var_value_changed(self, widget, key_widget, value_widget):
         key = key_widget.get_text()
@@ -794,10 +768,17 @@ class AppDetails(Gtk.ScrolledWindow):
     def create_edit_custom_website_row(self) -> Adw.EntryRow:
         app_config = self.get_config_for_app()
 
+        title =  _('Add a website')
+        text = ''
+
+        if 'website' in app_config:
+            title = _('Website')
+            app_config['website']
+
         row = Adw.EntryRow(
-            title=(_('Website') if ('website' in app_config and app_config['website']) else _('Add a website')),
+            title=title,
             selectable=False,
-            text=(app_config['website'] if 'website' in app_config else '')
+            text=text
         )
 
         row_img = Gtk.Image(icon_name='gl-earth', pixel_size=self.ACTION_ROW_ICON_SIZE)

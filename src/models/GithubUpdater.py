@@ -98,7 +98,7 @@ class GithubUpdater(UpdateManager):
         
         return '/'.join([
             GithubUpdater.repo_url_row.get_text(),
-            '/releases/download/*',
+            'releases/download/*',
             GithubUpdater.repo_filename_row.get_text()
         ]).strip()
 
