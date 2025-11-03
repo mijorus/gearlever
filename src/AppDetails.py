@@ -1001,7 +1001,6 @@ class AppDetails(Gtk.ScrolledWindow):
     def create_edit_env_vars_row(self) -> Adw.PreferencesGroup:
         add_btn_content = Adw.ButtonContent(
             icon_name='gl-plus-symbolic',
-            label=_('Add')
         )
 
         save_btn_content = Adw.ButtonContent(
@@ -1013,12 +1012,13 @@ class AppDetails(Gtk.ScrolledWindow):
         self.save_vars_btn = Gtk.Button(child=save_btn_content, sensitive=False,
                                         css_classes=['suggested-action'])
 
+
         self.save_vars_btn.connect('clicked', self.on_save_env_vars_clicked)
 
         btn_container = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5, 
                                 valign=Gtk.Align.CENTER)
 
-        [btn_container.append(w) for w in [self.save_vars_btn, add_item_btn]]
+        [btn_container.append(w) for w in [add_item_btn, self.save_vars_btn]]
 
         group = Adw.PreferencesGroup(
             title=_('Environment variables'),
