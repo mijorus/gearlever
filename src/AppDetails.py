@@ -559,6 +559,7 @@ class AppDetails(Gtk.ScrolledWindow):
     @_async
     def check_updates(self):
         manager = self.update_manager
+        print(manager)
 
         if not manager:
             GLib.idle_add(lambda: self.update_url_save_btn.set_visible(True))
@@ -580,19 +581,26 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @idle
     def set_update_information(self, manager: Optional[UpdateManager]=None):
+        # TODO
         if manager:
             self.update_manager = manager
         else:
             manager_label = self.update_url_source.get_model().get_string(
                 self.update_url_source.get_selected())
             
-            selected_manager = None
+            selected_model = None
             for m in UpdateManagerChecker.get_models():
                 if m.label == manager_label:
-                    selected_manager = m
+                    selected_model = m
                     break
 
-            if (not selected_manager):
+            if selected_model:
+                self.update_manager = UpdateManagerChecker.check_url(
+                    url='', 
+                    el=self.app_list_element,
+                    model=selected_model
+                )
+            else:
                 app_conf = self.get_config_for_app()
                 if 'update_url' in app_conf:
                     del app_conf['update_url']
@@ -601,9 +609,7 @@ class AppDetails(Gtk.ScrolledWindow):
                     del app_conf['update_url_manager']
 
                 save_config_for_app(app_conf)
-                selected_manager = UpdateManagerChecker.check_url(url='', el=self.app_list_element)
-            
-            self.update_manager = selected_manager
+                self.update_manager = UpdateManagerChecker.check_url(url='', el=self.app_list_element)
 
         if self.update_manager:
             [self.update_url_group.remove(r) for r in 
