@@ -10,13 +10,13 @@ from ..providers.AppImageProvider import AppImageListElement
 from .UpdateManager import UpdateManager
 from .GithubUpdater import GithubUpdater
 from .GitlabUpdater import GitlabUpdater
+from .CodebergUpdater import CodebergUpdater
 from .StaticFileUpdater import StaticFileUpdater
 
 class UpdateManagerChecker():
     @staticmethod
     def get_models() -> list[UpdateManager]:
-        return [StaticFileUpdater, GithubUpdater, GitlabUpdater]
-        # return [StaticFileUpdater, GithubUpdater, GitlabUpdater, CodebergUpdater]
+        return [StaticFileUpdater, GithubUpdater, GitlabUpdater, CodebergUpdater]
 
     @staticmethod
     def get_model_by_name(manager_label: str) -> Optional[UpdateManager]:

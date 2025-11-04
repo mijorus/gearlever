@@ -11,110 +11,82 @@ from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
 
-class GitlabUpdater(UpdateManager):
+
+class CodebergUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
-    label = 'Gitlab'
-    name = 'GitlabUpdater'
+    label = 'Codeberg'
+    name = 'CodebergUpdater'
     repo_url_row = None
     repo_filename_row = None
 
     @staticmethod
     def get_url_data(url: str):
+        # Example: https://codeberg.org/sonusmix/sonusmix/releases/download/v0.1.1/org.sonusmix.Sonusmix-0.1.1.AppImage
         paths = []
         if url.startswith('https://'):
-            logging.debug(f'GitlabUpdater: found http url, trying to detect gitlab data')
+            logging.debug(f'CodebergUpdater: found http url, trying to detect codeberg data')
             urldata = urlsplit(url)
 
-            if urldata.netloc != 'gitlab.com':
-                return None
+            if urldata.netloc != 'codeberg.org':
+                return False
 
             paths = urldata.path.split('/')
 
-            if len(paths) != 10 or len(paths) != 4:
-                return None
-            
-            if paths[1] == 'api':
-                if paths[2] != 'v4' or paths[5] != 'packages':
-                    return None
+            if len(paths) != 7:
+                return False
 
-                return {
-                    'project_id': paths[4],
-                    'filename': paths[9],
-                    'username': None,
-                    'repo': None
-                }
-            else:
-                if urldata.fragment:
-                    return None
-
-                return {
-                    'project_id': None,
-                    'filename': urldata.fragment,
-                    'username': paths[1],
-                    'repo': '/'.join(paths[2:3])
-                }
-
+        return {
+            'username': paths[1],
+            'repo': paths[2],
+            'filename': paths[6],
+        }
 
     @staticmethod
     def can_handle_link(url: str):
-        return GitlabUpdater.get_url_data(url) != False
+        return CodebergUpdater.get_url_data(url) != False
 
     @staticmethod
     def load_form_rows(update_url, embedded=False): 
-        url_data = GitlabUpdater.get_url_data(update_url)
+        url_data = CodebergUpdater.get_url_data(update_url)
         repo_url = ''
         filename = ''
 
         if url_data:
+            repo_url = '/'.join(['https://codeberg.org', url_data['username'], url_data['repo']])
             filename = url_data['filename']
 
-            if url_data['project_id']:
-                repo_url = '/'.join(['https://gitlab.com', 'api/v4/projects', url_data['project_id']])
-            else:
-                repo_url = '/'.join(['https://gitlab.com', url_data['username'], url_data['repo']])
-
-
-        GitlabUpdater.repo_url_row = AdwEntryRowDefault(
+        CodebergUpdater.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
             icon_name='gl-git',
             sensitive=(not embedded),
             title=_('Repo URL')
         )
 
-        GitlabUpdater.repo_filename_row = AdwEntryRowDefault(
+        CodebergUpdater.repo_filename_row = AdwEntryRowDefault(
             text=filename,
             icon_name='gl-paper',
             sensitive=(not embedded),
             title=_('Release file name')
         )
 
-        return [GitlabUpdater.repo_url_row, GitlabUpdater.repo_filename_row]
+        return [CodebergUpdater.repo_url_row, CodebergUpdater.repo_filename_row]
 
     @staticmethod
     def get_form_url() -> str:
-        if (not GitlabUpdater.repo_filename_row) or (not GitlabUpdater.repo_url_row):
+        if (not CodebergUpdater.repo_filename_row) or (not CodebergUpdater.repo_url_row):
             return ''
         
-        repo_url = GitlabUpdater.repo_url_row.get_text()
-        filename = GitlabUpdater.repo_filename_row.get_text()
-
-        if repo_url.startswith('https://gitlab.com/api'):
-            return '/'.join([
-                repo_url,
-                'packages/generic/<package_name>',
-                filename
-            ]).strip()
-        else:
-            return '#'.join([
-                repo_url,
-                urlencode(filename)
-            ]).strip()
+        return '/'.join([
+            CodebergUpdater.repo_url_row.get_text(),
+            'releases/download/*',
+            CodebergUpdater.repo_filename_row.get_text()
+        ])
 
 
     def __init__(self, url, **kwargs) -> None:
         super().__init__(url)
         self.staticfile_manager = None
-        self.url_data = GitlabUpdater.get_url_data(url)
+        self.url_data = CodebergUpdater.get_url_data(url)
         self.url = url
 
         self.embedded = False
@@ -124,7 +96,7 @@ class GitlabUpdater(UpdateManager):
         if not target_asset:
             raise Exception(f'Missing target_asset for {self.name} instance')
 
-        dwnl = target_asset['direct_asset_url']
+        dwnl = target_asset['browser_download_url']
         self.staticfile_manager = StaticFileUpdater(dwnl)
         fname, etag = self.staticfile_manager.download(status_update_cb)
 
@@ -161,19 +133,7 @@ class GitlabUpdater(UpdateManager):
         return regex
 
     def fetch_target_asset(self):
-        if not self.url_data:
-            return
-        
-        project_id = self.url_data['project_id']
-
-        if not project_id:
-            project_id = urlencode(self.url_data['repo'])
-
-        rel_url = '/'.join([
-            'https://gitlab.com/api/v4/projects',
-            project_id,
-            'releases'
-        ])
+        rel_url = f'https://codeberg.org/api/v1/repos/{self.url_data["username"]}/{self.url_data["repo"]}/releases?pre-release=exclude&draft=exclude'
 
         try:
             rel_data_resp = requests.get(rel_url)
@@ -182,9 +142,9 @@ class GitlabUpdater(UpdateManager):
         except Exception as e:
             logging.error(e)
             return
+        
 
         logging.debug(f'Found {len(rel_data)} assets from {rel_url}')
-
         if not rel_data:
             return
 
@@ -192,22 +152,18 @@ class GitlabUpdater(UpdateManager):
         target_re = re.compile(self.convert_glob_to_regex(self.url_data['filename']))
 
         possible_targets = []
-        assets = rel_data[0]['assets']
-        for asset in assets['links']:
-            link_res_name = asset['url'].split('/')[-1]
-            if re.match(target_re, link_res_name):
-                asset['name'] = link_res_name
+        for asset in rel_data[0]['assets']:
+            if re.match(target_re, asset['name']):
                 possible_targets.append(asset)
 
         if len(possible_targets) == 1:
             download_asset = possible_targets[0]
         else:
             logging.info(f'found {len(possible_targets)} possible file targets')
-            
+
             for t in possible_targets:
                 logging.info(' - ' + t['name'])
 
-            # Check possible differences with system architecture in file name
             if self.system_arch == 'x86_64':
                 for t in possible_targets:
                     if self.is_x86.search(t['name']) or not self.is_arm.search(t['name']):
@@ -219,27 +175,22 @@ class GitlabUpdater(UpdateManager):
             logging.debug(f'No matching assets found from {rel_url}')
             return
 
-        logging.debug(f'Found 1 matching asset: {download_asset["direct_asset_url"]}')
+        logging.debug(f'Found 1 matching asset: {download_asset["browser_download_url"]}')
         return download_asset
 
     def is_update_available(self, el: AppImageListElement):
         target_asset = self.fetch_target_asset()
 
         if target_asset:
-            asset_head_req = requests.head(target_asset['direct_asset_url'])
-            content_type = asset_head_req.headers.get('content-type', None)
+            content_type = requests.head(target_asset['browser_download_url']).headers.get('content-type', None)
             ct_supported = content_type in [*AppImageProvider.supported_mimes, 'raw',
                                                     'binary/octet-stream', 'application/octet-stream']
 
             if ct_supported:
-                is_size_different = False
                 old_size = os.path.getsize(el.file_path)
-                asset_size = asset_head_req.headers.get('content-length', None)
-
-                if asset_size:
-                    asset_size = int(asset_size)
-                    is_size_different = asset_size != old_size
-
+                is_size_different = target_asset['size'] != old_size
                 return is_size_different
 
         return False
+
+
