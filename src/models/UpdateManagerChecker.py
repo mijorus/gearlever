@@ -69,9 +69,9 @@ class UpdateManagerChecker():
 
         if model:
             if model_url and embedded_url:
-                return model.__init__(model_url, embedded=embedded_url)
+                return model(model_url, embedded=embedded_url)
             if model_url or embedded_url:
-                return model.__init__((model_url or embedded_url), embedded=(embedded_url != None))
+                return model((model_url or embedded_url), embedded=(embedded_url != None))
 
         return None
 

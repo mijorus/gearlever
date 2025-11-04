@@ -116,6 +116,10 @@ class GithubUpdater(UpdateManager):
 
             self.embedded = re.sub(r"\.zsync$", "", self.embedded)
 
+    def set_url(self, url: str):
+        self.url_data = self.get_url_data(url)
+        self.url = url
+
     def get_url_string_from_data(self, url_data):
         url = f'https://github.com/{url_data["username"]}/{url_data["repo"]}'
         url += f'/releases/download/{url_data["tag_name"]}/{url_data["filename"]}'

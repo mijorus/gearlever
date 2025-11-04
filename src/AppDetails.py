@@ -6,7 +6,6 @@ import shlex
 from typing import Optional, Callable
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
 
-from .State import state
 from .lib.terminal import sandbox_sh
 from .models.UpdateManager import UpdateManager
 from .models.UpdateManagerChecker import UpdateManagerChecker
@@ -559,7 +558,6 @@ class AppDetails(Gtk.ScrolledWindow):
     @_async
     def check_updates(self):
         manager = self.update_manager
-        print(manager)
 
         if not manager:
             GLib.idle_add(lambda: self.update_url_save_btn.set_visible(True))
@@ -594,28 +592,27 @@ class AppDetails(Gtk.ScrolledWindow):
                     selected_model = m
                     break
 
-            if selected_model:
-                self.update_manager = UpdateManagerChecker.check_url(
-                    url='', 
-                    el=self.app_list_element,
-                    model=selected_model
-                )
-            else:
-                app_conf = self.get_config_for_app()
-                if 'update_url' in app_conf:
-                    del app_conf['update_url']
-                
-                if 'update_url_manager' in app_conf:
-                    del app_conf['update_url_manager']
+            app_conf = self.get_config_for_app()
 
-                save_config_for_app(app_conf)
+            if selected_model:
+                update_url = app_conf.get('update_url', '')
+                self.update_manager = selected_model(url=update_url, embedded=False)
+            else:
+                refresh_config = False
+                for c in ['update_url', 'update_url_manager']:
+                    if c in app_conf:
+                        refresh_config = True
+                        del app_conf[c]
+
+                if refresh_config:
+                    save_config_for_app(app_conf)
+
                 self.update_manager = UpdateManagerChecker.check_url(url='', el=self.app_list_element)
 
         if self.update_manager:
             [self.update_url_group.remove(r) for r in 
                 self.update_url_form_rows]
             self.update_url_form_rows = []
-
             rows = self.update_manager.load_form_rows(
                 update_url=self.update_manager.url,
                 embedded=self.update_manager.embedded
@@ -656,10 +653,9 @@ class AppDetails(Gtk.ScrolledWindow):
             GLib.idle_add(lambda: widget.add_css_class('error'))
             return
 
-        self.update_manager = UpdateManagerChecker.check_url(text, model=self.update_manager)
-        if self.update_manager:
-            app_conf['update_url'] = self.update_manager.url
-            app_conf['update_url_manager'] = self.update_manager.name
+        self.update_manager.set_url(text)
+        app_conf['update_url'] = self.update_manager.url
+        app_conf['update_url_manager'] = self.update_manager.name
 
         save_config_for_app(app_conf)
         GLib.idle_add(lambda:  (widget.add_css_class('success')))
@@ -856,7 +852,6 @@ class AppDetails(Gtk.ScrolledWindow):
             if selected_model_name == m.name:
                 selected_model = m
                 self.update_url_source.set_selected(i + 1)
-                break
 
         if not selected_model:
             self.update_url_source.set_selected(0)

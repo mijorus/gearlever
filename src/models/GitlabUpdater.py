@@ -119,6 +119,10 @@ class GitlabUpdater(UpdateManager):
 
         self.embedded = False
 
+    def set_url(self, url: str):
+        self.url_data = self.get_url_data(url)
+        self.url = url
+
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
         if not target_asset:

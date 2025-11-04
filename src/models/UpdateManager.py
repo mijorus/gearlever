@@ -51,3 +51,7 @@ class UpdateManager(ABC):
     @abstractmethod
     def get_form_url() -> str:
         pass
+
+    @abstractmethod
+    def set_url(self, url: str):
+        self.url = url

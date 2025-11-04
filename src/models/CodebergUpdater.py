@@ -28,12 +28,12 @@ class CodebergUpdater(UpdateManager):
             urldata = urlsplit(url)
 
             if urldata.netloc != 'codeberg.org':
-                return False
+                return None
 
             paths = urldata.path.split('/')
 
             if len(paths) != 7:
-                return False
+                return None
 
         return {
             'username': paths[1],
@@ -90,6 +90,10 @@ class CodebergUpdater(UpdateManager):
         self.url = url
 
         self.embedded = False
+
+    def set_url(self, url: str):
+        self.url_data = self.get_url_data(url)
+        self.url = url
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()

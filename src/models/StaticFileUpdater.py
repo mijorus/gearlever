@@ -162,3 +162,6 @@ class StaticFileUpdater(UpdateManager):
 
         is_size_different = resp_cl != old_size
         return is_size_different
+
+    def set_url(self, url: str):
+        self.url = url
