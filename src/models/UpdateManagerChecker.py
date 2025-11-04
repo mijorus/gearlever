@@ -1,29 +1,21 @@
 import logging
-import requests
-import shutil
-import os
 import re
-import json
 from typing import Optional, Callable
-from abc import ABC, abstractmethod
-from gi.repository import GLib, Gio
-from urllib.parse import urlsplit
 
 from ..lib.constants import TMP_DIR
 from ..lib import terminal
 from ..lib.json_config import read_config_for_app
-from ..lib.utils import get_random_string, url_is_valid, get_file_hash
-from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
-from .Models import DownloadInterruptedException
+from ..providers.AppImageProvider import AppImageListElement
 
 from .UpdateManager import UpdateManager
 from .GithubUpdater import GithubUpdater
+from .GitlabUpdater import GitlabUpdater
 from .StaticFileUpdater import StaticFileUpdater
 
 class UpdateManagerChecker():
     @staticmethod
     def get_models() -> list[UpdateManager]:
-        return [StaticFileUpdater, GithubUpdater]
+        return [StaticFileUpdater, GithubUpdater, GitlabUpdater]
         # return [StaticFileUpdater, GithubUpdater, GitlabUpdater, CodebergUpdater]
 
     @staticmethod
@@ -53,7 +45,7 @@ class UpdateManagerChecker():
         if model:
             models = list(filter(lambda m: m is model, models))
 
-        model_url: UpdateManager | None = None
+        model_url: str | None = None
         embedded_url = None
 
         if url:
@@ -77,9 +69,9 @@ class UpdateManagerChecker():
 
         if model:
             if model_url and embedded_url:
-                return model(model_url, embedded=embedded_url)
+                return model.__init__(model_url, embedded=embedded_url)
             if model_url or embedded_url:
-                return model(model_url or embedded_url, embedded=embedded_url)
+                return model.__init__((model_url or embedded_url), embedded=(embedded_url != None))
 
         return None
 

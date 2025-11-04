@@ -2,13 +2,10 @@ import logging
 import requests
 import os
 import re
-from typing import Optional, Callable
-from gi.repository import GLib, Gio
-from urllib.parse import urlsplit
+from typing import Optional
+from urllib.parse import urlsplit, urlencode
 
-from ..lib.utils import get_file_hash
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
-from .Models import DownloadInterruptedException
 
 from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
@@ -29,20 +26,34 @@ class GitlabUpdater(UpdateManager):
             urldata = urlsplit(url)
 
             if urldata.netloc != 'gitlab.com':
-                return False
+                return None
 
             paths = urldata.path.split('/')
 
-            if len(paths) != 10:
-                return False
+            if len(paths) != 10 or len(paths) != 4:
+                return None
+            
+            if paths[1] == 'api':
+                if paths[2] != 'v4' or paths[5] != 'packages':
+                    return None
 
-            if paths[1] != 'api' or paths[2] != 'v4' or paths[5] != 'packages':
-                return False
+                return {
+                    'project_id': paths[4],
+                    'filename': paths[9],
+                    'username': None,
+                    'repo': None
+                }
+            else:
+                if urldata.fragment:
+                    return None
 
-        return {
-            'project_id': paths[4],
-            'filename': paths[9],
-        }
+                return {
+                    'project_id': None,
+                    'filename': urldata.fragment,
+                    'username': paths[1],
+                    'repo': '/'.join(paths[2:3])
+                }
+
 
     @staticmethod
     def can_handle_link(url: str):
@@ -55,11 +66,16 @@ class GitlabUpdater(UpdateManager):
         filename = ''
 
         # https://gitlab.com/api/v4/projects/24386000/packages/generic/librewolf/144.0.2-1/LibreWolf.x86_64.AppImage
-        # https://gitlab.com/librewolf-community/browser/appimage
+        # https://gitlab.com/librewolf-community/browser/appimage?gearlever_filename=test
 
         if url_data:
-            repo_url = '/'.join(['https://gitlab.com', 'api/v4/projects', url_data['project_id']])
             filename = url_data['filename']
+
+            if url_data['project_id']:
+                repo_url = '/'.join(['https://gitlab.com', 'api/v4/projects', url_data['project_id']])
+            else:
+                repo_url = '/'.join(['https://gitlab.com', url_data['username'], url_data['repo']])
+
 
         GitlabUpdater.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
@@ -79,15 +95,24 @@ class GitlabUpdater(UpdateManager):
 
     @staticmethod
     def get_form_url() -> str:
-         # TODO
         if (not GitlabUpdater.repo_filename_row) or (not GitlabUpdater.repo_url_row):
             return ''
         
-        return '/'.join([
-            GitlabUpdater.repo_url_row.get_text(),
-            'releases/download/*',
-            GitlabUpdater.repo_filename_row.get_text()
-        ]).strip()
+        repo_url = GitlabUpdater.repo_url_row.get_text()
+        filename = GitlabUpdater.repo_filename_row.get_text()
+
+        if repo_url.startswith('https://gitlab.com/api'):
+            return '/'.join([
+                repo_url,
+                'packages/generic/<package_name>',
+                filename
+            ]).strip()
+        else:
+            return '#'.join([
+                repo_url,
+                urlencode(filename)
+            ]).strip()
+
 
     def __init__(self, url, **kwargs) -> None:
         super().__init__(url)
@@ -139,12 +164,17 @@ class GitlabUpdater(UpdateManager):
         return regex
 
     def fetch_target_asset(self):
-        if type(self.url_data) == bool:
+        if not self.url_data:
             return
+        
+        project_id = self.url_data['project_id']
+
+        if not project_id:
+            project_id = urlencode(self.url_data['repo'])
 
         rel_url = '/'.join([
             'https://gitlab.com/api/v4/projects',
-            self.url_data['project_id'],
+            project_id,
             'releases'
         ])
 

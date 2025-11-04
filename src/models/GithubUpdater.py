@@ -166,8 +166,6 @@ class GithubUpdater(UpdateManager):
         if type(self.url_data) == bool:
             return
 
-        rel_url += f'/releases/{self.url_data["release"]}'
-
         rel_url = '/'.join([
             'https://api.github.com/repos',
             self.url_data["username"],
