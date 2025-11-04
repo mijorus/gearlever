@@ -4,7 +4,7 @@ import os
 import re
 from typing import Optional, Callable
 from gi.repository import GLib, Gio
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urljoin
 
 from ..lib.utils import get_file_hash
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
@@ -100,7 +100,7 @@ class GithubUpdater(UpdateManager):
             GithubUpdater.repo_url_row.get_text(),
             'releases/download/*',
             GithubUpdater.repo_filename_row.get_text()
-        ]).strip()
+        ])
 
     def __init__(self, url, embedded=False) -> None:
         super().__init__(url)
@@ -124,8 +124,7 @@ class GithubUpdater(UpdateManager):
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
         if not target_asset:
-            logging.warn('Missing target_asset for GithubUpdater instance')
-            return '', ''
+            raise Exception(f'Missing target_asset for {self.name} instance')
 
         dwnl = target_asset['asset']['browser_download_url']
         self.staticfile_manager = StaticFileUpdater(dwnl)
@@ -164,8 +163,18 @@ class GithubUpdater(UpdateManager):
         return regex
 
     def fetch_target_asset(self):
-        rel_url = f'https://api.github.com/repos/{self.url_data["username"]}/{self.url_data["repo"]}'
+        if type(self.url_data) == bool:
+            return
+
         rel_url += f'/releases/{self.url_data["release"]}'
+
+        rel_url = '/'.join([
+            'https://api.github.com/repos',
+            self.url_data["username"],
+            self.url_data["repo"],
+            'releases',
+            self.url_data["release"]
+        ])
 
         try:
             rel_data_resp = requests.get(rel_url)
