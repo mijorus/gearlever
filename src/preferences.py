@@ -106,7 +106,7 @@ class Preferences(Adw.PreferencesWindow):
         preview_appimage_files = self.create_boolean_settings_entry(
             _('Preview hashes for new apps before loading metadata'),
             'preview-before-opening-app',
-            _('If enabled, a preview of the file you are trying to open is shown.\nMalicious apps could execute code when loading the metadata.')
+            _('If enabled, a preview of the file you are trying to open is shown.\nDisable only if you trust your sources: malicious apps could execute code when loading the metadata.')
         )
 
         general_preference_group.add(preview_appimage_files)
