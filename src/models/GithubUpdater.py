@@ -2,7 +2,7 @@ import logging
 import requests
 import os
 import re
-from typing import Optional, Callable
+from typing import Optional, Literal
 from gi.repository import Adw, Gio
 from urllib.parse import urlsplit, urljoin
 
@@ -63,8 +63,8 @@ class GithubUpdater(UpdateManager):
     def can_handle_link(url: str):
         return GithubUpdater.get_url_data(url) != False
 
-    def __init__(self, url, embedded=False, **kwargs) -> None:
-        super().__init__(url)
+    def __init__(self, url, embedded: str|Literal[False]=False, **kwargs) -> None:
+        super().__init__(url, embedded, **kwargs)
         self.staticfile_manager = None
         self.set_url(url)
 

@@ -30,6 +30,7 @@ class AppDetails(Gtk.ScrolledWindow):
     UPDATE_BTN_LABEL = _('Update')
     BTN_SAVE = _('Save')
     BTN_SAVED = _('Saved')
+    UPDATE_BTN_ERROR = _('Invalid data')
     CANCEL_UPDATE = _('Cancel update')
     UPDATE_FETCHING = _('Checking updates...')
     UPDATE_NOT_AVAIL_BTN_LABEL = _('No updates available')
@@ -640,32 +641,57 @@ class AppDetails(Gtk.ScrolledWindow):
 
             self.check_updates()
 
+    @idle
+    def on_app_update_url_success(self):
+        self.update_url_save_btn.add_css_class('success')
+        self.update_url_save_btn.set_label(self.BTN_SAVED)
+
+    @idle
+    def on_app_update_url_error(self):
+        self.update_url_save_btn.add_css_class('error')
+        self.update_url_save_btn.set_label(self.UPDATE_BTN_ERROR)
+
+    @idle
+    def on_app_update_url_reset(self):
+        self.update_url_save_btn.remove_css_class('error')
+        self.update_url_save_btn.remove_css_class('success')
+        self.update_url_save_btn.set_child(
+            Adw.ButtonContent(
+            icon_name='gearlever-check-plain-symbolic',
+            label=_(self.BTN_SAVE),
+        ))
 
     @_async
     def on_app_update_url_apply(self, button):
         app_conf = self.get_config_for_app()
-        widget = self.update_url_group
+        widget = button
 
-        GLib.idle_add(lambda: (widget.remove_css_class('error')))
-        GLib.idle_add(lambda: (widget.remove_css_class('success')))
-
-        time.sleep(.5)
+        self.on_app_update_url_reset()
 
         if not self.update_manager:
             if self.app_list_element:
                 remove_update_config(self.app_list_element)
 
-            GLib.idle_add(lambda:  (widget.add_css_class('success')))
+            self.on_app_update_url_success()
+
+            time.sleep(3)
+            self.on_app_update_url_reset()
             return
 
         text = self.update_manager.get_form_url()
 
         if not text:
-            GLib.idle_add(lambda: widget.add_css_class('error'))
+            self.on_app_update_url_error()
+
+            time.sleep(3)
+            self.on_app_update_url_reset()
             return
 
         if not self.update_manager.can_handle_link(url=text):
-            GLib.idle_add(lambda: widget.add_css_class('error'))
+            self.on_app_update_url_error()
+            
+            time.sleep(3)
+            self.on_app_update_url_reset()
             return
 
         self.update_manager.set_url(text)
@@ -674,9 +700,13 @@ class AppDetails(Gtk.ScrolledWindow):
         app_conf['update_manager_config'] = self.update_manager.get_form_config()
 
         save_config_for_app(app_conf)
-        GLib.idle_add(lambda:  (widget.add_css_class('success')))
+
+        self.on_app_update_url_success()
 
         self.check_updates()
+
+        time.sleep(3)
+        self.on_app_update_url_reset()
 
     def on_env_var_value_changed(self, widget, key_widget, value_widget):
         key = key_widget.get_text()

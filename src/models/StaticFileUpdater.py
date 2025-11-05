@@ -75,8 +75,8 @@ class StaticFileUpdater(UpdateManager):
         return headers
 
 
-    def __init__(self, url, embedded=False) -> None:
-        super().__init__(url)
+    def __init__(self, url, **kwargs) -> None:
+        super().__init__(url, **kwargs)
         self.form_row = None
 
         logging.info(f'Downloading file from {self.url}')

@@ -60,7 +60,7 @@ class GitlabUpdater(UpdateManager):
 
 
     def __init__(self, url, **kwargs) -> None:
-        super().__init__(url)
+        super().__init__(url, **kwargs)
         self.staticfile_manager = None
         self.url_data = GitlabUpdater.get_url_data(url)
         self.url = url
