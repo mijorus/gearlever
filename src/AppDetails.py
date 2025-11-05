@@ -700,7 +700,6 @@ class AppDetails(Gtk.ScrolledWindow):
         app_conf['update_manager_config'] = self.update_manager.get_form_config()
 
         save_config_for_app(app_conf)
-
         self.on_app_update_url_success()
 
         self.check_updates()
