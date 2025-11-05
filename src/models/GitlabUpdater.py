@@ -54,61 +54,9 @@ class GitlabUpdater(UpdateManager):
                     'repo': '/'.join(paths[2:3])
                 }
 
-
     @staticmethod
     def can_handle_link(url: str):
         return GitlabUpdater.get_url_data(url) != False
-
-    @staticmethod
-    def load_form_rows(update_url, embedded=False): 
-        url_data = GitlabUpdater.get_url_data(update_url)
-        repo_url = ''
-        filename = ''
-
-        if url_data:
-            filename = url_data['filename']
-
-            if url_data['project_id']:
-                repo_url = '/'.join(['https://gitlab.com', 'api/v4/projects', url_data['project_id']])
-            else:
-                repo_url = '/'.join(['https://gitlab.com', url_data['username'], url_data['repo']])
-
-
-        GitlabUpdater.repo_url_row = AdwEntryRowDefault(
-            text=repo_url,
-            icon_name='gl-git',
-            sensitive=(not embedded),
-            title=_('Repo URL')
-        )
-
-        GitlabUpdater.repo_filename_row = AdwEntryRowDefault(
-            text=filename,
-            icon_name='gl-paper',
-            sensitive=(not embedded),
-            title=_('Release file name')
-        )
-
-        return [GitlabUpdater.repo_url_row, GitlabUpdater.repo_filename_row]
-
-    @staticmethod
-    def get_form_url() -> str:
-        if (not GitlabUpdater.repo_filename_row) or (not GitlabUpdater.repo_url_row):
-            return ''
-        
-        repo_url = GitlabUpdater.repo_url_row.get_text()
-        filename = GitlabUpdater.repo_filename_row.get_text()
-
-        if repo_url.startswith('https://gitlab.com/api'):
-            return '/'.join([
-                repo_url,
-                'packages/generic/<package_name>',
-                filename
-            ]).strip()
-        else:
-            return '#'.join([
-                repo_url,
-                urlencode(filename)
-            ]).strip()
 
 
     def __init__(self, url, **kwargs) -> None:
@@ -247,3 +195,52 @@ class GitlabUpdater(UpdateManager):
                 return is_size_different
 
         return False
+    
+    def load_form_rows(self, update_url, embedded=False): 
+        url_data = self.get_url_data(update_url)
+        repo_url = ''
+        filename = ''
+
+        if url_data:
+            filename = url_data['filename']
+
+            if url_data['project_id']:
+                repo_url = '/'.join(['https://gitlab.com', 'api/v4/projects', url_data['project_id']])
+            else:
+                repo_url = '/'.join(['https://gitlab.com', url_data['username'], url_data['repo']])
+
+
+        self.repo_url_row = AdwEntryRowDefault(
+            text=repo_url,
+            icon_name='gl-git',
+            sensitive=(not embedded),
+            title=_('Repo URL')
+        )
+
+        self.repo_filename_row = AdwEntryRowDefault(
+            text=filename,
+            icon_name='gl-paper',
+            sensitive=(not embedded),
+            title=_('Release file name')
+        )
+
+        return [self.repo_url_row, self.repo_filename_row]
+
+    def get_form_url(self, ) -> str:
+        if (not self.repo_filename_row) or (not self.repo_url_row):
+            return ''
+        
+        repo_url = self.repo_url_row.get_text()
+        filename = self.repo_filename_row.get_text()
+
+        if repo_url.startswith('https://gitlab.com/api'):
+            return '/'.join([
+                repo_url,
+                'packages/generic/<package_name>',
+                filename
+            ]).strip()
+        else:
+            return '#'.join([
+                repo_url,
+                urlencode(filename)
+            ]).strip()

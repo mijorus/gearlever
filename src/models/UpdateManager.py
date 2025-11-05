@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Optional, Callable
+from typing import Optional, Callable, Literal
 from abc import ABC, abstractmethod
 
 from ..lib.constants import TMP_DIR
@@ -18,8 +18,9 @@ class UpdateManager(ABC):
     is_arm = re.compile(r'(\-|\_|\.)(arm64|aarch64|armv7l)(\-|\_|\.)')
 
     @abstractmethod
-    def __init__(self, url: str, embedded=False) -> None:
+    def __init__(self, url: str, embedded: str|Literal[False]=False, config={}) -> None:
         self.url = url
+        self.config = config
         self.download_folder = os.path.join(TMP_DIR, 'downloads')
 
     def cleanup(self):
@@ -37,9 +38,8 @@ class UpdateManager(ABC):
     def cancel_download(self):
         pass
 
-    @staticmethod
     @abstractmethod
-    def load_form_rows(update_url: str, embedded: bool) -> list:
+    def load_form_rows(self, update_url: str, embedded: bool) -> list:
         pass
 
     @staticmethod
@@ -47,10 +47,12 @@ class UpdateManager(ABC):
     def can_handle_link(url: str) -> bool:
         pass
 
-    @staticmethod
     @abstractmethod
-    def get_form_url() -> str:
+    def get_form_url(self) -> str:
         pass
+
+    def get_form_config(self) -> dict:
+        return {}
 
     @abstractmethod
     def set_url(self, url: str):

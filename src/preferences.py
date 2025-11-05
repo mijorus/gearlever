@@ -103,6 +103,14 @@ class Preferences(Adw.PreferencesWindow):
 
         nconvention_group.add(exec_as_name_switch)
 
+        preview_appimage_files = self.create_boolean_settings_entry(
+            _('Preview hashes for new apps before loading metadata'),
+            'preview-before-opening-app',
+            _('If enabled, a preview of the file you are trying to open is shown.\nMalicious apps could execute code when loading the metadata.')
+        )
+
+        general_preference_group.add(preview_appimage_files)
+
         # debugging group
         debug_group = Adw.PreferencesGroup(name=_('Debugging'), title=_('Debugging'))
         debug_row = self.create_boolean_settings_entry(

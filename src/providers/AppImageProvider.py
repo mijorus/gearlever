@@ -12,6 +12,7 @@ from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.constants import TMP_DIR
 from ..lib import terminal
 from ..lib.async_utils import idle
+from ..lib.json_config import read_config_for_app, remove_update_config
 from ..lib.utils import get_giofile_content_type, gio_copy, get_file_hash, \
     remove_special_chars, get_random_string, show_message_dialog, get_osinfo, extract_terminal_arguments
 from ..models.Models import AppUpdateElement, InternalError, DownloadInterruptedException
@@ -210,6 +211,7 @@ class AppImageProvider():
         if '/' in icon and os.path.isfile(icon):
             os.remove(icon)
 
+        remove_update_config(el)
         el.set_installed_status(InstalledStatus.NOT_INSTALLED)
 
     def search(self, query: str) -> list[AppListElement]:
@@ -482,6 +484,7 @@ class AppImageProvider():
             raise InternalError(message='This file type is not supported')
         
         app_name: str = os.path.basename(file.get_parse_name())
+        preview_enabled = Settings.settings.get_boolean('preview-before-opening-app')
 
         el = AppImageListElement(
             name=re.sub(r'\.appimage$', '', app_name, 1, re.IGNORECASE),
@@ -492,6 +495,7 @@ class AppImageProvider():
             file_path=file.get_path(),
             desktop_entry=None,
             local_file=True,
+            trusted=(not preview_enabled)
         )
 
         el.architecture = self.get_elf_arch(el)

@@ -16,8 +16,6 @@ class CodebergUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
     label = 'Codeberg'
     name = 'CodebergUpdater'
-    repo_url_row = None
-    repo_filename_row = None
 
     @staticmethod
     def get_url_data(url: str):
@@ -45,43 +43,6 @@ class CodebergUpdater(UpdateManager):
     def can_handle_link(url: str):
         return CodebergUpdater.get_url_data(url) != False
 
-    @staticmethod
-    def load_form_rows(update_url, embedded=False): 
-        url_data = CodebergUpdater.get_url_data(update_url)
-        repo_url = ''
-        filename = ''
-
-        if url_data:
-            repo_url = '/'.join(['https://codeberg.org', url_data['username'], url_data['repo']])
-            filename = url_data['filename']
-
-        CodebergUpdater.repo_url_row = AdwEntryRowDefault(
-            text=repo_url,
-            icon_name='gl-git',
-            sensitive=(not embedded),
-            title=_('Repo URL')
-        )
-
-        CodebergUpdater.repo_filename_row = AdwEntryRowDefault(
-            text=filename,
-            icon_name='gl-paper',
-            sensitive=(not embedded),
-            title=_('Release file name')
-        )
-
-        return [CodebergUpdater.repo_url_row, CodebergUpdater.repo_filename_row]
-
-    @staticmethod
-    def get_form_url() -> str:
-        if (not CodebergUpdater.repo_filename_row) or (not CodebergUpdater.repo_url_row):
-            return ''
-        
-        return '/'.join([
-            CodebergUpdater.repo_url_row.get_text(),
-            'releases/download/*',
-            CodebergUpdater.repo_filename_row.get_text()
-        ])
-
 
     def __init__(self, url, **kwargs) -> None:
         super().__init__(url)
@@ -94,6 +55,8 @@ class CodebergUpdater(UpdateManager):
     def set_url(self, url: str):
         self.url_data = self.get_url_data(url)
         self.url = url
+        self.repo_url_row = None
+        self.repo_filename_row = None
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -196,5 +159,41 @@ class CodebergUpdater(UpdateManager):
                 return is_size_different
 
         return False
+    
+    def load_form_rows(self, update_url, embedded=False): 
+        url_data = CodebergUpdater.get_url_data(update_url)
+        repo_url = ''
+        filename = ''
+
+        if url_data:
+            repo_url = '/'.join(['https://codeberg.org', url_data['username'], url_data['repo']])
+            filename = url_data['filename']
+
+        CodebergUpdater.repo_url_row = AdwEntryRowDefault(
+            text=repo_url,
+            icon_name='gl-git',
+            sensitive=(not embedded),
+            title=_('Repo URL')
+        )
+
+        CodebergUpdater.repo_filename_row = AdwEntryRowDefault(
+            text=filename,
+            icon_name='gl-paper',
+            sensitive=(not embedded),
+            title=_('Release file name')
+        )
+
+        return [CodebergUpdater.repo_url_row, CodebergUpdater.repo_filename_row]
+
+    def get_form_url(self, ) -> str:
+        if (not CodebergUpdater.repo_filename_row) or (not CodebergUpdater.repo_url_row):
+            return ''
+        
+        return '/'.join([
+            CodebergUpdater.repo_url_row.get_text(),
+            'releases/download/*',
+            CodebergUpdater.repo_filename_row.get_text()
+        ])
+
 
 

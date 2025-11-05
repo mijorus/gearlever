@@ -22,7 +22,6 @@ from .UpdateManager import UpdateManager
 class StaticFileUpdater(UpdateManager):
     label = _('Static URL')
     name = 'StaticFileUpdater'
-    form_row = None
     currend_download: Optional[requests.Response]
 
     @staticmethod
@@ -46,24 +45,6 @@ class StaticFileUpdater(UpdateManager):
             logging.warn(f'Provided url "{url}" does not return a valid content-type header')
 
         return ct_supported
-
-    @staticmethod
-    def load_form_rows(update_url, embedded):
-        StaticFileUpdater.form_row = AdwEntryRowDefault(
-            text=update_url,
-            icon_name='gl-earth',
-            title=_('Update URL'),
-            sensitive=(not embedded)
-        )
-
-        return [StaticFileUpdater.form_row]
-    
-    @staticmethod
-    def get_form_url() -> str:
-        if (not StaticFileUpdater.form_row):
-            return ''
-        
-        return StaticFileUpdater.form_row.get_text().strip()
 
     @staticmethod
     def get_url_headers(url):
@@ -96,6 +77,8 @@ class StaticFileUpdater(UpdateManager):
 
     def __init__(self, url, embedded=False) -> None:
         super().__init__(url)
+        self.form_row = None
+
         logging.info(f'Downloading file from {self.url}')
 
     def download(self, status_update_cb) -> tuple[str, str]:
@@ -165,3 +148,19 @@ class StaticFileUpdater(UpdateManager):
 
     def set_url(self, url: str):
         self.url = url
+
+    def load_form_rows(self, update_url, embedded):
+        self.form_row = AdwEntryRowDefault(
+            text=update_url,
+            icon_name='gl-earth',
+            title=_('Update URL'),
+            sensitive=(not embedded)
+        )
+
+        return [self.form_row]
+    
+    def get_form_url(self, ) -> str:
+        if (not self.form_row):
+            return ''
+        
+        return self.form_row.get_text().strip()

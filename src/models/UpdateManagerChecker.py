@@ -46,7 +46,7 @@ class UpdateManagerChecker():
             models = list(filter(lambda m: m is model, models))
 
         model_url: str | None = None
-        embedded_url = None
+        embedded_url: str | None = None
 
         if url:
             for m in models:
@@ -70,8 +70,12 @@ class UpdateManagerChecker():
         if model:
             if model_url and embedded_url:
                 return model(model_url, embedded=embedded_url)
-            if model_url or embedded_url:
-                return model((model_url or embedded_url), embedded=(embedded_url != None))
+            
+            if model_url:
+                return model(model_url, embedded=embedded_url)
+            
+            if embedded_url:
+                return model(embedded_url, embedded=embedded_url)
 
         return None
 

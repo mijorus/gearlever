@@ -13,7 +13,8 @@ from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
-from .lib.json_config import read_json_config, set_json_config, read_config_for_app, save_config_for_app
+from .lib.json_config import read_json_config, set_json_config, read_config_for_app, save_config_for_app, \
+    remove_update_config
 from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
@@ -42,7 +43,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.ACTION_ROW_ICON_SIZE = 34
         self.EXTRA_DATA_SPACING = 20
 
-        self.app_list_element: AppImageListElement = None
+        self.app_list_element: AppImageListElement | None = None
         self.common_btn_css_classes = ['pill', 'text-button']
 
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin_top=10, margin_bottom=10, margin_start=20, margin_end=20)
@@ -142,6 +143,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.provider = appimage_provider
         self.update_action_button.set_visible(False)
 
+        self.before_load()
         self.load()
 
     def set_from_local_file(self, file: Gio.File):
@@ -195,6 +197,9 @@ class AppDetails(Gtk.ScrolledWindow):
         
         self.update_installation_status()
 
+        self.secondary_action_button.set_visible(True)
+        self.primary_action_button.set_visible(True)
+
         system_arch = sandbox_sh(['arch'])
 
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
@@ -228,8 +233,6 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.window_banner.set_revealed(True)
                 self.window_banner.set_title(_('Please, verify the source of this app before opening it'))
                 self.window_banner.set_button_label(_('Unlock'))
-
-            if not self.app_list_element.trusted:
                 self.secondary_action_button.set_sensitive(False)
                 self.primary_action_button.set_sensitive(False)
 
@@ -268,6 +271,18 @@ class AppDetails(Gtk.ScrolledWindow):
             generation,
             load_completed_callback=load_completed_callback
         )
+
+    def before_load(self):
+        self.title.set_label('...')
+        self.description.set_label('')
+        self.secondary_action_button.set_visible(False)
+        self.primary_action_button.set_visible(False)
+
+        if self.icon_slot:
+            self.details_row.remove(self.icon_slot)
+
+        if self.extra_data:
+            self.third_row.remove(self.extra_data)
 
     @_async
     def install_file(self, el: AppImageListElement):
@@ -526,7 +541,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_list_element.trusted = True
         widget.set_revealed(False)
 
-        self.title.set_label('...')
+        self.before_load()
         self.load()
 
     @debounce(0.5)
@@ -592,20 +607,15 @@ class AppDetails(Gtk.ScrolledWindow):
                     selected_model = m
                     break
 
-            app_conf = self.get_config_for_app()
+            app_conf = self.get_config_for_app(self.app_list_element)
 
             if selected_model:
                 update_url = app_conf.get('update_url', '')
-                self.update_manager = selected_model(url=update_url, embedded=False)
+                manager_config = app_conf.get('update_manager_config', {})
+                self.update_manager = selected_model(url=update_url, embedded=False, config=manager_config)
             else:
-                refresh_config = False
-                for c in ['update_url', 'update_url_manager']:
-                    if c in app_conf:
-                        refresh_config = True
-                        del app_conf[c]
-
-                if refresh_config:
-                    save_config_for_app(app_conf)
+                if self.app_list_element:
+                    remove_update_config(self.li)
 
                 self.update_manager = UpdateManagerChecker.check_url(url='', el=self.app_list_element)
 
@@ -656,6 +666,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_manager.set_url(text)
         app_conf['update_url'] = self.update_manager.url
         app_conf['update_url_manager'] = self.update_manager.name
+        app_conf['update_manager_config'] = self.update_manager.get_form_config()
 
         save_config_for_app(app_conf)
         GLib.idle_add(lambda:  (widget.add_css_class('success')))

@@ -3,7 +3,7 @@ import requests
 import os
 import re
 from typing import Optional, Callable
-from gi.repository import GLib, Gio
+from gi.repository import Adw, Gio
 from urllib.parse import urlsplit, urljoin
 
 from ..lib.utils import get_file_hash
@@ -18,8 +18,6 @@ class GithubUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
     label = 'Github'
     name = 'GithubUpdater'
-    repo_url_row = None
-    repo_filename_row = None
 
     @staticmethod
     def get_url_data(url: str):
@@ -65,48 +63,14 @@ class GithubUpdater(UpdateManager):
     def can_handle_link(url: str):
         return GithubUpdater.get_url_data(url) != False
 
-    @staticmethod
-    def load_form_rows(update_url, embedded=False): 
-        url_data = GithubUpdater.get_url_data(update_url)
-        repo_url = ''
-        filename = ''
-
-        if url_data:
-            repo_url = '/'.join(['https://github.com', url_data['username'], url_data['repo']])
-            filename = url_data['filename']
-
-        GithubUpdater.repo_url_row = AdwEntryRowDefault(
-            text=repo_url,
-            icon_name='gl-git',
-            sensitive=(not embedded),
-            title=_('Repo URL')
-        )
-
-        GithubUpdater.repo_filename_row = AdwEntryRowDefault(
-            text=filename,
-            icon_name='gl-paper',
-            sensitive=(not embedded),
-            title=_('Release file name')
-        )
-
-        return [GithubUpdater.repo_url_row, GithubUpdater.repo_filename_row]
-
-    @staticmethod
-    def get_form_url() -> str:
-        if (not GithubUpdater.repo_filename_row) or (not GithubUpdater.repo_url_row):
-            return ''
-        
-        return '/'.join([
-            GithubUpdater.repo_url_row.get_text(),
-            'releases/download/*',
-            GithubUpdater.repo_filename_row.get_text()
-        ])
-
-    def __init__(self, url, embedded=False) -> None:
+    def __init__(self, url, embedded=False, **kwargs) -> None:
         super().__init__(url)
         self.staticfile_manager = None
-        self.url_data = GithubUpdater.get_url_data(url)
-        self.url = self.get_url_string_from_data(self.url_data)
+        self.set_url(url)
+
+        self.repo_url_row = None
+        self.repo_filename_row = None
+        self.allow_prereleases_row = None
 
         self.embedded = False
         if embedded:
@@ -118,7 +82,9 @@ class GithubUpdater(UpdateManager):
 
     def set_url(self, url: str):
         self.url_data = self.get_url_data(url)
-        self.url = url
+
+        if self.url_data:
+            self.url = self.get_url_string_from_data(self.url_data)
 
     def get_url_string_from_data(self, url_data):
         url = f'https://github.com/{url_data["username"]}/{url_data["repo"]}'
@@ -266,3 +232,63 @@ class GithubUpdater(UpdateManager):
                     return is_size_different
 
         return False
+    
+    def load_form_rows(self,update_url, embedded=False): 
+        url_data = self.get_url_data(update_url)
+        repo_url = ''
+        filename = ''
+
+        if url_data:
+            repo_url = '/'.join(['https://github.com', url_data['username'], url_data['repo']])
+            filename = url_data['filename']
+
+        self.repo_url_row = AdwEntryRowDefault(
+            text=repo_url,
+            icon_name='gl-git',
+            sensitive=(not embedded),
+            title=_('Repo URL')
+        )
+
+        self.repo_filename_row = AdwEntryRowDefault(
+            text=filename,
+            icon_name='gl-paper',
+            sensitive=(not embedded),
+            title=_('Release file name')
+        )
+        
+        self.allow_prereleases_row = Adw.SwitchRow(
+            title=_('Allow pre-releases'),
+            active=self.config.get('allow_prereleases', False)
+        )
+
+        if embedded:
+            return [
+                self.repo_url_row, 
+                self.repo_filename_row,
+            ]
+
+        return [
+            self.repo_url_row, 
+            self.repo_filename_row,
+            self.allow_prereleases_row
+        ]
+
+    def get_form_url(self,) -> str:
+        if (not self.repo_filename_row) or (not self.repo_url_row):
+            return ''
+        
+        return '/'.join([
+            self.repo_url_row.get_text(),
+            'releases/download/*',
+            self.repo_filename_row.get_text()
+        ])
+
+    def get_form_config(self,):
+        allow_prereleases = False
+
+        if self.allow_prereleases_row:
+            allow_prereleases = self.allow_prereleases_row.get_active()
+
+        return {
+            'allow_prereleases': allow_prereleases
+        }
