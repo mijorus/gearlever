@@ -607,7 +607,7 @@ class AppDetails(Gtk.ScrolledWindow):
                     selected_model = m
                     break
 
-            app_conf = self.get_config_for_app(self.app_list_element)
+            app_conf = self.get_config_for_app()
 
             if selected_model:
                 update_url = app_conf.get('update_url', '')
@@ -615,14 +615,15 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.update_manager = selected_model(url=update_url, embedded=False, config=manager_config)
             else:
                 if self.app_list_element:
-                    remove_update_config(self.li)
+                    remove_update_config(self.app_list_element)
 
                 self.update_manager = UpdateManagerChecker.check_url(url='', el=self.app_list_element)
 
+        [self.update_url_group.remove(r) for r in 
+            self.update_url_form_rows]
+        self.update_url_form_ros = []
+
         if self.update_manager:
-            [self.update_url_group.remove(r) for r in 
-                self.update_url_form_rows]
-            self.update_url_form_rows = []
             rows = self.update_manager.load_form_rows(
                 update_url=self.update_manager.url,
                 embedded=self.update_manager.embedded
@@ -651,6 +652,10 @@ class AppDetails(Gtk.ScrolledWindow):
         time.sleep(.5)
 
         if not self.update_manager:
+            if self.app_list_element:
+                remove_update_config(self.app_list_element)
+
+            GLib.idle_add(lambda:  (widget.add_css_class('success')))
             return
 
         text = self.update_manager.get_form_url()

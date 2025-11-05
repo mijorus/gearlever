@@ -3,8 +3,6 @@ import json
 import gi
 import os
 import base64
-from ..models.AppListElement import AppListElement
-from ..providers.AppImageProvider import AppImageListElement
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
@@ -29,7 +27,7 @@ def set_json_config(name: str, data):
         file.write(json.dumps(data))
         logging.info(f'Saving config to {path}')
 
-def read_config_for_app(el: AppImageListElement | AppListElement) -> dict:
+def read_config_for_app(el) -> dict:
     conf = read_json_config('apps')
     b64name = base64.b64encode(el.name.encode('utf8')).decode('ascii')
 
@@ -38,7 +36,7 @@ def read_config_for_app(el: AppImageListElement | AppListElement) -> dict:
 
     return app_config
 
-def remove_update_config(el: AppImageListElement | AppListElement):
+def remove_update_config(el):
     app_conf = read_config_for_app(el)
 
     refresh_config = False
