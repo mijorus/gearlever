@@ -643,16 +643,19 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @idle
     def on_app_update_url_success(self):
+        self.update_url_save_btn.set_sensitive(False)
         self.update_url_save_btn.add_css_class('success')
         self.update_url_save_btn.set_label(self.BTN_SAVED)
 
     @idle
     def on_app_update_url_error(self):
+        self.update_url_save_btn.set_sensitive(False)
         self.update_url_save_btn.add_css_class('error')
         self.update_url_save_btn.set_label(self.UPDATE_BTN_ERROR)
 
     @idle
     def on_app_update_url_reset(self):
+        self.update_url_save_btn.set_sensitive(True)
         self.update_url_save_btn.remove_css_class('error')
         self.update_url_save_btn.remove_css_class('success')
         self.update_url_save_btn.set_child(
@@ -664,7 +667,7 @@ class AppDetails(Gtk.ScrolledWindow):
     @_async
     def on_app_update_url_apply(self, button):
         app_conf = self.get_config_for_app()
-        widget = button
+        def_sleep = 2
 
         self.on_app_update_url_reset()
 
@@ -674,7 +677,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
             self.on_app_update_url_success()
 
-            time.sleep(3)
+            time.sleep(def_sleep)
             self.on_app_update_url_reset()
             return
 
@@ -683,14 +686,14 @@ class AppDetails(Gtk.ScrolledWindow):
         if not text:
             self.on_app_update_url_error()
 
-            time.sleep(3)
+            time.sleep(def_sleep)
             self.on_app_update_url_reset()
             return
 
         if not self.update_manager.can_handle_link(url=text):
             self.on_app_update_url_error()
             
-            time.sleep(3)
+            time.sleep(def_sleep)
             self.on_app_update_url_reset()
             return
 
@@ -704,7 +707,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.check_updates()
 
-        time.sleep(3)
+        time.sleep(def_sleep)
         self.on_app_update_url_reset()
 
     def on_env_var_value_changed(self, widget, key_widget, value_widget):

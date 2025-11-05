@@ -24,7 +24,7 @@ def set_json_config(name: str, data):
     path = f'{GLib.get_user_config_dir()}/{name}.json'
 
     with open(path, 'w+') as file:
-        file.write(json.dumps(data))
+        file.write(json.dumps(data, indent=4))
         logging.info(f'Saving config to {path}')
 
 def read_config_for_app(el) -> dict:
