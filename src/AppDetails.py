@@ -200,6 +200,9 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.secondary_action_button.set_visible(True)
         self.primary_action_button.set_visible(True)
+        self.title.set_visible(True)
+        self.app_subtitle.set_visible(True)
+        self.description.set_visible(True)
 
         system_arch = sandbox_sh(['arch'])
 
@@ -274,8 +277,9 @@ class AppDetails(Gtk.ScrolledWindow):
         )
 
     def before_load(self):
-        self.title.set_label('...')
-        self.description.set_label('')
+        self.title.set_visible(False)
+        self.app_subtitle.set_visible(False)
+        self.description.set_visible(False)
         self.secondary_action_button.set_visible(False)
         self.primary_action_button.set_visible(False)
 
