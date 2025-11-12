@@ -26,18 +26,20 @@ class CodebergUpdater(UpdateManager):
             urldata = urlsplit(url)
 
             if urldata.netloc != 'codeberg.org':
-                return None
+                return False
 
             paths = urldata.path.split('/')
 
             if len(paths) != 7:
-                return None
+                return False
 
-        return {
-            'username': paths[1],
-            'repo': paths[2],
-            'filename': paths[6],
-        }
+            return {
+                'username': paths[1],
+                'repo': paths[2],
+                'filename': paths[6],
+            }
+        
+        return False
 
     @staticmethod
     def can_handle_link(url: str):
@@ -47,9 +49,7 @@ class CodebergUpdater(UpdateManager):
     def __init__(self, url, **kwargs) -> None:
         super().__init__(url, **kwargs)
         self.staticfile_manager = None
-        self.url_data = CodebergUpdater.get_url_data(url)
-        self.url = url
-
+        self.set_url(url)
         self.embedded = False
 
     def set_url(self, url: str):
@@ -100,6 +100,9 @@ class CodebergUpdater(UpdateManager):
         return regex
 
     def fetch_target_asset(self):
+        if not self.url_data:
+            return
+
         rel_url = f'https://codeberg.org/api/v1/repos/{self.url_data["username"]}/{self.url_data["repo"]}/releases?pre-release=exclude&draft=exclude'
 
         try:

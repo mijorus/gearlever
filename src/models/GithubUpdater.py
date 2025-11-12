@@ -135,7 +135,7 @@ class GithubUpdater(UpdateManager):
     def fetch_target_asset(self):
         if type(self.url_data) == bool:
             return
-
+        
         rel_url = '/'.join([
             'https://api.github.com/repos',
             self.url_data["username"],
