@@ -161,7 +161,6 @@ class AppDetails(Gtk.ScrolledWindow):
     def complete_load(self, icon: Gtk.Image, generation: str, load_completed_callback: Optional[Callable] = None):
         self.show_row_spinner(True)
 
-        self.details_row.remove(self.icon_slot)
         self.icon_slot = icon
         icon.set_pixel_size(128)
 
@@ -176,8 +175,9 @@ class AppDetails(Gtk.ScrolledWindow):
             self.provider.get_description(self.app_list_element)
         )
 
-        self.third_row.remove(self.extra_data)
-        
+        if self.update_url_group:
+            self.extra_data.remove(self.update_url_group)
+
         self.extra_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=self.EXTRA_DATA_SPACING)
         self.third_row.append(self.extra_data)
 
@@ -626,7 +626,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         [self.update_url_group.remove(r) for r in 
             self.update_url_form_rows]
-        self.update_url_form_ros = []
+        self.update_url_form_rows = []
 
         if self.update_manager:
             rows = self.update_manager.load_form_rows(
