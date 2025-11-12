@@ -43,6 +43,8 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
         self.installed_apps_list_slot = Gtk.Box()
         self.installed_apps_list = Gtk.ListBox(css_classes=["boxed-list"])
+        self.installed_apps_list.connect('row-activated', self.on_activated_row)
+
         self.installed_apps_list_slot.append(self.installed_apps_list)
 
         self.installed_apps_list_rows: List[AppListBoxItem] = []
@@ -137,8 +139,6 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         
         self.installed_apps_list.set_sort_func(lambda r1, r2: self.sort_installed_apps_list(r1, r2))
         self.installed_apps_list.invalidate_sort()
-
-        self.installed_apps_list.connect('row-activated', self.on_activated_row)
 
         self.update_all_btn.set_visible(False)
 
