@@ -117,12 +117,6 @@ class StaticFileUpdater(UpdateManager):
 
         self.currend_download = None
         return fname, etag
-        self.url = re.sub(r"\.zsync$", "", url)
-        self.currend_download = None
-        self.embedded = False
-
-        if embedded:
-            self.embedded = re.sub(r"\.zsync$", "", url)
 
     def cancel_download(self):
         if self.currend_download:

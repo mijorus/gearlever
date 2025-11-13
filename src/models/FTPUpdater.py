@@ -2,9 +2,14 @@ import logging
 import requests
 import os
 import re
+import ftputil
+from ftputil.file import FTPFile
+import fnmatch
 from socket import gethostbyname
 from typing import Optional
 from urllib.parse import urlsplit, urlencode
+from ..lib.utils import get_random_string
+
 
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 
@@ -28,13 +33,13 @@ class FTPUpdater(UpdateManager):
             return False
 
         return {
-            'server': splitted.netloc,
+            'server': 'ftp://' + splitted.netloc,
             'path': splitted.path,
         }
 
     @staticmethod
     def can_handle_link(url: str):
-        return CodebergUpdater.get_url_data(url) != False
+        return FTPUpdater.get_url_data(url) != False
 
 
     def __init__(self, url, **kwargs) -> None:
@@ -45,6 +50,7 @@ class FTPUpdater(UpdateManager):
         
         self.url_row = None
         self.filename_row = None
+        self.current_download: FTPFile | None = None
 
     def set_url(self, url: str):
         self.url_data = self.get_url_data(url)
@@ -55,19 +61,37 @@ class FTPUpdater(UpdateManager):
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
         if not target_asset:
-            raise Exception(f'Missing target_asset for {self.name} instance')
+            raise Exception('Missing target asset for FTPUpdater')
 
-        dwnl = target_asset['browser_download_url']
-        self.staticfile_manager = StaticFileUpdater(dwnl)
-        fname, etag = self.staticfile_manager.download(status_update_cb)
+        random_name = get_random_string()
+        fname = f'{self.download_folder}/{random_name}.appimage'
 
-        self.staticfile_manager = None
+        with ftputil.FTPHost(target_asset['server'], 'anonymous', '') as ftp_host:
+            chunk_size = 8192
+            downloaded = 0
+
+            with ftp_host.open(target_asset['path'], 'rb') as remote:
+                self.current_download = remote
+                with open(fname, 'wb') as local:
+                    while True:
+                        chunk = remote.read(chunk_size)
+
+                        if not chunk:
+                            break
+                        
+                        local.write(chunk)
+                        downloaded += len(chunk)
+                        
+                        # Calculate and display percentage
+                        percent = (downloaded / target_asset['size'])
+                        status_update_cb(percent)
+
         return fname, target_asset['id']
 
     def cancel_download(self):
-        if self.staticfile_manager:
-            self.staticfile_manager.cancel_download()
-            self.staticfile_manager = None
+        if self.current_download:
+            self.current_download.close()
+            self.current_download = None
 
     def cleanup(self):
         if self.staticfile_manager:
@@ -97,65 +121,81 @@ class FTPUpdater(UpdateManager):
         if not self.url_data:
             return
 
-        rel_url = f'https://codeberg.org/api/v1/repos/{self.url_data["username"]}/{self.url_data["repo"]}/releases?pre-release=exclude&draft=exclude'
+        pattern = self.url_data['path']
+        matching_file = None
 
-        try:
-            rel_data_resp = requests.get(rel_url)
-            rel_data_resp.raise_for_status()
-            rel_data = rel_data_resp.json()
-        except Exception as e:
-            logging.error(e)
-            return
-        
+        with ftputil.FTPHost(self.url_data['server'], 'anonymous', '') as ftp_host:
+            # Parse the pattern to separate directory path from filename pattern
+            parts = pattern.split('/')
+            base_path = '/'
+            wildcards_start = -1
+            
+            # Find where wildcards start
+            for i, part in enumerate(parts):
+                if '*' in part or '?' in part:
+                    wildcards_start = i
+                    break
+            
+            if wildcards_start > 0:
+                base_path = '/'.join(parts[:wildcards_start])
+            
+            # Recursively find all matching files
 
-        logging.debug(f'Found {len(rel_data)} assets from {rel_url}')
-        if not rel_data:
-            return
+            def find_matches(current_path, remaining_parts):
+                print(current_path)
+                """Recursively traverse directories to find matches."""
+                if not remaining_parts:
+                    return
+                
+                current_pattern = remaining_parts[0]
+                
+                try:
+                    items = ftp_host.listdir(current_path)
+                except:
+                    return
+                
+                for item in items:
+                    item_path = ftp_host.path.join(current_path, item)
+                    
+                    # Check if item matches current pattern
+                    if fnmatch.fnmatch(item, current_pattern):
+                        if len(remaining_parts) == 1:
+                            # Last pattern part - check if it's a file
+                            if ftp_host.path.isfile(item_path):
+                                size = ftp_host.path.getsize(item_path)
 
-        download_asset = None
-        target_re = re.compile(self.convert_glob_to_regex(self.url_data['filename']))
+                                print('Found mathing item ' + item_path)
+                                matching_file = {
+                                    'item_path': item_path, 
+                                    'size': size
+                                }
 
-        possible_targets = []
-        for asset in rel_data[0]['assets']:
-            if re.match(target_re, asset['name']):
-                possible_targets.append(asset)
+                                return
+                        else:
+                            # More patterns to match - recurse into directory
+                            if ftp_host.path.isdir(item_path):
+                                find_matches(item_path, remaining_parts[1:])
+            
+            # Start searching from base path
+            pattern_parts = [p for p in parts[wildcards_start:] if p]
+            find_matches(base_path, pattern_parts)
+            
+        if not matching_file:
+            print("No files found matching the pattern")
+            return None
 
-        if len(possible_targets) == 1:
-            download_asset = possible_targets[0]
-        else:
-            logging.info(f'found {len(possible_targets)} possible file targets')
-
-            for t in possible_targets:
-                logging.info(' - ' + t['name'])
-
-            if self.system_arch == 'x86_64':
-                for t in possible_targets:
-                    if self.is_x86.search(t['name']) or not self.is_arm.search(t['name']):
-                        download_asset = t
-                        logging.info('found possible target: ' + t['name'])
-                        break
-
-        if not download_asset:
-            logging.debug(f'No matching assets found from {rel_url}')
-            return
-
-        logging.debug(f'Found 1 matching asset: {download_asset["browser_download_url"]}')
-        return download_asset
+        logging.debug(f'Found 1 matching asset: {matching_file["item_path"]}')
+        return matching_file
 
     def is_update_available(self, el: AppImageListElement):
         target_asset = self.fetch_target_asset()
 
-        if target_asset:
-            content_type = requests.head(target_asset['browser_download_url']).headers.get('content-type', None)
-            ct_supported = content_type in [*AppImageProvider.supported_mimes, 'raw',
-                                                    'binary/octet-stream', 'application/octet-stream']
+        if not target_asset:
+            return False
 
-            if ct_supported:
-                old_size = os.path.getsize(el.file_path)
-                is_size_different = target_asset['size'] != old_size
-                return is_size_different
-
-        return False
+        old_size = os.path.getsize(el.file_path)
+        is_size_different = target_asset['size'] != old_size
+        return is_size_different
     
     def load_form_rows(self, update_url, embedded=False): 
         url_data = FTPUpdater.get_url_data(update_url)
@@ -167,7 +207,7 @@ class FTPUpdater(UpdateManager):
             filename = url_data['path']
 
         self.url_row = AdwEntryRowDefault(
-            text=ftp_url,
+            text=(ftp_url),
             icon_name='gl-git',
             sensitive=(not embedded),
             title=_('Server URL')
