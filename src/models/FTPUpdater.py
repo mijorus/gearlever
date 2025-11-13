@@ -2,6 +2,7 @@ import logging
 import requests
 import os
 import re
+from socket import gethostbyname
 from typing import Optional
 from urllib.parse import urlsplit, urlencode
 
@@ -12,34 +13,24 @@ from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
 
 
-class CodebergUpdater(UpdateManager):
+class FTPUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
-    label = 'Codeberg'
-    name = 'CodebergUpdater'
+    label = 'FTP'
+    name = 'FTPUpdater'
 
     @staticmethod
     def get_url_data(url: str):
-        # Example: https://codeberg.org/sonusmix/sonusmix/releases/download/v0.1.1/org.sonusmix.Sonusmix-0.1.1.AppImage
-        paths = []
-        if url.startswith('https://'):
-            logging.debug(f'CodebergUpdater: found http url, trying to detect codeberg data')
-            urldata = urlsplit(url)
+        if (not url.startswith('ftp://')):
+            return False
 
-            if urldata.netloc != 'codeberg.org':
-                return False
+        splitted = urlsplit(url)
+        if not splitted.path:
+            return False
 
-            paths = urldata.path.split('/')
-
-            if len(paths) != 7:
-                return False
-
-            return {
-                'username': paths[1],
-                'repo': paths[2],
-                'filename': paths[6],
-            }
-        
-        return False
+        return {
+            'server': splitted.netloc,
+            'path': splitted.path,
+        }
 
     @staticmethod
     def can_handle_link(url: str):
@@ -51,8 +42,9 @@ class CodebergUpdater(UpdateManager):
         self.staticfile_manager = None
         self.set_url(url)
         self.embedded = False
-        self.repo_url_row = None
-        self.repo_filename_row = None
+        
+        self.url_row = None
+        self.filename_row = None
 
     def set_url(self, url: str):
         self.url_data = self.get_url_data(url)
@@ -166,38 +158,37 @@ class CodebergUpdater(UpdateManager):
         return False
     
     def load_form_rows(self, update_url, embedded=False): 
-        url_data = CodebergUpdater.get_url_data(update_url)
-        repo_url = ''
+        url_data = FTPUpdater.get_url_data(update_url)
+        ftp_url = ''
         filename = ''
-
+        
         if url_data:
-            repo_url = '/'.join(['https://codeberg.org', url_data['username'], url_data['repo']])
-            filename = url_data['filename']
+            ftp_url = url_data['server']
+            filename = url_data['path']
 
-        self.repo_url_row = AdwEntryRowDefault(
-            text=repo_url,
+        self.url_row = AdwEntryRowDefault(
+            text=ftp_url,
             icon_name='gl-git',
             sensitive=(not embedded),
-            title=_('Repo URL')
+            title=_('Server URL')
         )
 
-        self.repo_filename_row = AdwEntryRowDefault(
+        self.filename_row = AdwEntryRowDefault(
             text=filename,
             icon_name='gl-paper',
             sensitive=(not embedded),
-            title=_('Release file name')
+            title=_('File name pattern')
         )
 
         return [self.repo_url_row, self.repo_filename_row]
 
     def get_form_url(self, ) -> str:
-        if (not self.repo_filename_row) or (not self.repo_url_row):
+        if (not self.filename_row) or (not self.url_row):
             return ''
         
         return '/'.join([
-            self.repo_url_row.get_text(),
-            'releases/download/*',
-            self.repo_filename_row.get_text()
+            self.url_row.get_text(),
+            self.filename_row.get_text()
         ])
 
 
