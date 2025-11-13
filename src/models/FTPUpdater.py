@@ -5,13 +5,13 @@ import re
 import ftputil
 from ftputil.file import FTPFile
 import fnmatch
-from socket import gethostbyname
+import shutil
 from typing import Optional
 from urllib.parse import urlsplit, urlencode
 from ..lib.utils import get_random_string
 
 
-from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
+from ..providers.AppImageProvider import  AppImageListElement
 
 from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
@@ -94,8 +94,8 @@ class FTPUpdater(UpdateManager):
             self.current_download = None
 
     def cleanup(self):
-        if self.staticfile_manager:
-            self.staticfile_manager.cleanup()
+        if os.path.exists(self.download_folder):
+            shutil.rmtree(self.download_folder)
 
     def convert_glob_to_regex(self, glob_str):
         """
