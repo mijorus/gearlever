@@ -1,3 +1,4 @@
 dbus-python == 1.2.18
 pyxdg == 0.28
 ftputil == 5.1.0
+requests >= 2.25.1

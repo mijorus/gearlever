@@ -1,7 +1,5 @@
 import logging
-import requests
 import os
-import re
 import ftputil
 from ftputil.file import FTPFile
 import fnmatch
@@ -29,7 +27,8 @@ class FTPUpdater(UpdateManager):
             return False
 
         splitted = urlsplit(url)
-        if not splitted.path:
+        print(splitted)
+        if len(splitted.path) < 2:
             return False
 
         return {
@@ -96,26 +95,6 @@ class FTPUpdater(UpdateManager):
     def cleanup(self):
         if os.path.exists(self.download_folder):
             shutil.rmtree(self.download_folder)
-
-    def convert_glob_to_regex(self, glob_str):
-        """
-        Converts a string with glob patterns to a regular expression.
-
-        Args:
-            glob_str: A string containing glob patterns.
-
-        Returns:
-            A regular expression string equivalent to the glob patterns.
-        """
-        regex = ""
-        for char in glob_str:
-            if char == "*":
-                regex += r".*"
-            else:
-                regex += re.escape(char)
-
-        regex = f'^{regex}$'
-        return regex
 
     def fetch_target_asset(self):
         if not self.url_data:
@@ -220,15 +199,19 @@ class FTPUpdater(UpdateManager):
             title=_('File name pattern')
         )
 
-        return [self.repo_url_row, self.repo_filename_row]
+        return [self.url_row, self.filename_row]
 
     def get_form_url(self, ) -> str:
         if (not self.filename_row) or (not self.url_row):
             return ''
         
+        filename = self.filename_row.get_text()
+        if filename.startswith('/'):
+            filename = filename[1:]
+        
         return '/'.join([
             self.url_row.get_text(),
-            self.filename_row.get_text()
+            filename
         ])
 
 

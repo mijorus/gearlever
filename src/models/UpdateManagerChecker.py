@@ -12,11 +12,12 @@ from .GithubUpdater import GithubUpdater
 from .GitlabUpdater import GitlabUpdater
 from .CodebergUpdater import CodebergUpdater
 from .StaticFileUpdater import StaticFileUpdater
+from .FTPUpdater import FTPUpdater
 
 class UpdateManagerChecker():
     @staticmethod
     def get_models() -> list[UpdateManager]:
-        return [StaticFileUpdater, GithubUpdater, GitlabUpdater, CodebergUpdater]
+        return [StaticFileUpdater, GithubUpdater, GitlabUpdater, CodebergUpdater, FTPUpdater]
 
     @staticmethod
     def get_model_by_name(manager_label: str) -> Optional[UpdateManager]:

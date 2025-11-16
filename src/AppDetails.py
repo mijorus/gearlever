@@ -161,6 +161,9 @@ class AppDetails(Gtk.ScrolledWindow):
     def complete_load(self, icon: Gtk.Image, generation: str, load_completed_callback: Optional[Callable] = None):
         self.show_row_spinner(True)
 
+        if self.icon_slot:
+            self.details_row.remove(self.icon_slot)
+
         self.icon_slot = icon
         icon.set_pixel_size(128)
 
@@ -175,8 +178,8 @@ class AppDetails(Gtk.ScrolledWindow):
             self.provider.get_description(self.app_list_element)
         )
 
-        if self.update_url_group:
-            self.extra_data.remove(self.update_url_group)
+        if self.extra_data:
+            self.third_row.remove(self.extra_data)
 
         self.extra_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=self.EXTRA_DATA_SPACING)
         self.third_row.append(self.extra_data)
@@ -285,9 +288,11 @@ class AppDetails(Gtk.ScrolledWindow):
 
         if self.icon_slot:
             self.details_row.remove(self.icon_slot)
+            self.icon_slot = None
 
         if self.extra_data:
             self.third_row.remove(self.extra_data)
+            self.extra_data = None
 
     @_async
     def install_file(self, el: AppImageListElement):
@@ -397,7 +402,6 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_list_element.set_installed_status(InstalledStatus.UPDATING)
         self.update_installation_status()
 
-        app_conf = self.get_config_for_app()
         manager = UpdateManagerChecker.check_url_for_app(self.app_list_element)
 
         if not manager:
