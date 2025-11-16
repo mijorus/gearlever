@@ -27,7 +27,6 @@ class FTPUpdater(UpdateManager):
             return False
 
         splitted = urlsplit(url)
-        print(splitted)
         if len(splitted.path) < 2:
             return False
 
@@ -103,7 +102,8 @@ class FTPUpdater(UpdateManager):
         pattern = self.url_data['path']
         matching_file = None
 
-        with ftputil.FTPHost(self.url_data['server'], 'anonymous', '') as ftp_host:
+        server = self.url_data['server'].replace('ftp://', '')
+        with ftputil.FTPHost(server, 'anonymous', '') as ftp_host:
             # Parse the pattern to separate directory path from filename pattern
             parts = pattern.split('/')
             base_path = '/'
@@ -117,6 +117,16 @@ class FTPUpdater(UpdateManager):
             
             if wildcards_start > 0:
                 base_path = '/'.join(parts[:wildcards_start])
+            else:
+                base_path = '/'.join(parts)
+                if ftp_host.path.isfile(base_path):
+                    size = ftp_host.path.getsize(base_path)
+                    return {
+                        'item_path': base_path, 
+                        'size': size
+                    }
+
+                return None
             
             # Recursively find all matching files
 
@@ -135,32 +145,31 @@ class FTPUpdater(UpdateManager):
                 
                 for item in items:
                     item_path = ftp_host.path.join(current_path, item)
+                    print('found', item_path)
                     
                     # Check if item matches current pattern
                     if fnmatch.fnmatch(item, current_pattern):
                         if len(remaining_parts) == 1:
                             # Last pattern part - check if it's a file
                             if ftp_host.path.isfile(item_path):
+                                logging.debug('FTPUpdater: Found mathing item ' + item_path)
                                 size = ftp_host.path.getsize(item_path)
 
-                                print('Found mathing item ' + item_path)
-                                matching_file = {
+                                return {
                                     'item_path': item_path, 
                                     'size': size
                                 }
-
-                                return
                         else:
                             # More patterns to match - recurse into directory
                             if ftp_host.path.isdir(item_path):
-                                find_matches(item_path, remaining_parts[1:])
+                                return find_matches(item_path, remaining_parts[1:])
             
             # Start searching from base path
             pattern_parts = [p for p in parts[wildcards_start:] if p]
-            find_matches(base_path, pattern_parts)
+            matching_file = find_matches(base_path, pattern_parts)
             
         if not matching_file:
-            print("No files found matching the pattern")
+            logging.info("FTPUpdater: No files found matching the pattern")
             return None
 
         logging.debug(f'Found 1 matching asset: {matching_file["item_path"]}')
