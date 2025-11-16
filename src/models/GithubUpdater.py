@@ -227,6 +227,11 @@ class GithubUpdater(UpdateManager):
                         return match.group(1) != curr_version_hash
 
                 else:
+                    digest = target_asset['asset'].get('digest', '')
+                    if digest.startswith('sha256:'):
+                        curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha256')
+                        return f'sha256:{curr_version_hash}' != digest
+
                     old_size = os.path.getsize(el.file_path)
                     is_size_different = target_asset['asset']['size'] != old_size
                     return is_size_different
