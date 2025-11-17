@@ -2,15 +2,17 @@ import logging
 import os
 import ftputil
 from ftputil.file import FTPFile
+from ftputil import FTPHost
 import fnmatch
 import shutil
 from typing import Optional
 from urllib.parse import urlsplit, urlencode
-from ..lib.utils import get_random_string
+from ..lib.utils import get_random_string, get_file_hash
 
 
 from ..providers.AppImageProvider import  AppImageListElement
 
+from ..models.Models import DownloadInterruptedException
 from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
@@ -48,7 +50,7 @@ class FTPUpdater(UpdateManager):
         
         self.url_row = None
         self.filename_row = None
-        self.current_download: FTPFile | None = None
+        self.current_download: FTPHost | None = None
 
     def set_url(self, url: str):
         self.url_data = self.get_url_data(url)
@@ -60,18 +62,30 @@ class FTPUpdater(UpdateManager):
         target_asset = self.fetch_target_asset()
         if not target_asset:
             raise Exception('Missing target asset for FTPUpdater')
+        
+        if not self.url_data:
+            raise Exception('Missing url data for FTPUpdater')
 
         random_name = get_random_string()
+
+        if not os.path.exists(self.download_folder):
+            os.makedirs(self.download_folder)
+
         fname = f'{self.download_folder}/{random_name}.appimage'
 
-        with ftputil.FTPHost(target_asset['server'], 'anonymous', '') as ftp_host:
-            chunk_size = 8192
-            downloaded = 0
+        server = self.url_data['server'].replace('ftp://', '')
 
-            with ftp_host.open(target_asset['path'], 'rb') as remote:
-                self.current_download = remote
+        self.current_download = ftputil.FTPHost(server, 'anonymous', '')
+        chunk_size = 8192
+        downloaded = 0
+
+        try:
+            with self.current_download.open(target_asset['item_path'], 'rb') as remote:
                 with open(fname, 'wb') as local:
                     while True:
+                        if not self.current_download:
+                            break
+
                         chunk = remote.read(chunk_size)
 
                         if not chunk:
@@ -83,12 +97,27 @@ class FTPUpdater(UpdateManager):
                         # Calculate and display percentage
                         percent = (downloaded / target_asset['size'])
                         status_update_cb(percent)
+        except Exception as e:
+            if self.current_download:
+                raise e
 
-        return fname, target_asset['id']
+            raise DownloadInterruptedException
+
+        if self.current_download:
+            self.current_download.close()
+            self.current_download = None
+
+        file_hash = get_file_hash(None, 'md5', file_path=fname)
+        return fname, file_hash
 
     def cancel_download(self):
         if self.current_download:
-            self.current_download.close()
+
+            try:
+                self.current_download.close()
+            except Exception as e:
+                pass
+            
             self.current_download = None
 
     def cleanup(self):
@@ -131,7 +160,6 @@ class FTPUpdater(UpdateManager):
             # Recursively find all matching files
 
             def find_matches(current_path, remaining_parts):
-                print(current_path)
                 """Recursively traverse directories to find matches."""
                 if not remaining_parts:
                     return
@@ -145,14 +173,14 @@ class FTPUpdater(UpdateManager):
                 
                 for item in items:
                     item_path = ftp_host.path.join(current_path, item)
-                    print('found', item_path)
+                    logging.debug('found ' + str(item_path))
                     
                     # Check if item matches current pattern
                     if fnmatch.fnmatch(item, current_pattern):
                         if len(remaining_parts) == 1:
                             # Last pattern part - check if it's a file
                             if ftp_host.path.isfile(item_path):
-                                logging.debug('FTPUpdater: Found mathing item ' + item_path)
+                                logging.debug('FTPUpdater: Found mathing item ' + str(item_path))
                                 size = ftp_host.path.getsize(item_path)
 
                                 return {

@@ -125,7 +125,7 @@ class AppImageProvider():
                                 env_variables=exec_command_data['env_vars'],
                             )
 
-                            list_element.architecture = self.get_elf_arch(list_element)
+                            list_element.architecture = None
 
                             output.append(list_element)
                         else:
@@ -178,7 +178,7 @@ class AppImageProvider():
         
         return ''
 
-    def refresh_title(self, el: AppImageListElement):
+    def refresh_data(self, el: AppImageListElement):
         if el.desktop_entry:
             el.name = el.desktop_entry.getName()
         
@@ -186,6 +186,9 @@ class AppImageProvider():
         if extracted.desktop_entry:
             el.name = extracted.desktop_entry.getName()
             el.version = el.desktop_entry.get('X-AppImage-Version')
+
+    def refresh_arch(self, el: AppImageListElement):
+        el.architecture = self.get_elf_arch(el)
 
     def uninstall(self, el: AppImageListElement, force_delete=False):
         logging.info(f'Removing {el.file_path}')
@@ -578,11 +581,11 @@ class AppImageProvider():
 
         el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
 
-    def update_from_url(self, manager, el: AppImageListElement, status_cb: callable) -> AppImageListElement:
+    def update_from_url(self, manager, el: AppImageListElement, status_cb: callable) -> AppImageListElement | None:
         try:
             update_file_path, f_hash = manager.download(status_cb)
         except DownloadInterruptedException as de:
-            return el
+            return None
         except Exception as e:
             raise e
 

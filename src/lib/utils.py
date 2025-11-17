@@ -77,8 +77,11 @@ def gio_copy(file: Gio.File, destination: Gio.File):
     )
 
 
-def get_file_hash(file: Gio.File, alg='md5') -> str:
-    with open(file.get_path(), 'rb') as f:
+def get_file_hash(file: Gio.File | None, alg='md5', file_path=None) -> str:
+    if not file_path:
+        file_path = file.get_path()
+
+    with open(file_path, 'rb') as f:
         if alg == 'md5':
             return hashlib.md5(f.read()).hexdigest()
         elif alg == 'sha1':

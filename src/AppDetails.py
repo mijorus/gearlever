@@ -40,7 +40,6 @@ class AppDetails(Gtk.ScrolledWindow):
 
     def __init__(self):
         super().__init__()
-        self.current_update_manager: Optional[UpdateManager] = None
         self.ACTION_ROW_ICON_SIZE = 34
         self.EXTRA_DATA_SPACING = 20
 
@@ -269,9 +268,10 @@ class AppDetails(Gtk.ScrolledWindow):
 
         if self.app_list_element.trusted:
             icon = self.provider.get_icon(self.app_list_element)
+            self.provider.refresh_arch(self.app_list_element)
 
             if self.app_list_element.installed_status is not InstalledStatus.INSTALLED:
-                self.provider.refresh_title(self.app_list_element)
+                self.provider.refresh_data(self.app_list_element)
 
         self.complete_load(
             icon,
@@ -367,8 +367,8 @@ class AppDetails(Gtk.ScrolledWindow):
                 except Exception as e:
                     logging.error(str(e))
         elif self.app_list_element.installed_status == InstalledStatus.UPDATING:
-            if self.current_update_manager:
-                self.current_update_manager.cancel_download()
+            if self.update_manager:
+                self.update_manager.cancel_download()
                 self.update_installation_status()
 
     def on_remove_app_clicked(self, dialog, response: str):
@@ -402,33 +402,41 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_list_element.set_installed_status(InstalledStatus.UPDATING)
         self.update_installation_status()
 
-        manager = UpdateManagerChecker.check_url_for_app(self.app_list_element)
-
-        if not manager:
+        if not self.update_manager:
             return
 
+        update_success = False
+
         try:
-            self.current_update_manager = manager
-            self.app_list_element = appimage_provider.update_from_url(manager, self.app_list_element, status_cb= lambda s: \
+            update_result = appimage_provider.update_from_url(self.update_manager, self.app_list_element, status_cb= lambda s: \
                 GLib.idle_add(lambda: self.update_action_button.set_label(str(round(s * 100)) + ' %')
             ))
+
+            if update_result == None:
+                update_success = False
+            else:
+                update_success = True
+                self.app_list_element = update_result
+
         except Exception as e:
             self.show_update_error_dialog(str(e))
 
-        self.app_list_element.set_installed_status(InstalledStatus.INSTALLED)
-        self.current_update_manager = None
-        manager.cleanup()
-
         GLib.idle_add(lambda: self.update_action_button.set_label(_('Update')))
+        GLib.idle_add(lambda: self.update_action_button.set_sensitive(True))
+        self.app_list_element.set_installed_status(InstalledStatus.INSTALLED)
+        self.update_manager.cleanup()
 
-        self.provider.reload_metadata(self.app_list_element)
+        if update_success:
+            self.update_manager = None
+            self.provider.reload_metadata(self.app_list_element)
 
-        icon = self.provider.get_icon(self.app_list_element)
-        self.provider.refresh_title(self.app_list_element)
+            icon = self.provider.get_icon(self.app_list_element)
+            self.provider.refresh_data(self.app_list_element)
 
-        generation = self.provider.get_appimage_type(self.app_list_element)
-        self.complete_load(icon, generation)
-        self.update_installation_status()
+            generation = self.provider.get_appimage_type(self.app_list_element)
+            self.complete_load(icon, generation)
+            self.update_installation_status()
+
 
     @idle
     def show_update_error_dialog(self, msg: str):
@@ -440,7 +448,6 @@ class AppDetails(Gtk.ScrolledWindow):
         )
 
         dialog.add_response('okay', _('Close'))
-
         dialog.present()
 
     @idle
@@ -590,6 +597,8 @@ class AppDetails(Gtk.ScrolledWindow):
         self.set_app_as_updatable()
 
         is_updatable = manager.is_update_available(self.app_list_element)
+
+        # TODO error modal
         self.app_list_element.is_updatable_from_url = is_updatable
 
         if is_updatable:
@@ -791,7 +800,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.provider.reload_metadata(self.app_list_element)
 
         icon = self.provider.get_icon(self.app_list_element)
-        self.provider.refresh_title(self.app_list_element)
+        self.provider.refresh_data(self.app_list_element)
 
         generation = self.provider.get_appimage_type(self.app_list_element)
 

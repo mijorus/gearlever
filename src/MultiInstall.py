@@ -100,7 +100,7 @@ class MultiInstall(Gtk.ScrolledWindow):
 
     @_async
     def create_app_row(self, el: AppImageListElement):
-        appimage_provider.refresh_title(el)
+        appimage_provider.refresh_data(el)
         icon = appimage_provider.get_icon(el)
 
         self.create_app_row_complete_load(el, icon)

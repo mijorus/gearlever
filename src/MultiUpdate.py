@@ -70,7 +70,7 @@ class MultiUpdate(Gtk.ScrolledWindow):
 
     @idle
     def create_app_row(self, el: AppImageListElement):
-        appimage_provider.refresh_title(el)
+        appimage_provider.refresh_data(el)
         icon = appimage_provider.get_icon(el)
 
         row = AppListBoxItem(el, show_details_btn=False)

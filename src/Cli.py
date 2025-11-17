@@ -210,7 +210,7 @@ class Cli():
             sys.exit(0)
 
         el.update_logic = AppImageUpdateLogic.KEEP
-        appimage_provider.refresh_title(el)
+        appimage_provider.refresh_data(el)
 
         if '--replace' in argv:
             el.update_logic = AppImageUpdateLogic.REPLACE
