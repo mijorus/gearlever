@@ -11,6 +11,8 @@ from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
 
+# Example: 
+# https://codeberg.org/sonusmix/sonusmix/releases/download/v0.1.1/org.sonusmix.Sonusmix-0.1.1.AppImage
 
 class CodebergUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
@@ -19,7 +21,6 @@ class CodebergUpdater(UpdateManager):
 
     @staticmethod
     def get_url_data(url: str):
-        # Example: https://codeberg.org/sonusmix/sonusmix/releases/download/v0.1.1/org.sonusmix.Sonusmix-0.1.1.AppImage
         paths = []
         if url.startswith('https://'):
             logging.debug(f'CodebergUpdater: found http url, trying to detect codeberg data')
@@ -105,7 +106,12 @@ class CodebergUpdater(UpdateManager):
         if not self.url_data:
             return
 
-        rel_url = f'https://codeberg.org/api/v1/repos/{self.url_data["username"]}/{self.url_data["repo"]}/releases?pre-release=exclude&draft=exclude'
+        rel_url = '/'.join([
+            f'https://codeberg.org/api/v1/repos', 
+            self.url_data["username"],
+            self.url_data["repo"],
+            'releases?pre-release=exclude&draft=exclude'
+        ])
 
         try:
             rel_data_resp = requests.get(rel_url)

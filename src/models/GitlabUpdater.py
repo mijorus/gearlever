@@ -3,13 +3,16 @@ import requests
 import os
 import re
 from typing import Optional
-from urllib.parse import urlsplit, urlencode
+from urllib.parse import urlsplit, quote, unquote
 
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 
 from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
+
+# Example:
+# https://gitlab.com/librewolf-community/browser/appimage/-/releases
 
 class GitlabUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
@@ -20,39 +23,41 @@ class GitlabUpdater(UpdateManager):
 
     @staticmethod
     def get_url_data(url: str):
+        if not url.startswith('https://'):
+            return None
+
         paths = []
-        if url.startswith('https://'):
-            logging.debug(f'GitlabUpdater: found http url, trying to detect gitlab data')
-            urldata = urlsplit(url)
+        logging.debug(f'GitlabUpdater: found http url, trying to detect gitlab data')
+        urldata = urlsplit(url)
 
-            if urldata.netloc != 'gitlab.com':
+        if urldata.netloc != 'gitlab.com':
+            return None
+
+        paths = urldata.path.split('/')
+
+        if len(paths) not in [4, 10]:
+            return None
+        
+        if paths[1] == 'api':
+            if paths[2] != 'v4' or paths[5] != 'packages':
                 return None
 
-            paths = urldata.path.split('/')
-
-            if len(paths) != 10 or len(paths) != 4:
+            return {
+                'project_id': paths[4],
+                'filename': paths[9],
+                'username': None,
+                'repo': None
+            }
+        else:
+            if not urldata.fragment:
                 return None
-            
-            if paths[1] == 'api':
-                if paths[2] != 'v4' or paths[5] != 'packages':
-                    return None
 
-                return {
-                    'project_id': paths[4],
-                    'filename': paths[9],
-                    'username': None,
-                    'repo': None
-                }
-            else:
-                if urldata.fragment:
-                    return None
-
-                return {
-                    'project_id': None,
-                    'filename': urldata.fragment,
-                    'username': paths[1],
-                    'repo': '/'.join(paths[2:3])
-                }
+            return {
+                'project_id': None,
+                'filename': urldata.fragment,
+                'username': paths[1],
+                'repo': '/'.join(paths[2:4])
+            }
 
     @staticmethod
     def can_handle_link(url: str):
@@ -115,11 +120,14 @@ class GitlabUpdater(UpdateManager):
     def fetch_target_asset(self):
         if not self.url_data:
             return
-        
+
         project_id = self.url_data['project_id']
 
         if not project_id:
-            project_id = urlencode(self.url_data['repo'])
+            project_id = quote(
+                self.url_data['username'] + '/' + self.url_data['repo'], 
+                safe=''
+            )
 
         rel_url = '/'.join([
             'https://gitlab.com/api/v4/projects',
@@ -207,7 +215,7 @@ class GitlabUpdater(UpdateManager):
             if url_data['project_id']:
                 repo_url = '/'.join(['https://gitlab.com', 'api/v4/projects', url_data['project_id']])
             else:
-                repo_url = '/'.join(['https://gitlab.com', url_data['username'], url_data['repo']])
+                repo_url = '/'.join(['https://gitlab.com', url_data['username'], unquote(url_data['repo'])])
 
 
         self.repo_url_row = AdwEntryRowDefault(
@@ -242,5 +250,5 @@ class GitlabUpdater(UpdateManager):
         else:
             return '#'.join([
                 repo_url,
-                urlencode(filename)
+                filename
             ]).strip()
