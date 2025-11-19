@@ -215,7 +215,7 @@ class GitlabUpdater(UpdateManager):
             if url_data['project_id']:
                 repo_url = '/'.join(['https://gitlab.com', 'api/v4/projects', url_data['project_id']])
             else:
-                repo_url = '/'.join(['https://gitlab.com', url_data['username'], unquote(url_data['repo'])])
+                repo_url = '/'.join(['https://gitlab.com', url_data['username'], url_data['repo']])
 
 
         self.repo_url_row = AdwEntryRowDefault(
