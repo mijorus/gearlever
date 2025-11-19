@@ -190,7 +190,7 @@ class AppImageProvider():
     def refresh_arch(self, el: AppImageListElement):
         el.architecture = self.get_elf_arch(el)
 
-    def uninstall(self, el: AppImageListElement, force_delete=False):
+    def uninstall(self, el: AppImageListElement, force_delete=False, remove_configuration=True):
         logging.info(f'Removing {el.file_path}')
 
         gf = Gio.File.new_for_path(el.file_path)
@@ -214,7 +214,9 @@ class AppImageProvider():
         if '/' in icon and os.path.isfile(icon):
             os.remove(icon)
 
-        remove_update_config(el)
+        if remove_configuration:
+            remove_update_config(el)
+
         el.set_installed_status(InstalledStatus.NOT_INSTALLED)
 
     def search(self, query: str) -> list[AppListElement]:
@@ -360,17 +362,17 @@ class AppImageProvider():
             desk_entry_section_regex = re.compile(r'\[Desktop Entry\][\s\S]*?(?=\n\[)', flags=re.MULTILINE)
             with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
                 desktop_file_content = dskt_file.read()
-
                 desktop_file_entry_section_match = desk_entry_section_regex.match(desktop_file_content)
-                desktop_file_entry_section = ''
 
+                desktop_file_entry_section = ''
                 if desktop_file_entry_section_match:
                     desktop_file_entry_section = desktop_file_entry_section_match.group(0)
+                else:
+                    desktop_file_entry_section = desktop_file_content
 
-                if desktop_file_entry_section:
-                    desktop_file_entry_section = re.sub(r'^TryExec=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
-                    desktop_file_entry_section = re.sub(r'^Icon=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
-                    desktop_file_entry_section = re.sub(r'^X-AppImage-Version=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
+                desktop_file_entry_section = re.sub(r'^TryExec=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
+                desktop_file_entry_section = re.sub(r'^Icon=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
+                desktop_file_entry_section = re.sub(r'^X-AppImage-Version=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
 
                 # replace executable path
                 exec_command = ['Exec=' + shlex.join([dest_appimage_file.get_path(), *exec_arguments])]
@@ -407,7 +409,12 @@ class AppImageProvider():
 
                 final_app_name = final_app_name.strip()
 
-                desktop_file_content = desk_entry_section_regex.sub(desktop_file_entry_section, desktop_file_content)
+                if desktop_file_entry_section_match:
+                    desktop_file_content = desk_entry_section_regex.sub(desktop_file_entry_section, desktop_file_content)
+                else:
+                    desktop_file_content = desktop_file_entry_section
+
+                desktop_file_content = re.sub(r'\n\n(?!\[)', '\n', desktop_file_content)
 
                 # finally, write the new .desktop file
                 if (not os.path.exists(self.user_desktop_files_path)) and os.path.exists(self.user_local_share_path):
@@ -466,7 +473,7 @@ class AppImageProvider():
 
         gio_copy(outdated_file, new_file)
 
-        self.uninstall(el)
+        self.uninstall(el, remove_configuration=False)
 
         el.file_path = f'{dest_path}/tmp.appimage'
         el.extracted = None
