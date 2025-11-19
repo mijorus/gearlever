@@ -360,10 +360,17 @@ class AppImageProvider():
             desk_entry_section_regex = re.compile(r'\[Desktop Entry\][\s\S]*?(?=\n\[)', flags=re.MULTILINE)
             with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
                 desktop_file_content = dskt_file.read()
-                desktop_file_entry_section = desk_entry_section_regex.match(desktop_file_content).group(0)
-                desktop_file_entry_section = re.sub(r'^TryExec=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
-                desktop_file_entry_section = re.sub(r'^Icon=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
-                desktop_file_entry_section = re.sub(r'^X-AppImage-Version=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
+
+                desktop_file_entry_section_match = desk_entry_section_regex.match(desktop_file_content)
+                desktop_file_entry_section = ''
+
+                if desktop_file_entry_section_match:
+                    desktop_file_entry_section = desktop_file_entry_section_match.group(0)
+
+                if desktop_file_entry_section:
+                    desktop_file_entry_section = re.sub(r'^TryExec=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
+                    desktop_file_entry_section = re.sub(r'^Icon=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
+                    desktop_file_entry_section = re.sub(r'^X-AppImage-Version=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
 
                 # replace executable path
                 exec_command = ['Exec=' + shlex.join([dest_appimage_file.get_path(), *exec_arguments])]
