@@ -154,7 +154,7 @@ class Cli():
         update_url = Cli._get_arg_value(argv, '--url')
         manager_name = Cli._get_arg_value(argv, '--manager')
 
-        if (not update_url) or (not url_is_valid(update_url)):
+        if (not update_url):
             print('Error: "%s" is not a valid URL' % update_url)
             sys.exit(1)
 
