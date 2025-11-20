@@ -81,6 +81,7 @@ class FTPUpdater(UpdateManager):
         self.current_download = ftputil.FTPHost(server, 'anonymous', '')
         chunk_size = 8192
         downloaded = 0
+        oldperc = 0
 
         try:
             remote = self.current_download.open(target_asset['item_path'], 'rb')
@@ -96,7 +97,11 @@ class FTPUpdater(UpdateManager):
                     
                     # Calculate and display percentage
                     percent = (downloaded / target_asset['size'])
-                    status_update_cb(percent)
+                    roundedperc = round(percent * 100)
+                    if roundedperc != oldperc:
+                        status_update_cb(percent)
+                        oldperc = roundedperc
+
         except Exception as e:
             raise DownloadInterruptedException
 
