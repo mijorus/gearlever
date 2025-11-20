@@ -130,7 +130,7 @@ class AppDetails(Gtk.ScrolledWindow):
         # Update url entry
         self.update_manager: Optional[UpdateManager] = None
         self.update_url_group: Optional[Adw.PreferencesGroup] = None
-        self.update_url_row: Optional[AdwEntryRowDefault] = None # TODO
+        self.update_url_row: Optional[AdwEntryRowDefault] = None
         self.update_url_save_btn: Optional[Gtk.Button] = None
         self.update_url_source: Optional[Adw.ComboRow] = None
         self.update_url_form_rows: list = []
@@ -285,6 +285,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.description.set_visible(False)
         self.secondary_action_button.set_visible(False)
         self.primary_action_button.set_visible(False)
+        self.window_banner.set_revealed(False)
 
         if self.icon_slot:
             self.details_row.remove(self.icon_slot)
@@ -596,9 +597,13 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.set_app_as_updatable()
 
-        is_updatable = manager.is_update_available(self.app_list_element)
+        is_updatable = False
 
-        # TODO error modal
+        try:
+            is_updatable = manager.is_update_available(self.app_list_element)
+        except Exception as e:
+            self.show_update_error_dialog(str(e))
+
         self.app_list_element.is_updatable_from_url = is_updatable
 
         if is_updatable:
@@ -612,7 +617,6 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @idle
     def set_update_information(self, manager: Optional[UpdateManager]=None):
-        # TODO
         if manager:
             self.update_manager = manager
         else:

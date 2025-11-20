@@ -80,45 +80,42 @@ class FTPUpdater(UpdateManager):
         downloaded = 0
 
         try:
-            with self.current_download.open(target_asset['item_path'], 'rb') as remote:
-                with open(fname, 'wb') as local:
-                    while True:
-                        if not self.current_download:
-                            break
+            remote = self.current_download.open(target_asset['item_path'], 'rb')
+            with open(fname, 'wb') as local:
+                while True:
+                    chunk = remote.read(chunk_size)
 
-                        chunk = remote.read(chunk_size)
+                    if not chunk:
+                        break
 
-                        if not chunk:
-                            break
-                        
-                        local.write(chunk)
-                        downloaded += len(chunk)
-                        
-                        # Calculate and display percentage
-                        percent = (downloaded / target_asset['size'])
-                        status_update_cb(percent)
+                    local.write(chunk)
+                    downloaded += len(chunk)
+                    
+                    # Calculate and display percentage
+                    percent = (downloaded / target_asset['size'])
+                    status_update_cb(percent)
         except Exception as e:
-            if self.current_download:
-                raise e
-
             raise DownloadInterruptedException
 
         if self.current_download:
             self.current_download.close()
             self.current_download = None
+            # try:
+            # except:
+            #     pass
+            # finally:
 
         file_hash = get_file_hash(None, 'md5', file_path=fname)
         return fname, file_hash
 
     def cancel_download(self):
         if self.current_download:
-
             try:
                 self.current_download.close()
             except Exception as e:
                 pass
-            
-            self.current_download = None
+            finally:
+                self.current_download = None
 
     def cleanup(self):
         if os.path.exists(self.download_folder):
