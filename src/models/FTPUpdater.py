@@ -100,10 +100,6 @@ class FTPUpdater(UpdateManager):
         if self.current_download:
             self.current_download.close()
             self.current_download = None
-            # try:
-            # except:
-            #     pass
-            # finally:
 
         file_hash = get_file_hash(None, 'md5', file_path=fname)
         return fname, file_hash
