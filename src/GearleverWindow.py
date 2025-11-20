@@ -78,6 +78,8 @@ class GearleverWindow(Adw.Window):
         self.installed_stack = Gtk.Stack()
         self.app_details = AppDetails()
         self.app_details.connect('uninstalled-app', self.on_uninstalled_app)
+        self.app_details.connect('update-started', self.on_app_update_started)
+        self.app_details.connect('update-ended', self.on_app_update_ended)
 
         self.installed_apps_list = InstalledAppsList()
         self.installed_apps_list.refresh_list()
@@ -244,7 +246,7 @@ class GearleverWindow(Adw.Window):
             return self.on_selected_local_file(list(value))
 
         return False
-    
+
     def on_drop_enter(self, widget, x, y):
         self.container_stack.set_transition_type(Adw.LeafletTransitionType.UNDER)
         self.visible_before_dragdrop_start = self.container_stack.get_visible_child()
@@ -267,6 +269,15 @@ class GearleverWindow(Adw.Window):
             return self.close()
 
         self.on_show_installed_list(widget, data)
+
+    def on_app_update_started(self, *args):
+        self.left_button.set_visible(False)
+        self.left_button.set_sensitive(False)
+
+    def on_app_update_ended(self, *args):
+        self.left_button.set_visible(True)
+        self.left_button.set_sensitive(True)
+
 
     def on_open_file_chooser_response(self, dialog, result):
         try:

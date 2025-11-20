@@ -25,6 +25,8 @@ class AppDetails(Gtk.ScrolledWindow):
     """The presentation screen for an application"""
     __gsignals__ = {
         "uninstalled-app": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
+        "update-started": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
+        "update-ended": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
     }
 
     UPDATE_BTN_LABEL = _('Update')
@@ -409,6 +411,7 @@ class AppDetails(Gtk.ScrolledWindow):
         update_success = False
 
         try:
+            self.emit('update-started', None)
             update_result = appimage_provider.update_from_url(self.update_manager, self.app_list_element, status_cb= lambda s: \
                 GLib.idle_add(lambda: self.update_action_button.set_label(str(round(s * 100)) + ' %')
             ))
@@ -421,6 +424,8 @@ class AppDetails(Gtk.ScrolledWindow):
 
         except Exception as e:
             self.show_update_error_dialog(str(e))
+        finally:
+            self.emit('update-ended', None)
 
         GLib.idle_add(lambda: self.update_action_button.set_label(_('Update')))
         GLib.idle_add(lambda: self.update_action_button.set_sensitive(True))
