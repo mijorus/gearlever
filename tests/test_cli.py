@@ -141,12 +141,30 @@ class TestGearLever(unittest.TestCase):
 
     def test_fetch_updates_explicit_url(self):
         appname = 'beeper.appimage'
-        self.runCommand(['--integrate', 'https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop', os.path.join(self.download_dir, appname), '-y'])
+        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         self.runCommand(['--set-update-url', os.path.join(self.installPath, appname), '--url', 'https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop'])
         self.assertIn(appname, self.get_installed_files())
 
         updates_list = self.runCommand(['--list-updates'])
         self.assertIn(appname, updates_list)
+
+        self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
+
+    def test_fetch_updates_explicit_url_ftp(self):
+        appname = 'showfoto.appimage'
+        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
+        self.runCommand(['--set-update-url', os.path.join(self.installPath, appname), '--url', 'ftp://www-ftp.lip6.fr/pub/X11/kde/stable/digikam/*/digiKam-*-Qt6-x86-64.appimage'])
+
+
+        self.assertIn(appname, self.get_installed_files())
+
+        updates_list = self.runCommand(['--list-updates'])
+        self.assertIn(appname, updates_list)
+
+        for l in updates_list.split('\n'):
+            if appname in l:
+                self.assertIn('FTPUpdater', l)
+                break
 
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
 
