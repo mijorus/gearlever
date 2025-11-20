@@ -18,6 +18,9 @@ from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
 
 
+# Example:
+# https://download.kde.org/stable/digikam/
+
 class FTPUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
     label = 'FTP'
