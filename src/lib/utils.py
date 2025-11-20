@@ -9,9 +9,6 @@ import gi
 import hashlib
 from . import terminal
 
-from .constants import APP_ID
-from .async_utils import idle
-
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
@@ -80,8 +77,11 @@ def gio_copy(file: Gio.File, destination: Gio.File):
     )
 
 
-def get_file_hash(file: Gio.File, alg='md5') -> str:
-    with open(file.get_path(), 'rb') as f:
+def get_file_hash(file: Gio.File | None, alg='md5', file_path=None) -> str:
+    if not file_path:
+        file_path = file.get_path()
+
+    with open(file_path, 'rb') as f:
         if alg == 'md5':
             return hashlib.md5(f.read()).hexdigest()
         elif alg == 'sha1':
@@ -96,10 +96,6 @@ def send_notification(notification=Gio.Notification, tag=None):
     if not tag:
         tag = str(time.time_ns())
     Gio.Application().get_default().send_notification(tag, notification)
-
-
-def get_gsettings() -> Gio.Settings:
-    return Gio.Settings.new(APP_ID)
 
 
 def create_dict(*args: str):

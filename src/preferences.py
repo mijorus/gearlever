@@ -5,7 +5,8 @@ import os
 
 from .lib.constants import FETCH_UPDATES_ARG
 from .models.Models import InternalError
-from .lib.utils import get_gsettings, portal
+from .models.Settings import Settings
+from .lib.utils import portal
 from .lib.json_config import read_json_config, set_json_config
 from .State import state
 from dbus import Array as DBusArray
@@ -19,8 +20,8 @@ class Preferences(Adw.PreferencesWindow):
     def __init__(self, **kwargs) :
         super().__init__(**kwargs)
 
-        self.settings = get_gsettings()
- 
+        self.settings = Settings.settings
+
         # page 1
         page1 = Adw.PreferencesPage()
 
@@ -101,6 +102,14 @@ class Preferences(Adw.PreferencesWindow):
         )
 
         nconvention_group.add(exec_as_name_switch)
+
+        preview_appimage_files = self.create_boolean_settings_entry(
+            _('Preview hashes for new apps before loading metadata'),
+            'preview-before-opening-app',
+            _('If enabled, a preview of the file you are trying to open is shown.\nDisable only if you trust your sources: malicious apps could execute code when loading the metadata.')
+        )
+
+        general_preference_group.add(preview_appimage_files)
 
         # debugging group
         debug_group = Adw.PreferencesGroup(name=_('Debugging'), title=_('Debugging'))

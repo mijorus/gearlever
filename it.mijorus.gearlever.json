@@ -71,8 +71,8 @@
             "sources": [
                 {
                     "type": "file",
-                    "url": "https://github.com/ip7z/7zip/releases/download/24.09/7z2409-linux-x64.tar.xz",
-                    "sha256": "914c7e20ad5ef8e4d3cf08620ff8894b28fe11b7eb99809d6930870fbe48a281",
+                    "url": "https://github.com/ip7z/7zip/releases/download/25.01/7z2501-linux-x64.tar.xz",
+                    "sha256": "4ca3b7c6f2f67866b92622818b58233dc70367be2f36b498eb0bdeaaa44b53f4",
                     "dest": "7z",
                     "dest-filename": "7z.tar.xz",
                     "only-arches": [
@@ -81,8 +81,8 @@
                 },
                 {
                     "type": "file",
-                    "url": "https://github.com/ip7z/7zip/releases/download/24.09/7z2409-linux-arm64.tar.xz",
-                    "sha256": "fbe331697c9417bbc06fc92d3f4576dca6a5a1442fad7ae810304446a9153e2c",
+                    "url": "https://github.com/ip7z/7zip/releases/download/25.01/7z2501-linux-arm64.tar.xz",
+                    "sha256": "39c5140f02ce4436599303c59a149f654cb1bbc47cdc105a942120d747ae040d",
                     "dest": "7z",
                     "dest-filename": "7z.tar.xz",
                     "only-arches": [

@@ -9,7 +9,7 @@ from .lib.utils import make_option, url_is_valid
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageUpdateLogic, AppImageListElement
 from .lib.json_config import read_config_for_app, save_config_for_app
-from .models.UpdateManager import UpdateManagerChecker
+from .models.UpdateManagerChecker import UpdateManagerChecker
 
 class Cli():
     options = [
@@ -210,7 +210,7 @@ class Cli():
             sys.exit(0)
 
         el.update_logic = AppImageUpdateLogic.KEEP
-        appimage_provider.refresh_title(el)
+        appimage_provider.refresh_data(el)
 
         if '--replace' in argv:
             el.update_logic = AppImageUpdateLogic.REPLACE

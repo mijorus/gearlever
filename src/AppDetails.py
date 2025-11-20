@@ -6,14 +6,15 @@ import shlex
 from typing import Optional, Callable
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
 
-from .State import state
 from .lib.terminal import sandbox_sh
-from .models.UpdateManager import UpdateManager, UpdateManagerChecker
+from .models.UpdateManager import UpdateManager
+from .models.UpdateManagerChecker import UpdateManagerChecker
 from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
-from .lib.json_config import read_json_config, set_json_config, read_config_for_app, save_config_for_app
+from .lib.json_config import read_json_config, set_json_config, read_config_for_app, save_config_for_app, \
+    remove_update_config
 from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
@@ -24,9 +25,14 @@ class AppDetails(Gtk.ScrolledWindow):
     """The presentation screen for an application"""
     __gsignals__ = {
         "uninstalled-app": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
+        "update-started": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
+        "update-ended": (GObject.SIGNAL_RUN_FIRST, GObject.TYPE_NONE, (object, )),
     }
 
     UPDATE_BTN_LABEL = _('Update')
+    BTN_SAVE = _('Save')
+    BTN_SAVED = _('Saved')
+    UPDATE_BTN_ERROR = _('Invalid data')
     CANCEL_UPDATE = _('Cancel update')
     UPDATE_FETCHING = _('Checking updates...')
     UPDATE_NOT_AVAIL_BTN_LABEL = _('No updates available')
@@ -36,11 +42,10 @@ class AppDetails(Gtk.ScrolledWindow):
 
     def __init__(self):
         super().__init__()
-        self.current_update_manager: Optional[UpdateManager] = None
         self.ACTION_ROW_ICON_SIZE = 34
         self.EXTRA_DATA_SPACING = 20
 
-        self.app_list_element: AppImageListElement = None
+        self.app_list_element: AppImageListElement | None = None
         self.common_btn_css_classes = ['pill', 'text-button']
 
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin_top=10, margin_bottom=10, margin_start=20, margin_end=20)
@@ -126,10 +131,12 @@ class AppDetails(Gtk.ScrolledWindow):
         self.command_line_arguments_row = None
 
         # Update url entry
+        self.update_manager: Optional[UpdateManager] = None
         self.update_url_group: Optional[Adw.PreferencesGroup] = None
         self.update_url_row: Optional[AdwEntryRowDefault] = None
         self.update_url_save_btn: Optional[Gtk.Button] = None
         self.update_url_source: Optional[Adw.ComboRow] = None
+        self.update_url_form_rows: list = []
         self.update_url_group: Optional[Adw.PreferenciesGroup] = None
 
         self.set_child(container_box)
@@ -139,6 +146,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.provider = appimage_provider
         self.update_action_button.set_visible(False)
 
+        self.before_load()
         self.load()
 
     def set_from_local_file(self, file: Gio.File):
@@ -155,7 +163,9 @@ class AppDetails(Gtk.ScrolledWindow):
     def complete_load(self, icon: Gtk.Image, generation: str, load_completed_callback: Optional[Callable] = None):
         self.show_row_spinner(True)
 
-        self.details_row.remove(self.icon_slot)
+        if self.icon_slot:
+            self.details_row.remove(self.icon_slot)
+
         self.icon_slot = icon
         icon.set_pixel_size(128)
 
@@ -170,8 +180,9 @@ class AppDetails(Gtk.ScrolledWindow):
             self.provider.get_description(self.app_list_element)
         )
 
-        self.third_row.remove(self.extra_data)
-        
+        if self.extra_data:
+            self.third_row.remove(self.extra_data)
+
         self.extra_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=self.EXTRA_DATA_SPACING)
         self.third_row.append(self.extra_data)
 
@@ -191,6 +202,12 @@ class AppDetails(Gtk.ScrolledWindow):
             gtk_list.append(self.create_app_hash_row())
         
         self.update_installation_status()
+
+        self.secondary_action_button.set_visible(True)
+        self.primary_action_button.set_visible(True)
+        self.title.set_visible(True)
+        self.app_subtitle.set_visible(True)
+        self.description.set_visible(True)
 
         system_arch = sandbox_sh(['arch'])
 
@@ -226,8 +243,6 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.window_banner.set_revealed(True)
                 self.window_banner.set_title(_('Please, verify the source of this app before opening it'))
                 self.window_banner.set_button_label(_('Unlock'))
-
-            if not self.app_list_element.trusted:
                 self.secondary_action_button.set_sensitive(False)
                 self.primary_action_button.set_sensitive(False)
 
@@ -239,9 +254,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
             edit_env_vars_widget = self.create_edit_env_vars_row()
             self.extra_data.append(edit_env_vars_widget)
-
             self.update_action_button.set_visible(False)
-            self.check_updates()
 
         self.show_row_spinner(False)
 
@@ -263,15 +276,32 @@ class AppDetails(Gtk.ScrolledWindow):
 
         if self.app_list_element.trusted:
             icon = self.provider.get_icon(self.app_list_element)
+            self.provider.refresh_arch(self.app_list_element)
 
             if self.app_list_element.installed_status is not InstalledStatus.INSTALLED:
-                self.provider.refresh_title(self.app_list_element)
+                self.provider.refresh_data(self.app_list_element)
 
         self.complete_load(
             icon,
             generation,
             load_completed_callback=load_completed_callback
         )
+
+    def before_load(self):
+        self.title.set_visible(False)
+        self.app_subtitle.set_visible(False)
+        self.description.set_visible(False)
+        self.secondary_action_button.set_visible(False)
+        self.primary_action_button.set_visible(False)
+        self.window_banner.set_revealed(False)
+
+        if self.icon_slot:
+            self.details_row.remove(self.icon_slot)
+            self.icon_slot = None
+
+        if self.extra_data:
+            self.third_row.remove(self.extra_data)
+            self.extra_data = None
 
     @_async
     def install_file(self, el: AppImageListElement):
@@ -346,8 +376,8 @@ class AppDetails(Gtk.ScrolledWindow):
                 except Exception as e:
                     logging.error(str(e))
         elif self.app_list_element.installed_status == InstalledStatus.UPDATING:
-            if self.current_update_manager:
-                self.current_update_manager.cancel_download()
+            if self.update_manager:
+                self.update_manager.cancel_download()
                 self.update_installation_status()
 
     def on_remove_app_clicked(self, dialog, response: str):
@@ -381,35 +411,44 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_list_element.set_installed_status(InstalledStatus.UPDATING)
         self.update_installation_status()
 
-        app_conf = self.get_config_for_app()
-        manager = UpdateManagerChecker.check_url_for_app(self.app_list_element)
-
-        if not manager:
+        if not self.update_manager:
             return
 
+        update_success = False
+
         try:
-            self.current_update_manager = manager
-            self.app_list_element = appimage_provider.update_from_url(manager, self.app_list_element, status_cb= lambda s: \
+            self.emit('update-started', None)
+            update_result = appimage_provider.update_from_url(self.update_manager, self.app_list_element, status_cb= lambda s: \
                 GLib.idle_add(lambda: self.update_action_button.set_label(str(round(s * 100)) + ' %')
             ))
+
+            if update_result == None:
+                update_success = False
+            else:
+                update_success = True
+                self.app_list_element = update_result
+
         except Exception as e:
             self.show_update_error_dialog(str(e))
-
-        self.app_list_element.set_installed_status(InstalledStatus.INSTALLED)
-        self.current_update_manager = None
-        manager.cleanup()
+        finally:
+            self.emit('update-ended', None)
 
         GLib.idle_add(lambda: self.update_action_button.set_label(_('Update')))
-        self.check_updates()
+        GLib.idle_add(lambda: self.update_action_button.set_sensitive(True))
+        self.app_list_element.set_installed_status(InstalledStatus.INSTALLED)
+        self.update_manager.cleanup()
 
-        self.provider.reload_metadata(self.app_list_element)
+        if update_success:
+            self.update_manager = None
+            self.provider.reload_metadata(self.app_list_element)
 
-        icon = self.provider.get_icon(self.app_list_element)
-        self.provider.refresh_title(self.app_list_element)
+            icon = self.provider.get_icon(self.app_list_element)
+            self.provider.refresh_data(self.app_list_element)
 
-        generation = self.provider.get_appimage_type(self.app_list_element)
-        self.complete_load(icon, generation)
-        self.update_installation_status()
+            generation = self.provider.get_appimage_type(self.app_list_element)
+            self.complete_load(icon, generation)
+            self.update_installation_status()
+
 
     @idle
     def show_update_error_dialog(self, msg: str):
@@ -421,7 +460,6 @@ class AppDetails(Gtk.ScrolledWindow):
         )
 
         dialog.add_response('okay', _('Close'))
-
         dialog.present()
 
     @idle
@@ -531,7 +569,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_list_element.trusted = True
         widget.set_revealed(False)
 
-        self.title.set_label('...')
+        self.before_load()
         self.load()
 
     @debounce(0.5)
@@ -560,35 +598,23 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_action_button.set_label(self.UPDATE_FETCHING)
         self.update_action_button.set_sensitive(False)
 
-    @idle
-    def set_update_information(self, manager: UpdateManager):
-        if manager.embedded:
-            self.update_url_row.set_default_text(manager.embedded)
-
-            if not self.update_url_row.get_text():
-                self.update_url_row.set_text(manager.url)
-
-            self.update_url_source.set_selected(
-                self.update_url_source.get_model()._items_val.index(manager.label)
-            )
-
-        if manager.embedded:
-            self.update_url_group.set_description(self.UPDATE_INFO_EMBEDDED)
-        else:
-            self.update_url_group.set_description(self.UPDATE_INFO_NOT_EMBEDDED)
-
     @_async
     def check_updates(self):
-        manager = UpdateManagerChecker.check_url_for_app(self.app_list_element)
+        manager = self.update_manager
 
         if not manager:
             GLib.idle_add(lambda: self.update_url_save_btn.set_visible(True))
             return
 
         self.set_app_as_updatable()
-        self.set_update_information(manager)
 
-        is_updatable = manager.is_update_available(self.app_list_element)
+        is_updatable = False
+
+        try:
+            is_updatable = manager.is_update_available(self.app_list_element)
+        except Exception as e:
+            self.show_update_error_dialog(str(e))
+
         self.app_list_element.is_updatable_from_url = is_updatable
 
         if is_updatable:
@@ -600,57 +626,121 @@ class AppDetails(Gtk.ScrolledWindow):
         GLib.idle_add(lambda: self.update_action_button.set_sensitive(True))
         GLib.idle_add(lambda: self.update_action_button.set_sensitive(is_updatable))
 
-    def on_app_update_url_change(self, *props):
-        app_conf = self.get_config_for_app()
-        has_changed = False
+    @idle
+    def set_update_information(self, manager: Optional[UpdateManager]=None):
+        if manager:
+            self.update_manager = manager
+        else:
+            manager_label = self.update_url_source.get_model().get_string(
+                self.update_url_source.get_selected())
+            
+            selected_model = None
+            for m in UpdateManagerChecker.get_models():
+                if m.label == manager_label:
+                    selected_model = m
+                    break
 
-        manager_label = self.update_url_source.get_model().get_string(
-            self.update_url_source.get_selected())
-    
-        selected_manager = list(filter(lambda m: m.label == manager_label, 
-                                  UpdateManagerChecker.get_models()))[0]
-        
-        if app_conf.get('update_url_manager', None) != selected_manager.name:
-            has_changed = True
+            app_conf = self.get_config_for_app()
 
-        if app_conf.get('update_url', None) != self.update_url_row.get_text():
-            has_changed = True
+            if selected_model:
+                update_url = app_conf.get('update_url', '')
+                manager_config = app_conf.get('update_manager_config', {})
+                self.update_manager = selected_model(url=update_url, embedded=False, config=manager_config)
+            else:
+                if self.app_list_element:
+                    remove_update_config(self.app_list_element)
 
-        self.update_url_save_btn.set_sensitive(has_changed)
+                self.update_manager = UpdateManagerChecker.check_url(url='', el=self.app_list_element)
+
+        [self.update_url_group.remove(r) for r in 
+            self.update_url_form_rows]
+        self.update_url_form_rows = []
+
+        if self.update_manager:
+            rows = self.update_manager.load_form_rows(
+                update_url=self.update_manager.url,
+                embedded=self.update_manager.embedded
+            )
+
+            for r in rows:
+                self.update_url_form_rows.append(r)
+                self.update_url_group.add(r)
+
+            if self.update_manager.embedded:
+                self.update_url_group.set_description(self.UPDATE_INFO_EMBEDDED)
+            else:
+                self.update_url_group.set_description(self.UPDATE_INFO_NOT_EMBEDDED)
+
+            self.check_updates()
+
+    @idle
+    def on_app_update_url_success(self):
+        self.update_url_save_btn.set_sensitive(False)
+        self.update_url_save_btn.add_css_class('success')
+        self.update_url_save_btn.set_label(self.BTN_SAVED)
+
+    @idle
+    def on_app_update_url_error(self):
+        self.update_url_save_btn.set_sensitive(False)
+        self.update_url_save_btn.add_css_class('error')
+        self.update_url_save_btn.set_label(self.UPDATE_BTN_ERROR)
+
+    @idle
+    def on_app_update_url_reset(self):
+        self.update_url_save_btn.set_sensitive(True)
+        self.update_url_save_btn.remove_css_class('error')
+        self.update_url_save_btn.remove_css_class('success')
+        self.update_url_save_btn.set_child(
+            Adw.ButtonContent(
+            icon_name='gearlever-check-plain-symbolic',
+            label=_(self.BTN_SAVE),
+        ))
 
     @_async
-    def on_app_update_url_apply(self, ev):
+    def on_app_update_url_apply(self, button):
         app_conf = self.get_config_for_app()
-        widget = self.update_url_row
+        def_sleep = 2
 
-        text = widget.get_text().strip()
+        self.on_app_update_url_reset()
 
-        GLib.idle_add(lambda: widget.remove_css_class('error'))
-        GLib.idle_add(lambda: widget.remove_css_class('success'))
+        if not self.update_manager:
+            if self.app_list_element:
+                remove_update_config(self.app_list_element)
 
-        if text:
-            manager_label = self.update_url_source.get_model().get_string(
-            self.update_url_source.get_selected())
-    
-            selected_manager = list(filter(lambda m: m.label == manager_label, 
-                                    UpdateManagerChecker.get_models()))[0]
+            self.on_app_update_url_success()
 
-            manager = UpdateManagerChecker.check_url(text, model=selected_manager)
-            if not manager:
-                GLib.idle_add(lambda: widget.add_css_class('error'))
-                return
+            time.sleep(def_sleep)
+            self.on_app_update_url_reset()
+            return
+
+        text = self.update_manager.get_form_url()
+
+        if not text:
+            self.on_app_update_url_error()
+
+            time.sleep(def_sleep)
+            self.on_app_update_url_reset()
+            return
+
+        if not self.update_manager.can_handle_link(url=text):
+            self.on_app_update_url_error()
             
-            app_conf['update_url'] = manager.url
-            app_conf['update_url_manager'] = manager.name
-        else:
-            if 'update_url' in app_conf:
-                del app_conf['update_url']
-            
-            if 'update_url_manager' in app_conf:
-                del app_conf['update_url_manager']
-        
+            time.sleep(def_sleep)
+            self.on_app_update_url_reset()
+            return
+
+        self.update_manager.set_url(text)
+        app_conf['update_url'] = self.update_manager.url
+        app_conf['update_url_manager'] = self.update_manager.name
+        app_conf['update_manager_config'] = self.update_manager.get_form_config()
+
         save_config_for_app(app_conf)
-        GLib.idle_add(lambda: widget.add_css_class('success'))
+        self.on_app_update_url_success()
+
+        self.check_updates()
+
+        time.sleep(def_sleep)
+        self.on_app_update_url_reset()
 
     def on_env_var_value_changed(self, widget, key_widget, value_widget):
         key = key_widget.get_text()
@@ -730,7 +820,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.provider.reload_metadata(self.app_list_element)
 
         icon = self.provider.get_icon(self.app_list_element)
-        self.provider.refresh_title(self.app_list_element)
+        self.provider.refresh_data(self.app_list_element)
 
         generation = self.provider.get_appimage_type(self.app_list_element)
 
@@ -765,10 +855,17 @@ class AppDetails(Gtk.ScrolledWindow):
     def create_edit_custom_website_row(self) -> Adw.EntryRow:
         app_config = self.get_config_for_app()
 
+        title =  _('Add a website')
+        text = ''
+
+        if 'website' in app_config:
+            title = _('Website')
+            app_config['website']
+
         row = Adw.EntryRow(
-            title=(_('Website') if ('website' in app_config and app_config['website']) else _('Add a website')),
+            title=title,
             selectable=False,
-            text=(app_config['website'] if 'website' in app_config else '')
+            text=text
         )
 
         row_img = Gtk.Image(icon_name='gl-earth', pixel_size=self.ACTION_ROW_ICON_SIZE)
@@ -789,18 +886,28 @@ class AppDetails(Gtk.ScrolledWindow):
     def create_edit_update_url_row(self) -> Adw.EntryRow:
         app_config = self.get_config_for_app()
 
-        save_btn_content = Adw.ButtonContent(
-            icon_name='gearlever-check-plain-symbolic',
-            label=_('Save')
+        row_btn = Gtk.Button(
+            icon_name='gl-info-symbolic', 
+            valign=Gtk.Align.CENTER, 
+            tooltip_text=_('How it works'),
         )
 
-        self.update_url_save_btn = Gtk.Button(child=save_btn_content, sensitive=False,
+        row_btn.connect('clicked', self.on_update_url_info_btn_clicked)
+
+        save_btn_content = Adw.ButtonContent(
+            icon_name='gearlever-check-plain-symbolic',
+            label=_(self.BTN_SAVE),
+        )
+
+        self.update_url_save_btn = Gtk.Button(child=save_btn_content, sensitive=True,
                                         css_classes=['suggested-action'])
 
         self.update_url_save_btn.connect('clicked', self.on_app_update_url_apply)
 
         btn_container = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5, 
                                 valign=Gtk.Align.CENTER)
+
+        btn_container.append(row_btn)
         btn_container.append(self.update_url_save_btn)
 
         group = Adw.PreferencesGroup(
@@ -809,11 +916,12 @@ class AppDetails(Gtk.ScrolledWindow):
             header_suffix=btn_container,
         )
 
-        title = _('Update URL')
-
         combo_model = Gtk.StringList()
-        combo_model._items_val = []
-        selected_model = app_config.get('update_url_manager', None)
+
+        combo_model.append(_('Default'))
+
+        selected_model_name = app_config.get('update_url_manager', None)
+        selected_model: Optional[UpdateManager] = None
 
         self.update_url_source = Adw.ComboRow(
             title=_('Source'),
@@ -821,44 +929,26 @@ class AppDetails(Gtk.ScrolledWindow):
             model=combo_model
         )
 
-        for i, m in enumerate(UpdateManagerChecker.get_models()):
+        available_models = UpdateManagerChecker.get_models()
+
+        for i, m in enumerate(available_models):
             combo_model.append(m.label)
-            combo_model._items_val.append(m.label)
 
-            if selected_model == m.name:
-                self.update_url_source.set_selected(i)
+            if selected_model_name == m.name:
+                selected_model = m
+                self.update_url_source.set_selected(i + 1)
 
-        # self.update_url_row = Adw.EntryRow(
-        #     title=title,
-        #     selectable=True,
-        #     text=(app_config.get('update_url', ''))
-        # )
-        self.update_url_row = AdwEntryRowDefault(
-            text=(app_config.get('update_url', '')),
-            title=title
-        )
+        if not selected_model:
+            self.update_url_source.set_selected(0)
 
-        row_img = Gtk.Image(icon_name='gl-software-update-available-symbolic', 
-                            pixel_size=self.ACTION_ROW_ICON_SIZE)
-
-        row_btn = Gtk.Button(
-            icon_name='gl-info-symbolic', 
-            valign=Gtk.Align.CENTER, 
-            tooltip_text=_('How it works'),
-        )
-
-        row_btn.connect('clicked', self.on_update_url_info_btn_clicked)
-        self.update_url_source.connect('notify::selected', self.on_app_update_url_change)
-        self.update_url_row.connect('changed', self.on_app_update_url_change)
-
-        self.update_url_row.add_prefix(row_img)
-        self.update_url_row.add_suffix(row_btn)
+        self.update_url_source.connect('notify::selected', lambda *args: self.set_update_information())
+        self.update_url_form_rows = []
 
         group.add(self.update_url_source)
-        group.add(self.update_url_row)
+        self.set_update_information()
 
         return group
-    
+
     def create_reload_metadata_row(self) -> Adw.EntryRow:
         row = Adw.ActionRow(selectable=False, activatable=True,
             title=(_('Reload metadata')), 
@@ -871,7 +961,7 @@ class AppDetails(Gtk.ScrolledWindow):
         row.connect('activated', self.on_refresh_metadata_btn_clicked)
 
         return row
-    
+
     def create_show_exec_args_row(self) -> Adw.ActionRow:
         row = Adw.EntryRow(
             title=(_('Command line arguments')),
@@ -952,24 +1042,24 @@ class AppDetails(Gtk.ScrolledWindow):
     def create_edit_env_vars_row(self) -> Adw.PreferencesGroup:
         add_btn_content = Adw.ButtonContent(
             icon_name='gl-plus-symbolic',
-            label=_('Add')
         )
 
         save_btn_content = Adw.ButtonContent(
             icon_name='gearlever-check-plain-symbolic',
-            label=_('Save')
+            label=_(self.BTN_SAVE)
         )
 
         add_item_btn = Gtk.Button(child=add_btn_content)
         self.save_vars_btn = Gtk.Button(child=save_btn_content, sensitive=False,
                                         css_classes=['suggested-action'])
 
+
         self.save_vars_btn.connect('clicked', self.on_save_env_vars_clicked)
 
         btn_container = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5, 
                                 valign=Gtk.Align.CENTER)
 
-        [btn_container.append(w) for w in [self.save_vars_btn, add_item_btn]]
+        [btn_container.append(w) for w in [add_item_btn, self.save_vars_btn]]
 
         group = Adw.PreferencesGroup(
             title=_('Environment variables'),

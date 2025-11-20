@@ -21,8 +21,9 @@ import logging
 import shutil
 import os
 
+from .models.Settings import Settings
 from .lib.terminal import sandbox_sh
-from .lib.utils import get_gsettings, make_option
+from .lib.utils import make_option
 from .lib.constants import APP_ID, APP_NAME, APP_DATA, TMP_DIR
 from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
@@ -60,7 +61,7 @@ class GearleverApplication(Adw.Application):
         logging.info(f'\n\n---- Application startup | version {self.version}')
         Adw.Application.do_startup(self)
 
-        settings = get_gsettings()
+        settings = Settings.settings
 
         logging.debug('::: Settings')
         for k in settings.props.settings_schema.list_keys():
@@ -178,7 +179,7 @@ def main(version, pkgdatadir):
         filemode='a',
         encoding='utf-8',
         format='%(asctime)s %(levelname)-1s [%(filename)s:%(lineno)d] %(message)s',
-        level= logging.DEBUG if get_gsettings().get_boolean('debug-logs') else logging.INFO,
+        level= logging.DEBUG if Settings.settings.get_boolean('debug-logs') else logging.INFO,
         force=True
     )
 

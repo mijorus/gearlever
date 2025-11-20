@@ -4,25 +4,26 @@ import os
 import shutil
 import filecmp
 import shlex
-from xdg.DesktopEntry import DesktopEntry
+from xdg import DesktopEntry
 
 import dataclasses
-from ..lib.constants import APP_ID, TMP_DIR
-from ..lib import terminal
+from ..models.Settings import Settings
 from ..models.AppListElement import AppListElement, InstalledStatus
-from ..lib.async_utils import _async, idle
-from ..lib.json_config import save_config_for_app, read_config_for_app
-from ..lib.utils import get_giofile_content_type, get_gsettings, gio_copy, get_file_hash, \
+from ..lib.constants import TMP_DIR
+from ..lib import terminal
+from ..lib.async_utils import idle
+from ..lib.json_config import read_config_for_app, remove_update_config
+from ..lib.utils import get_giofile_content_type, gio_copy, get_file_hash, \
     remove_special_chars, get_random_string, show_message_dialog, get_osinfo, extract_terminal_arguments
 from ..models.Models import AppUpdateElement, InternalError, DownloadInterruptedException
 from typing import Optional, List, TypedDict
-from gi.repository import GLib, Gtk, Gdk, Gio, Adw
+from gi.repository import GLib, Gtk, Gdk, Gio
 from enum import Enum
 
 
 class ExtractedAppImage():
     extraction_folder: str
-    desktop_entry: Optional[DesktopEntry]
+    desktop_entry: Optional[DesktopEntry.DesktopEntry]
     appimage_file: Gio.File
     desktop_file: Optional[Gio.File]
     icon_file: Optional[Gio.File]
@@ -47,8 +48,8 @@ class AppImageListElement():
     trusted: bool = False
     is_updatable_from_url = False
     env_variables: List[str] = dataclasses.field(default_factory=lambda: [])
-    exec_arguments: str = ''
-    desktop_entry: Optional[DesktopEntry] = None
+    exec_arguments: List[str] = dataclasses.field(default_factory=lambda: [])
+    desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
     update_logic: Optional[AppImageUpdateLogic] = None
     architecture: Optional[AppImageArchitecture] = None
     updating_from: Optional[any] = None # AppImageListElement
@@ -77,7 +78,6 @@ class AppImageProvider():
         self.desktop_exec_codes = ["%f", "%F",  "%u",  "%U",  "%i",  "%c", "%k"]
         logging.info(f'Activating {self.name} provider')
 
-
         self.general_messages = []
         self.update_messages = []
 
@@ -87,7 +87,7 @@ class AppImageProvider():
 
     def list_installed(self) -> list[AppImageListElement]:
         default_folder_path = self._get_appimages_default_destination_path()
-        manage_from_outside = get_gsettings().get_boolean('manage-files-outside-default-folder')
+        manage_from_outside = Settings.settings.get_boolean('manage-files-outside-default-folder')
         output = []
 
         if not os.path.exists(self.user_desktop_files_path):
@@ -99,7 +99,7 @@ class AppImageProvider():
 
             try:
                 if os.path.isfile(gfile.get_path()) and get_giofile_content_type(gfile) == 'application/x-desktop':
-                    entry = DesktopEntry(filename=gfile.get_path())
+                    entry = DesktopEntry.DesktopEntry(filename=gfile.get_path())
                     exec_location = entry.getTryExec()
                     exec_command_data = extract_terminal_arguments(entry.getExec())
 
@@ -114,18 +114,18 @@ class AppImageProvider():
                                 name=entry.getName(),
                                 desktop_file_path=gfile.get_path(),
                                 description=entry.getComment(),
-                                version=entry.get('X-AppImage-Version'),
+                                version=self._get_app_version(None, desktop_entry=entry),
                                 installed_status=InstalledStatus.INSTALLED,
                                 file_path=exec_location,
                                 provider=self.name,
                                 desktop_entry=entry,
                                 trusted=True,
                                 external_folder=(not exec_in_defalut_folder),
-                                exec_arguments=shlex.join(exec_command_data['arguments']),
+                                exec_arguments=exec_command_data['arguments'],
                                 env_variables=exec_command_data['env_vars'],
                             )
 
-                            list_element.architecture = self.get_elf_arch(list_element)
+                            list_element.architecture = None
 
                             output.append(list_element)
                         else:
@@ -178,7 +178,7 @@ class AppImageProvider():
         
         return ''
 
-    def refresh_title(self, el: AppImageListElement):
+    def refresh_data(self, el: AppImageListElement):
         if el.desktop_entry:
             el.name = el.desktop_entry.getName()
         
@@ -187,7 +187,10 @@ class AppImageProvider():
             el.name = extracted.desktop_entry.getName()
             el.version = el.desktop_entry.get('X-AppImage-Version')
 
-    def uninstall(self, el: AppImageListElement, force_delete=False):
+    def refresh_arch(self, el: AppImageListElement):
+        el.architecture = self.get_elf_arch(el)
+
+    def uninstall(self, el: AppImageListElement, force_delete=False, remove_configuration=True):
         logging.info(f'Removing {el.file_path}')
 
         gf = Gio.File.new_for_path(el.file_path)
@@ -210,6 +213,9 @@ class AppImageProvider():
         icon = el.desktop_entry.getIcon()
         if '/' in icon and os.path.isfile(icon):
             os.remove(icon)
+
+        if remove_configuration:
+            remove_update_config(el)
 
         el.set_installed_status(InstalledStatus.NOT_INSTALLED)
 
@@ -279,7 +285,7 @@ class AppImageProvider():
                     appimage_filename = appimage_filename.lower().replace(' ', '_')
                 
                 append_file_ext = True
-                gsettings = get_gsettings()
+                gsettings = Settings.settings
 
                 if extracted_appimage.desktop_entry and \
                     gsettings.get_boolean('exec-as-name-for-terminal-apps') and \
@@ -346,82 +352,79 @@ class AppImageProvider():
             if not os.path.exists(self.user_desktop_files_path):
                 os.makedirs(self.user_desktop_files_path)
 
-            dest_desktop_file_path = os.path.join(self.user_desktop_files_path, prefixed_filename) + '.desktop'
+            dest_desktop_file_path = f'{os.path.join(self.user_desktop_files_path, prefixed_filename)}.desktop'
             dest_desktop_file_path = dest_desktop_file_path.replace(' ', '_')
 
             # Get default exec arguments
             exec_arguments = shlex.split(extracted_appimage.desktop_entry.getExec())[1:]
-            el.exec_arguments = shlex.join(exec_arguments)
+            el.exec_arguments = exec_arguments
 
-            desktop_file_content = ''
+            desk_entry_section_regex = re.compile(r'\[Desktop Entry\][\s\S]*?(?=\n\[)', flags=re.MULTILINE)
             with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
                 desktop_file_content = dskt_file.read()
+                desktop_file_entry_section_match = desk_entry_section_regex.match(desktop_file_content)
 
-            escaped_exec_filepath = self._escape_exec_argument(dest_appimage_file.get_path())
-            icon_key = 'Icon=applications-other'
-            if dest_appimage_icon_file:
-                icon_key = dest_appimage_icon_file.get_path()
-            
-            for g in extracted_appimage.desktop_entry.groups():
-                if g == DesktopEntry.defaultGroup:
-                    exec_key = extracted_appimage.desktop_entry.get('Exec', group=g)
-                    exec_kg_arguments = shlex.split(exec_key)[1:]
-
-                    exec_line = ' '.join([
-                        escaped_exec_filepath, 
-                        shlex.join(exec_kg_arguments)
-                    ])
-
-                    desktop_file_content = self._desktop_file_replace_key(desktop_file_content, g, 'Exec', exec_line)
-                    desktop_file_content = self._desktop_file_replace_key(desktop_file_content, g, 'TryExec', dest_appimage_file.get_path())
-                    desktop_file_content = self._desktop_file_replace_key(desktop_file_content, g, 'Icon', icon_key)
+                desktop_file_entry_section = ''
+                if desktop_file_entry_section_match:
+                    desktop_file_entry_section = desktop_file_entry_section_match.group(0)
                 else:
-                    if extracted_appimage.desktop_entry.hasKey('Icon', group=g):
-                        desktop_file_content = self._desktop_file_replace_key(desktop_file_content, g, 'Icon', icon_key)
+                    desktop_file_entry_section = desktop_file_content
 
-                    if extracted_appimage.desktop_entry.hasKey('Exec', group=g):
-                        exec_key = extracted_appimage.desktop_entry.get('Exec', group=g)
-                        exec_kg_arguments = shlex.split(exec_key)[1:]
-                        exec_line = ' '.join([
-                            escaped_exec_filepath, 
-                            shlex.join(exec_kg_arguments)
-                        ])
+                desktop_file_entry_section = re.sub(r'^TryExec=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
+                desktop_file_entry_section = re.sub(r'^Icon=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
+                desktop_file_entry_section = re.sub(r'^X-AppImage-Version=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
 
-                        desktop_file_content = self._desktop_file_replace_key(
-                            desktop_file_content, g, 'Exec', exec_line)
+                # replace executable path
+                exec_command = ['Exec=' + shlex.join([dest_appimage_file.get_path(), *exec_arguments])]
+                # replace try exec executable path
+                exec_command.append(f'TryExec=' + dest_appimage_file.get_path())
 
-            # generate a new app name
-            final_app_name = extracted_appimage.appimage_file.get_basename()
-            if extracted_appimage.desktop_entry:
-                final_app_name = extracted_appimage.desktop_entry.get('Name', group=DesktopEntry.defaultGroup)
+                if dest_appimage_icon_file:
+                    exec_command.append(f"Icon={dest_appimage_icon_file.get_path()}")
+                else:
+                    exec_command.append(f'Icon=applications-other')
 
-                if el.update_logic is AppImageUpdateLogic.KEEP:
-                    final_app_name += f' ({version})'
+                desktop_file_entry_section = re.sub(
+                    r'^Exec=.*$',
+                    '\n'.join(exec_command),
+                    desktop_file_entry_section,
+                    flags=re.MULTILINE
+                )
 
-            desktop_file_content = self._desktop_file_replace_key(
-                desktop_file_content,
-                group_name=DesktopEntry.defaultGroup,
-                key='X-AppImage-Version',
-                replacement=version
-            )
+                # generate a new app name
+                final_app_name = extracted_appimage.appimage_file.get_basename()
+                if extracted_appimage.desktop_entry:
+                    final_app_name = extracted_appimage.desktop_entry.getName()
+                    desktop_file_entry_section += f'\nX-AppImage-Version={version}'
 
-            final_app_name = final_app_name.strip()
-            desktop_file_content = self._desktop_file_replace_key(
-                desktop_file_content,
-                group_name=DesktopEntry.defaultGroup,
-                key='Name',
-                replacement=final_app_name
-            )
+                    if el.update_logic is AppImageUpdateLogic.KEEP:
+                        final_app_name += f' ({version})'
 
-            # finally, write the new .desktop file
-            if (not os.path.exists(self.user_desktop_files_path)) and os.path.exists(self.user_local_share_path):
-                os.mkdir(self.user_desktop_files_path)
+                        desktop_file_entry_section = re.sub(
+                            r'^Name\[(.*?)\]=.*$',
+                            '',
+                            desktop_file_entry_section,
+                            flags=re.MULTILINE
+                        )
 
-            with open(dest_desktop_file_path, 'w+') as desktop_file_python_dest:
-                desktop_file_python_dest.write(desktop_file_content)
+                final_app_name = final_app_name.strip()
+
+                if desktop_file_entry_section_match:
+                    desktop_file_content = desk_entry_section_regex.sub(desktop_file_entry_section, desktop_file_content)
+                else:
+                    desktop_file_content = desktop_file_entry_section
+
+                desktop_file_content = re.sub(r'\n\n(?!\[)', '\n', desktop_file_content)
+
+                # finally, write the new .desktop file
+                if (not os.path.exists(self.user_desktop_files_path)) and os.path.exists(self.user_local_share_path):
+                    os.mkdir(self.user_desktop_files_path)
+
+                with open(dest_desktop_file_path, 'w+') as desktop_file_python_dest:
+                    desktop_file_python_dest.write(desktop_file_content)
 
             if os.path.exists(dest_desktop_file_path):
-                el.desktop_entry = DesktopEntry(filename=dest_desktop_file_path)
+                el.desktop_entry = DesktopEntry.DesktopEntry(filename=dest_desktop_file_path)
                 el.desktop_file_path = dest_desktop_file_path
                 el.installed_status = InstalledStatus.INSTALLED
 
@@ -443,7 +446,7 @@ class AppImageProvider():
             logging.error('Appimage installation error: ' + str(e))
             raise e
 
-        if get_gsettings().get_boolean('move-appimage-on-integration'):
+        if Settings.settings.get_boolean('move-appimage-on-integration'):
             if os.path.dirname(extracted_appimage.appimage_file.get_path()) != appimages_destination_path:
                 logging.info('Deleting original appimage file from: '  + extracted_appimage.appimage_file.get_path())
                 if not extracted_appimage.appimage_file.delete(None):
@@ -470,7 +473,7 @@ class AppImageProvider():
 
         gio_copy(outdated_file, new_file)
 
-        self.uninstall(el)
+        self.uninstall(el, remove_configuration=False)
 
         el.file_path = f'{dest_path}/tmp.appimage'
         el.extracted = None
@@ -496,6 +499,7 @@ class AppImageProvider():
             raise InternalError(message='This file type is not supported')
         
         app_name: str = os.path.basename(file.get_parse_name())
+        preview_enabled = Settings.settings.get_boolean('preview-before-opening-app')
 
         el = AppImageListElement(
             name=re.sub(r'\.appimage$', '', app_name, 1, re.IGNORECASE),
@@ -506,6 +510,7 @@ class AppImageProvider():
             file_path=file.get_path(),
             desktop_entry=None,
             local_file=True,
+            trusted=(not preview_enabled)
         )
 
         el.architecture = self.get_elf_arch(el)
@@ -526,53 +531,73 @@ class AppImageProvider():
             shutil.rmtree(self.extraction_folder)
             os.makedirs(self.extraction_folder)
 
+    def update_exec_arguments(self, el:AppImageListElement, arg_string: str):
+        arg_string = arg_string.replace("\n", "")
+
+        if not el.desktop_file_path:
+            raise Exception('desktop_file_path not specified')
+    
+        desktop_file_content = ''
+        entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
+        with open(el.desktop_file_path, 'r') as desktop_file:
+            desktop_file_content = desktop_file.read()
+            exec_command = shlex.split(entry.getExec())[0]
+            exec_command += f' {arg_string}'
+
+            # replace executable path
+            desktop_file_content = re.sub(
+                r'^Exec=.*$',
+                f"Exec={exec_command}",
+                desktop_file_content,
+                flags=re.MULTILINE
+            )
+
+        with open(el.desktop_file_path, 'w') as desktop_file:
+            desktop_file.write(desktop_file_content)         
+
     def update_desktop_file(self, el: AppImageListElement):
         if not el.desktop_file_path:
             raise Exception('desktop_file_path not specified')
-
-        entry = DesktopEntry(filename=el.desktop_file_path)
-        tryexec_command = entry.getTryExec()
-        exec_arguments = el.exec_arguments
-        env_vars = ' '.join(el.env_variables)
-
-        if exec_arguments:
-            exec_arguments = f' {exec_arguments}'
-
-        if env_vars:
-            env_vars = f'env {env_vars} '
-
-        exec_command = ''.join([
-            env_vars,
-            self._escape_exec_argument(tryexec_command),
-            exec_arguments
-        ])
-
+    
         desktop_file_content = ''
+        entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
         with open(el.desktop_file_path, 'r') as desktop_file:
             desktop_file_content = desktop_file.read()
 
-        # replace executable path
-        desktop_file_content = self._desktop_file_replace_key(
-            desktop_file_content,
-            group_name=DesktopEntry.defaultGroup,
-            key='Exec',
-            replacement=exec_command
-        )
+            tryexec_command = entry.getTryExec()
+            exec_arguments = ' '.join(el.exec_arguments)
+            env_vars = ' '.join(el.env_variables)
 
-        tmp_desktop_file = os.path.join(TMP_DIR, get_random_string() + '.desktop')
-        with open(tmp_desktop_file, 'w+') as desktop_file:
+            if exec_arguments:
+                exec_arguments = f' {exec_arguments}'
+
+            if env_vars:
+                env_vars = f'env {env_vars} '
+
+            exec_command = ''.join([
+                env_vars,
+                shlex.quote(tryexec_command),
+                exec_arguments
+            ])
+
+            # replace executable path
+            desktop_file_content = re.sub(
+                r'^Exec=.*$',
+                f"Exec={exec_command}",
+                desktop_file_content,
+                flags=re.MULTILINE
+            )
+
+        with open(el.desktop_file_path, 'w') as desktop_file:
             desktop_file.write(desktop_file_content)
 
-        terminal.host_sh(['desktop-file-validate', '--no-hints', '--no-warn-deprecated', tmp_desktop_file])
+        el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
 
-        shutil.move(tmp_desktop_file, el.desktop_file_path)
-        el.desktop_entry = DesktopEntry(filename=el.desktop_file_path)
-
-    def update_from_url(self, manager, el: AppImageListElement, status_cb: callable) -> AppImageListElement:
+    def update_from_url(self, manager, el: AppImageListElement, status_cb: callable) -> AppImageListElement | None:
         try:
             update_file_path, f_hash = manager.download(status_cb)
         except DownloadInterruptedException as de:
-            return el
+            return None
         except Exception as e:
             raise e
 
@@ -593,45 +618,6 @@ class AppImageProvider():
         return list_element
 
     # Private methods
-    def _escape_exec_argument(self, arg: str) -> str:
-        """
-        Escape an input string according to the Exec key quoting rules
-        from the freedesktop.org Desktop Entry Specification.
-
-        Escapes:
-        - Double quote (")
-        - Backtick (`)
-        - Dollar sign ($)
-        - Backslash (\\)
-
-        Returns the escaped string, enclosed in double quotes if needed.
-        """
-        reserved_chars = set(' \t\n"\'\\><~|&;$*?#()`')
-
-        def escape_inner(s: str) -> str:
-            s = s.replace("\\", "\\\\")  # Escape backslash first
-            s = s.replace('"', r'\"')
-            s = s.replace('`', r'\`')
-            s = s.replace('$', r'\$')
-            return s
-
-        if any(ch in reserved_chars for ch in arg):
-            return f'"{escape_inner(arg)}"'
-        else:
-            return arg
-
-    def _desktop_file_replace_key(self, content: str, group_name: str, key: str, replacement: str):
-        pattern = rf'(\[{group_name}\][\s\S]*?)^{key}=.*$'
-
-        if re.search(pattern, content, flags=re.MULTILINE):
-            replacement = rf'\1{key}={replacement}'
-        else:
-            pattern = rf'\[{group_name}\].*$'
-            replacement = f'[{group_name}]\n{key}={replacement}'
-
-
-        return re.sub(pattern, replacement, content, flags=re.MULTILINE, count=1)
-
     def _run_filepath(self, el: AppImageListElement):
         is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) != None
 
@@ -740,6 +726,7 @@ class AppImageProvider():
                 appimage_offset = terminal.sandbox_sh(['get_appimage_offset', file.get_path()])
 
                 try:
+                    terminal.sandbox_sh(['unsquashfs', '-o', appimage_offset, '-l', file.get_path()])
                     terminal.sandbox_sh(['unsquashfs', '-o', appimage_offset, '-d', squashfs_root_folder, file.get_path()])
                 except Exception as e:
                     logging.error('Extraction with unsquashfs failed')
@@ -763,7 +750,7 @@ class AppImageProvider():
 
         icon_file: Optional[Gio.File] = None
         desktop_file: Optional[Gio.File] = None
-        desktop_entry: Optional[DesktopEntry] = None
+        desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
 
         # hash file
         md5_hash = get_file_hash(file)
@@ -794,7 +781,7 @@ class AppImageProvider():
 
                 desktop_entry_icon = None
                 if desktop_file:
-                    desktop_entry = DesktopEntry(desktop_file.get_path())
+                    desktop_entry = DesktopEntry.DesktopEntry(desktop_file.get_path())
                     desktop_entry_icon = desktop_entry.getIcon()
                     desktop_entry_icon = re.sub(r"\.(png|svg)$", '', desktop_entry_icon)
 
@@ -873,16 +860,18 @@ class AppImageProvider():
         return result
 
     def _get_appimages_default_destination_path(self) -> str:
-        folder = get_gsettings().get_string('appimages-default-folder')
+        folder = Settings.settings.get_string('appimages-default-folder')
         return re.sub(r'^~', GLib.get_home_dir(), folder)
 
-    def _get_app_version(self, extracted_appimage: ExtractedAppImage):
-        version = None
+    def _get_app_version(self, extracted_appimage: Optional[ExtractedAppImage], desktop_entry: Optional[DesktopEntry] = None):
+        if not desktop_entry:
+            desktop_entry = extracted_appimage.desktop_entry
 
-        if extracted_appimage.desktop_entry:
-            version = extracted_appimage.desktop_entry.get('X-AppImage-Version')
+        version = desktop_entry.get(
+            'X-AppImage-Version'
+        )
 
-        if not version:
+        if (not version) and extracted_appimage:
             version = extracted_appimage.md5[0:6]
 
         return version
