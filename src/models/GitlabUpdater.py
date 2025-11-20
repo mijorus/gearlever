@@ -61,7 +61,7 @@ class GitlabUpdater(UpdateManager):
 
     @staticmethod
     def can_handle_link(url: str):
-        return GitlabUpdater.get_url_data(url) != False
+        return GitlabUpdater.get_url_data(url) != None
 
 
     def __init__(self, url, **kwargs) -> None:

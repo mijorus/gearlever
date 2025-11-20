@@ -29,11 +29,11 @@ class FTPUpdater(UpdateManager):
     @staticmethod
     def get_url_data(url: str):
         if (not url.startswith('ftp://')):
-            return False
+            return None
 
         splitted = urlsplit(url)
         if len(splitted.path) < 2:
-            return False
+            return None
 
         return {
             'server': 'ftp://' + splitted.netloc,
@@ -42,7 +42,7 @@ class FTPUpdater(UpdateManager):
 
     @staticmethod
     def can_handle_link(url: str):
-        return FTPUpdater.get_url_data(url) != False
+        return FTPUpdater.get_url_data(url) != None
 
 
     def __init__(self, url, **kwargs) -> None:

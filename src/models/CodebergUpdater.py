@@ -27,12 +27,12 @@ class CodebergUpdater(UpdateManager):
             urldata = urlsplit(url)
 
             if urldata.netloc != 'codeberg.org':
-                return False
+                return None
 
             paths = urldata.path.split('/')
 
             if len(paths) != 7:
-                return False
+                return None
 
             return {
                 'username': paths[1],
@@ -40,11 +40,11 @@ class CodebergUpdater(UpdateManager):
                 'filename': paths[6],
             }
         
-        return False
+        return None
 
     @staticmethod
     def can_handle_link(url: str):
-        return CodebergUpdater.get_url_data(url) != False
+        return CodebergUpdater.get_url_data(url) != None
 
 
     def __init__(self, url, **kwargs) -> None:

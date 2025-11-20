@@ -30,15 +30,15 @@ class GithubUpdater(UpdateManager):
             urldata = urlsplit(url)
 
             if urldata.netloc != 'github.com':
-                return False
+                return None
 
             paths = urldata.path.split('/')
 
             if len(paths) != 7:
-                return False
+                return None
 
             if paths[3] != 'releases' or paths[4] != 'download':
-                return False
+                return None
 
             rel_name = 'latest'
             tag_name = paths[5]
@@ -49,7 +49,7 @@ class GithubUpdater(UpdateManager):
         items = url.split('|')
 
         if len(items) != 5:
-            return False
+            return None
 
         return {
             'username': items[1],
@@ -61,7 +61,7 @@ class GithubUpdater(UpdateManager):
 
     @staticmethod
     def can_handle_link(url: str):
-        return GithubUpdater.get_url_data(url) != False
+        return GithubUpdater.get_url_data(url) != None
 
     def __init__(self, url, embedded: str|Literal[False]=False, **kwargs) -> None:
         super().__init__(url, embedded, **kwargs)
