@@ -1,4 +1,5 @@
 import os
+import platform
 import re
 from typing import Optional, Callable, Literal
 from abc import ABC, abstractmethod
@@ -13,7 +14,7 @@ class UpdateManager(ABC):
     url = ''
     label = ''
     embedded = False
-    system_arch = terminal.sandbox_sh(['arch'])
+    system_arch = platform.machine()
     is_x86 = re.compile(r'(\-|\_|\.)x86(\-|\_|\.)')
     is_arm = re.compile(r'(\-|\_|\.)(arm64|aarch64|armv7l)(\-|\_|\.)')
 
