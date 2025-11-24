@@ -808,7 +808,7 @@ class AppDetails(Gtk.ScrolledWindow):
             launcher.launch()
 
     def on_update_url_info_btn_clicked(self, widget):
-        url = 'https://mijorus.it/posts/gearlever/update-url-info/'
+        url = 'https://gearlever.mijorus.it/docs/overview'
         launcher = Gtk.UriLauncher.new(url)
         launcher.launch()
 
