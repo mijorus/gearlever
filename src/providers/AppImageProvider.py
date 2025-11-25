@@ -373,7 +373,7 @@ class AppImageProvider():
 
             if el.update_logic is AppImageUpdateLogic.KEEP:
                 final_app_name = extracted_appimage.desktop_entry.getName() + f' ({version})'
-                jd_desktop_entry.Name = final_app_name
+                jd_desktop_entry.Name.default_text = final_app_name
 
             desktop_icon = f'applications-other'
             if dest_appimage_icon_file:
@@ -387,13 +387,19 @@ class AppImageProvider():
                 action.Exec = shlex.join([dest_appimage_file.get_path(), *a_exec_args['arguments']])
 
             desktop_file_content = jd_desktop_entry.get_text()
+
             desktop_file_entry_section_match = self.desk_entry_section_regex.search(desktop_file_content)
-            desktop_file_entry_section = desktop_file_entry_section_match.group(0)
+            original_desktop_entry_section = desktop_file_content
+
+            if desktop_file_entry_section_match:
+                original_desktop_entry_section = desktop_file_entry_section_match.group(0)
+
+            desktop_file_entry_section = original_desktop_entry_section
             desktop_file_entry_section = re.sub(r'^X-AppImage-Version=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
             desktop_file_entry_section += f'\nX-AppImage-Version={version}\n'
 
             desktop_file_content = desktop_file_content.replace(
-                desktop_file_entry_section_match.group(0),
+                original_desktop_entry_section,
                 desktop_file_entry_section,
             )
 
