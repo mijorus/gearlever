@@ -4,7 +4,7 @@
     <launchable type="desktop-id">it.mijorus.gearlever.desktop</launchable>
     <name>Gear Lever</name>
     <summary>Manage AppImages</summary>
-    <url type="homepage">https://mijorus.it/projects/gearlever/</url>
+    <url type="homepage">https://gearlever.mijorus.it</url>
     <url type="donation">https://ko-fi.com/mijorus</url>
     <url type="bugtracker">https://github.com/mijorus/gearlever/issues</url>
     <metadata_license>CC0-1.0</metadata_license>
