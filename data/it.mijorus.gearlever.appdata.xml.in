@@ -20,12 +20,21 @@
         <p>An utility to manage AppImages with ease! Gear lever will organize and manage AppImage files for you, generate desktop entries and app metadata, update apps in-place or keep multiple versions side-by-side.</p>
     </description>
     <releases>
-        <release type="stable" version="3.4.7" date="2025-11-30:00:00Z">
+        <release type="stable" version="4.0.0" date="2025-11-25:00:00Z">
+            <description>
+                <p>- Added FTP update system</p>
+                <p>- New update management UI</p>
+                <p>- New documentation website, still work in progress</p>
+                <p>- Faster app loading times for most of the appimages</p>
+                <p>- Better support for apps having dekstop actions</p>
+            </description>
+        </release>
+        <release type="stable" version="3.4.7" date="2025-10-30:00:00Z">
             <description>
                 <p>- Bug fix</p>
             </description>
         </release>
-        <release type="stable" version="3.4.6" date="2025-11-29:00:00Z">
+        <release type="stable" version="3.4.6" date="2025-10-29:00:00Z">
             <description>
                 <p>- Improved desktop file support: added support for desktop actions</p>
             </description>
