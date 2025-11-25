@@ -225,7 +225,7 @@ class FTPUpdater(UpdateManager):
 
         self.url_row = AdwEntryRowDefault(
             text=(ftp_url),
-            icon_name='gl-git',
+            icon_name='gl-earth-symbolic',
             sensitive=(not embedded),
             title=_('Server URL')
         )
