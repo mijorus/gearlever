@@ -5,6 +5,8 @@ import shutil
 import filecmp
 import shlex
 from xdg import DesktopEntry
+from desktop_entry_lib import DesktopEntry as JdDesktopEntry
+from desktop_entry_lib import DesktopAction as JdDesktopAction
 
 import dataclasses
 from ..models.Settings import Settings
@@ -48,7 +50,7 @@ class AppImageListElement():
     trusted: bool = False
     is_updatable_from_url = False
     env_variables: List[str] = dataclasses.field(default_factory=lambda: [])
-    exec_arguments: List[str] = dataclasses.field(default_factory=lambda: [])
+    exec_arguments: str = ''
     desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
     update_logic: Optional[AppImageUpdateLogic] = None
     architecture: Optional[AppImageArchitecture] = None
@@ -84,6 +86,7 @@ class AppImageProvider():
         self.extraction_folder = os.path.join(TMP_DIR, 'appimages')
         self.user_desktop_files_path = os.path.join(GLib.get_home_dir(), '.local', 'share', 'applications')
         self.user_local_share_path = os.path.join(GLib.get_home_dir(), '.local', 'share')
+    desk_entry_section_regex = re.compile(r'\[Desktop Entry\][\s\S]*?(?=\n\[)', flags=re.MULTILINE)
 
     def list_installed(self) -> list[AppImageListElement]:
         default_folder_path = self._get_appimages_default_destination_path()
@@ -102,6 +105,7 @@ class AppImageProvider():
                     entry = DesktopEntry.DesktopEntry(filename=gfile.get_path())
                     exec_location = entry.getTryExec()
                     exec_command_data = extract_terminal_arguments(entry.getExec())
+                    exec_arguments = ' '.join(exec_command_data['arguments'])
 
                     if os.path.isfile(exec_location):
                         exec_gfile = Gio.File.new_for_path(exec_location)
@@ -121,7 +125,7 @@ class AppImageProvider():
                                 desktop_entry=entry,
                                 trusted=True,
                                 external_folder=(not exec_in_defalut_folder),
-                                exec_arguments=exec_command_data['arguments'],
+                                exec_arguments=exec_arguments,
                                 env_variables=exec_command_data['env_vars'],
                             )
 
@@ -356,75 +360,51 @@ class AppImageProvider():
             dest_desktop_file_path = dest_desktop_file_path.replace(' ', '_')
 
             # Get default exec arguments
-            exec_arguments = shlex.split(extracted_appimage.desktop_entry.getExec())[1:]
-            el.exec_arguments = exec_arguments
+            term_arguments = extract_terminal_arguments(extracted_appimage.desktop_entry.getExec())
+            exec_arguments = term_arguments['arguments']
+            el.exec_arguments = ' '.join(exec_arguments)
 
-            desk_entry_section_regex = re.compile(r'\[Desktop Entry\][\s\S]*?(?=\n\[)', flags=re.MULTILINE)
-            with open(extracted_appimage.desktop_file.get_path(), 'r') as dskt_file:
-                desktop_file_content = dskt_file.read()
-                desktop_file_entry_section_match = desk_entry_section_regex.search(desktop_file_content)
+            jd_desktop_entry = JdDesktopEntry.from_file(
+                extracted_appimage.desktop_file.get_path()
+            )
 
-                desktop_file_entry_section = ''
-                if desktop_file_entry_section_match:
-                    desktop_file_entry_section = str(desktop_file_entry_section_match.group(0))
-                else:
-                    desktop_file_entry_section = desktop_file_content
+            jd_desktop_entry.TryExec = dest_appimage_file.get_path()
+            jd_desktop_entry.Exec = shlex.join([dest_appimage_file.get_path(), *exec_arguments])
 
-                desktop_file_entry_section_original = desktop_file_entry_section
+            if el.update_logic is AppImageUpdateLogic.KEEP:
+                final_app_name = extracted_appimage.desktop_entry.getName() + f' ({version})'
+                jd_desktop_entry.Name = final_app_name
 
-                desktop_file_entry_section = re.sub(r'^TryExec=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
-                desktop_file_entry_section = re.sub(r'^Icon=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
-                desktop_file_entry_section = re.sub(r'^X-AppImage-Version=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
+            desktop_icon = f'applications-other'
+            if dest_appimage_icon_file:
+                desktop_icon = f"{dest_appimage_icon_file.get_path()}"
+            
+            jd_desktop_entry.Icon = desktop_icon
 
-                # replace executable path
-                exec_command = ['Exec=' + shlex.join([dest_appimage_file.get_path(), *exec_arguments])]
-                # replace try exec executable path
-                exec_command.append(f'TryExec=' + dest_appimage_file.get_path())
+            for a, action in jd_desktop_entry.Actions.items():
+                a_exec_args = extract_terminal_arguments(action.Exec)
+                action.Icon = desktop_icon
+                action.Exec = shlex.join([dest_appimage_file.get_path(), *a_exec_args['arguments']])
 
-                if dest_appimage_icon_file:
-                    exec_command.append(f"Icon={dest_appimage_icon_file.get_path()}")
-                else:
-                    exec_command.append(f'Icon=applications-other')
+            desktop_file_content = jd_desktop_entry.get_text()
+            desktop_file_entry_section_match = self.desk_entry_section_regex.search(desktop_file_content)
+            desktop_file_entry_section = desktop_file_entry_section_match.group(0)
+            desktop_file_entry_section = re.sub(r'^X-AppImage-Version=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
+            desktop_file_entry_section += f'\nX-AppImage-Version={version}\n'
 
-                desktop_file_entry_section = re.sub(
-                    r'^Exec=.*$',
-                    '\n'.join(exec_command),
-                    desktop_file_entry_section,
-                    flags=re.MULTILINE
-                )
+            desktop_file_content = desktop_file_content.replace(
+                desktop_file_entry_section_match.group(0),
+                desktop_file_entry_section,
+            )
 
-                # generate a new app name
-                final_app_name = extracted_appimage.appimage_file.get_basename()
-                if extracted_appimage.desktop_entry:
-                    final_app_name = extracted_appimage.desktop_entry.getName()
-                    desktop_file_entry_section = desktop_file_entry_section.strip()
-                    desktop_file_entry_section += f'\nX-AppImage-Version={version}\n'
+            desktop_file_content = re.sub(r'\n\n(?!\[)', '\n', desktop_file_content)
 
-                    if el.update_logic is AppImageUpdateLogic.KEEP:
-                        final_app_name += f' ({version})'
+            # finally, write the new .desktop file
+            if (not os.path.exists(self.user_desktop_files_path)) and os.path.exists(self.user_local_share_path):
+                os.mkdir(self.user_desktop_files_path)
 
-                        desktop_file_entry_section = re.sub(
-                            r'^Name\[(.*?)\]=.*$',
-                            '',
-                            desktop_file_entry_section,
-                            flags=re.MULTILINE
-                        )
-
-                final_app_name = final_app_name.strip()
-
-                desktop_file_content = desktop_file_content.replace(
-                    desktop_file_entry_section_original,
-                    desktop_file_entry_section
-                )
-
-                desktop_file_content = re.sub(r'\n\n(?!\[)', '\n', desktop_file_content)
-
-                # finally, write the new .desktop file
-                if (not os.path.exists(self.user_desktop_files_path)) and os.path.exists(self.user_local_share_path):
-                    os.mkdir(self.user_desktop_files_path)
-
-                with open(dest_desktop_file_path, 'w+') as desktop_file_python_dest:
-                    desktop_file_python_dest.write(desktop_file_content)
+            with open(dest_desktop_file_path, 'w+') as desktop_file_python_dest:
+                desktop_file_python_dest.write(desktop_file_content)
 
             if os.path.exists(dest_desktop_file_path):
                 el.desktop_entry = DesktopEntry.DesktopEntry(filename=dest_desktop_file_path)
@@ -561,38 +541,27 @@ class AppImageProvider():
     def update_desktop_file(self, el: AppImageListElement):
         if not el.desktop_file_path:
             raise Exception('desktop_file_path not specified')
-    
-        desktop_file_content = ''
-        entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
-        with open(el.desktop_file_path, 'r') as desktop_file:
-            desktop_file_content = desktop_file.read()
+        
+        jd_desktop_file = JdDesktopEntry.from_file(el.desktop_file_path)
 
-            tryexec_command = entry.getTryExec()
-            exec_arguments = ' '.join(el.exec_arguments)
-            env_vars = ' '.join(el.env_variables)
+        tryexec_command = jd_desktop_file.TryExec
+        exec_arguments = el.exec_arguments
+        env_vars = ' '.join(el.env_variables)
 
-            if exec_arguments:
-                exec_arguments = f' {exec_arguments}'
+        if exec_arguments:
+            exec_arguments = f' {exec_arguments}'
 
-            if env_vars:
-                env_vars = f'env {env_vars} '
+        if env_vars:
+            env_vars = f'env {env_vars} '
 
-            exec_command = ''.join([
-                env_vars,
-                shlex.quote(tryexec_command),
-                exec_arguments
-            ])
+        exec_command = ''.join([
+            env_vars,
+            shlex.quote(tryexec_command),
+            exec_arguments
+        ])
 
-            # replace executable path
-            desktop_file_content = re.sub(
-                r'^Exec=.*$',
-                f"Exec={exec_command}",
-                desktop_file_content,
-                flags=re.MULTILINE
-            )
-
-        with open(el.desktop_file_path, 'w') as desktop_file:
-            desktop_file.write(desktop_file_content)
+        jd_desktop_file.Exec = exec_command
+        jd_desktop_file.write_file(el.desktop_file_path)
 
         el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
 
