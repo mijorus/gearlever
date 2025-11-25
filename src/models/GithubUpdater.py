@@ -133,16 +133,23 @@ class GithubUpdater(UpdateManager):
         return regex
 
     def fetch_target_asset(self):
-        if type(self.url_data) == bool:
+        if not self.url_data:
             return
         
+        config = self.get_form_config()
+        release_name = self.url_data["release"]
+
         rel_url = '/'.join([
             'https://api.github.com/repos',
             self.url_data["username"],
             self.url_data["repo"],
             'releases',
-            self.url_data["release"]
         ])
+
+        if config.get('allow_prereleases'):
+            rel_url += '?per_page=1'
+        else:
+            rel_url += f'/{release_name}'
 
         try:
             rel_data_resp = requests.get(rel_url)
@@ -154,6 +161,13 @@ class GithubUpdater(UpdateManager):
 
             logging.error(e)
             return
+
+        if config.get('allow_prereleases'):
+            if len(rel_data):
+                rel_data = rel_data[0]
+            else:
+                logging.error('Empty release list')
+                return
 
         logging.debug(f'Found {len(rel_data["assets"])} assets from {rel_url}')
 
