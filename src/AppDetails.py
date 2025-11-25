@@ -429,6 +429,7 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.app_list_element = update_result
 
         except Exception as e:
+            logging.error('Update error', exc_info=e)
             self.show_update_error_dialog(str(e))
         finally:
             self.emit('update-ended', None)
@@ -613,6 +614,7 @@ class AppDetails(Gtk.ScrolledWindow):
         try:
             is_updatable = manager.is_update_available(self.app_list_element)
         except Exception as e:
+            logging.error('Update error', exc_info=e)
             self.show_update_error_dialog(str(e))
 
         self.app_list_element.is_updatable_from_url = is_updatable
