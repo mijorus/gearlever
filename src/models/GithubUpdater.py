@@ -242,7 +242,7 @@ class GithubUpdater(UpdateManager):
 
                 else:
                     digest = target_asset['asset'].get('digest', '')
-                    if digest.startswith('sha256:'):
+                    if digest and digest.startswith('sha256:'):
                         curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha256')
                         return f'sha256:{curr_version_hash}' != digest
 
