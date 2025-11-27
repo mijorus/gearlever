@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unnamed project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-20 14:54+0100\n"
-"PO-Revision-Date: 2025-08-30 18:55+0200\n"
+"POT-Creation-Date: 2025-11-25 16:17+0100\n"
+"PO-Revision-Date: 2025-11-28 16:12+0100\n"
 "Last-Translator: p-sage\n"
 "Language-Team: French <gnomefr@traduc.org>\n"
 "Language: fr\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.7\n"
+"X-Generator: Poedit 3.8\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 msgid "Gear Lever"
-msgstr "Levier de vitesse"
+msgstr "Gear Lever"
 
 #: data/it.mijorus.gearlever.desktop.in:4
 msgid "An utility to manage AppImages with ease!"
@@ -31,37 +31,49 @@ msgstr "Un outil pour gérer facilement vos AppImages !"
 msgid "AppImage;"
 msgstr "AppImage;application;"
 
-#: src/main.py:117
+#: src/main.py:112
 msgid "translator_credits"
 msgstr "Irénée Thirion <irenee.thirion@e.email>"
 
-#: src/AppDetails.py:28 src/AppDetails.py:74 src/AppDetails.py:395
+#: src/AppDetails.py:32 src/AppDetails.py:80 src/AppDetails.py:437
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: src/AppDetails.py:29
+#: src/AppDetails.py:33
+msgid "Save"
+msgstr "Sauvegarder"
+
+#: src/AppDetails.py:34
+msgid "Saved"
+msgstr "Sauvegardé"
+
+#: src/AppDetails.py:35
+msgid "Invalid data"
+msgstr "Données non valides"
+
+#: src/AppDetails.py:36
 msgid "Cancel update"
-msgstr "Annuler"
+msgstr "Annuler la mise à jour"
 
-#: src/AppDetails.py:30 src/InstalledAppsList.py:32
+#: src/AppDetails.py:37 src/InstalledAppsList.py:31
 msgid "Checking updates..."
-msgstr "Vérification des mises à jour..."
+msgstr "Vérification des mises à jour…"
 
-#: src/AppDetails.py:31
+#: src/AppDetails.py:38
 msgid "No updates available"
 msgstr "Aucune mise à jour disponible"
 
-#: src/AppDetails.py:32
+#: src/AppDetails.py:39
 msgid "This application includes update information provided by the developer"
 msgstr ""
 "Le développeur a fourni les informations de mise à jour pour cette "
 "application"
 
-#: src/AppDetails.py:33
+#: src/AppDetails.py:40
 msgid "Manage update details for this application"
 msgstr "Gérer les paramètres de mise à jour pour cette application"
 
-#: src/AppDetails.py:213
+#: src/AppDetails.py:233
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -70,108 +82,104 @@ msgstr ""
 "<small>Vous pouvez masquer les applications externes dans les paramètres</"
 "small>"
 
-#: src/AppDetails.py:224
+#: src/AppDetails.py:244
 msgid "Please, verify the source of this app before opening it"
 msgstr "Veuillez vérifier la source de cette application avant de l’ouvrir"
 
-#: src/AppDetails.py:225
+#: src/AppDetails.py:245
 msgid "Unlock"
 msgstr "Déverrouiller"
 
-#: src/AppDetails.py:328
+#: src/AppDetails.py:365
 msgid "Launching..."
 msgstr "Lancement…"
 
-#: src/AppDetails.py:335 src/AppDetails.py:501
-#: src/providers/AppImageProvider.py:648
+#: src/AppDetails.py:372 src/AppDetails.py:547
+#: src/providers/AppImageProvider.py:645
 msgid "Error"
 msgstr "Erreur"
 
-#: src/AppDetails.py:412
+#: src/AppDetails.py:459
 msgid "Update error"
 msgstr "Erreur de mise à jour"
 
-#: src/AppDetails.py:416
+#: src/AppDetails.py:463
 msgid "Close"
 msgstr "Fermer"
 
-#: src/AppDetails.py:424
+#: src/AppDetails.py:470
 msgid "Do you really want to remove this app?"
-msgstr "Voulez-vous vraiment désinstaller cette application ?"
+msgstr "Voulez-vous vraiment désinstaller cette application ?"
 
-#: src/AppDetails.py:427 src/components/AppDetailsConflictModal.py:14
+#: src/AppDetails.py:473 src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
 msgstr "Annuler"
 
-#: src/AppDetails.py:428 src/AppDetails.py:467
+#: src/AppDetails.py:474 src/AppDetails.py:513
 msgid "Remove"
 msgstr "Désinstaller"
 
-#: src/AppDetails.py:463 src/AppDetails.py:483
+#: src/AppDetails.py:509 src/AppDetails.py:529
 msgid "This app runs in the terminal"
 msgstr "Cette application s’exécute dans le terminal"
 
-#: src/AppDetails.py:465 src/AppDetails.py:480 src/AppDetails.py:486
+#: src/AppDetails.py:511 src/AppDetails.py:526 src/AppDetails.py:532
 msgid "Launch"
 msgstr "Lancer"
 
-#: src/AppDetails.py:471
+#: src/AppDetails.py:517
 msgid "Uninstalling..."
 msgstr "Désinstallation…"
 
-#: src/AppDetails.py:475
+#: src/AppDetails.py:521
 msgid "Installing..."
 msgstr "Installation…"
 
-#: src/AppDetails.py:488
+#: src/AppDetails.py:534
 msgid "Move to the app menu"
 msgstr "Déplacer vers le menu des applications"
 
-#: src/AppDetails.py:512
+#: src/AppDetails.py:558
 msgid "This app might not be compatible with your system architecture"
 msgstr "Cette application risque de ne pas fonctionner avec votre système"
 
-#: src/AppDetails.py:759
-msgid "Website"
-msgstr "Site web"
-
-#: src/AppDetails.py:759
+#: src/AppDetails.py:860
 msgid "Add a website"
 msgstr "Ajouter un site web"
 
-#: src/AppDetails.py:768
+#: src/AppDetails.py:864
+msgid "Website"
+msgstr "Site web"
+
+#: src/AppDetails.py:877
 msgid "Open URL"
 msgstr "Ouvrir l’URL"
 
-#: src/AppDetails.py:784 src/AppDetails.py:947
-msgid "Save"
-msgstr "Sauvegarder"
-
-#: src/AppDetails.py:797
-msgid "Update management"
-msgstr "Gestion des mises à jour"
-
-#: src/AppDetails.py:802
-msgid "Update URL"
-msgstr "Mettre à jour l’URL"
-
-#: src/AppDetails.py:809
-msgid "Source"
-msgstr "Source"
-
-#: src/AppDetails.py:810
-msgid "Select the source type"
-msgstr "Sélectionnez le type de source"
-
-#: src/AppDetails.py:834
+#: src/AppDetails.py:894
 msgid "How it works"
 msgstr "Fonctionnement"
 
-#: src/AppDetails.py:851
+#: src/AppDetails.py:916
+msgid "Update management"
+msgstr "Gestion des mises à jour"
+
+#: src/AppDetails.py:923
+msgid "Default"
+msgstr "Par défaut"
+
+#: src/AppDetails.py:929
+msgid "Source"
+msgstr "Source"
+
+#: src/AppDetails.py:930
+msgid "Select the source type"
+msgstr "Sélectionnez le type de source"
+
+#: src/AppDetails.py:956
 msgid "Reload metadata"
 msgstr "Recharger les métadonnées"
 
-#: src/AppDetails.py:852
+#: src/AppDetails.py:957
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -179,87 +187,87 @@ msgstr ""
 "Mettre à jour des informations comme l’icône, la version et la description.\n"
 "Utile si l’application se met à jour elle-même."
 
-#: src/AppDetails.py:864
+#: src/AppDetails.py:969
 msgid "Command line arguments"
 msgstr "Arguments en ligne de commande"
 
-#: src/AppDetails.py:882
+#: src/AppDetails.py:987
 msgid "Hash"
 msgstr "Hachage"
 
-#: src/AppDetails.py:892
+#: src/AppDetails.py:997
 msgid "Path"
 msgstr "Chemin d’accès"
 
-#: src/AppDetails.py:894
+#: src/AppDetails.py:999
 msgid "Open Folder"
 msgstr "Ouvrir le dossier"
 
-#: src/AppDetails.py:904
+#: src/AppDetails.py:1009
 msgid "Package type"
 msgstr "Type de paquet"
 
-#: src/AppDetails.py:922
+#: src/AppDetails.py:1027
 msgid "Key"
 msgstr "Clé"
 
-#: src/AppDetails.py:923
+#: src/AppDetails.py:1028
 msgid "Value"
 msgstr "Valeur"
 
-#: src/AppDetails.py:942
-msgid "Add"
-msgstr "Ajouter"
-
-#: src/AppDetails.py:962
+#: src/AppDetails.py:1067
 msgid "Environment variables"
 msgstr "Variables d’environnement"
 
-#: src/AppDetails.py:963
+#: src/AppDetails.py:1068
 msgid "Add or customize environment for this application"
 msgstr "Éditer les variables d’environnement de cette application"
 
-#: src/GearleverWindow.py:37
+#: src/GearleverWindow.py:39
 msgid "Open a new AppImage"
 msgstr "Ouvrir une nouvelle AppImage"
 
-#: src/GearleverWindow.py:49
+#: src/GearleverWindow.py:51
 msgid "Open"
 msgstr "Ouvrir"
 
-#: src/GearleverWindow.py:253
+#: src/GearleverWindow.py:294
 msgid "Open a file"
 msgstr "Ouvrir un fichier"
 
-#: src/InstalledAppsList.py:30
+#: src/InstalledAppsList.py:29
 msgid "Check for updates"
 msgstr "Vérifier les mises à jour"
 
-#: src/InstalledAppsList.py:31
+#: src/InstalledAppsList.py:30
 msgid "No updates found"
 msgstr "Aucune mise à jour trouvée"
 
-#: src/InstalledAppsList.py:51
+#: src/InstalledAppsList.py:32
+msgid "Update all"
+msgstr "Tout mettre à jour"
+
+#: src/InstalledAppsList.py:55
 msgid "Filter installed applications"
 msgstr "Filtrer les applications installées"
 
-#: src/InstalledAppsList.py:57
+#: src/InstalledAppsList.py:62
 msgid "Installed applications"
 msgstr "Applications installées"
 
-#: src/preferences.py:28
+#: src/preferences.py:29
 msgid "General"
 msgstr "Général"
 
-#: src/preferences.py:33
+#: src/preferences.py:34
 msgid "AppImage default location"
 msgstr "Emplacement par défaut des AppImages"
 
-#: src/preferences.py:42
+#: src/preferences.py:43
 msgid "Show integrated AppImages outside the default folder"
 msgstr "Afficher les AppImages intégrées en dehors du dossier par défaut"
 
-#: src/preferences.py:44
+#: src/preferences.py:45
 msgid ""
 "List AppImages that have been integrated into the system menu but are "
 "located outside the default folder"
@@ -267,15 +275,15 @@ msgstr ""
 "Liste les AppImages qui ont été intégrées dans le menu système mais qui se "
 "trouvent en dehors du dossier par défaut"
 
-#: src/preferences.py:51
+#: src/preferences.py:52
 msgid "Updates management"
 msgstr "Gestion des mises à jour"
 
-#: src/preferences.py:53
+#: src/preferences.py:54
 msgid "Check updates on system startup"
 msgstr "Vérifier les mises à jour au démarrage du système"
 
-#: src/preferences.py:55
+#: src/preferences.py:56
 msgid ""
 "Receive a notification when a new update is detected; updates will not be "
 "installed automatically"
@@ -283,39 +291,39 @@ msgstr ""
 "Recevoir une notification lorsqu’une nouvelle mise à jour est détectée; les "
 "mises à jour ne seront pas installées automatiquement"
 
-#: src/preferences.py:62
+#: src/preferences.py:63
 msgid "File management"
 msgstr "Gestion des fichiers"
 
-#: src/preferences.py:64
+#: src/preferences.py:65
 msgid "Move AppImages into the destination folder"
 msgstr "Déplacer les AppImages dans le dossier de destination"
 
-#: src/preferences.py:65
+#: src/preferences.py:66
 msgid "Reduce disk usage"
 msgstr "Réduit l’utilisation de l’espace de stockage"
 
-#: src/preferences.py:69
+#: src/preferences.py:70
 msgid "Clone AppImages into the destination folder"
 msgstr "Cloner les AppImages dans le dossier de destination"
 
-#: src/preferences.py:70
+#: src/preferences.py:71
 msgid "Keep the original file and create a copy in the destination folder"
 msgstr ""
 "Conserve le fichier original et créer une copie dans le dossier de "
 "destination"
 
-#: src/preferences.py:96
+#: src/preferences.py:97
 msgid "Naming conventions"
 msgstr "Conventions de nommage"
 
-#: src/preferences.py:98
+#: src/preferences.py:99
 msgid "Use executable name for integrated terminal apps"
 msgstr ""
 "Utiliser le nom de l’exécutable pour les applications intégrées dans le "
 "terminal"
 
-#: src/preferences.py:100
+#: src/preferences.py:101
 msgid ""
 "If enabled, apps that run in the terminal are renamed as their executable.\n"
 "You would need to add the aforementioned folder to your $PATH manually.\n"
@@ -324,19 +332,36 @@ msgid ""
 msgstr ""
 "Si cette option est activée, les applications s’exécutant dans un terminal "
 "seront nommées comme leur exécutable. Vous devrez ajouter le dossier "
-"précédemment mentionné dans votre $CHEMIN D’ACCÈS manuellement.\n"
+"précédemment mentionné dans votre $PATH manuellement.\n"
 "\n"
 "Par exemple, « golang_x86_64.appimage » sera enregistré comme « go »"
 
-#: src/preferences.py:106
+#: src/preferences.py:107
+msgid "Preview hashes for new apps before loading metadata"
+msgstr ""
+"Prévisualiser les hachages des nouvelles apps avant le chargement des "
+"métadonnées"
+
+#: src/preferences.py:109
+msgid ""
+"If enabled, a preview of the file you are trying to open is shown.\n"
+"Disable only if you trust your sources: malicious apps could execute code "
+"when loading the metadata."
+msgstr ""
+"Activer cette option montre une prévisualisation du fichier que vous voulez "
+"ouvrir.\n"
+"Ne désactivez que si vous faites confiance à vos sources : des applications "
+"malveillantes peuvent exécuter du code au chargement des métadonnées."
+
+#: src/preferences.py:115
 msgid "Debugging"
 msgstr "Débogage"
 
-#: src/preferences.py:108
+#: src/preferences.py:117
 msgid "Enable debug logs"
 msgstr "Activer le journal de débogage"
 
-#: src/preferences.py:110
+#: src/preferences.py:119
 msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
@@ -346,15 +371,15 @@ msgstr ""
 "potentiellement les performances.\n"
 "Nécessite un redémarrage."
 
-#: src/preferences.py:137
+#: src/preferences.py:146
 msgid "The folder must writeable"
 msgstr "Le dossier doit avoir le droit d’écriture"
 
-#: src/preferences.py:140 src/WelcomeScreen.py:98
+#: src/preferences.py:149 src/WelcomeScreen.py:118
 msgid "Select a folder"
 msgstr "Sélectionnez un dossier"
 
-#: src/WelcomeScreen.py:95
+#: src/WelcomeScreen.py:115
 msgid "The folder must be in your home directory"
 msgstr "Le dossier doit être dans votre dossier personnel"
 
@@ -372,7 +397,7 @@ msgstr "_Afficher le tutoriel"
 
 #: src/gtk/main-menu.ui:18
 msgid "_About Gear lever"
-msgstr "À _propos de Levier de vitesse"
+msgstr "À _propos de Gear lever"
 
 #: src/components/AppDetailsConflictModal.py:10
 #, python-brace-format
@@ -408,7 +433,7 @@ msgstr "Glissez et déposez une AppImage ici ou cliquez sur l’icône « + »
 #: src/gtk/empty-list-placeholder.ui:35
 msgid " If you don't see your apps, check if the selected folder is correct."
 msgstr ""
-"Si vous ne voyez pas vos applications, vérifiez que le dossier sélectionné "
+" Si vous ne voyez pas vos applications, vérifiez que le dossier sélectionné "
 "est correct."
 
 #: src/gtk/empty-list-placeholder.ui:46
@@ -434,68 +459,68 @@ msgctxt "shortcut window"
 msgid "Quit"
 msgstr "Quitter"
 
-#: src/gtk/tutorial/1.ui:21
+#: src/gtk/tutorial/1.ui:26
 msgid "Hi, welcome to Gear lever"
-msgstr "Bonjour, bienvenue dans Levier de vitesse"
+msgstr "Bonjour, bienvenue dans Gear lever"
 
-#: src/gtk/tutorial/1.ui:30
+#: src/gtk/tutorial/1.ui:35
 msgid "An app that helps you integrate AppImages into your system."
 msgstr ""
 "Une application qui vous aide à intégrer les AppImages dans votre système."
 
-#: src/gtk/tutorial/1.ui:36
+#: src/gtk/tutorial/1.ui:43
 msgid "Click \"Next\" to follow this tutorial."
 msgstr "Cliquez sur « Suivant » pour suivre ce tutoriel."
 
-#: src/gtk/tutorial/2.ui:19
+#: src/gtk/tutorial/2.ui:12
 msgid "Set the AppImage location"
 msgstr "Sélectionnez l’emplacement de l’AppImage"
 
-#: src/gtk/tutorial/2.ui:28
+#: src/gtk/tutorial/2.ui:13
 msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
 msgstr ""
-"Levier de vitesse regroupe toutes vos AppImages dans un dossier spécifique "
-"en les gardant organisées."
+"Gear lever regroupe toutes vos AppImages dans un dossier spécifique en les "
+"gardant organisées."
 
-#: src/gtk/tutorial/2.ui:33
+#: src/gtk/tutorial/2.ui:21
 #, python-brace-format
-msgid "By default, AppImages are saved at: {location}"
-msgstr "Par défaut, les AppImages sont enregistrées dans : {location}"
+msgid "<b>By default, AppImages are saved at: {location}</b>"
+msgstr "<b>Par défaut, les AppImages sont enregistrées dans : {location}</b>"
 
-#: src/gtk/tutorial/2.ui:47
+#: src/gtk/tutorial/2.ui:29
 msgid "Change AppImage location"
 msgstr "Changer l’emplacement des AppImages"
 
-#: src/gtk/tutorial/2.ui:59
+#: src/gtk/tutorial/2.ui:38
 msgid "You can customize it later in the preferences."
 msgstr "Vous pouvez modifier cela plus tard dans les préférences."
 
-#: src/gtk/tutorial/3.ui:19
+#: src/gtk/tutorial/3.ui:23
 msgid "Set Gear lever as default"
-msgstr "Définir Levier de vitesse comme application par défaut"
+msgstr "Définir Gear lever comme application par défaut"
 
-#: src/gtk/tutorial/3.ui:28
+#: src/gtk/tutorial/3.ui:32
 msgid ""
 "Click on the button to open a demo folder, containing a sample AppImage."
 msgstr ""
 "Cliquez sur le bouton pour ouvrir un dossier de démonstration, contenant un "
 "échantillon AppImage."
 
-#: src/gtk/tutorial/3.ui:33
+#: src/gtk/tutorial/3.ui:40
 msgid ""
 "Use the right-click menu to set Gear lever as the default app for "
 "\".appimage\" files"
 msgstr ""
-"Utilisez le menu du clic droit pour définir Levier de vitesse comme "
-"application par défaut pour les fichiers « .appimage »"
+"Utilisez le menu du clic droit pour définir Gear lever comme application par "
+"défaut pour les fichiers « .appimage »"
 
-#: src/gtk/tutorial/3.ui:44
+#: src/gtk/tutorial/3.ui:54
 msgid "Open demo folder"
 msgstr "Ouvrir le dossier de démonstration"
 
-#: src/gtk/tutorial/3.ui:56
+#: src/gtk/tutorial/3.ui:63
 msgid "This step is optional"
 msgstr "Cette étape est facultative"
 
@@ -503,7 +528,7 @@ msgstr "Cette étape est facultative"
 msgid "All done, let's go!"
 msgstr "Tout est prêt, allons-y !"
 
-#: src/gtk/tutorial/last.ui:35
+#: src/gtk/tutorial/last.ui:24
 msgid "Close tutorial"
 msgstr "Fermer le tutoriel"
 
@@ -511,7 +536,7 @@ msgstr "Fermer le tutoriel"
 msgid "No description provided"
 msgstr "Aucune description fournie"
 
-#: src/providers/AppImageProvider.py:584
+#: src/providers/AppImageProvider.py:585
 msgid ""
 "The downloaded file is not a valid appimage, please check if the provided "
 "URL is correct"
@@ -519,22 +544,11 @@ msgstr ""
 "Le fichier téléchargé n’est pas un AppImage valide, veuillez vérifier si "
 "l’URL fournie est correcte"
 
-#: src/providers/AppImageProvider.py:590
-#, python-brace-format
-msgid ""
-"The downloaded appimage does not have the same app name and can't be "
-"updated\n"
-"{el.name} ➔ {list_element.name}"
-msgstr ""
-"Le fichier AppImage téléchargée n’a pas le même nom et ne peut pas être mise "
-"à jour\n"
-"{el.name} ➔ {list_element.name}"
-
-#: src/providers/AppImageProvider.py:634
+#: src/providers/AppImageProvider.py:631
 msgid "Running AppImages on NixOS requires appimage-run"
-msgstr "L’exécution de fichiers AppImage sur NixOS nécessite appimage-run"
+msgstr "L’exécution d’AppImages sur NixOS nécessite appimage-run"
 
-#: src/providers/AppImageProvider.py:649
+#: src/providers/AppImageProvider.py:646
 #, python-brace-format
 msgid ""
 "AppImages require FUSE to run. You might still be able to run it with --"
@@ -543,11 +557,27 @@ msgid ""
 "Click the link below for more information. \n"
 "{url}"
 msgstr ""
-"L’exécution de fichiers AppImage nécessite FUSE. Vous pouvez toujours tenter "
-"de le lancer avec l’option --appimage-extract-and-run\n"
+"L’exécution d’AppImages nécessite FUSE. Il devrait toujours être possible de "
+"l'exécuter en ligne de commande avec l’option --appimage-extract-and-run\n"
 "\n"
-"Cliquez sur le lien ci-dessous pour obtenir plus d’information.\n"
+"Vous trouverez plus d'informations en cliquant sur le lien ci-dessous.\n"
 "{url}"
+
+#~ msgid "Update URL"
+#~ msgstr "Mettre à jour l’URL"
+
+#~ msgid "Add"
+#~ msgstr "Ajouter"
+
+#, python-brace-format
+#~ msgid ""
+#~ "The downloaded appimage does not have the same app name and can't be "
+#~ "updated\n"
+#~ "{el.name} ➔ {list_element.name}"
+#~ msgstr ""
+#~ "Le fichier AppImage téléchargée n’a pas le même nom et ne peut pas être "
+#~ "mise à jour\n"
+#~ "{el.name} ➔ {list_element.name}"
 
 #~ msgid "Static URL"
 #~ msgstr "URL statique"
