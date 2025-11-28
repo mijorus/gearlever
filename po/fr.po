@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: unnamed project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-20 14:54+0100\n"
-"PO-Revision-Date: 2025-08-30 18:55+0200\n"
+"PO-Revision-Date: 2025-11-28 01:00+0100\n"
 "Last-Translator: p-sage\n"
 "Language-Team: French <gnomefr@traduc.org>\n"
 "Language: fr\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.7\n"
+"X-Generator: Poedit 3.8\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 msgid "Gear Lever"
-msgstr "Levier de vitesse"
+msgstr "Gear Lever"
 
 #: data/it.mijorus.gearlever.desktop.in:4
 msgid "An utility to manage AppImages with ease!"
@@ -41,11 +41,11 @@ msgstr "Mettre à jour"
 
 #: src/AppDetails.py:29
 msgid "Cancel update"
-msgstr "Annuler"
+msgstr "Annuler la mise à jour"
 
 #: src/AppDetails.py:30 src/InstalledAppsList.py:32
 msgid "Checking updates..."
-msgstr "Vérification des mises à jour..."
+msgstr "Vérification des mises à jour…"
 
 #: src/AppDetails.py:31
 msgid "No updates available"
@@ -97,7 +97,7 @@ msgstr "Fermer"
 
 #: src/AppDetails.py:424
 msgid "Do you really want to remove this app?"
-msgstr "Voulez-vous vraiment désinstaller cette application ?"
+msgstr "Voulez-vous vraiment désinstaller cette application ?"
 
 #: src/AppDetails.py:427 src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
@@ -372,7 +372,7 @@ msgstr "_Afficher le tutoriel"
 
 #: src/gtk/main-menu.ui:18
 msgid "_About Gear lever"
-msgstr "À _propos de Levier de vitesse"
+msgstr "À _propos de Gear lever"
 
 #: src/components/AppDetailsConflictModal.py:10
 #, python-brace-format
@@ -436,7 +436,7 @@ msgstr "Quitter"
 
 #: src/gtk/tutorial/1.ui:21
 msgid "Hi, welcome to Gear lever"
-msgstr "Bonjour, bienvenue dans Levier de vitesse"
+msgstr "Bonjour, bienvenue dans Gear lever"
 
 #: src/gtk/tutorial/1.ui:30
 msgid "An app that helps you integrate AppImages into your system."
@@ -456,8 +456,8 @@ msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
 msgstr ""
-"Levier de vitesse regroupe toutes vos AppImages dans un dossier spécifique "
-"en les gardant organisées."
+"Gear lever regroupe toutes vos AppImages dans un dossier spécifique en les "
+"gardant organisées."
 
 #: src/gtk/tutorial/2.ui:33
 #, python-brace-format
@@ -474,7 +474,7 @@ msgstr "Vous pouvez modifier cela plus tard dans les préférences."
 
 #: src/gtk/tutorial/3.ui:19
 msgid "Set Gear lever as default"
-msgstr "Définir Levier de vitesse comme application par défaut"
+msgstr "Définir Gear lever comme application par défaut"
 
 #: src/gtk/tutorial/3.ui:28
 msgid ""
@@ -488,8 +488,8 @@ msgid ""
 "Use the right-click menu to set Gear lever as the default app for "
 "\".appimage\" files"
 msgstr ""
-"Utilisez le menu du clic droit pour définir Levier de vitesse comme "
-"application par défaut pour les fichiers « .appimage »"
+"Utilisez le menu du clic droit pour définir Gear lever comme application par "
+"défaut pour les fichiers « .appimage »"
 
 #: src/gtk/tutorial/3.ui:44
 msgid "Open demo folder"
@@ -532,7 +532,7 @@ msgstr ""
 
 #: src/providers/AppImageProvider.py:634
 msgid "Running AppImages on NixOS requires appimage-run"
-msgstr "L’exécution de fichiers AppImage sur NixOS nécessite appimage-run"
+msgstr "L’exécution d’AppImages sur NixOS nécessite appimage-run"
 
 #: src/providers/AppImageProvider.py:649
 #, python-brace-format
@@ -543,10 +543,10 @@ msgid ""
 "Click the link below for more information. \n"
 "{url}"
 msgstr ""
-"L’exécution de fichiers AppImage nécessite FUSE. Vous pouvez toujours tenter "
-"de le lancer avec l’option --appimage-extract-and-run\n"
+"L’exécution d’AppImages nécessite FUSE. Il devrait toujours être possible de "
+"l'exécuter en ligne de commande avec l’option --appimage-extract-and-run\n"
 "\n"
-"Cliquez sur le lien ci-dessous pour obtenir plus d’information.\n"
+"Cliquez sur le lien ci-dessous pour obtenir plus d’informations.\n"
 "{url}"
 
 #~ msgid "Static URL"

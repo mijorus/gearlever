@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-04 15:35+0200\n"
-"PO-Revision-Date: 2023-10-21 00:22+0200\n"
+"PO-Revision-Date: 2025-11-28 00:53+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pl_PL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4\n"
+"X-Generator: Poedit 3.8\n"
 
 #: data/it.mijorus.gearlever.desktop.in:2
 msgid "Gear Lever"
@@ -75,7 +75,7 @@ msgstr ""
 
 #: src/AppDetails.py:279
 msgid "Launching..."
-msgstr "Uruchamianie..."
+msgstr "Uruchamianie…"
 
 #: src/AppDetails.py:309
 msgid "This app runs in the terminal"
@@ -91,11 +91,11 @@ msgstr "Usuń"
 
 #: src/AppDetails.py:320
 msgid "Uninstalling..."
-msgstr "Odinstalowywanie..."
+msgstr "Odinstalowywanie…"
 
 #: src/AppDetails.py:323
 msgid "Installing..."
-msgstr "Instalowanie..."
+msgstr "Instalowanie…"
 
 #: src/AppDetails.py:329
 msgid "Move to the app menu"
@@ -311,8 +311,8 @@ msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
 msgstr ""
-"Przerzutka grupuje wszystkie Twoje AppImages w określonym "
-"folderze i utrzymuje je zorganizowane."
+"Przerzutka grupuje wszystkie Twoje AppImages w określonym folderze i "
+"utrzymuje je zorganizowane."
 
 #: src/gtk/tutorial/2.ui:33
 #, python-brace-format
@@ -339,11 +339,11 @@ msgstr ""
 
 #: src/gtk/tutorial/3.ui:33
 msgid ""
-"Use the right-click menu to set Gear lever as the default app for \"."
-"appimage\" files"
+"Use the right-click menu to set Gear lever as the default app for "
+"\".appimage\" files"
 msgstr ""
-"Użyj menu prawego kliknięcia, aby ustawić Przerzutkę jako "
-"domyślną aplikację dla plików \".appimage\""
+"Użyj menu prawego kliknięcia, aby ustawić Przerzutkę jako domyślną aplikację "
+"dla plików \".appimage\""
 
 #: src/gtk/tutorial/3.ui:44
 msgid "Open demo folder"
