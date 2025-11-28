@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: gearlever\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-05 09:39+0000\n"
-"PO-Revision-Date: 2024-07-07 09:34+0530\n"
+"PO-Revision-Date: 2025-11-28 00:51+0100\n"
 "Last-Translator: Scrambled777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <indlinux-hindi@lists.sourceforge.net>\n"
 "Language: hi\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Gtranslator 46.1\n"
+"X-Generator: Poedit 3.8\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 msgid "Gear Lever"
@@ -34,8 +34,7 @@ msgstr "AppImage;ऐपइमेज;"
 msgid "translator_credits"
 msgstr "Scrambled777 <weblate.scrambled777@simplelogin.com>"
 
-#: src/AppDetails.py:27 src/AppDetails.py:73 src/AppDetails.py:381
-#: src/AppDetails.py:462
+#: src/AppDetails.py:27 src/AppDetails.py:73 src/AppDetails.py:381 src/AppDetails.py:462
 msgid "Update"
 msgstr "अद्यतन"
 
@@ -45,7 +44,7 @@ msgstr "अद्यतन रद्द करें"
 
 #: src/AppDetails.py:29 src/InstalledAppsList.py:30
 msgid "Checking updates..."
-msgstr "अद्यतनों की जांच की जा रही है..."
+msgstr "अद्यतनों की जांच की जा रही है…"
 
 #: src/AppDetails.py:30
 msgid "No updates available"
@@ -77,10 +76,9 @@ msgstr "खोलें"
 
 #: src/AppDetails.py:344
 msgid "Launching..."
-msgstr "शुरू हो रहा है..."
+msgstr "शुरू हो रहा है…"
 
-#: src/AppDetails.py:351 src/AppDetails.py:476
-#: src/providers/AppImageProvider.py:645
+#: src/AppDetails.py:351 src/AppDetails.py:476 src/providers/AppImageProvider.py:645
 msgid "Error"
 msgstr "त्रुटि"
 
@@ -106,11 +104,11 @@ msgstr "हटाएं"
 
 #: src/AppDetails.py:441
 msgid "Uninstalling..."
-msgstr "अस्थापित किया जा रहा है..."
+msgstr "अस्थापित किया जा रहा है…"
 
 #: src/AppDetails.py:445
 msgid "Installing..."
-msgstr "स्थापित किया जा रहा है..."
+msgstr "स्थापित किया जा रहा है…"
 
 #: src/AppDetails.py:458
 msgid "Move to the app menu"
@@ -246,11 +244,9 @@ msgstr "तयशुदा फोल्डर के बाहर एकीक�
 
 #: src/preferences.py:43
 msgid ""
-"List AppImages that have been integrated into the system menu but are "
-"located outside the default folder"
-msgstr ""
-"उन ऐपइमेज की सूची बनाएं जिन्हें सिस्टम मेनू में एकीकृत किया गया है लेकिन तयशुदा फोल्डर के "
-"बाहर स्थित हैं"
+"List AppImages that have been integrated into the system menu but are located outside the "
+"default folder"
+msgstr "उन ऐपइमेज की सूची बनाएं जिन्हें सिस्टम मेनू में एकीकृत किया गया है लेकिन तयशुदा फोल्डर के बाहर स्थित हैं"
 
 #: src/preferences.py:50
 msgid "Updates management"
@@ -262,8 +258,8 @@ msgstr "पृष्ठभूमि में अद्यतन जांचे
 
 #: src/preferences.py:54
 msgid ""
-"Receive a notification when a new update is detected; updates will not be "
-"installed automatically"
+"Receive a notification when a new update is detected; updates will not be installed "
+"automatically"
 msgstr "नया अद्यतन पता चलने पर सूचना प्राप्त करें; अद्यतन स्वचालित रूप से स्थापित नहीं होंगे"
 
 #: src/preferences.py:61
@@ -301,8 +297,7 @@ msgid ""
 "\n"
 "For example, \"golang_x86_64.appimage\" will be saved as \"go\""
 msgstr ""
-"सक्षम होने पर, टर्मिनल में चलने वाले ऐप्स का नाम उनके निष्पादन योग्य के रूप में बदल दिया "
-"जाता है।\n"
+"सक्षम होने पर, टर्मिनल में चलने वाले ऐप्स का नाम उनके निष्पादन योग्य के रूप में बदल दिया जाता है।\n"
 "आपको उपरोक्त फोल्डर को अपने $PATH में हाथ से से जोड़ना होगा।\n"
 "\n"
 "उदाहरण के लिए, \"golang_x86_64.appimage\" को \"go\" के रूप में सहेजा जाएगा"
@@ -317,12 +312,10 @@ msgstr "डिबग लॉग सक्षम करें"
 
 #: src/preferences.py:109
 msgid ""
-"Increases log verbosity, occupying more disk space and potentially impacting "
-"performance.\n"
+"Increases log verbosity, occupying more disk space and potentially impacting performance.\n"
 "Requires a restart."
 msgstr ""
-"लॉग वाचालता बढ़ाता है, अधिक डिस्क स्थान घेरता है और संभावित रूप से प्रदर्शन को प्रभावित "
-"करता है।\n"
+"लॉग वाचालता बढ़ाता है, अधिक डिस्क स्थान घेरता है और संभावित रूप से प्रदर्शन को प्रभावित करता है।\n"
 "पुनरारंभ की आवश्यकता है।"
 
 #: src/preferences.py:133 src/WelcomeScreen.py:95
@@ -426,12 +419,8 @@ msgid "Set the AppImage location"
 msgstr "ऐपइमेज स्थान निर्धारित करें"
 
 #: src/gtk/tutorial/2.ui:28
-msgid ""
-"Gear lever groups all your AppImages into a specific folder and keeps them "
-"organized."
-msgstr ""
-"गियर लीवर आपके सभी ऐपइमेज को एक विशिष्ट फोल्डर में समूहित करता है और उन्हें व्यवस्थित "
-"रखता है।"
+msgid "Gear lever groups all your AppImages into a specific folder and keeps them organized."
+msgstr "गियर लीवर आपके सभी ऐपइमेज को एक विशिष्ट फोल्डर में समूहित करता है और उन्हें व्यवस्थित रखता है।"
 
 #: src/gtk/tutorial/2.ui:33
 #, python-brace-format
@@ -451,17 +440,14 @@ msgid "Set Gear lever as default"
 msgstr "गियर लीवर को तयशुदा रूप में निर्धारित करें"
 
 #: src/gtk/tutorial/3.ui:28
-msgid ""
-"Click on the button to open a demo folder, containing a sample AppImage."
+msgid "Click on the button to open a demo folder, containing a sample AppImage."
 msgstr "एक नमूना ऐपइमेज युक्त प्रदर्शन फोल्डर खोलने के लिए बटन पर क्लिक करें।"
 
 #: src/gtk/tutorial/3.ui:33
-msgid ""
-"Use the right-click menu to set Gear lever as the default app for \"."
-"appimage\" files"
+msgid "Use the right-click menu to set Gear lever as the default app for \".appimage\" files"
 msgstr ""
-"गियर लीवर को \".appimage\" फाइलों के लिए तयशुदा ऐप के रूप में निर्धारित करने के लिए "
-"दाएं-क्लिक मेनू का उपयोग करें"
+"गियर लीवर को \".appimage\" फाइलों के लिए तयशुदा ऐप के रूप में निर्धारित करने के लिए दाएं-क्लिक मेनू का "
+"उपयोग करें"
 
 #: src/gtk/tutorial/3.ui:44
 msgid "Open demo folder"
@@ -485,17 +471,13 @@ msgstr "कोई विवरण उपलब्ध नहीं कराय�
 
 #: src/providers/AppImageProvider.py:581
 msgid ""
-"The downloaded file is not a valid appimage, please check if the provided "
-"URL is correct"
-msgstr ""
-"डाउनलोड की गई फाइल मान्य एपिमेज नहीं है, कृपया जांचें कि प्रदान किया गया यूआरएल सही है "
-"या नहीं"
+"The downloaded file is not a valid appimage, please check if the provided URL is correct"
+msgstr "डाउनलोड की गई फाइल मान्य एपिमेज नहीं है, कृपया जांचें कि प्रदान किया गया यूआरएल सही है या नहीं"
 
 #: src/providers/AppImageProvider.py:587
 #, python-brace-format
 msgid ""
-"The downloaded appimage does not have the same app name and can't be "
-"updated\n"
+"The downloaded appimage does not have the same app name and can't be updated\n"
 "{el.name} ➔ {list_element.name}"
 msgstr ""
 "डाउनलोड की गई ऐप इमेज का ऐप नाम समान नहीं है और उसे अद्यतित नहीं किया जा सकता\n"
@@ -508,14 +490,14 @@ msgstr "NixOS पर ऐपइमेज चलाने के लिए appimag
 #: src/providers/AppImageProvider.py:646
 #, python-brace-format
 msgid ""
-"AppImages require FUSE to run. You might still be able to run it with --"
-"appimage-extract-and-run in the command line arguments. \n"
+"AppImages require FUSE to run. You might still be able to run it with --appimage-extract-"
+"and-run in the command line arguments. \n"
 "\n"
 "Click the link below for more information. \n"
 "{url}"
 msgstr ""
-"ऐपइमेज को चलाने के लिए FUSE की आवश्यकता होती है। आप कमांड लाइन तर्कों में --appimage-"
-"extract-and-run के साथ इसे चलाने में सक्षम हो सकते हैं। \n"
+"ऐपइमेज को चलाने के लिए FUSE की आवश्यकता होती है। आप कमांड लाइन तर्कों में --appimage-extract-and-run "
+"के साथ इसे चलाने में सक्षम हो सकते हैं। \n"
 "\n"
 "अधिक जानकारी के लिए नीचे दिए गए लिंक पर क्लिक करें। \n"
 "{url}"
@@ -527,14 +509,13 @@ msgstr ""
 #~ msgstr "उपसर्गों के बिना ऐपइमेज फाइलें सहेजें"
 
 #~ msgid ""
-#~ "When enabled, every appimage will be renamed as a short, lowercase "
-#~ "version of their app name, without the \"gearlever\" prefix.\n"
+#~ "When enabled, every appimage will be renamed as a short, lowercase version of their app "
+#~ "name, without the \"gearlever\" prefix.\n"
 #~ "\n"
-#~ "For example, \"kdenlive-24.02-x86_64.appimage\" will be saved as "
-#~ "\"kdelive.appimage\""
+#~ "For example, \"kdenlive-24.02-x86_64.appimage\" will be saved as \"kdelive.appimage\""
 #~ msgstr ""
-#~ "सक्षम होने पर, प्रत्येक ऐपइमेज का नाम \"gearlever\" उपसर्ग के बिना, उनके ऐप नाम के "
-#~ "संक्षिप्त, छोटे-अक्षर संस्करण के रूप में बदल दिया जाएगा।\n"
+#~ "सक्षम होने पर, प्रत्येक ऐपइमेज का नाम \"gearlever\" उपसर्ग के बिना, उनके ऐप नाम के संक्षिप्त, छोटे-"
+#~ "अक्षर संस्करण के रूप में बदल दिया जाएगा।\n"
 #~ "\n"
-#~ "उदाहरण के लिए, \"kdenlive-24.02-x86_64.appimage\" को \"kdelive.appimage\" "
-#~ "के रूप में सहेजा जाएगा।"
+#~ "उदाहरण के लिए, \"kdenlive-24.02-x86_64.appimage\" को \"kdelive.appimage\" के रूप में सहेजा "
+#~ "जाएगा।"

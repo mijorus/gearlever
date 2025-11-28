@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-25 16:17+0100\n"
-"PO-Revision-Date: 2025-11-25 17:45+0000\n"
+"PO-Revision-Date: 2025-11-28 16:24+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pt_PT\n"
@@ -90,7 +90,7 @@ msgstr "Desbloquear"
 
 #: src/AppDetails.py:365
 msgid "Launching..."
-msgstr "A executar..."
+msgstr "A executar…"
 
 #: src/AppDetails.py:372 src/AppDetails.py:547
 #: src/providers/AppImageProvider.py:645
@@ -127,11 +127,11 @@ msgstr "Executar"
 
 #: src/AppDetails.py:517
 msgid "Uninstalling..."
-msgstr "A desinstalar..."
+msgstr "A desinstalar…"
 
 #: src/AppDetails.py:521
 msgid "Installing..."
-msgstr "A instalar..."
+msgstr "A instalar…"
 
 #: src/AppDetails.py:534
 msgid "Move to the app menu"
