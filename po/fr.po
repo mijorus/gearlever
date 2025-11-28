@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: unnamed project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-25 16:17+0100\n"
-"PO-Revision-Date: 2025-11-28 16:12+0100\n"
+"PO-Revision-Date: 2025-11-28 16:31+0100\n"
 "Last-Translator: p-sage\n"
 "Language-Team: French <gnomefr@traduc.org>\n"
 "Language: fr\n"
@@ -433,7 +433,7 @@ msgstr "Glissez et déposez une AppImage ici ou cliquez sur l’icône « + »
 #: src/gtk/empty-list-placeholder.ui:35
 msgid " If you don't see your apps, check if the selected folder is correct."
 msgstr ""
-" Si vous ne voyez pas vos applications, vérifiez que le dossier sélectionné "
+"Si vous ne voyez pas vos applications, vérifiez que le dossier sélectionné "
 "est correct."
 
 #: src/gtk/empty-list-placeholder.ui:46
