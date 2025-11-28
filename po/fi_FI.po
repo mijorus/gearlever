@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-05 09:39+0000\n"
-"PO-Revision-Date: 2024-11-07 18:43+0200\n"
+"PO-Revision-Date: 2025-11-28 00:51+0100\n"
 "Last-Translator: JT65 <jouko.tiilikainen@outlook.com>\n"
 "Language-Team: \n"
 "Language: fi_FI\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4.4\n"
+"X-Generator: Poedit 3.8\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 msgid "Gear Lever"
@@ -44,7 +44,7 @@ msgstr "Peruuta päivitys"
 
 #: src/AppDetails.py:29 src/InstalledAppsList.py:30
 msgid "Checking updates..."
-msgstr "Tarkistetaan päivityksiä..."
+msgstr "Tarkistetaan päivityksiä…"
 
 #: src/AppDetails.py:30
 msgid "No updates available"
@@ -76,7 +76,7 @@ msgstr "Avaa"
 
 #: src/AppDetails.py:344
 msgid "Launching..."
-msgstr "Käynnistää..."
+msgstr "Käynnistää…"
 
 #: src/AppDetails.py:351 src/AppDetails.py:476
 #: src/providers/AppImageProvider.py:645
@@ -105,11 +105,11 @@ msgstr "Poista"
 
 #: src/AppDetails.py:441
 msgid "Uninstalling..."
-msgstr "Poistetaan asennus..."
+msgstr "Poistetaan asennus…"
 
 #: src/AppDetails.py:445
 msgid "Installing..."
-msgstr "Asennetaan..."
+msgstr "Asennetaan…"
 
 #: src/AppDetails.py:458
 msgid "Move to the app menu"
@@ -459,8 +459,8 @@ msgstr "Napsauta painiketta avataksesi esittelykansio, joka sisältää näyttee
 
 #: src/gtk/tutorial/3.ui:33
 msgid ""
-"Use the right-click menu to set Gear lever as the default app for \"."
-"appimage\" files"
+"Use the right-click menu to set Gear lever as the default app for "
+"\".appimage\" files"
 msgstr "Aseta Gear Lever oletussovellukseksi \".Appimage\" -tiedostot"
 
 #: src/gtk/tutorial/3.ui:44

@@ -34,7 +34,7 @@ class AppDetails(Gtk.ScrolledWindow):
     BTN_SAVED = _('Saved')
     UPDATE_BTN_ERROR = _('Invalid data')
     CANCEL_UPDATE = _('Cancel update')
-    UPDATE_FETCHING = _('Checking updates...')
+    UPDATE_FETCHING = _('Checking updates…')
     UPDATE_NOT_AVAIL_BTN_LABEL = _('No updates available')
     UPDATE_INFO_EMBEDDED = _('This application includes update information provided by the developer')
     UPDATE_INFO_NOT_EMBEDDED = _('Manage update details for this application')
@@ -362,7 +362,7 @@ class AppDetails(Gtk.ScrolledWindow):
                     self.app_list_element.set_trusted()
                     
                     pre_launch_label = self.secondary_action_button.get_label()
-                    self.secondary_action_button.set_label(_('Launching...'))
+                    self.secondary_action_button.set_label(_('Launching…'))
                     self.secondary_action_button.set_sensitive(False)
 
                     try:
@@ -514,11 +514,11 @@ class AppDetails(Gtk.ScrolledWindow):
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
 
         elif self.app_list_element.installed_status == InstalledStatus.UNINSTALLING:
-            self.primary_action_button.set_label(_('Uninstalling...'))
+            self.primary_action_button.set_label(_('Uninstalling…'))
             self.primary_action_button.set_sensitive(False)
 
         elif self.app_list_element.installed_status == InstalledStatus.INSTALLING:
-            self.primary_action_button.set_label(_('Installing...'))
+            self.primary_action_button.set_label(_('Installing…'))
             self.primary_action_button.set_sensitive(False)
 
         elif self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED:
