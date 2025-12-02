@@ -13,11 +13,12 @@ from .GitlabUpdater import GitlabUpdater
 from .CodebergUpdater import CodebergUpdater
 from .StaticFileUpdater import StaticFileUpdater
 from .FTPUpdater import FTPUpdater
+from .ForgejoUpdater import ForgejoUpdater
 
 class UpdateManagerChecker():
     @staticmethod
     def get_models() -> list[UpdateManager]:
-        return [StaticFileUpdater, GithubUpdater, GitlabUpdater, CodebergUpdater, FTPUpdater]
+        return [StaticFileUpdater, GithubUpdater, GitlabUpdater, CodebergUpdater, FTPUpdater, ForgejoUpdater]
 
     @staticmethod
     def get_model_by_name(manager_label: str) -> Optional[UpdateManager]:
@@ -38,7 +39,7 @@ class UpdateManagerChecker():
             model=UpdateManagerChecker.get_model_by_name(update_url_manager))
 
     @staticmethod
-    def check_url(url: str=Optional[str], el: Optional[AppImageListElement]=None,
+    def check_url(url: Optional[str], el: Optional[AppImageListElement]=None,
                     model: Optional[UpdateManager]=None) -> Optional[UpdateManager]:
 
         models = UpdateManagerChecker.get_models()
@@ -70,13 +71,13 @@ class UpdateManagerChecker():
 
         if model:
             if model_url and embedded_url:
-                return model(model_url, embedded=embedded_url)
+                return model(model_url, embedded=embedded_url, el=el)
             
             if model_url:
-                return model(model_url, embedded=embedded_url)
+                return model(model_url, embedded=embedded_url, el=el)
             
             if embedded_url:
-                return model(embedded_url, embedded=embedded_url)
+                return model(embedded_url, embedded=embedded_url, el=el)
 
         return None
 

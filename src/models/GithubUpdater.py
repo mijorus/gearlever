@@ -136,7 +136,13 @@ class GithubUpdater(UpdateManager):
         if not self.url_data:
             return
         
-        config = self.get_form_config()
+        allow_prereleases = False
+
+        if self.el:
+            allow_prereleases = self.el.get_config() \
+                .get('update_manager_config', {}) \
+                .get('allow_prereleases', False)
+
         release_name = self.url_data["release"]
 
         rel_url = '/'.join([
@@ -146,9 +152,7 @@ class GithubUpdater(UpdateManager):
             'releases',
         ])
 
-        if config.get('allow_prereleases'):
-            rel_url += '?per_page=1'
-        else:
+        if not allow_prereleases:
             rel_url += f'/{release_name}'
 
         try:
@@ -162,25 +166,32 @@ class GithubUpdater(UpdateManager):
             logging.error(e)
             return
 
-        if config.get('allow_prereleases'):
-            if len(rel_data):
-                rel_data = rel_data[0]
-            else:
-                logging.error('Empty release list')
-                return
+        release = None
 
-        logging.debug(f'Found {len(rel_data["assets"])} assets from {rel_url}')
+        if allow_prereleases:
+            for r in rel_data:
+                if r['draft'] == False:
+                    release = r
+                    break
+        else:
+            release = rel_data
+
+        if not release:
+            logging.error('Empty release list')
+            return
+
+        logging.debug(f'Found {len(release["assets"])} assets from {rel_url}')
 
         zsync_file = None
         target_re = re.compile(self.convert_glob_to_regex(self.url_data['filename']))
         target_tag = re.compile(self.convert_glob_to_regex(self.url_data['tag_name']))
 
-        if not re.match(target_tag, rel_data['tag_name']):
-            logging.debug(f'Release tag names do not match: {rel_data["tag_name"]} != {self.url_data["tag_name"]}')
+        if not re.match(target_tag, release['tag_name']):
+            logging.debug(f'Release tag names do not match: {release["tag_name"]} != {self.url_data["tag_name"]}')
             return
 
         possible_targets = []
-        for asset in rel_data['assets']:
+        for asset in release['assets']:
             if self.embedded:
                 if re.match(target_re, asset['name']) and asset['name'].endswith('.zsync'):
                     possible_targets = [asset]
@@ -212,7 +223,7 @@ class GithubUpdater(UpdateManager):
         is_zsync = self.embedded and zsync_file['name'].endswith('.zsync')
         target_file = re.sub(r'\.zsync$', '', zsync_file['name'])
 
-        for asset in rel_data['assets']:
+        for asset in release['assets']:
             if asset['name'] == target_file:
                 logging.debug(f'Found 1 matching asset: {asset["name"]}')
 
@@ -251,11 +262,15 @@ class GithubUpdater(UpdateManager):
                     return is_size_different
 
         return False
-    
+
     def load_form_rows(self,update_url, embedded=False): 
         url_data = self.get_url_data(update_url)
         repo_url = ''
         filename = ''
+        config = {}
+
+        if self.el:
+            config = self.el.get_config().get('update_manager_config', {})
 
         if url_data:
             repo_url = '/'.join(['https://github.com', url_data['username'], url_data['repo']])
@@ -277,7 +292,7 @@ class GithubUpdater(UpdateManager):
         
         self.allow_prereleases_row = Adw.SwitchRow(
             title=_('Allow pre-releases'),
-            active=self.config.get('allow_prereleases', False)
+            active=config.get('allow_prereleases', False)
         )
 
         if embedded:

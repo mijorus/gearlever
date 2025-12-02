@@ -647,7 +647,7 @@ class AppDetails(Gtk.ScrolledWindow):
             if selected_model:
                 update_url = app_conf.get('update_url', '')
                 manager_config = app_conf.get('update_manager_config', {})
-                self.update_manager = selected_model(url=update_url, embedded=False, config=manager_config)
+                self.update_manager = selected_model(url=update_url, embedded=False, el=self.app_list_element)
             else:
                 if self.app_list_element:
                     remove_update_config(self.app_list_element)
@@ -802,7 +802,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
     # Returns the configuration from the json for this specific app
     def get_config_for_app(self) -> dict:
-        return read_config_for_app(self.app_list_element)
+        return self.app_list_element.get_config()
 
     def on_web_browser_open_btn_clicked(self, widget):
         app_config = self.get_config_for_app()
