@@ -2,6 +2,7 @@ import time
 import logging
 import base64
 import os
+import platform
 import shlex
 from typing import Optional, Callable
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
@@ -209,7 +210,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_subtitle.set_visible(True)
         self.description.set_visible(True)
 
-        system_arch = sandbox_sh(['arch'])
+        system_arch = platform.machine()
 
         if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
             # Exec arguments
