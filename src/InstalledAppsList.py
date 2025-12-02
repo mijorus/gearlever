@@ -28,7 +28,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
     CHECK_FOR_UPDATES_LABEL = _('Check for updates')
     NO_UPDATES_FOUND_LABEL = _('No updates found')
-    CHECKING_FOR_UPDATES_LABEL = _('Checking updates…')
+    CHECKING_FOR_UPDATES_LABEL = _('Checking updates...')
     UPDATE_ALL_LABEL = _('Update all')
 
     def __init__(self):
