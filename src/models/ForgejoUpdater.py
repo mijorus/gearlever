@@ -14,71 +14,49 @@ from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
 
-class GithubUpdater(UpdateManager):
+class ForgejoUpdater(UpdateManager):
+    # Example https://git.citron-emu.org/Citron/Emulator
+
     staticfile_manager: Optional[StaticFileUpdater]
-    label = 'Github'
-    name = 'GithubUpdater'
+    label = 'Forgejo'
+    name = 'ForgejoUpdater'
 
     @staticmethod
     def get_url_data(url: str):
-        # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
-        # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#github-releases
-
-        tag_name = '*'
+        paths = []
         if url.startswith('https://'):
-            logging.debug(f'GithubUpdater: found http url, trying to detect github data')
+            logging.debug(f'ForgejoUpdater: found http url, trying to detect forgejo data')
             urldata = urlsplit(url)
-
-            if urldata.netloc != 'github.com':
-                return None
 
             paths = urldata.path.split('/')
 
             if len(paths) != 7:
                 return None
 
-            if paths[3] != 'releases' or paths[4] != 'download':
-                return None
-
-            rel_name = 'latest'
-            tag_name = paths[5]
-
-            url = f'|{paths[1]}|{paths[2]}|{rel_name}|{paths[6]}'
-            logging.debug(f'GithubUpdater: generated appimages-like update string "{url}"')
-
-        items = url.split('|')
-
-        if len(items) != 5:
-            return None
-
-        return {
-            'username': items[1],
-            'repo': items[2],
-            'release': items[3],
-            'filename': items[4],
-            'tag_name': tag_name
-        }
-
+            return {
+                'netloc': urldata.netloc,
+                'username': paths[1],
+                'repo': paths[2],
+                'filename': paths[6],
+            }
+        
+        return None
+    
     @staticmethod
     def can_handle_link(url: str):
-        return GithubUpdater.get_url_data(url) != None
+        return ForgejoUpdater.get_url_data(url) != None
 
-    def __init__(self, url, embedded: str|Literal[False]=False, **kwargs) -> None:
-        super().__init__(url, embedded, **kwargs)
+
+    def __init__(self, url, **kwargs) -> None:
+        super().__init__(url, **kwargs)
         self.staticfile_manager = None
-        self.set_url(url)
+        self.url_data = ForgejoUpdater.get_url_data(url)
+        self.url = url
+        self.embedded = False
 
         self.repo_url_row = None
         self.repo_filename_row = None
         self.allow_prereleases_row = None
-
-        self.embedded = False
-        if embedded:
-            self.embedded = self.get_url_string_from_data(
-                GithubUpdater.get_url_data(embedded)
-            )
-
-            self.embedded = re.sub(r"\.zsync$", "", self.embedded)
 
     def set_url(self, url: str):
         self.url_data = self.get_url_data(url)
@@ -87,8 +65,8 @@ class GithubUpdater(UpdateManager):
             self.url = self.get_url_string_from_data(self.url_data)
 
     def get_url_string_from_data(self, url_data):
-        url = f'https://github.com/{url_data["username"]}/{url_data["repo"]}'
-        url += f'/releases/download/{url_data["tag_name"]}/{url_data["filename"]}'
+        url = f'https://{url_data["netloc"]}/{url_data["username"]}/{url_data["repo"]}'
+        url += f'/releases/download/*/{url_data["filename"]}'
         return url
 
     def download(self, status_update_cb) -> tuple[str, str]:
@@ -96,12 +74,12 @@ class GithubUpdater(UpdateManager):
         if not target_asset:
             raise Exception(f'Missing target_asset for {self.name} instance')
 
-        dwnl = target_asset['asset']['browser_download_url']
+        dwnl = target_asset['browser_download_url']
         self.staticfile_manager = StaticFileUpdater(dwnl)
         fname, etag = self.staticfile_manager.download(status_update_cb)
 
         self.staticfile_manager = None
-        return fname, target_asset['asset']['id']
+        return fname, target_asset['id']
 
     def cancel_download(self):
         if self.staticfile_manager:
@@ -135,7 +113,8 @@ class GithubUpdater(UpdateManager):
     def fetch_target_asset(self):
         if not self.url_data:
             return
-        
+
+        api_version = 'v1'
         allow_prereleases = False
 
         if self.el:
@@ -143,26 +122,24 @@ class GithubUpdater(UpdateManager):
                 .get('update_manager_config', {}) \
                 .get('allow_prereleases', False)
 
-        release_name = self.url_data["release"]
-
         rel_url = '/'.join([
-            'https://api.github.com/repos',
+            f'https://{self.url_data["netloc"]}',
+            'api', 
+            api_version,
+            'repos',
             self.url_data["username"],
             self.url_data["repo"],
-            'releases',
+            'releases'
         ])
 
         if not allow_prereleases:
-            rel_url += f'/{release_name}'
+            rel_url += '/latest'
 
         try:
             rel_data_resp = requests.get(rel_url)
             rel_data_resp.raise_for_status()
             rel_data = rel_data_resp.json()
         except Exception as e:
-            if 'rate limit exceeded' in str(e):
-                print(str(e))
-
             logging.error(e)
             return
 
@@ -182,87 +159,51 @@ class GithubUpdater(UpdateManager):
 
         logging.debug(f'Found {len(release["assets"])} assets from {rel_url}')
 
-        zsync_file = None
+        download_asset = None
         target_re = re.compile(self.convert_glob_to_regex(self.url_data['filename']))
-        target_tag = re.compile(self.convert_glob_to_regex(self.url_data['tag_name']))
-
-        if not re.match(target_tag, release['tag_name']):
-            logging.debug(f'Release tag names do not match: {release["tag_name"]} != {self.url_data["tag_name"]}')
-            return
 
         possible_targets = []
         for asset in release['assets']:
-            if self.embedded:
-                if re.match(target_re, asset['name']) and asset['name'].endswith('.zsync'):
-                    possible_targets = [asset]
-                    break
-            else:
-                if re.match(target_re, asset['name']):
-                    possible_targets.append(asset)
+            if re.match(target_re, asset['name']):
+                possible_targets.append(asset)
 
         if len(possible_targets) == 1:
-            zsync_file = possible_targets[0]
+            download_asset = possible_targets[0]
         else:
             logging.info(f'found {len(possible_targets)} possible file targets')
-            
+
             for t in possible_targets:
                 logging.info(' - ' + t['name'])
 
-            # Check possible differences with system architecture in file name
             if self.system_arch == 'x86_64':
                 for t in possible_targets:
                     if self.is_x86.search(t['name']) or not self.is_arm.search(t['name']):
-                        zsync_file = t
+                        download_asset = t
                         logging.info('found possible target: ' + t['name'])
                         break
 
-        if not zsync_file:
+        if not download_asset:
             logging.debug(f'No matching assets found from {rel_url}')
             return
 
-        is_zsync = self.embedded and zsync_file['name'].endswith('.zsync')
-        target_file = re.sub(r'\.zsync$', '', zsync_file['name'])
-
-        for asset in release['assets']:
-            if asset['name'] == target_file:
-                logging.debug(f'Found 1 matching asset: {asset["name"]}')
-
-                if is_zsync:
-                    return {'asset': asset, 'zsync': zsync_file}
-
-                return {'asset': asset, 'zsync': None}
+        logging.debug(f'Found 1 matching asset: {download_asset["browser_download_url"]}')
+        return download_asset
 
     def is_update_available(self, el: AppImageListElement):
         target_asset = self.fetch_target_asset()
 
         if target_asset:
-            ct_supported = target_asset['asset']['content_type'] in [*AppImageProvider.supported_mimes, 'raw',
+            content_type = requests.head(target_asset['browser_download_url']).headers.get('content-type', None)
+            ct_supported = content_type in [*AppImageProvider.supported_mimes, 'raw',
                                                     'binary/octet-stream', 'application/octet-stream']
 
             if ct_supported:
-                if target_asset['zsync']:
-                    logging.debug('GithubUpdated: checking zsync file at ' + target_asset['zsync']['browser_download_url'])
-                    zsync_file = requests.get(target_asset['zsync']['browser_download_url']).text
-                    zsync_file_header = zsync_file.split('\n\n', 1)[0]
-                    sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
-                    curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha1')
-
-                    match = re.search(sha_pattern, zsync_file_header)
-                    if match:
-                        return match.group(1) != curr_version_hash
-
-                else:
-                    digest = target_asset['asset'].get('digest', '')
-                    if digest and digest.startswith('sha256:'):
-                        curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha256')
-                        return f'sha256:{curr_version_hash}' != digest
-
-                    old_size = os.path.getsize(el.file_path)
-                    is_size_different = target_asset['asset']['size'] != old_size
-                    return is_size_different
+                old_size = os.path.getsize(el.file_path)
+                is_size_different = target_asset['size'] != old_size
+                return is_size_different
 
         return False
-
+    
     def load_form_rows(self,update_url, embedded=False): 
         url_data = self.get_url_data(update_url)
         repo_url = ''
@@ -273,23 +214,23 @@ class GithubUpdater(UpdateManager):
             config = self.el.get_config().get('update_manager_config', {})
 
         if url_data:
-            repo_url = '/'.join(['https://github.com', url_data['username'], url_data['repo']])
+            repo_url = '/'.join([f'https://{url_data["netloc"]}', url_data['username'], url_data['repo']])
             filename = url_data['filename']
 
         self.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
             icon_name='gl-git',
-            sensitive=(not embedded),
+            sensitive=True,
             title=_('Repo URL')
         )
 
         self.repo_filename_row = AdwEntryRowDefault(
             text=filename,
             icon_name='gl-paper',
-            sensitive=(not embedded),
+            sensitive=True,
             title=_('Release file name')
         )
-        
+
         self.allow_prereleases_row = Adw.SwitchRow(
             title=_('Allow pre-releases'),
             active=config.get('allow_prereleases', False)

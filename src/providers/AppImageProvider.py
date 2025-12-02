@@ -69,6 +69,8 @@ class AppImageListElement():
         os.chmod(self.file_path, 0o755)
         self.trusted = True
 
+    def get_config(self):
+        return read_config_for_app(self)
 
 class AppImageProvider():
     supported_mimes = ['application/x-iso9660-appimage', 'application/vnd.appimage', 'application/x-appimage']

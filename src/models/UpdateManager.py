@@ -14,14 +14,15 @@ class UpdateManager(ABC):
     url = ''
     label = ''
     embedded = False
+    el: Optional[AppImageListElement] = None
     system_arch = platform.machine()
     is_x86 = re.compile(r'(\-|\_|\.)x86(\-|\_|\.)')
     is_arm = re.compile(r'(\-|\_|\.)(arm64|aarch64|armv7l)(\-|\_|\.)')
 
     @abstractmethod
-    def __init__(self, url: str, embedded: str|Literal[False]=False, config={}) -> None:
+    def __init__(self, url: str, embedded: str|Literal[False]=False, el=None) -> None:
         self.url = url
-        self.config = config
+        self.el = el
         self.download_folder = os.path.join(TMP_DIR, 'downloads')
 
     def cleanup(self):
