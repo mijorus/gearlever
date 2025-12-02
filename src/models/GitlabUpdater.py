@@ -110,7 +110,7 @@ class GitlabUpdater(UpdateManager):
         regex = ""
         for char in glob_str:
             if char == "*":
-                regex += r".*"
+                regex += r"[a-zA-Z0-9]*"
             else:
                 regex += re.escape(char)
 
