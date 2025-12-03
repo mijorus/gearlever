@@ -80,6 +80,17 @@ class GithubUpdater(UpdateManager):
 
             self.embedded = re.sub(r"\.zsync$", "", self.embedded)
 
+        config = {}
+
+        if self.el:
+            config = self.el.get_config().get('update_manager_config', {})
+
+        self.config = {
+            'repo_url': config.get('repo_url', None),
+            'repo_filename': config.get('repo_filename', None),
+            'allow_prereleases': config.get('allow_prereleases', None)
+        }
+
     def set_url(self, url: str):
         self.url_data = self.get_url_data(url)
 
@@ -307,7 +318,7 @@ class GithubUpdater(UpdateManager):
             self.allow_prereleases_row
         ]
 
-    def get_form_url(self,) -> str:
+    def get_url_from_form(self) -> str:
         if (not self.repo_filename_row) or (not self.repo_url_row):
             return ''
         
@@ -317,12 +328,29 @@ class GithubUpdater(UpdateManager):
             self.repo_filename_row.get_text()
         ])
 
-    def get_form_config(self,):
+    def get_url_from_params(self, **kwargs):
+        return '/'.join([
+            kwargs.get('repo_url', ''),
+            'releases/download/*',
+            kwargs.get('repo_filename', ''),
+        ])
+
+    def update_config_from_form(self):
         allow_prereleases = False
+        repo_url = None
+        repo_filename = None
 
         if self.allow_prereleases_row:
             allow_prereleases = self.allow_prereleases_row.get_active()
 
-        return {
-            'allow_prereleases': allow_prereleases
+        if self.repo_url_row:
+            repo_url = self.repo_url_row.get_text()
+
+        if self.repo_filename_row:
+            repo_filename = self.repo_filename_row.get_text()
+
+        self.config = {
+            'allow_prereleases': allow_prereleases,
+            'repo_url': repo_url,
+            'repo_filename': repo_filename,
         }

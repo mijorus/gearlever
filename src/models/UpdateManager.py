@@ -24,6 +24,7 @@ class UpdateManager(ABC):
         self.url = url
         self.el = el
         self.download_folder = os.path.join(TMP_DIR, 'downloads')
+        self.config = {}
 
     def cleanup(self):
         pass
@@ -50,11 +51,15 @@ class UpdateManager(ABC):
         pass
 
     @abstractmethod
-    def get_form_url(self) -> str:
+    def get_url_from_form(self) -> str:
         pass
 
-    def get_form_config(self) -> dict:
-        return {}
+    @abstractmethod
+    def get_url_from_params(self, **kwargs) -> str:
+        pass
+
+    def update_config_from_form(self):
+        pass
 
     @abstractmethod
     def set_url(self, url: str):

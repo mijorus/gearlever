@@ -8,8 +8,9 @@ from .lib.constants import FETCH_UPDATES_ARG
 from .lib.utils import make_option, url_is_valid
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageUpdateLogic, AppImageListElement
-from .lib.json_config import read_config_for_app, save_config_for_app
+from .lib.json_config import read_config_for_app, save_config_for_app, remove_update_config
 from .models.UpdateManagerChecker import UpdateManagerChecker
+from .models.UpdateManager import UpdateManager
 
 class Cli():
     options = [
@@ -149,7 +150,7 @@ class Cli():
         Cli._print_help_if_requested(argv, [
             ['--manager <manager>', f'Optional: specify an update manager between: {u_managers}'],
             ['--unset', f'Unset a custom config for an app'],
-        ], text='Usage: --set-update-url <file_path> --url <url>')
+        ], text='Deprecated (use --set-update-source), usage: --set-update-url <file_path> --url <url>')
 
         update_url = None
         update_url = Cli._get_arg_value(argv, '--url')
@@ -163,15 +164,7 @@ class Cli():
         el = appimage_provider.create_list_element_from_file(g_file)
 
         if '--unset' in argv:
-            app_conf = read_config_for_app(el)
-
-            if 'update_url' in app_conf:
-                del app_conf['update_url']
-
-            if 'update_url_manager' in app_conf:
-                del app_conf['update_url_manager']
-
-            save_config_for_app(app_conf)
+            remove_update_config(el)
             sys.exit(0)
 
         selected_manager = None
@@ -193,6 +186,48 @@ class Cli():
             else:
                 print(f'The provided url is not supported by any of the following providers: {u_managers}')
             sys.exit(1)
+
+    @staticmethod
+    def set_update_source(argv):
+        u_managers = ', '.join([n.name for n in UpdateManagerChecker.get_models()])
+
+        Cli._print_help_if_requested(argv, [
+            ['--manager <manager>', f'Optional: specify an update manager between: {u_managers}'],
+            ['--unset', f'Unset a custom config for an app'],
+        ], text='Usage: --set-update-source <file_path> --manager <manager> [...OPTIONS]')
+
+        update_options = Cli._get_arg_value(argv, '--url')
+        manager_name = Cli._get_arg_value(argv, '--manager')
+
+        if (not manager_name):
+            print('Error: "%s" is not a valid update manager' % manager_name)
+            sys.exit(1)
+
+        g_file = Cli._get_file_from_args(argv)
+        el = appimage_provider.create_list_element_from_file(g_file)
+
+        if '--unset' in argv:
+            remove_update_config(el)
+            sys.exit(0)
+
+        selected_model = None
+        if manager_name:
+            selected_model = UpdateManagerChecker.get_model_by_name(manager_name)
+
+        if not selected_model:
+            print('Error: "%s" is not a valid update manager' % manager_name)
+            sys.exit(1)
+
+        manager: UpdateManager = selected_model(url='', embedded=False, el=self.app_list_element)
+        update_url = manager.get_url_from_form(update_options)
+
+        remove_update_config(el)
+
+        app_conf = el.get_config()
+        app_conf['update_url'] = update_url
+        app_conf['update_url_manager'] = manager.name
+        save_config_for_app(app_conf)
+        sys.exit(0)
 
     @staticmethod
     def integrate(argv):

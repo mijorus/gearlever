@@ -69,8 +69,16 @@ class GitlabUpdater(UpdateManager):
         self.staticfile_manager = None
         self.url_data = GitlabUpdater.get_url_data(url)
         self.url = url
-
         self.embedded = False
+
+        config = {}
+        if self.el:
+            config = self.el.get_config().get('update_manager_config', {})
+
+        self.config = {
+            'repo_url': config.get('repo_url', None),
+            'repo_filename': config.get('repo_filename', None),
+        }
 
     def set_url(self, url: str):
         self.url_data = self.get_url_data(url)
@@ -234,7 +242,7 @@ class GitlabUpdater(UpdateManager):
 
         return [self.repo_url_row, self.repo_filename_row]
 
-    def get_form_url(self, ) -> str:
+    def get_url_from_form(self, ) -> str:
         if (not self.repo_filename_row) or (not self.repo_url_row):
             return ''
         
@@ -252,3 +260,24 @@ class GitlabUpdater(UpdateManager):
                 repo_url,
                 filename
             ]).strip()
+        
+    def get_url_from_params(self, **kwargs):
+        return '#'.join([
+            kwargs.get('repo_url', ''),
+            kwargs.get('repo_filename', ''),
+        ])
+
+    def update_config_from_form(self):
+        repo_url = None
+        repo_filename = None
+
+        if self.repo_url_row:
+            repo_url = self.repo_url_row.get_text()
+
+        if self.repo_filename_row:
+            repo_filename = self.repo_filename_row.get_text()
+
+        self.config = {
+            'repo_url': repo_url,
+            'repo_filename': repo_filename,
+        }

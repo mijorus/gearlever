@@ -50,10 +50,19 @@ class FTPUpdater(UpdateManager):
         self.staticfile_manager = None
         self.set_url(url)
         self.embedded = False
-        
+
         self.url_row = None
         self.filename_row = None
         self.current_download: FTPHost | None = None
+
+        config = {}
+        if self.el:
+            config = self.el.get_config().get('update_manager_config', {})
+
+        self.config = {
+            'url': config.get('url', None),
+            'filename': config.get('filename', None),
+        }
 
     def set_url(self, url: str):
         self.url_data = self.get_url_data(url)
@@ -213,7 +222,7 @@ class FTPUpdater(UpdateManager):
         old_size = os.path.getsize(el.file_path)
         is_size_different = target_asset['size'] != old_size
         return is_size_different
-    
+
     def load_form_rows(self, update_url, embedded=False): 
         url_data = FTPUpdater.get_url_data(update_url)
         ftp_url = ''
@@ -239,7 +248,7 @@ class FTPUpdater(UpdateManager):
 
         return [self.url_row, self.filename_row]
 
-    def get_form_url(self, ) -> str:
+    def get_url_from_form(self, ) -> str:
         if (not self.filename_row) or (not self.url_row):
             return ''
         
@@ -252,5 +261,10 @@ class FTPUpdater(UpdateManager):
             filename
         ])
 
+    def get_url_from_params(self, **kwargs):
+        return '/'.join([
+            kwargs.get('url', ''),
+            kwargs.get('filename', ''),
+        ])
 
 

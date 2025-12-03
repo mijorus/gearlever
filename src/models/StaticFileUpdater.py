@@ -153,7 +153,7 @@ class StaticFileUpdater(UpdateManager):
 
         return [self.form_row]
     
-    def get_form_url(self, ) -> str:
+    def get_url_from_form(self, ) -> str:
         if (not self.form_row):
             return ''
         

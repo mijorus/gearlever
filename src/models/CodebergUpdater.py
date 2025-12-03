@@ -196,7 +196,7 @@ class CodebergUpdater(UpdateManager):
 
         return [self.repo_url_row, self.repo_filename_row]
 
-    def get_form_url(self, ) -> str:
+    def get_url_from_form(self, ) -> str:
         if (not self.repo_filename_row) or (not self.repo_url_row):
             return ''
         
@@ -204,6 +204,13 @@ class CodebergUpdater(UpdateManager):
             self.repo_url_row.get_text(),
             'releases/download/*',
             self.repo_filename_row.get_text()
+        ])
+
+    def get_url_from_params(self, **kwargs):
+        return '/'.join([
+            kwargs.get('repo_url', ''),
+            'releases/download/*',
+            kwargs.get('repo_filename', ''),
         ])
 
 
