@@ -51,7 +51,7 @@
                 {
                     "type": "git",
                     "url": "https://github.com/plougher/squashfs-tools.git",
-                    "tag": "4.6.1"
+                    "tag": "4.7.4"
                 }
             ]
         },
