@@ -18,6 +18,7 @@ class Cli():
         make_option('remove', description='Trashes an AppImage, its .desktop file and icons  '),
         make_option('list-installed', description='List integrated apps'),
         make_option('list-updates', description='List available updates'),
+        make_option('list-update-managers', description='List available update managers'),
         make_option('set-update-url', description='Set a custom update url'),
         make_option(FETCH_UPDATES_ARG, description='Fetch updates in the background and sends a desktop notification, used on system startup'),
     ]
@@ -296,6 +297,16 @@ class Cli():
         if not table:
             print('No updates available')
             return
+
+        Cli._print_table(table)
+
+    @staticmethod
+    def list_update_managers(argv):
+        models = UpdateManagerChecker.get_models()
+        table = []
+
+        for m in models:
+            table.append([m.label, m.name])
 
         Cli._print_table(table)
 
