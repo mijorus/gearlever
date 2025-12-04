@@ -20,7 +20,8 @@ class Cli():
         make_option('list-installed', description='List integrated apps'),
         make_option('list-updates', description='List available updates'),
         make_option('list-update-managers', description='List available update managers'),
-        make_option('set-update-url', description='Set a custom update url'),
+        # make_option('set-update-url', description='Set a custom update url'), DEPRECATED
+        make_option('set-update-source', description='Set a custom update source'),
         make_option(FETCH_UPDATES_ARG, description='Fetch updates in the background and sends a desktop notification, used on system startup'),
     ]
 
@@ -191,13 +192,23 @@ class Cli():
     def set_update_source(argv):
         u_managers = ', '.join([n.name for n in UpdateManagerChecker.get_models()])
 
+        manager_name = Cli._get_arg_value(argv, '--manager')
+        selected_model = None
+
+        if manager_name:
+            selected_model = UpdateManagerChecker.get_model_by_name(manager_name)
+            manager: UpdateManager = selected_model(url='', embedded=False)
+            Cli._print_help_if_requested(argv, [
+                [f'--manager {manager_name}'],
+                *[[f'OPTION {k}=<value>'] for k in manager.config.keys()]
+            ], text='Usage: --set-update-source <file_path> --manager <manager> [...OPTIONS]')
+
         Cli._print_help_if_requested(argv, [
-            ['--manager <manager>', f'Optional: specify an update manager between: {u_managers}'],
+            ['--manager <manager>', f'Specify an update manager between: {u_managers}'],
             ['--unset', f'Unset a custom config for an app'],
         ], text='Usage: --set-update-source <file_path> --manager <manager> [...OPTIONS]')
 
-        update_options = Cli._get_arg_value(argv, '--url')
-        manager_name = Cli._get_arg_value(argv, '--manager')
+        update_options = Cli._get_key_pairs(argv)
 
         if (not manager_name):
             print('Error: "%s" is not a valid update manager' % manager_name)
@@ -218,15 +229,28 @@ class Cli():
             print('Error: "%s" is not a valid update manager' % manager_name)
             sys.exit(1)
 
-        manager: UpdateManager = selected_model(url='', embedded=False, el=self.app_list_element)
-        update_url = manager.get_url_from_form(update_options)
+        manager: UpdateManager = selected_model(url='', embedded=False, el=el)
+        if set(manager.config.keys()) != set(update_options.keys()):
+            print('Missing or invalid update configuration, required keys: ' + ', '.join(manager.config.keys()))
+            sys.exit(1)
+
+        manager_url = manager.get_url_from_params(**update_options)
+        
+        if not manager.can_handle_link(manager_url):
+            print('Invalid configuration for ' + manager_name)
+            sys.exit(1)
+
+        manager.config = update_options
+        manager.set_url(manager_url)
 
         remove_update_config(el)
 
         app_conf = el.get_config()
-        app_conf['update_url'] = update_url
+        app_conf['update_url'] = manager.url
         app_conf['update_url_manager'] = manager.name
+        app_conf['update_manager_config'] = manager.config
         save_config_for_app(app_conf)
+
         sys.exit(0)
 
     @staticmethod
@@ -346,6 +370,16 @@ class Cli():
         Cli._print_table(table)
 
     @staticmethod
+    def _get_key_pairs(argv: list[str]) -> dict:
+        result = {}
+        for pair in argv:
+            if '=' in pair:
+                key, value = pair.split('=', 1)
+                result[key] = value
+
+        return result
+
+    @staticmethod
     def _get_arg_value(argv: list[str], arg_name: str):
         if not arg_name in argv:
             return None
@@ -399,12 +433,13 @@ class Cli():
         if '--help' in argv:
             opt = Cli._get_invoked_option(argv)
             if opt:
-                print(str(opt.description) + '\n')
+                print(str(opt.description))
 
             if text:
-                print(text + '\n')
+                print(text)
 
             Cli._print_table(help)
+            print('\nMore documentation available at https://gearlever.mijorus.it')
             sys.exit(0)
 
     @staticmethod

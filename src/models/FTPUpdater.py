@@ -266,5 +266,20 @@ class FTPUpdater(UpdateManager):
             kwargs.get('url', ''),
             kwargs.get('filename', ''),
         ])
+    
+    def update_config_from_form(self):
+        url = None
+        filename = None
+
+        if self.url_row:
+            url = self.url_row.get_text()
+
+        if self.filename_row:
+            filename = self.filename_row.get_text()
+
+        self.config = {
+            'url': url,
+            'filename': filename,
+        }
 
 
