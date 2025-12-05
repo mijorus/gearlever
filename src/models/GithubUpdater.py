@@ -144,12 +144,8 @@ class GithubUpdater(UpdateManager):
         if not self.url_data:
             return
         
-        allow_prereleases = False
-
-        if self.el:
-            allow_prereleases = self.el.get_config() \
-                .get('update_manager_config', {}) \
-                .get('allow_prereleases', False)
+        allow_prereleases = self.get_saved_config() \
+            .get('allow_prereleases', False)
 
         release_name = self.url_data["release"]
 
@@ -275,10 +271,7 @@ class GithubUpdater(UpdateManager):
         url_data = self.get_url_data(update_url)
         repo_url = ''
         filename = ''
-        config = {}
-
-        if self.el:
-            config = self.el.get_config().get('update_manager_config', {})
+        config = self.get_saved_config()
 
         if url_data:
             repo_url = '/'.join(['https://github.com', url_data['username'], url_data['repo']])
