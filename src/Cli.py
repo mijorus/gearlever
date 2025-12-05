@@ -240,6 +240,15 @@ class Cli():
             print('Invalid configuration for ' + manager_name)
             sys.exit(1)
 
+        boolean_vals = ['0', '1', 'false', 'true']
+        for k, v in manager.config.items():
+            if type(v) == bool:
+                if update_options[k] not in boolean_vals:
+                    print(f'{k} is not a boolean value, allowed values: ' + str(boolean_vals))
+                    sys.exit(1)
+
+                update_options[k] = (update_options[k] in ['1', 'true'])
+
         manager.config = update_options
         manager.set_url(manager_url)
 

@@ -88,7 +88,7 @@ class GithubUpdater(UpdateManager):
         self.config = {
             'repo_url': config.get('repo_url', None),
             'repo_filename': config.get('repo_filename', None),
-            'allow_prereleases': config.get('allow_prereleases', None)
+            'allow_prereleases': config.get('allow_prereleases', False)
         }
 
     def set_url(self, url: str):
