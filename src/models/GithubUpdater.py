@@ -83,8 +83,8 @@ class GithubUpdater(UpdateManager):
         saved_config = self.get_saved_config()
 
         self.config = {
-            'repo_url': saved_config.get('repo_url', None),
-            'repo_filename': saved_config.get('repo_filename', None),
+            'repo_url': '',
+            'repo_filename': '',
             'allow_prereleases': saved_config.get('allow_prereleases', False)
         }
 
@@ -93,6 +93,8 @@ class GithubUpdater(UpdateManager):
 
         if self.url_data:
             self.url = self.get_url_string_from_data(self.url_data)
+            self.config['repo_url'] =  '/'.join(['https://github.com', self.url_data['username'], self.url_data['repo']])
+            self.config['repo_filename'] =  self.url_data['filename']
 
     def get_url_string_from_data(self, url_data):
         url = f'https://github.com/{url_data["username"]}/{url_data["repo"]}'
@@ -268,14 +270,8 @@ class GithubUpdater(UpdateManager):
         return False
 
     def load_form_rows(self,update_url, embedded=False): 
-        url_data = self.get_url_data(update_url)
-        repo_url = ''
-        filename = ''
-        config = self.get_saved_config()
-
-        if url_data:
-            repo_url = '/'.join(['https://github.com', url_data['username'], url_data['repo']])
-            filename = url_data['filename']
+        repo_url = self.config.get('repo_url')
+        filename = self.config.get('repo_filename')
 
         self.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
@@ -293,7 +289,7 @@ class GithubUpdater(UpdateManager):
         
         self.allow_prereleases_row = Adw.SwitchRow(
             title=_('Allow pre-releases'),
-            active=config.get('allow_prereleases', False)
+            active=self.config.get('allow_prereleases')
         )
 
         if embedded:
