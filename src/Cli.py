@@ -20,7 +20,7 @@ class Cli():
         make_option('list-installed', description='List integrated apps'),
         make_option('list-updates', description='List available updates'),
         make_option('list-update-managers', description='List available update managers'),
-        # make_option('set-update-url', description='Set a custom update url'), DEPRECATED
+        make_option('set-update-url', description='(DEPRECATED, use set-update-source instead) Set a custom update url'),
         make_option('set-update-source', description='Set a custom update source'),
         make_option(FETCH_UPDATES_ARG, description='Fetch updates in the background and sends a desktop notification, used on system startup'),
     ]
