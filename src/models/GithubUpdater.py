@@ -80,15 +80,12 @@ class GithubUpdater(UpdateManager):
 
             self.embedded = re.sub(r"\.zsync$", "", self.embedded)
 
-        config = {}
-
-        if self.el:
-            config = self.el.get_config().get('update_manager_config', {})
+        saved_config = self.get_saved_config()
 
         self.config = {
-            'repo_url': config.get('repo_url', None),
-            'repo_filename': config.get('repo_filename', None),
-            'allow_prereleases': config.get('allow_prereleases', False)
+            'repo_url': saved_config.get('repo_url', None),
+            'repo_filename': saved_config.get('repo_filename', None),
+            'allow_prereleases': saved_config.get('allow_prereleases', False)
         }
 
     def set_url(self, url: str):

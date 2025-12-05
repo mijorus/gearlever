@@ -64,3 +64,11 @@ class UpdateManager(ABC):
     @abstractmethod
     def set_url(self, url: str):
         self.url = url
+
+    def get_saved_config(self):
+        config = {}
+
+        if self.el:
+            config = self.el.get_config().get('update_manager_config', {})
+
+        return config

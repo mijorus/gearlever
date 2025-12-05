@@ -78,8 +78,12 @@ class StaticFileUpdater(UpdateManager):
     def __init__(self, url, **kwargs) -> None:
         super().__init__(url, **kwargs)
         self.form_row = None
-        self.config = { 'url': None }
         logging.info(f'Downloading file from {self.url}')
+
+        saved_config = self.get_saved_config()
+        self.config = {
+            'url': saved_config.get('url', None)
+        }
 
     def download(self, status_update_cb) -> tuple[str, str]:
         self.currend_download = requests.get(self.url, stream=True)
