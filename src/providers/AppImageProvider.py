@@ -4,6 +4,7 @@ import os
 import shutil
 import filecmp
 import shlex
+import traceback
 from xdg import DesktopEntry
 from desktop_entry_lib import DesktopEntry as JdDesktopEntry
 from desktop_entry_lib import DesktopAction as JdDesktopAction
@@ -688,18 +689,41 @@ class AppImageProvider():
             logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
             use_appimage_extract = False
             use_unsquashfs = False
+            use_7zz_full = False
+            use_7zz = False
 
             try:
+                logging.debug('Testing with 7zz')
                 terminal.sandbox_sh(['7zz', 't', file.get_path(), '-y', '-bso0', '-bsp0'])
-                z7zoutput = terminal.sandbox_sh(['7zz', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', '-bsp0', 
-                                                    '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path)
-                logging.debug('=== 7zz log ===')
-                logging.debug(z7zoutput)
-                logging.debug(f'=== end 7zz log ===')
+                use_7zz = True
             except Exception as e:
-                logging.error('Extraction with 7zz failed')
-                logging.error(str(e))
-                use_unsquashfs = True
+                logging.warn('Testing with 7zz FAILED')
+            
+            if use_7zz:
+                try:
+                    z7zoutput = terminal.sandbox_sh(['7zz', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', '-bsp0',
+                                                        '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path)
+                    logging.debug('=== 7zz log ===')
+                    logging.debug(z7zoutput)
+                    logging.debug(f'=== end 7zz log ===')
+                except Exception as e:
+                    terminal.sandbox_sh(['rm', '-rf', squashfs_root_folder])
+                    logging.error('Extraction with 7zz (fast) failed')
+                    logging.error(traceback.format_exc())
+                    use_7zz_full = True
+                
+                if use_7zz_full:
+                    try:
+                        logging.debug('7z, using full decompress')
+                        z7zoutput = terminal.sandbox_sh(['7zz', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', 'aoa'], cwd=dest_path)
+
+                        logging.debug('=== 7zz log ===')
+                        logging.debug(z7zoutput)
+                        logging.debug(f'=== end 7zz log ===')
+                    except Exception as e:
+                        logging.error('Extraction with 7zz failed')
+                        logging.error(traceback.format_exc())
+                        use_unsquashfs = True
 
             if use_unsquashfs:
                 logging.debug('Testing with unsquashfs')
