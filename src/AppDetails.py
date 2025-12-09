@@ -259,15 +259,11 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.show_row_spinner(False)
 
-        self.desc_row.set_visible(len(self.description.get_text()) > 0)
-
         if load_completed_callback:
             load_completed_callback()
 
     @_async
     def load(self, load_completed_callback: Optional[Callable] = None):
-        self.show_row_spinner(True)
-
         if self.command_line_arguments_row:
             self.command_line_arguments_row.remove_css_class('error')
 
@@ -289,6 +285,7 @@ class AppDetails(Gtk.ScrolledWindow):
         )
 
     def before_load(self):
+        self.show_row_spinner(True)
         self.title.set_visible(False)
         self.app_subtitle.set_visible(False)
         self.description.set_visible(False)
@@ -307,10 +304,6 @@ class AppDetails(Gtk.ScrolledWindow):
     @_async
     def install_file(self, el: AppImageListElement):
         self.provider.install_file(el)
-        # try:
-        # except Exception as e:
-        #     logging.error(str(e))
-
         self.update_installation_status()
 
         self.complete_load(
