@@ -74,7 +74,7 @@ class AppImageListElement():
 
 class AppImageProvider():
     supported_mimes = ['application/x-iso9660-appimage', 'application/vnd.appimage', 'application/x-appimage']
-    
+
     def __init__(self):
         self.name = 'AppImage'
         self.v2_detector_string = 'AppImages require FUSE to run.'
@@ -181,13 +181,13 @@ class AppImageProvider():
     def get_description(self, el: AppImageListElement) -> str:
         if el.desktop_entry:
             return el.desktop_entry.getComment()
-        
+
         return ''
 
     def refresh_data(self, el: AppImageListElement):
         if el.desktop_entry:
             el.name = el.desktop_entry.getName()
-        
+
         extracted = self._load_appimage_metadata(el)
         if extracted.desktop_entry:
             el.name = extracted.desktop_entry.getName()
@@ -257,7 +257,7 @@ class AppImageProvider():
         for item in self.list_installed():
             if item.name == el.name:
                 return True
-        
+
         return False
 
     def install_file(self, el: AppImageListElement):
@@ -289,7 +289,7 @@ class AppImageProvider():
                 if extracted_appimage.desktop_entry:
                     appimage_filename = extracted_appimage.desktop_entry.getName()
                     appimage_filename = appimage_filename.lower().replace(' ', '_')
-                
+
                 append_file_ext = True
                 gsettings = Settings.settings
 
@@ -310,7 +310,7 @@ class AppImageProvider():
                 i = 0
                 files_in_dest_dir = os.listdir(self._get_appimages_default_destination_path())
 
-                # if there is already an app with the same name, 
+                # if there is already an app with the same name,
                 # we try not to overwrite
                 while appimage_filename in files_in_dest_dir:
                     if i == 0:
@@ -380,7 +380,7 @@ class AppImageProvider():
             desktop_icon = f'applications-other'
             if dest_appimage_icon_file:
                 desktop_icon = f"{dest_appimage_icon_file.get_path()}"
-            
+
             jd_desktop_entry.Icon = desktop_icon
 
             for a, action in jd_desktop_entry.Actions.items():
@@ -451,7 +451,7 @@ class AppImageProvider():
     def reload_metadata(self, el: AppImageListElement):
         if not (el.installed_status is InstalledStatus.INSTALLED):
             return
-        
+
         logging.info(f'Reloading metadata for {el.file_path}')
         random_str = get_random_string()
         dest_path = f'{self.extraction_folder}/gearlever_{random_str}'
@@ -488,7 +488,7 @@ class AppImageProvider():
     def create_list_element_from_file(self, file: Gio.File, return_new_el=False) -> AppImageListElement:
         if not self.can_install_file(file):
             raise InternalError(message='This file type is not supported')
-        
+
         app_name: str = os.path.basename(file.get_parse_name())
         preview_enabled = Settings.settings.get_boolean('preview-before-opening-app')
 
@@ -527,7 +527,7 @@ class AppImageProvider():
 
         if not el.desktop_file_path:
             raise Exception('desktop_file_path not specified')
-    
+
         desktop_file_content = ''
         entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
         with open(el.desktop_file_path, 'r') as desktop_file:
@@ -544,12 +544,12 @@ class AppImageProvider():
             )
 
         with open(el.desktop_file_path, 'w') as desktop_file:
-            desktop_file.write(desktop_file_content)         
+            desktop_file.write(desktop_file_content)
 
     def update_desktop_file(self, el: AppImageListElement):
         if not el.desktop_file_path:
             raise Exception('desktop_file_path not specified')
-        
+
         jd_desktop_file = JdDesktopEntry.from_file(el.desktop_file_path)
 
         tryexec_command = jd_desktop_file.TryExec
@@ -585,7 +585,7 @@ class AppImageProvider():
 
         if not self.can_install_file(update_gfile):
             raise Exception(_('The downloaded file is not a valid appimage, please check if the provided URL is correct'))
-        
+
         list_element = self.create_list_element_from_file(update_gfile, return_new_el=True)
 
         list_element.update_logic = AppImageUpdateLogic.REPLACE
@@ -638,7 +638,7 @@ class AppImageProvider():
         output = output.strip()
 
         if output:
-            # Printing the output might help folks who run 
+            # Printing the output might help folks who run
             # run Gear Lever from the terminal
             print(output)
 
@@ -671,29 +671,38 @@ class AppImageProvider():
         ###############################################################################
 
         squashfs_root_folder = os.path.join(dest_path, 'squashfs-root')
-        is_dwarf = False
+        use_appimage_extract = False
+        use_7zz = False
+        use_unsquashfs = False
+        use_dwarf = False
+        block_unsafe_extractor = Settings.settings.get_boolean('block-unsafe-extractor')
+
 
         try:
             terminal.sandbox_sh(['dwarfsck', f'--input={file.get_path()}', '-q', '-detail=0', '--no-check'], error_quiet=True)
-            is_dwarf = True
+            use_dwarf = True
         except:
+            use_7zz = True
             logging.info('Filesystem is not dwarfsck')
 
-        if is_dwarf:
+        if use_dwarf:
             os.mkdir(squashfs_root_folder)
             logging.info(f'Exctracting with dwarfsextract to {squashfs_root_folder}')
-            terminal.sandbox_sh(['dwarfsextract', f'--input={file.get_path()}', f'--output={squashfs_root_folder}',
-                                    '--pattern=**.png','--pattern=**.svg', '--pattern=**.desktop', '--pattern=.DirIcon'])
-        else:
-            logging.info(f'Exctracting with p7zip to {squashfs_root_folder}')
-            use_appimage_extract = False
-            use_unsquashfs = False
 
             try:
+                terminal.sandbox_sh(['dwarfsextract', f'--input={file.get_path()}', f'--output={squashfs_root_folder}',
+                                        '--pattern=**.png','--pattern=**.svg', '--pattern=**.desktop', '--pattern=.DirIcon'])
+            except Exception as e:
+                logging.error('Extraction with dwarfsextract failed')
+                logging.error(str(e))
+                use_appimage_extract = True
+
+        if use_7zz:
+            try:
                 terminal.sandbox_sh(['7zz', 't', file.get_path(), '-y', '-bso0', '-bsp0'])
-                z7zoutput = terminal.sandbox_sh(['7zz', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', '-bsp0', 
+                z7zoutput = terminal.sandbox_sh(['7zz', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', '-bsp0',
                                                     '-ir!*.png', '-ir!*.svg', '-ir!*.desktop',
-                                                    '-xr!*.desktop*/', '-xr!*.svg*/', '-xr!*.png*/', 
+                                                    '-xr!*.desktop*/', '-xr!*.svg*/', '-xr!*.png*/',
                                                     '-ir0!.DirIcon'
                                                 ], cwd=dest_path)
                 logging.debug('=== 7zz log ===')
@@ -704,24 +713,32 @@ class AppImageProvider():
                 logging.error(str(e))
                 use_unsquashfs = True
 
-            if use_unsquashfs:
-                logging.debug('Testing with unsquashfs')
-                appimage_offset = terminal.sandbox_sh(['get_appimage_offset', file.get_path()])
+        if  use_unsquashfs:
+            logging.debug('Testing with unsquashfs')
+            appimage_offset = terminal.sandbox_sh(['get_appimage_offset', file.get_path()])
 
-                try:
-                    terminal.sandbox_sh(['unsquashfs', '-o', appimage_offset, '-l', file.get_path()])
-                    terminal.sandbox_sh(['unsquashfs', '-o', appimage_offset, '-d', squashfs_root_folder, file.get_path()])
-                except Exception as e:
-                    logging.error('Extraction with unsquashfs failed')
-                    logging.error(str(e))
-                    use_appimage_extract = True
+            try:
+                terminal.sandbox_sh(['unsquashfs', '-o', appimage_offset, '-l', file.get_path()])
+                terminal.sandbox_sh(['unsquashfs', '-o', appimage_offset, '-d', squashfs_root_folder, file.get_path()])
+            except Exception as e:
+                logging.error('Extraction with unsquashfs failed')
+                logging.error(str(e))
+                use_appimage_extract = True
 
-            if use_appimage_extract:
-                logging.info('Extracting with appimage-extract')
-                cloned_file = Gio.File.new_for_path(f'{dest_path}/app.appimage')
-                gio_copy(file, cloned_file)
-                terminal.sandbox_sh(['chmod', '+x', cloned_file.get_path()])
-                terminal.sandbox_sh([cloned_file.get_path(), '--appimage-extract'], cwd=dest_path)
+        if block_unsafe_extractor and use_appimage_extract:
+            show_message_dialog(
+                _("Can't load the metadata"),
+                _("Any attempts at loading this app's metadata failed; if you want proceed using appimage-extract, please disable the security option in the settings.")
+            )
+
+            raise Exception('blocked by security setting')
+
+        if (block_unsafe_extractor == False) and use_appimage_extract:
+            logging.info('Extracting with appimage-extract')
+            cloned_file = Gio.File.new_for_path(f'{dest_path}/app.appimage')
+            gio_copy(file, cloned_file)
+            terminal.sandbox_sh(['chmod', '+x', cloned_file.get_path()])
+            terminal.sandbox_sh([cloned_file.get_path(), '--appimage-extract'], cwd=dest_path)
 
         return squashfs_root_folder
 
@@ -808,7 +825,7 @@ class AppImageProvider():
 
                         if diricon.query_exists():
                             diricon_ct = get_giofile_content_type(diricon)
-                            
+
                             # https://docs.appimage.org/reference/appdir.html
                             if diricon_ct in ['image/png', 'image/svg', 'image/svg+xml']:
                                 tmp_icon_file = diricon
@@ -858,17 +875,17 @@ class AppImageProvider():
             version = extracted_appimage.md5[0:6]
 
         return version
-    
+
     def get_elf_arch(self, el: AppImageListElement) -> AppImageArchitecture:
         file_brief = terminal.sandbox_sh(['file', '--brief', '--exclude-quiet=apptype', '--exclude-quiet=ascii',
-                                                     '--exclude-quiet=compress', '--exclude-quiet=csv', '--exclude-quiet=elf', 
+                                                     '--exclude-quiet=compress', '--exclude-quiet=csv', '--exclude-quiet=elf',
                                                      '--exclude-quiet=encoding', '--exclude-quiet=tar', '--exclude-quiet=cdf',
                                                      '--exclude-quiet=json', '--exclude-quiet=simh', '--exclude-quiet=text', '--exclude-quiet=tokens',
                                                      el.file_path])
-                        
+
         aarch = AppImageArchitecture.UNKNOWN
         file_brief = file_brief.lower()
-        
+
         if 'aarch64' in file_brief or ' arm ' in file_brief:
             aarch = AppImageArchitecture.ARM_64
         elif 'x86-64' in file_brief or 'x86_64' in file_brief:

@@ -28,5 +28,8 @@
         <key name="preview-before-opening-app" type="b">
             <default>true</default>
         </key>
+        <key name="block-unsafe-extractor" type="b">
+            <default>true</default>
+        </key>
     </schema>
 </schemalist>

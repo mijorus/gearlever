@@ -108,8 +108,15 @@ class Preferences(Adw.PreferencesWindow):
             'preview-before-opening-app',
             _('If enabled, a preview of the file you are trying to open is shown.\nDisable only if you trust your sources: malicious apps could execute code when loading the metadata.')
         )
+        
+        block_appimage_extract = self.create_boolean_settings_entry(
+            _('Use safe mechanisms to load metadata'),
+            'block-unsafe-extractor',
+            _('If enabled, the app will try to load an Appimage without using the built-in appimage-extract command.\nDisable only if you trust your sources: malicious apps could execute code when loading the metadata.')
+        )
 
         general_preference_group.add(preview_appimage_files)
+        general_preference_group.add(block_appimage_extract)
 
         # debugging group
         debug_group = Adw.PreferencesGroup(name=_('Debugging'), title=_('Debugging'))
