@@ -28,10 +28,7 @@ class TestGearLever(unittest.TestCase):
         output_str = output.stdout.decode()
         return output_str
 
-    def installApp(self, appname, app_url=None):
-        if app_url:
-            self.download_file(app_url, appname)
-
+    def installApp(self, appname):
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         installed = self.runCommand(['--list-installed', '-v'])
         self.assertIn(appname, self.get_installed_files())
@@ -110,6 +107,18 @@ class TestGearLever(unittest.TestCase):
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
         self.assertNotIn(appname, self.get_installed_files())
         self.assertNotIn('mudlet.svg', self.get_icon_files())
+
+    def test_install_shutter_encoder(self):
+        appname = 'shutter_encoder.appimage'
+        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
+        installed = self.runCommand(['--list-installed', '-v'])
+        self.assertIn(appname, self.get_installed_files())
+        self.assertIn('shutter_encoder.png', self.get_icon_files())
+        self.assertIn(appname, installed)
+
+        self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
+        self.assertNotIn(appname, self.get_installed_files())
+        self.assertNotIn('shutter_encoder.png', self.get_icon_files())
 
     def test_install_dwarfs(self):
         appname = 'citron.appimage'

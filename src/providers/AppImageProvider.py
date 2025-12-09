@@ -692,7 +692,10 @@ class AppImageProvider():
             try:
                 terminal.sandbox_sh(['7zz', 't', file.get_path(), '-y', '-bso0', '-bsp0'])
                 z7zoutput = terminal.sandbox_sh(['7zz', 'x', file.get_path(), f'-o{squashfs_root_folder}', '-y', '-bso0', '-bsp0', 
-                                                    '*.png', '*.svg', '*.desktop', '.DirIcon', '-r'], cwd=dest_path)
+                                                    '-ir!*.png', '-ir!*.svg', '-ir!*.desktop',
+                                                    '-xr!*.desktop*/', '-xr!*.svg*/', '-xr!*.png*/', 
+                                                    '-ir0!.DirIcon'
+                                                ], cwd=dest_path)
                 logging.debug('=== 7zz log ===')
                 logging.debug(z7zoutput)
                 logging.debug(f'=== end 7zz log ===')

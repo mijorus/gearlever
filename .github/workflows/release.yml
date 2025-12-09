@@ -2,6 +2,9 @@ name: Flatpak Release
 
 on: 
   workflow_dispatch:
+  push:
+    paths:
+      - 'meson.build'
 
 jobs:
   build:
