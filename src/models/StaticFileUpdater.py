@@ -80,11 +80,6 @@ class StaticFileUpdater(UpdateManager):
         self.form_row = None
         logging.info(f'Downloading file from {self.url}')
 
-        saved_config = self.get_saved_config()
-        self.config = {
-            'url': saved_config.get('url', None)
-        }
-
     def download(self, status_update_cb) -> tuple[str, str]:
         self.currend_download = requests.get(self.url, stream=True)
         random_name = get_random_string()
@@ -146,10 +141,13 @@ class StaticFileUpdater(UpdateManager):
 
     def set_url(self, url: str):
         self.url = url
+        self.config = {
+            'url': url
+        }
 
-    def load_form_rows(self, update_url, embedded):
+    def load_form_rows(self, embedded):
         self.form_row = AdwEntryRowDefault(
-            text=update_url,
+            text=self.config['url'],
             icon_name='gl-earth',
             title=_('Update URL'),
             sensitive=(not embedded)
@@ -165,3 +163,11 @@ class StaticFileUpdater(UpdateManager):
     
     def get_url_from_params(self, **kwargs):
         return kwargs.get('url', '')
+    
+    def update_config_from_form(self):
+        url = ''
+
+        if self.form_row:
+            url = self.form_row.get_text()
+
+        self.config['url'] = url

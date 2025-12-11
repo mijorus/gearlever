@@ -14,6 +14,7 @@ class UpdateManager(ABC):
     url = ''
     label = ''
     embedded = False
+    config = {}
     el: Optional[AppImageListElement] = None
     system_arch = platform.machine()
     is_x86 = re.compile(r'(\-|\_|\.)x86(\-|\_|\.)')
@@ -21,10 +22,9 @@ class UpdateManager(ABC):
 
     @abstractmethod
     def __init__(self, url: str, embedded: str|Literal[False]=False, el=None) -> None:
-        self.url = url
         self.el = el
         self.download_folder = os.path.join(TMP_DIR, 'downloads')
-        self.config = {}
+        self.set_url(url)
 
     def cleanup(self):
         pass
@@ -42,7 +42,7 @@ class UpdateManager(ABC):
         pass
 
     @abstractmethod
-    def load_form_rows(self, update_url: str, embedded: bool) -> list:
+    def load_form_rows(self, embedded: bool) -> list:
         pass
 
     @staticmethod

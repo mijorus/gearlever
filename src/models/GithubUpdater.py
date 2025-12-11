@@ -80,16 +80,15 @@ class GithubUpdater(UpdateManager):
 
             self.embedded = re.sub(r"\.zsync$", "", self.embedded)
 
-        saved_config = self.get_saved_config()
+    def set_url(self, url: str):
+        self.url = url
+        self.url_data = self.get_url_data(url)
 
         self.config = {
             'repo_url': '',
             'repo_filename': '',
-            'allow_prereleases': saved_config.get('allow_prereleases', False)
+            'allow_prereleases': self.get_saved_config().get('allow_prereleases', False)
         }
-
-    def set_url(self, url: str):
-        self.url_data = self.get_url_data(url)
 
         if self.url_data:
             self.url = self.get_url_string_from_data(self.url_data)
@@ -269,7 +268,7 @@ class GithubUpdater(UpdateManager):
 
         return False
 
-    def load_form_rows(self,update_url, embedded=False): 
+    def load_form_rows(self, embedded=False): 
         repo_url = self.config.get('repo_url')
         filename = self.config.get('repo_filename')
 

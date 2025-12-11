@@ -67,8 +67,15 @@ class FTPUpdater(UpdateManager):
     def set_url(self, url: str):
         self.url_data = self.get_url_data(url)
         self.url = url
-        self.repo_url_row = None
-        self.repo_filename_row = None
+
+        self.config = {
+            'url': '',
+            'filename': '',
+        }
+
+        if self.url_data:
+            self.config['url'] = self.url_data['server']
+            self.config['filename'] = self.url_data['path']
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -223,15 +230,10 @@ class FTPUpdater(UpdateManager):
         is_size_different = target_asset['size'] != old_size
         return is_size_different
 
-    def load_form_rows(self, update_url, embedded=False): 
-        url_data = FTPUpdater.get_url_data(update_url)
-        ftp_url = ''
-        filename = ''
+    def load_form_rows(self, embedded=False): 
+        ftp_url = self.config['url']
+        filename = self.config['filename']
         
-        if url_data:
-            ftp_url = url_data['server']
-            filename = url_data['path']
-
         self.url_row = AdwEntryRowDefault(
             text=(ftp_url),
             icon_name='gl-earth-symbolic',

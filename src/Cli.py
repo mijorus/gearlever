@@ -244,7 +244,7 @@ class Cli():
         for k, v in manager.config.items():
             if type(v) == bool:
                 if update_options[k] not in boolean_vals:
-                    print(f'{k} is not a boolean value, allowed values: ' + str(boolean_vals))
+                    print(f'{k} is not a boolean value, allowed values: ' + '/'.join(boolean_vals))
                     sys.exit(1)
 
                 update_options[k] = (update_options[k] in ['1', 'true'])

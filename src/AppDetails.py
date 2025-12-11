@@ -653,7 +653,6 @@ class AppDetails(Gtk.ScrolledWindow):
 
         if self.update_manager:
             rows = self.update_manager.load_form_rows(
-                update_url=self.update_manager.url,
                 embedded=self.update_manager.embedded
             )
 

@@ -84,6 +84,21 @@ class GitlabUpdater(UpdateManager):
         self.url_data = self.get_url_data(url)
         self.url = url
 
+        self.config = {
+            'repo_url': '',
+            'repo_filename': '',
+        }
+
+        if self.url_data:
+            repo_url = ''
+            if self.url_data['project_id']:
+                repo_url = '/'.join(['https://gitlab.com', 'api/v4/projects', self.url_data['project_id']])
+            else:
+                repo_url = '/'.join(['https://gitlab.com', self.url_data['username'], self.url_data['repo']])
+
+            self.config['repo_url'] = repo_url
+            self.config['repo_filename'] = self.url_data['filename']
+
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
         if not target_asset:
@@ -212,19 +227,9 @@ class GitlabUpdater(UpdateManager):
 
         return False
     
-    def load_form_rows(self, update_url, embedded=False): 
-        url_data = self.get_url_data(update_url)
-        repo_url = ''
-        filename = ''
-
-        if url_data:
-            filename = url_data['filename']
-
-            if url_data['project_id']:
-                repo_url = '/'.join(['https://gitlab.com', 'api/v4/projects', url_data['project_id']])
-            else:
-                repo_url = '/'.join(['https://gitlab.com', url_data['username'], url_data['repo']])
-
+    def load_form_rows(self, embedded=False): 
+        repo_url = self.config['repo_url']
+        filename = self.config['repo_filename']
 
         self.repo_url_row = AdwEntryRowDefault(
             text=repo_url,

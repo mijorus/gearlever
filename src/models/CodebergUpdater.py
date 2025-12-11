@@ -12,7 +12,7 @@ from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
 
 # Example: 
-# https://codeberg.org/sonusmix/sonusmix/releases/download/v0.1.1/org.sonusmix.Sonusmix-0.1.1.AppImage
+# https://codeberg.org/sonusmix/sonusmix/
 
 class CodebergUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
@@ -50,16 +50,23 @@ class CodebergUpdater(UpdateManager):
     def __init__(self, url, **kwargs) -> None:
         super().__init__(url, **kwargs)
         self.staticfile_manager = None
-        self.set_url(url)
         self.embedded = False
         self.repo_url_row = None
         self.repo_filename_row = None
+        self.set_url(url)
 
     def set_url(self, url: str):
-        self.url_data = self.get_url_data(url)
         self.url = url
-        self.repo_url_row = None
-        self.repo_filename_row = None
+        self.url_data = self.get_url_data(url)
+
+        self.config = {
+            'repo_url': '',
+            'repo_filename': '',
+        }
+
+        if self.url_data:
+            self.config['repo_url'] =  '/'.join(['https://codeberg.org', self.url_data['username'], self.url_data['repo']])
+            self.config['repo_filename'] =  self.url_data['filename']
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -171,14 +178,9 @@ class CodebergUpdater(UpdateManager):
 
         return False
     
-    def load_form_rows(self, update_url, embedded=False): 
-        url_data = CodebergUpdater.get_url_data(update_url)
-        repo_url = ''
-        filename = ''
-
-        if url_data:
-            repo_url = '/'.join(['https://codeberg.org', url_data['username'], url_data['repo']])
-            filename = url_data['filename']
+    def load_form_rows(self, embedded=False): 
+        repo_url = self.config.get('repo_url')
+        filename = self.config.get('repo_filename')
 
         self.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
@@ -212,6 +214,21 @@ class CodebergUpdater(UpdateManager):
             'releases/download/*',
             kwargs.get('repo_filename', ''),
         ])
+    
+    def update_config_from_form(self):
+        repo_url = None
+        repo_filename = None
+
+        if self.repo_url_row:
+            repo_url = self.repo_url_row.get_text()
+
+        if self.repo_filename_row:
+            repo_filename = self.repo_filename_row.get_text()
+
+        self.config = {
+            'repo_url': repo_url,
+            'repo_filename': repo_filename,
+        }
 
 
 
