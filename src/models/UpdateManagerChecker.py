@@ -90,6 +90,7 @@ class UpdateManagerChecker():
         readelf_out = readelf_out.replace('\n', ' ') + ' '
 
         # Github url
+        # example value: " String dump of section '.upd_info':   [     0]  gh-releases-zsync|neovim|neovim|latest|nvim-linux-x86_64.appimage.zsync "
         pattern_gh = r"gh-releases-zsync\|.*(.zsync)"
         matches = re.search(pattern_gh, readelf_out)
 
@@ -97,11 +98,12 @@ class UpdateManagerChecker():
             return matches[0].strip()
 
         # Static url
-        pattern_link = r"^zsync\|http(.*)\s"
+        # example value: " String dump of section '.upd_info':   [     0]  zsync|https://gitlab.com/api/v4/projects/24386000/packages/generic/librewolf/latest/LibreWolf.x86_64.AppImage.zsync "
+        pattern_link = r"\szsync\|http(.*)\s"
         matches = re.search(pattern_link, readelf_out)
 
         if matches:
-            return re.sub(r"^zsync\|", '', matches[0]).strip()
+            return re.sub(r"\szsync\|", '', matches[0]).strip()
 
         return None
 
