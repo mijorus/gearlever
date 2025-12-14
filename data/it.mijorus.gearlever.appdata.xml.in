@@ -4,7 +4,7 @@
     <launchable type="desktop-id">it.mijorus.gearlever.desktop</launchable>
     <name>Gear Lever</name>
     <summary>Manage AppImages</summary>
-    <url type="homepage">https://mijorus.it/projects/gearlever/</url>
+    <url type="homepage">https://gearlever.mijorus.it</url>
     <url type="donation">https://ko-fi.com/mijorus</url>
     <url type="bugtracker">https://github.com/mijorus/gearlever/issues</url>
     <metadata_license>CC0-1.0</metadata_license>
@@ -20,6 +20,40 @@
         <p>An utility to manage AppImages with ease! Gear lever will organize and manage AppImage files for you, generate desktop entries and app metadata, update apps in-place or keep multiple versions side-by-side.</p>
     </description>
     <releases>
+        <release type="stable" version="4.2.0" date="2025-12-11:00:00Z">
+            <description>
+                <p>- Added new CLI utility "set-update-source", which brings the new update UI to the terminal interface</p>
+            </description>
+        </release>
+        <release type="stable" version="4.1.1" date="2025-12-09:00:00Z">
+            <description>
+                <p>- Fixed an issue for some apps that were relying on the 7zz extraction method</p>
+            </description>
+        </release>
+        <release type="stable" version="4.1.0" date="2025-12-02:00:00Z">
+            <description>
+                <p>- Added Forgejo update system</p>
+            </description>
+        </release>
+        <release type="stable" version="4.0.0" date="2025-11-25:00:00Z">
+            <description>
+                <p>- Added FTP update system</p>
+                <p>- New update management UI</p>
+                <p>- New documentation website, still work in progress</p>
+                <p>- Faster app loading times for most of the appimages</p>
+                <p>- Better support for apps having dekstop actions</p>
+            </description>
+        </release>
+        <release type="stable" version="3.4.7" date="2025-10-30:00:00Z">
+            <description>
+                <p>- Bug fix</p>
+            </description>
+        </release>
+        <release type="stable" version="3.4.6" date="2025-10-29:00:00Z">
+            <description>
+                <p>- Improved desktop file support: added support for desktop actions</p>
+            </description>
+        </release>
         <release type="stable" version="3.4.5" date="2025-10-09:00:00Z">
             <description>
                 <p>- Fixed an issue happening on systems with more than one user</p>

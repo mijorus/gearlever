@@ -17,7 +17,9 @@ po/*.mo
 tests/__pycache__
 
 
-# Ignore local package build artifacts
 pkgroot
 *.deb
 
+tests/testfiles/*.appimage
+tests/testfiles/*.AppImage
+tests/testfiles.tar.gz

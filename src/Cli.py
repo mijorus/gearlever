@@ -8,8 +8,9 @@ from .lib.constants import FETCH_UPDATES_ARG
 from .lib.utils import make_option, url_is_valid
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageUpdateLogic, AppImageListElement
-from .lib.json_config import read_config_for_app, save_config_for_app
-from .models.UpdateManager import UpdateManagerChecker
+from .lib.json_config import read_config_for_app, save_config_for_app, remove_update_config
+from .models.UpdateManagerChecker import UpdateManagerChecker
+from .models.UpdateManager import UpdateManager
 
 class Cli():
     options = [
@@ -18,7 +19,9 @@ class Cli():
         make_option('remove', description='Trashes an AppImage, its .desktop file and icons  '),
         make_option('list-installed', description='List integrated apps'),
         make_option('list-updates', description='List available updates'),
-        make_option('set-update-url', description='Set a custom update url'),
+        make_option('list-update-managers', description='List available update managers'),
+        make_option('set-update-url', description='(DEPRECATED, use set-update-source instead) Set a custom update url'),
+        make_option('set-update-source', description='Set a custom update source'),
         make_option(FETCH_UPDATES_ARG, description='Fetch updates in the background and sends a desktop notification, used on system startup'),
     ]
 
@@ -148,13 +151,13 @@ class Cli():
         Cli._print_help_if_requested(argv, [
             ['--manager <manager>', f'Optional: specify an update manager between: {u_managers}'],
             ['--unset', f'Unset a custom config for an app'],
-        ], text='Usage: --set-update-url <file_path> --url <url>')
+        ], text='Deprecated (use --set-update-source), usage: --set-update-url <file_path> --url <url>')
 
         update_url = None
         update_url = Cli._get_arg_value(argv, '--url')
         manager_name = Cli._get_arg_value(argv, '--manager')
 
-        if (not update_url) or (not url_is_valid(update_url)):
+        if (not update_url):
             print('Error: "%s" is not a valid URL' % update_url)
             sys.exit(1)
 
@@ -162,15 +165,7 @@ class Cli():
         el = appimage_provider.create_list_element_from_file(g_file)
 
         if '--unset' in argv:
-            app_conf = read_config_for_app(el)
-
-            if 'update_url' in app_conf:
-                del app_conf['update_url']
-
-            if 'update_url_manager' in app_conf:
-                del app_conf['update_url_manager']
-
-            save_config_for_app(app_conf)
+            remove_update_config(el)
             sys.exit(0)
 
         selected_manager = None
@@ -194,6 +189,80 @@ class Cli():
             sys.exit(1)
 
     @staticmethod
+    def set_update_source(argv):
+        u_managers = ', '.join([n.name for n in UpdateManagerChecker.get_models()])
+
+        manager_name = Cli._get_arg_value(argv, '--manager')
+        selected_model = None
+
+        if manager_name:
+            selected_model = UpdateManagerChecker.get_model_by_name(manager_name)
+            manager: UpdateManager = selected_model(url='', embedded=False)
+            Cli._print_help_if_requested(argv, [
+                [f'--manager {manager_name}'],
+                *[[f'OPTION {k}=<value>'] for k in manager.config.keys()]
+            ], text='Usage: --set-update-source <file_path> --manager <manager> [...OPTIONS]')
+
+        Cli._print_help_if_requested(argv, [
+            ['--manager <manager>', f'Specify an update manager between: {u_managers}'],
+            ['--unset', f'Unset a custom config for an app'],
+        ], text='Usage: --set-update-source <file_path> --manager <manager> [...OPTIONS]')
+
+        update_options = Cli._get_key_pairs(argv)
+
+        if (not manager_name):
+            print('Error: "%s" is not a valid update manager' % manager_name)
+            sys.exit(1)
+
+        g_file = Cli._get_file_from_args(argv)
+        el = appimage_provider.create_list_element_from_file(g_file)
+
+        if '--unset' in argv:
+            remove_update_config(el)
+            sys.exit(0)
+
+        selected_model = None
+        if manager_name:
+            selected_model = UpdateManagerChecker.get_model_by_name(manager_name)
+
+        if not selected_model:
+            print('Error: "%s" is not a valid update manager' % manager_name)
+            sys.exit(1)
+
+        manager: UpdateManager = selected_model(url='', embedded=False, el=el)
+        if set(manager.config.keys()) != set(update_options.keys()):
+            print('Missing or invalid update configuration, required keys: ' + ', '.join(manager.config.keys()))
+            sys.exit(1)
+
+        manager_url = manager.get_url_from_params(**update_options)
+        
+        if not manager.can_handle_link(manager_url):
+            print('Invalid configuration for ' + manager_name)
+            sys.exit(1)
+
+        boolean_vals = ['0', '1', 'false', 'true']
+        for k, v in manager.config.items():
+            if type(v) == bool:
+                if update_options[k] not in boolean_vals:
+                    print(f'{k} is not a boolean value, allowed values: ' + '/'.join(boolean_vals))
+                    sys.exit(1)
+
+                update_options[k] = (update_options[k] in ['1', 'true'])
+
+        manager.config = update_options
+        manager.set_url(manager_url)
+
+        remove_update_config(el)
+
+        app_conf = el.get_config()
+        app_conf['update_url'] = manager.url
+        app_conf['update_url_manager'] = manager.name
+        app_conf['update_manager_config'] = manager.config
+        save_config_for_app(app_conf)
+
+        sys.exit(0)
+
+    @staticmethod
     def integrate(argv):
         Cli._print_help_if_requested(argv, [
             ['--keep-both', 'If a name conflict occurs, keeps both files (default behaviour)'],
@@ -210,7 +279,7 @@ class Cli():
             sys.exit(0)
 
         el.update_logic = AppImageUpdateLogic.KEEP
-        appimage_provider.refresh_title(el)
+        appimage_provider.refresh_data(el)
 
         if '--replace' in argv:
             el.update_logic = AppImageUpdateLogic.REPLACE
@@ -300,6 +369,26 @@ class Cli():
         Cli._print_table(table)
 
     @staticmethod
+    def list_update_managers(argv):
+        models = UpdateManagerChecker.get_models()
+        table = []
+
+        for m in models:
+            table.append([m.label, m.name])
+
+        Cli._print_table(table)
+
+    @staticmethod
+    def _get_key_pairs(argv: list[str]) -> dict:
+        result = {}
+        for pair in argv:
+            if '=' in pair:
+                key, value = pair.split('=', 1)
+                result[key] = value
+
+        return result
+
+    @staticmethod
     def _get_arg_value(argv: list[str], arg_name: str):
         if not arg_name in argv:
             return None
@@ -353,12 +442,13 @@ class Cli():
         if '--help' in argv:
             opt = Cli._get_invoked_option(argv)
             if opt:
-                print(str(opt.description) + '\n')
+                print(str(opt.description))
 
             if text:
-                print(text + '\n')
+                print(text)
 
             Cli._print_table(help)
+            print('\nMore documentation available at https://gearlever.mijorus.it')
             sys.exit(0)
 
     @staticmethod

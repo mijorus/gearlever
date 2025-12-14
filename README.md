@@ -5,7 +5,7 @@
   <img width="150" src="data/icons/hicolor/scalable/apps/it.mijorus.gearlever.svg">
 </p>
 
-<p align="center"><a href="https://flatstat.mijorus.it/app/it.mijorus.gearlever"  align="center"><img width="150" src="https://img.shields.io/endpoint?url=https://flathub-stats-backend.vercel.app/badges/it.mijorus.gearlever/shields.io.json"></a></p>
+<p align="center"><img width="100" src="https://img.shields.io/flathub/downloads/it.mijorus.gearlever"></p>
 
 
 
@@ -106,6 +106,11 @@ chmod +x scripts/make_deb.sh
 ```
 
 ## Run CLI tests
+1. Download the latest release here:
+   https://github.com/mijorus/gearlever-test-files
+2. Pleace if under test/
+3. Extract it `tar -xzvf testfiles.tar.gz`
+4. Run:
 ```sh
 python3 -m unittest tests/test_cli.py
 ```
