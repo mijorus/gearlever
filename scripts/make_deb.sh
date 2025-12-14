@@ -33,6 +33,10 @@ mkdir -p "$PKGDIR"
 # Install into package root
 DESTDIR="$PKGDIR" ninja -C "$BUILD_DIR" install
 
+# Install Python dependencies
+echo "Installing Python dependencies..."
+pip3 install --target="$PKGDIR/usr/share/gearlever" --no-deps -r "$ROOT_DIR/requirements.txt"
+
 # Ensure helper scripts from build-aux get packaged (used at runtime by the app)
 if [ -f "$ROOT_DIR/build-aux/get_appimage_offset.sh" ]; then
   mkdir -p "$PKGDIR/usr/bin"
