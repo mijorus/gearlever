@@ -3,15 +3,8 @@ import requests
 import shutil
 import os
 import re
-import json
-from typing import Optional, Callable
-from abc import ABC, abstractmethod
-from gi.repository import GLib, Gio
-from urllib.parse import urlsplit
+from typing import Optional, Literal
 
-from ..lib.constants import TMP_DIR
-from ..lib import terminal
-from ..lib.json_config import read_config_for_app
 from ..lib.utils import get_random_string, url_is_valid, get_file_hash
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 from .Models import DownloadInterruptedException
@@ -75,9 +68,12 @@ class StaticFileUpdater(UpdateManager):
         return headers
 
 
-    def __init__(self, url, **kwargs) -> None:
+    def __init__(self, url, embedded: str|Literal[False]=False, **kwargs) -> None:
         super().__init__(url, **kwargs)
         self.form_row = None
+        self.embedded = embedded
+        self.set_url(url)
+
         logging.info(f'Downloading file from {self.url}')
 
     def download(self, status_update_cb) -> tuple[str, str]:
@@ -140,12 +136,15 @@ class StaticFileUpdater(UpdateManager):
         return is_size_different
 
     def set_url(self, url: str):
+        if self.embedded:
+            url = re.sub(r"\.zsync$", "", url).strip()
+
         self.url = url
         self.config = {
             'url': url
         }
 
-    def load_form_rows(self, embedded):
+    def load_form_rows(self, embedded=False):
         self.form_row = AdwEntryRowDefault(
             text=self.config['url'],
             icon_name='gl-earth',

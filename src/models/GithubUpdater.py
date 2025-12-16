@@ -66,19 +66,12 @@ class GithubUpdater(UpdateManager):
     def __init__(self, url, embedded: str|Literal[False]=False, **kwargs) -> None:
         super().__init__(url, embedded, **kwargs)
         self.staticfile_manager = None
-        self.set_url(url)
-
         self.repo_url_row = None
         self.repo_filename_row = None
         self.allow_prereleases_row = None
+        self.embedded = embedded
 
-        self.embedded = False
-        if embedded:
-            self.embedded = self.get_url_string_from_data(
-                GithubUpdater.get_url_data(embedded)
-            )
-
-            self.embedded = re.sub(r"\.zsync$", "", self.embedded)
+        self.set_url(url)
 
     def set_url(self, url: str):
         self.url = url

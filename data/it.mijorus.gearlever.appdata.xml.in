@@ -20,6 +20,11 @@
         <p>An utility to manage AppImages with ease! Gear lever will organize and manage AppImage files for you, generate desktop entries and app metadata, update apps in-place or keep multiple versions side-by-side.</p>
     </description>
     <releases>
+        <release type="stable" version="4.2.1" date="2025-12-16:00:00Z">
+            <description>
+                <p>- Bugfix for integrated update URLs</p>
+            </description>
+        </release>
         <release type="stable" version="4.2.0" date="2025-12-11:00:00Z">
             <description>
                 <p>- Added new CLI utility "set-update-source", which brings the new update UI to the terminal interface</p>
