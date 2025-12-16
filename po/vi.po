@@ -2,21 +2,22 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Loc Huynh <https://github.com/hthienloc>, 2025.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: unnamed project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-20 14:54+0100\n"
-"PO-Revision-Date: 2025-11-20 18:31+0700\n"
-"Last-Translator: loccun <huynhloc.contact@gmail.com>\n"
-"Language-Team: \n"
+"PO-Revision-Date: 2025-12-09 21:20+0700\n"
+"Last-Translator: Loc Huynh <https://github.com/hthienloc>\n"
+"Language-Team: Vietnamese <https://github.com/linux-l10n-vi>\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Gtranslator 49.0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 msgid "Gear Lever"
@@ -32,7 +33,7 @@ msgstr "AppImage;"
 
 #: src/main.py:117
 msgid "translator_credits"
-msgstr "ghi_công_người_dịch"
+msgstr "Loc Huynh"
 
 #: src/AppDetails.py:28 src/AppDetails.py:74 src/AppDetails.py:395
 msgid "Update"
@@ -62,7 +63,8 @@ msgstr "Quản lý chi tiết bản cập nhật cho ứng dụng này"
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
-msgstr "Ứng dụng này nằm ngoài thư mục mặc định\n"
+msgstr ""
+"Ứng dụng này nằm ngoài thư mục mặc định\n"
 "<small>Bạn có thể ẩn các ứng dụng bên ngoài trong cài đặt</small>"
 
 #: src/AppDetails.py:224
@@ -170,7 +172,8 @@ msgstr "Tải lại siêu dữ liệu"
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
-msgstr "Cập nhật thông tin như biểu tượng, phiên bản và mô tả.\n"
+msgstr ""
+"Cập nhật thông tin như biểu tượng, phiên bản và mô tả.\n"
 "Hữu ích khi ứng dụng tự cập nhật."
 
 #: src/AppDetails.py:864
@@ -257,7 +260,9 @@ msgstr "Hiển thị AppImage tích hợp ngoài thư mục mặc định"
 msgid ""
 "List AppImages that have been integrated into the system menu but are "
 "located outside the default folder"
-msgstr "Liệt kê các AppImage đã được tích hợp vào menu hệ thống nhưng nằm ngoài thư mục mặc định"
+msgstr ""
+"Liệt kê các AppImage đã được tích hợp vào menu hệ thống nhưng nằm ngoài thư "
+"mục mặc định"
 
 #: src/preferences.py:51
 msgid "Updates management"
@@ -271,7 +276,9 @@ msgstr "Kiểm tra cập nhật khi khởi động hệ thống"
 msgid ""
 "Receive a notification when a new update is detected; updates will not be "
 "installed automatically"
-msgstr "Nhận thông báo khi có bản cập nhật mới; các bản cập nhật sẽ không tự động được cài đặt"
+msgstr ""
+"Nhận thông báo khi có bản cập nhật mới; các bản cập nhật sẽ không tự động "
+"được cài đặt"
 
 #: src/preferences.py:62
 msgid "File management"
@@ -307,7 +314,9 @@ msgid ""
 "You would need to add the aforementioned folder to your $PATH manually.\n"
 "\n"
 "For example, \"golang_x86_64.appimage\" will be saved as \"go\""
-msgstr "Nếu bật, các ứng dụng chạy trong terminal sẽ được đổi tên theo tên thực thi của chúng.\n"
+msgstr ""
+"Nếu bật, các ứng dụng chạy trong terminal sẽ được đổi tên theo tên thực thi "
+"của chúng.\n"
 "Bạn sẽ cần thêm thư mục nêu trên vào $PATH theo cách thủ công.\n"
 "\n"
 "Ví dụ, \"golang_x86_64.appimage\" sẽ được lưu với tên \"go\""
@@ -325,7 +334,9 @@ msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
 "Requires a restart."
-msgstr "Tăng độ chi tiết của nhật ký, chiếm nhiều dung lượng đĩa hơn và có thể ảnh hưởng hiệu năng.\n"
+msgstr ""
+"Tăng độ chi tiết của nhật ký, chiếm nhiều dung lượng đĩa hơn và có thể ảnh "
+"hưởng hiệu năng.\n"
 "Cần khởi động lại."
 
 #: src/preferences.py:137
@@ -387,7 +398,9 @@ msgstr "Kéo và thả một AppImage vào đây hoặc nhấp vào biểu tư�
 
 #: src/gtk/empty-list-placeholder.ui:35
 msgid " If you don't see your apps, check if the selected folder is correct."
-msgstr " Nếu bạn không thấy ứng dụng của mình, kiểm tra xem thư mục đã chọn có chính xác không."
+msgstr ""
+" Nếu bạn không thấy ứng dụng của mình, kiểm tra xem thư mục đã chọn có chính "
+"xác không."
 
 #: src/gtk/empty-list-placeholder.ui:46
 msgid "Show welcome screen"
@@ -405,7 +418,7 @@ msgstr "Chung"
 #: src/gtk/help-overlay.ui:14
 msgctxt "shortcut window"
 msgid "Show Shortcuts"
-msgstr "Hiển Thị Phím Tắt"
+msgstr "Hiển thị Phím tắt"
 
 #: src/gtk/help-overlay.ui:20
 msgctxt "shortcut window"
@@ -432,7 +445,9 @@ msgstr "Đặt vị trí AppImage"
 msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
-msgstr "Gear lever gom tất cả AppImage của bạn vào một thư mục cụ thể và giữ chúng ngăn nắp."
+msgstr ""
+"Gear lever gom tất cả AppImage của bạn vào một thư mục cụ thể và giữ chúng "
+"ngăn nắp."
 
 #: src/gtk/tutorial/2.ui:33
 #, python-brace-format
@@ -458,9 +473,11 @@ msgstr "Nhấp vào nút để mở thư mục demo, chứa một AppImage mẫu
 
 #: src/gtk/tutorial/3.ui:33
 msgid ""
-"Use the right-click menu to set Gear lever as the default app for \"."
-"appimage\" files"
-msgstr "Sử dụng menu nhấp phải để đặt Gear lever làm ứng dụng mặc định cho các tệp \".appimage\""
+"Use the right-click menu to set Gear lever as the default app for "
+"\".appimage\" files"
+msgstr ""
+"Sử dụng menu nhấp phải để đặt Gear lever làm ứng dụng mặc định cho các tệp "
+"\".appimage\""
 
 #: src/gtk/tutorial/3.ui:44
 msgid "Open demo folder"
@@ -472,7 +489,7 @@ msgstr "Bước này là tùy chọn"
 
 #: src/gtk/tutorial/last.ui:21
 msgid "All done, let's go!"
-msgstr "Xong rồi, đi thôi!"
+msgstr "Được rồi, đi thôi!"
 
 #: src/gtk/tutorial/last.ui:35
 msgid "Close tutorial"
@@ -486,7 +503,9 @@ msgstr "Không có mô tả"
 msgid ""
 "The downloaded file is not a valid appimage, please check if the provided "
 "URL is correct"
-msgstr "Tệp tải xuống không phải là AppImage hợp lệ, vui lòng kiểm tra xem URL cung cấp có đúng không"
+msgstr ""
+"Tệp tải xuống không phải là AppImage hợp lệ, vui lòng kiểm tra xem URL cung "
+"cấp có đúng không"
 
 #: src/providers/AppImageProvider.py:590
 #, python-brace-format
@@ -494,7 +513,8 @@ msgid ""
 "The downloaded appimage does not have the same app name and can't be "
 "updated\n"
 "{el.name} ➔ {list_element.name}"
-msgstr "AppImage tải xuống không có cùng tên ứng dụng và không thể cập nhật\n"
+msgstr ""
+"AppImage tải xuống không có cùng tên ứng dụng và không thể cập nhật\n"
 "{el.name} ➔ {list_element.name}"
 
 #: src/providers/AppImageProvider.py:634
@@ -509,7 +529,9 @@ msgid ""
 "\n"
 "Click the link below for more information. \n"
 "{url}"
-msgstr "AppImage cần FUSE để chạy. Bạn vẫn có thể chạy bằng --appimage-extract-and-run trong tham số dòng lệnh. \n"
+msgstr ""
+"AppImage cần FUSE để chạy. Bạn vẫn có thể chạy bằng --appimage-extract-and-"
+"run trong tham số dòng lệnh. \n"
 "\n"
 "Nhấp liên kết bên dưới để biết thêm thông tin. \n"
 "{url}"
