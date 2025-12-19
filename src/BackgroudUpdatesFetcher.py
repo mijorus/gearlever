@@ -37,7 +37,9 @@ class BackgroudUpdatesFetcher():
             else:
                 content = UPDATES_AVAILABLE_LABEL.replace('{n}', str(updates_available))
 
-            sandbox_sh(['notify-send', content])
+            result = sandbox_sh(['notify-send', content, '--action=Open Gear Lever'])
+            if result == '0':
+                sandbox_sh(['gearlever'])
         else:
             logging.warn('No available updates found')
             
