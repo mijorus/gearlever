@@ -37,7 +37,9 @@ class BackgroudUpdatesFetcher():
             else:
                 content = UPDATES_AVAILABLE_LABEL.replace('{n}', str(updates_available))
 
-            result = sandbox_sh(['notify-send', content, '--action=Open Gear Lever'])
+            expire_time = 1000 * 60 * 10
+            open_label = _('Open') + ' Gear Lever'
+            result = sandbox_sh(['notify-send', content, f'--action={open_label}', f'--expire-time={expire_time}'])
             if result == '0':
                 sandbox_sh(['gearlever'])
         else:

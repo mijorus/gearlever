@@ -120,6 +120,19 @@ class TestGearLever(unittest.TestCase):
         self.assertNotIn(appname, self.get_installed_files())
         self.assertNotIn('shutter_encoder.png', self.get_icon_files())
 
+    def test_integrated_static_update_url(self):
+        appname = 'librewolf.appimage'
+        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
+        installed = self.runCommand(['--list-installed', '-v'])
+
+        for l in installed.split('\n'):
+            if appname in l:
+                self.assertIn('StaticFileUpdater',l)
+                break
+
+        self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
+        self.assertNotIn(appname, self.get_installed_files())
+
     def test_install_dwarfs(self):
         appname = 'citron.appimage'
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
