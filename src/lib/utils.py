@@ -12,6 +12,7 @@ from . import terminal
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
+from .async_utils import idle
 from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GdkPixbuf  # noqa
 
 
@@ -154,11 +155,11 @@ def remove_special_chars(filename, replacement=""):
     pattern = r"[^\w\._]+"
     return re.sub(pattern, replacement, filename)
 
-
-def show_message_dialog(header, message, markup=False):
+@idle
+def show_message_dialog(message, header=None, markup=False):
     dialog = Adw.MessageDialog(
         transient_for=get_application_window(),
-        heading=_('Error'),
+        heading=header or _('Error'),
         body_use_markup=markup
     )
 

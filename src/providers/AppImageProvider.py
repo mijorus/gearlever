@@ -6,7 +6,6 @@ import filecmp
 import shlex
 from xdg import DesktopEntry
 from desktop_entry_lib import DesktopEntry as JdDesktopEntry
-from desktop_entry_lib import DesktopAction as JdDesktopAction
 
 import dataclasses
 from ..models.Settings import Settings
@@ -16,7 +15,7 @@ from ..lib import terminal
 from ..lib.async_utils import idle
 from ..lib.json_config import read_config_for_app, remove_update_config
 from ..lib.utils import get_giofile_content_type, gio_copy, get_file_hash, \
-    remove_special_chars, get_random_string, show_message_dialog, get_osinfo, extract_terminal_arguments
+    remove_special_chars, get_random_string, get_osinfo, extract_terminal_arguments, show_message_dialog
 from ..models.Models import AppUpdateElement, InternalError, DownloadInterruptedException
 from typing import Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, Gio
@@ -644,7 +643,6 @@ class AppImageProvider():
 
             if self.v2_detector_string in output:
                 show_message_dialog(
-                    _('Error'),
                     _('AppImages require FUSE to run. You might still be able to run it with --appimage-extract-and-run in the command line arguments. \n\nClick the link below for more information. \n{url}'.format(
                         url='<a href="https://github.com/AppImage/AppImageKit/wiki/FUSE">https://github.com/AppImage/AppImageKit/wiki/FUSE</a>'
                     )),
@@ -726,8 +724,7 @@ class AppImageProvider():
                 use_appimage_extract = True
 
         if block_unsafe_extractor and use_appimage_extract:
-            show_message_dialog(
-                _("Can't load the metadata"),
+            raise InternalError(
                 _("Any attempts at loading this app's metadata failed; if you want proceed using appimage-extract, please disable the security option in the settings.")
             )
 

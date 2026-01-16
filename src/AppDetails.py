@@ -2,12 +2,14 @@ import time
 import logging
 import base64
 import os
+import traceback
 import platform
 import shlex
 from typing import Optional, Callable
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
 
 from .lib.terminal import sandbox_sh
+from .models.Models import InternalError
 from .models.UpdateManager import UpdateManager
 from .models.UpdateManagerChecker import UpdateManagerChecker
 from .models.AppListElement import InstalledStatus
@@ -270,19 +272,22 @@ class AppDetails(Gtk.ScrolledWindow):
         icon = Gtk.Image(icon_name='application-x-executable-symbolic')
         generation = self.provider.get_appimage_type(self.app_list_element)
 
+        try:
+            if self.app_list_element.trusted:
+                icon = self.provider.get_icon(self.app_list_element)
+                self.provider.refresh_arch(self.app_list_element)
 
-        if self.app_list_element.trusted:
-            icon = self.provider.get_icon(self.app_list_element)
-            self.provider.refresh_arch(self.app_list_element)
+                if self.app_list_element.installed_status is not InstalledStatus.INSTALLED:
+                    self.provider.refresh_data(self.app_list_element)
 
-            if self.app_list_element.installed_status is not InstalledStatus.INSTALLED:
-                self.provider.refresh_data(self.app_list_element)
-
-        self.complete_load(
-            icon,
-            generation,
-            load_completed_callback=load_completed_callback
-        )
+            self.complete_load(
+                icon,
+                generation,
+                load_completed_callback=load_completed_callback
+            )
+        except Exception as e:
+            self.handle_exception(e)
+            self.emit('uninstalled-app', self)
 
     def before_load(self):
         self.show_row_spinner(True)
@@ -303,13 +308,31 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @_async
     def install_file(self, el: AppImageListElement):
-        self.provider.install_file(el)
-        self.update_installation_status()
+        try:
+            self.provider.install_file(el)
+            self.update_installation_status()
 
-        self.complete_load(
-            self.provider.get_icon(self.app_list_element),
-            self.provider.get_appimage_type(self.app_list_element),
-        )
+            self.complete_load(
+                self.provider.get_icon(self.app_list_element),
+                self.provider.get_appimage_type(self.app_list_element),
+            )
+        except Exception as e:
+            self.handle_exception(e)
+            self.emit('uninstalled-app', self)
+            
+    def handle_exception(self, e: Exception):
+        if type(e) is InternalError:
+                show_message_dialog(
+                    e.message,
+                    markup=True
+                )
+        else:
+            traceback.print_exc()
+            show_message_dialog(
+                '',
+                header=_('Unkown Error'),
+                markup=False
+            )
 
     def on_conflict_modal_close(self, widget, data: str):
         if data == 'cancel':
@@ -362,8 +385,9 @@ class AppDetails(Gtk.ScrolledWindow):
                     try:
                         self.provider.run(self.app_list_element)
                     except Exception as e:
-                        logging.error(e)
-                        show_message_dialog(_('Error'), str(e))
+                        traceback.print_exc()
+                        print('sono qui')
+                        self.handle_exception(e)
 
                     self.post_launch_animation(restore_as=pre_launch_label)
 
