@@ -1,4 +1,5 @@
 import logging
+import glob
 import re
 import os
 import shutil
@@ -707,9 +708,14 @@ class AppImageProvider():
                 logging.debug(z7zoutput)
                 logging.debug(f'=== end 7zz log ===')
             except Exception as e:
-                logging.error('Extraction with 7zz failed')
-                logging.error(str(e))
-                use_unsquashfs = True
+
+                if glob.glob('*.desktop', root_dir=squashfs_root_folder) and \
+                    glob.glob('*.png', root_dir=squashfs_root_folder) or glob.glob('*.svg', root_dir=squashfs_root_folder):
+                    logging.warning('Extraction with 7zz failed, but the required files have been extracted')
+                else:
+                    logging.error('Extraction with 7zz failed')
+                    logging.error(str(e))
+                    use_unsquashfs = True
 
         if  use_unsquashfs:
             logging.debug('Testing with unsquashfs')
@@ -786,34 +792,7 @@ class AppImageProvider():
                     # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#the-filesystem-image
 
                     tmp_icon_file: Optional[Gio.File] = None
-                    icon_xt_f = None
-                    for icon_xt in ['.svg', '.png']:
-                        icon_xt_f = Gio.File.new_for_path(extraction_folder.get_path() + f'/{desktop_entry_icon}{icon_xt}')
-
-                        if icon_xt_f.query_exists():
-                            tmp_icon_file = icon_xt_f
-                            break
-
-                    if (not icon_xt_f.query_exists()) or (get_giofile_content_type(icon_xt_f) not in ['image/svg+xml', 'image/svg']):
-                        # always prefer svg(s) to png(s)
-                        # if a png is not found in the root of the filesystem, try somewhere else
-
-                        icons_folder_prefix = '/usr/share/icons/hicolor'
-                        icon_try_paths = [
-                            extraction_folder.get_path() + f'{icons_folder_prefix}/scalable/apps/{desktop_entry_icon}.svg',
-                            extraction_folder.get_path() + f'{icons_folder_prefix}/512x512/apps/{desktop_entry_icon}.png',
-                            extraction_folder.get_path() + f'{icons_folder_prefix}/256x256/apps/{desktop_entry_icon}.png',
-                            extraction_folder.get_path() + f'{icons_folder_prefix}/128x128/apps/{desktop_entry_icon}.png',
-                            extraction_folder.get_path() + f'{icons_folder_prefix}/96x96/apps/{desktop_entry_icon}.png'
-                        ]
-
-                        for icon_xt in icon_try_paths:
-                            logging.debug('Looking for icon in: ' + icon_xt)
-                            icon_xt_f = Gio.File.new_for_path(icon_xt)
-
-                            if icon_xt_f.query_exists():
-                                tmp_icon_file = icon_xt_f
-                                break
+                    
                     if not tmp_icon_file:
                         # if icon file is still not found, let's try with .DirIcon file
                         diricon = Gio.File.new_for_path(
@@ -834,6 +813,36 @@ class AppImageProvider():
                                     if diricon_linked_to.query_exists() and \
                                         get_giofile_content_type(diricon_linked_to) in ['image/png']:
                                         tmp_icon_file = diricon_linked_to
+                    
+                    if not tmp_icon_file:
+                        icon_xt_f = None
+                        for icon_xt in ['.svg', '.png']:
+                            icon_xt_f = Gio.File.new_for_path(extraction_folder.get_path() + f'/{desktop_entry_icon}{icon_xt}')
+
+                            if icon_xt_f.query_exists():
+                                tmp_icon_file = icon_xt_f
+                                break
+
+                        if (not icon_xt_f.query_exists()) or (get_giofile_content_type(icon_xt_f) not in ['image/svg+xml', 'image/svg']):
+                            # always prefer svg(s) to png(s)
+                            # if a png is not found in the root of the filesystem, try somewhere else
+
+                            icons_folder_prefix = '/usr/share/icons/hicolor'
+                            icon_try_paths = [
+                                extraction_folder.get_path() + f'{icons_folder_prefix}/scalable/apps/{desktop_entry_icon}.svg',
+                                extraction_folder.get_path() + f'{icons_folder_prefix}/512x512/apps/{desktop_entry_icon}.png',
+                                extraction_folder.get_path() + f'{icons_folder_prefix}/256x256/apps/{desktop_entry_icon}.png',
+                                extraction_folder.get_path() + f'{icons_folder_prefix}/128x128/apps/{desktop_entry_icon}.png',
+                                extraction_folder.get_path() + f'{icons_folder_prefix}/96x96/apps/{desktop_entry_icon}.png'
+                            ]
+
+                            for icon_xt in icon_try_paths:
+                                logging.debug('Looking for icon in: ' + icon_xt)
+                                icon_xt_f = Gio.File.new_for_path(icon_xt)
+
+                                if icon_xt_f.query_exists():
+                                    tmp_icon_file = icon_xt_f
+                                    break
 
                     if tmp_icon_file:
                         i, tmp_icon_ext = os.path.splitext(tmp_icon_file.get_path())
