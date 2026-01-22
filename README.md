@@ -7,6 +7,8 @@
 
 <p align="center"><img width="100" src="https://img.shields.io/flathub/downloads/it.mijorus.gearlever"></p>
 
+## Documentation
+https://gearlever.mijorus.it
 
 
 ## Features
