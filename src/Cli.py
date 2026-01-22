@@ -65,11 +65,13 @@ class Cli():
     def update(argv):
         Cli._print_help_if_requested(argv, [
             ['--yes | -y', 'Skips any interactive question'],
+            ['--force', 'Forces updates for running applications'],
             ['--all', 'Updates all AppImages'],
         ], text='Usage: --update <file_path>')
 
         assume_yes = ('-y' in argv) or ('--yes' in argv)
         update_all = ('--all' in argv)
+        force = ('--force' in argv)
 
         updates: list[AppImageListElement] = []
 
@@ -98,6 +100,10 @@ class Cli():
             sys.exit(0)
 
         for el in updates:
+            if appimage_provider.is_app_running(el) and (not force):
+                print(f'{el.file_path} was skipped because the application is running; use --force to skip this check.')
+                continue
+
             manager = UpdateManagerChecker.check_url_for_app(el)
 
             if not manager:

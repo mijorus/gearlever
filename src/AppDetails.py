@@ -426,6 +426,16 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @_async
     def update_action_button_clicked(self, w):
+        is_running = self.provider.is_app_running(self.app_list_element)
+
+        if is_running:
+            self.show_update_error_dialog(
+                _('{app_name} is running, please close it before proceeding with the update'.format(
+                    app_name=self.app_list_element.name))
+            )
+
+            return
+
         self.app_list_element.set_installed_status(InstalledStatus.UPDATING)
         self.update_installation_status()
 

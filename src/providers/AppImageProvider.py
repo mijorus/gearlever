@@ -597,6 +597,21 @@ class AppImageProvider():
 
         return list_element
 
+    def is_app_running(self, el: AppImageListElement) -> bool: 
+        if not el.file_path:
+            return False
+
+        running = terminal.host_sh(["ps", "-eo", "exe"])
+        spl = running.split('\n')
+
+        for l in spl:
+            l = l.strip()
+
+            if l == el.file_path:
+                return True
+            
+        return False
+
     # Private methods
     def _run_filepath(self, el: AppImageListElement):
         is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) != None
