@@ -143,6 +143,11 @@ class GithubUpdater(UpdateManager):
 
         release_name = self.url_data["release"]
 
+        # special values, see https://github.com/AppImage/AppImageSpec/blob/master/draft.md#github-releases
+        prerelease_only = release_name == 'latest-pre'
+        if prerelease_only or release_name == 'latest-all':
+            allow_prereleases = True
+
         rel_url = '/'.join([
             'https://api.github.com/repos',
             self.url_data["username"],
@@ -168,7 +173,7 @@ class GithubUpdater(UpdateManager):
 
         if allow_prereleases:
             for r in rel_data:
-                if r['draft'] == False:
+                if r['draft'] == False and (not prerelease_only or r['prerelease'] == True):
                     release = r
                     break
         else:
