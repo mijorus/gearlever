@@ -1,3 +1,4 @@
+from enum import Enum, auto
 import logging
 import requests
 import os
@@ -13,6 +14,14 @@ from .Models import DownloadInterruptedException
 from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
+
+class PrereleaseMode(Enum):
+    allow = auto()
+    """allow both prereleases and regular releases"""
+    only = auto()
+    """only allow prereleases but not regular releases"""
+    forbid = auto()
+    """only allow regular releases"""
 
 class GithubUpdater(UpdateManager):
     staticfile_manager: Optional[StaticFileUpdater]
@@ -138,15 +147,30 @@ class GithubUpdater(UpdateManager):
         if not self.url_data:
             return
         
-        allow_prereleases = self.get_saved_config() \
-            .get('allow_prereleases', False)
-
         release_name = self.url_data["release"]
 
-        # special values, see https://github.com/AppImage/AppImageSpec/blob/master/draft.md#github-releases
-        prerelease_only = release_name == 'latest-pre'
-        if prerelease_only or release_name == 'latest-all':
-            allow_prereleases = True
+        allow_prereleases_config = self.get_saved_config() \
+            .get('allow_prereleases', None)
+
+        prerelease_mode: PrereleaseMode
+        # check for special values, see https://github.com/AppImage/AppImageSpec/blob/master/draft.md#github-releases
+        # but only do this if the user hasn't configured allow prereleases themselves.
+        if allow_prereleases_config is None:
+            if release_name == 'latest-pre':
+                prerelease_mode = PrereleaseMode.only
+                release_name = None
+            elif release_name == 'latest-all':
+                prerelease_mode = PrereleaseMode.allow
+                release_name = None
+            else:
+                prerelease_mode = PrereleaseMode.forbid
+        else:
+            prerelease_mode = PrereleaseMode.allow if allow_prereleases_config else PrereleaseMode.forbid
+
+        can_use_latest = prerelease_mode == PrereleaseMode.forbid and release_name == 'latest'
+        if can_use_latest:
+            # latest is a special value, not actually a release name
+            release_name = None
 
         rel_url = '/'.join([
             'https://api.github.com/repos',
@@ -155,8 +179,9 @@ class GithubUpdater(UpdateManager):
             'releases',
         ])
 
-        if not allow_prereleases:
-            rel_url += f'/{release_name}'
+        # latest release can be accessed directly at this url, but that doesn't work with prereleases or tag names
+        if can_use_latest:
+            rel_url += '/latest'
 
         try:
             rel_data_resp = requests.get(rel_url)
@@ -171,11 +196,17 @@ class GithubUpdater(UpdateManager):
 
         release = None
 
-        if allow_prereleases:
+        if not can_use_latest:
             for r in rel_data:
-                if r['draft'] == False and (not prerelease_only or r['prerelease'] == True):
-                    release = r
-                    break
+                if (
+                    r["draft"]
+                    or (prerelease_mode == PrereleaseMode.forbid and r["prerelease"])
+                    or (prerelease_mode == PrereleaseMode.only and not r["prerelease"])
+                    or (release_name is not None and r["tag_name"] != release_name)
+                ):
+                    continue
+                release = r
+                break
         else:
             release = rel_data
 
