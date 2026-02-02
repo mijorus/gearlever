@@ -1,0 +1,39 @@
+# File: .github/workflows/appimage-build.yml
+
+name: AppImage Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-appimage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t gearlever-appimage -f .docker/Dockerfile .
+
+      - name: Run Docker container to build AppImage
+        run: |
+          mkdir -p build
+          docker run --rm -v $(pwd)/build:/output:rw gearlever-appimage
+
+      - name: Debug - List files
+        run: |
+          ls -al
+          ls -al build
+
+      - name: Upload AppImage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GearLever-x86_64.AppImage
+          path: |
+            ./build/GearLever-x86_64.AppImage
+            ./build/GearLever-x86_64.AppImage.zsync
