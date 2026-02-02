@@ -73,6 +73,17 @@ class GithubUpdater(UpdateManager):
 
         self.set_url(url)
 
+    def does_allow_prereleases(self):
+        allow_prereleases = False
+
+        if self.embedded:
+            if self.url_data:
+                allow_prereleases = self.url_data['release'] in ['latest-pre', 'latest-all']
+        else:
+            allow_prereleases = self.get_saved_config().get('allow_prereleases', False)
+
+        return allow_prereleases
+
     def set_url(self, url: str):
         self.url = url
         self.url_data = self.get_url_data(url)
@@ -80,7 +91,7 @@ class GithubUpdater(UpdateManager):
         self.config = {
             'repo_url': '',
             'repo_filename': '',
-            'allow_prereleases': self.get_saved_config().get('allow_prereleases', False)
+            'allow_prereleases': self.does_allow_prereleases()
         }
 
         if self.url_data:
@@ -138,8 +149,7 @@ class GithubUpdater(UpdateManager):
         if not self.url_data:
             return
         
-        allow_prereleases = self.get_saved_config() \
-            .get('allow_prereleases', False)
+        allow_prereleases = self.does_allow_prereleases()
 
         release_name = self.url_data["release"]
 
@@ -281,13 +291,15 @@ class GithubUpdater(UpdateManager):
         
         self.allow_prereleases_row = Adw.SwitchRow(
             title=_('Allow pre-releases'),
-            active=self.config.get('allow_prereleases')
+            sensitive=(not embedded),
+            active=self.does_allow_prereleases()
         )
 
         if embedded:
             return [
                 self.repo_url_row, 
                 self.repo_filename_row,
+                self.allow_prereleases_row
             ]
 
         return [
