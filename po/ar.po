@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: unnamed project\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-01-22 16:42+0100\n"
-"PO-Revision-Date: 2026-02-04 23:34+0200\n"
-"Last-Translator: محمد الباشا <contact.mu7basha@gmail.com>\n"
+"PO-Revision-Date: 2026-02-04 23:57+0200\n"
+"Last-Translator: Muhammed Al-Basha <contact.mu7basha@gmail.com>\n"
 "Language-Team: Arabic\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural= n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Gtranslator 49.0\n"
 
 # المترجمون: لا تترجم اسم التطبيق
 #: data/it.mijorus.gearlever.desktop.in:2
@@ -27,11 +27,11 @@ msgstr "جيير ليفر"
 
 #: data/it.mijorus.gearlever.desktop.in:3
 msgid "An utility to manage AppImages with ease!"
-msgstr "أداة لإدارة حزم آبايميج بسهولة!"
+msgstr "أداة لإدارة حزم AppImage بسهولة!"
 
 #: data/it.mijorus.gearlever.desktop.in:11
 msgid "AppImage;"
-msgstr "AppImage;آبايميج;"
+msgstr "AppImage;ه"
 
 #: src/main.py:112
 msgid "translator_credits"
@@ -39,11 +39,11 @@ msgstr "محمد الباشا <contact.mu7basha@gmail.com>"
 
 #: src/AppDetails.py:35 src/AppDetails.py:83 src/AppDetails.py:465
 msgid "Update"
-msgstr "حدّث"
+msgstr "حدث"
 
 #: src/AppDetails.py:36
 msgid "Save"
-msgstr "احفظ"
+msgstr "حفظ"
 
 #: src/AppDetails.py:37
 msgid "Saved"
@@ -78,7 +78,7 @@ msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
 msgstr ""
-"هذه التطبيق يوجد خارج المجلد الافتراضي\n"
+"هذا التطبيق يوجد خارج المجلد الافتراضي\n"
 "<small>يمكنك إخفاء التطبيقات الخارجية في الاعدادات</small>"
 
 #: src/AppDetails.py:247
@@ -117,11 +117,11 @@ msgstr "أترغب في حذف هذا التطبيق؟"
 
 #: src/AppDetails.py:501 src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
-msgstr "ألغي"
+msgstr "إلغاء"
 
 #: src/AppDetails.py:502 src/AppDetails.py:541
 msgid "Remove"
-msgstr "أحذف"
+msgstr "حذف"
 
 #: src/AppDetails.py:537 src/AppDetails.py:557
 msgid "This app runs in the terminal"
@@ -129,7 +129,7 @@ msgstr "هذا التطبيق يعمل في الطرفية"
 
 #: src/AppDetails.py:539 src/AppDetails.py:554 src/AppDetails.py:560
 msgid "Launch"
-msgstr "أطلق"
+msgstr "إطلاق"
 
 #: src/AppDetails.py:545
 msgid "Uninstalling..."
@@ -233,7 +233,7 @@ msgstr "اضف أو خصص بيئة هذا التطبيق"
 
 #: src/GearleverWindow.py:39
 msgid "Open a new AppImage"
-msgstr "افتح حزمة آبايميج جديدة"
+msgstr "افتح حزمة AppImage جديدة"
 
 #: src/GearleverWindow.py:51
 msgid "Open"
@@ -273,14 +273,15 @@ msgstr "المكان الافتراضي للأبايميج"
 
 #: src/preferences.py:43
 msgid "Show integrated AppImages outside the default folder"
-msgstr "اظهر حزم آبايميج المدمجة خارج المجلد الافتراضي"
+msgstr "اظهر حزم AppImage المدمجة خارج المجلد الافتراضي"
 
 #: src/preferences.py:45
 msgid ""
 "List AppImages that have been integrated into the system menu but are "
 "located outside the default folder"
 msgstr ""
-"اظهر حزم آبايميج التي تم دمجها بقائمة النظام لكنها توجد خارج المجلد الافتراضي"
+"اظهر حزم AppImage التي تم دمجها بقائمة النظام لكنها توجد خارج المجلد "
+"الافتراضي"
 
 #: src/preferences.py:52
 msgid "Updates management"
@@ -302,7 +303,7 @@ msgstr "إدارة الملفات"
 
 #: src/preferences.py:65
 msgid "Move AppImages into the destination folder"
-msgstr "انقل حزم آبايميج لمجلد الوجهة"
+msgstr "انقل حزم AppImage لمجلد الوجهة"
 
 #: src/preferences.py:66
 msgid "Reduce disk usage"
@@ -310,7 +311,7 @@ msgstr "يقلل من استخدام القرص"
 
 #: src/preferences.py:70
 msgid "Clone AppImages into the destination folder"
-msgstr "استنسخ حزم آبايميج لمجلد الوجهة"
+msgstr "استنسخ حزم AppImage لمجلد الوجهة"
 
 #: src/preferences.py:71
 msgid "Keep the original file and create a copy in the destination folder"
@@ -361,7 +362,7 @@ msgid ""
 "Disable only if you trust your sources: malicious apps could execute code "
 "when loading the metadata."
 msgstr ""
-"إذا فُعلت، سيحاول التطبيق تحميل حزمة آبايميج باستخدام أمر appimage-extract "
+"إذا فُعلت، سيحاول التطبيق تحميل حزمة AppImage باستخدام أمر appimage-extract "
 "المضمن.\n"
 "ألغي تفعيله فقط إذا كنت تثق بمصادرك: يمكن للتطبيقات الخبيثة تنفيذ الأوامر "
 "أثناء تحميل المعلومات الوصفية."
@@ -438,7 +439,7 @@ msgstr "ابدأ"
 
 #: src/gtk/empty-list-placeholder.ui:30
 msgid "Drag and drop an AppImage here or click on the \"+\" icon."
-msgstr "اسحب وافلت حزمة آبايميج هنا أو اضغط على أيقونة \"+\"."
+msgstr "اسحب وافلت حزمة AppImage هنا أو اضغط على أيقونة \"+\"."
 
 #: src/gtk/empty-list-placeholder.ui:35
 msgid "If you don't see your apps, check if the selected folder is correct."
@@ -473,7 +474,7 @@ msgstr "اهلًا، مرحبًا بك في جيير ليفر"
 
 #: src/gtk/tutorial/1.ui:35
 msgid "An app that helps you integrate AppImages into your system."
-msgstr "تطبيق يساعدك في دمج حزم آبايميج في نظامك."
+msgstr "تطبيق يساعدك في دمج حزم AppImage في نظامك."
 
 #: src/gtk/tutorial/1.ui:43
 msgid "Click \"Next\" to follow this tutorial."
@@ -481,21 +482,21 @@ msgstr "اضغط \"التالي\" لمتابعة الدرس التعليمي."
 
 #: src/gtk/tutorial/2.ui:12
 msgid "Set the AppImage location"
-msgstr "عيّن مكان لآبايميج"
+msgstr "عيّن مكان لAppImage"
 
 #: src/gtk/tutorial/2.ui:13
 msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
-msgstr "جيير ليفر سيجمع كل حزم آبايميج خاصتك في مجلد محدَّد لإبقائهم مرتبين."
+msgstr "جيير ليفر سيجمع كل حزم AppImage خاصتك في مجلد محدَّد لإبقائهم مرتبين."
 
 #: src/gtk/tutorial/2.ui:21
 msgid "<b>By default, AppImages are saved at: {location}</b>"
-msgstr "<b>إفتراضيًا، تُحفَظ حزم آبايميج في: {location}</b>"
+msgstr "<b>إفتراضيًا، تُحفَظ حزم AppImage في: {location}</b>"
 
 #: src/gtk/tutorial/2.ui:29
 msgid "Change AppImage location"
-msgstr "غيّر مكان آبايميج"
+msgstr "غيّر مكان AppImage"
 
 #: src/gtk/tutorial/2.ui:38
 msgid "You can customize it later in the preferences."
@@ -508,7 +509,7 @@ msgstr "عيّن جيير ليفر كالإفتراضي"
 #: src/gtk/tutorial/3.ui:32
 msgid ""
 "Click on the button to open a demo folder, containing a sample AppImage."
-msgstr "اضغط على الزر لفتح مجلد عرضي، يحتوي على عينة لآبايميج."
+msgstr "اضغط على الزر لفتح مجلد عرضي، يحتوي على عينة لAppImage."
 
 #: src/gtk/tutorial/3.ui:40
 msgid ""
@@ -542,11 +543,11 @@ msgstr "لم يُوفَر وصف"
 msgid ""
 "The downloaded file is not a valid appimage, please check if the provided "
 "URL is correct"
-msgstr "الملف المحمَّل ليس آبايميج صالح، تأكَّد من أن عنوان URL المزوَّد صحيح"
+msgstr "الملف المحمَّل ليس AppImage صالح، تأكَّد من أن عنوان URL المزوَّد صحيح"
 
 #: src/providers/AppImageProvider.py:648
 msgid "Running AppImages on NixOS requires appimage-run"
-msgstr "تشغيل حزم آبايميج على NixOS يتطلب appimage-run"
+msgstr "تشغيل حزم AppImage على NixOS يتطلب appimage-run"
 
 #: src/providers/AppImageProvider.py:662
 #, python-brace-format
@@ -557,7 +558,7 @@ msgid ""
 "Click the link below for more information. \n"
 "{url}"
 msgstr ""
-"حزم آبايميج تتطلب FUSE لتعمل. يزال بمستطاعك تشغيلها مع --appimage-extract-"
+"حزم AppImage تتطلب FUSE لتعمل. يزال بمستطاعك تشغيلها مع --appimage-extract-"
 "and-run في معاملات سطر الأوامر.\n"
 "\n"
 "لمزيد من المعلومات اضغط على الرابط الآتي.\n"
