@@ -253,3 +253,33 @@ def extract_terminal_arguments(command):
         i += 1
     
     return result
+
+def gnu_naturalsize(value, precision=1):
+    """
+    Format a number of bytes like humanize.naturalsize(value, gnu=True).
+    Uses powers of 1024 and single-letter suffixes.
+    """
+    if value < 0:
+        return f"-{gnu_naturalsize(abs(value), precision)}"
+    
+    # Standard GNU suffixes
+    suffixes = ('B', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
+    
+    # Set the base for binary (1024)
+    base = 1024.0
+    
+    if value < base:
+        return f"{value}B"
+    
+    # Calculate the magnitude
+    import math
+    i = int(math.floor(math.log(value, base)))
+    
+    # Handle cases where value might exceed our suffix list
+    if i >= len(suffixes):
+        i = len(suffixes) - 1
+        
+    v = value / math.pow(base, i)
+    
+    # Return formatted string (e.g., 953.7M)
+    return f"{v:.{precision}f}{suffixes[i]}"
