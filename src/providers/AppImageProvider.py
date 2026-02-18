@@ -399,6 +399,7 @@ class AppImageProvider():
             desktop_file_entry_section = original_desktop_entry_section
             desktop_file_entry_section = re.sub(r'^X-AppImage-Version=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
             desktop_file_entry_section += f'\nX-AppImage-Version={version}\n'
+            desktop_file_entry_section += f'\nX-AppImage-Name={extracted_appimage.desktop_entry.getName()}\n'
 
             desktop_file_content = desktop_file_content.replace(
                 original_desktop_entry_section,
