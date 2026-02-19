@@ -25,7 +25,7 @@
         <key name="fetch-updates-in-background" type="b">
             <default>false</default>
         </key>
-        <key name="preview-before-opening-app" type="b">
+        <key name="preview-minimal-ui" type="b">
             <default>true</default>
         </key>
         <key name="block-unsafe-extractor" type="b">

@@ -47,6 +47,7 @@ class AppDetails(Gtk.ScrolledWindow):
         super().__init__()
         self.ACTION_ROW_ICON_SIZE = 34
         self.EXTRA_DATA_SPACING = 20
+        self.minimal_ui = False
 
         self.app_list_element: AppImageListElement | None = None
         self.common_btn_css_classes = ['pill', 'text-button']
@@ -87,14 +88,14 @@ class AppDetails(Gtk.ScrolledWindow):
             visible=False
         )
 
-        action_buttons_row = CenteringBox(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        action_buttons_row = CenteringBox(orientation=Gtk.Orientation.VERTICAL, spacing=10, margin_top=20)
         self.primary_action_button.connect('clicked', self.on_primary_action_button_clicked)
         self.secondary_action_button.connect('clicked', self.on_secondary_action_button_clicked)
         self.update_action_button.connect('clicked', self.update_action_button_clicked)
         
-        primary_action_buttons_row = CenteringBox(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
-        [primary_action_buttons_row.append(el) for el in [self.secondary_action_button, self.update_action_button]]
-        [action_buttons_row.append(el) for el in [primary_action_buttons_row, self.primary_action_button]]
+        self.primary_action_buttons_row = CenteringBox(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        [self.primary_action_buttons_row.append(el) for el in [self.secondary_action_button, self.primary_action_button]]
+        [action_buttons_row.append(el) for el in [self.primary_action_buttons_row, self.update_action_button]]
 
         [self.details_row.append(el) for el in [self.icon_slot, title_col, action_buttons_row]]
 
@@ -155,7 +156,6 @@ class AppDetails(Gtk.ScrolledWindow):
     def set_from_local_file(self, file: Gio.File):
         if appimage_provider.can_install_file(file):
             list_element = appimage_provider.create_list_element_from_file(file)
-
             self.set_app_list_element(list_element)
             return True
 
@@ -305,6 +305,20 @@ class AppDetails(Gtk.ScrolledWindow):
         if self.extra_data:
             self.third_row.remove(self.extra_data)
             self.extra_data = None
+
+    def set_minimal_ui(self, enabled=True):
+        self.minimal_ui = enabled
+
+        if enabled:
+            self.third_row.set_visible(False)
+            self.desc_row.set_visible(False)
+            self.primary_action_buttons_row.set_orientation(Gtk.Orientation.VERTICAL)
+            self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
+        else:
+            self.third_row.set_visible(True)
+            self.desc_row.set_visible(True)
+            self.primary_action_buttons_row.set_orientation(Gtk.Orientation.HORIZONTAL)
+            self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
     @_async
     def install_file(self, el: AppImageListElement):
@@ -623,9 +637,15 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @idle
     def set_app_as_updatable(self):
+        self.primary_action_buttons_row.set_orientation(Gtk.Orientation.HORIZONTAL)
         self.update_action_button.set_visible(True)
         self.update_action_button.set_label(self.UPDATE_FETCHING)
         self.update_action_button.set_sensitive(False)
+        # if self.minimal_ui:
+        #     self.update_action_button.set_visible(False)
+        #     self.update_action_button.set_sensitive(False)
+        # else:
+        #     self.primary_action_buttons_row.set_orientation(Gtk.Orientation.HORIZONTAL)
 
     @_async
     def check_updates(self):

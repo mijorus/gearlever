@@ -492,7 +492,7 @@ class AppImageProvider():
             raise InternalError(message='This file type is not supported')
 
         app_name: str = os.path.basename(file.get_parse_name())
-        preview_enabled = Settings.settings.get_boolean('preview-before-opening-app')
+        preview_enabled = False
 
         el = AppImageListElement(
             name=re.sub(r'\.appimage$', '', app_name, 1, re.IGNORECASE),

@@ -156,6 +156,11 @@ class GearleverWindow(Adw.Window):
             self.container_stack.set_visible_child(self.app_details)
 
             if self.from_file:
+                if self.settings.get_boolean('preview-minimal-ui'):
+                    self.app_details.set_minimal_ui(True)
+                    self.set_default_size(-1, -1)
+                    self.set_resizable(False)
+
                 # open the app with a minimal UI when opening a single file
                 self.left_button.set_visible(False)
                 self.menu_button.set_visible(False)
