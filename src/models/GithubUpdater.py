@@ -243,6 +243,9 @@ class GithubUpdater(UpdateManager):
     def is_update_available(self, el: AppImageListElement):
         target_asset = self.fetch_target_asset()
 
+        if not os.path.exists(el.file_path):
+            return False
+
         if target_asset:
             ct_supported = target_asset['asset']['content_type'] in [*AppImageProvider.supported_mimes, 'raw',
                                                     'binary/octet-stream', 'application/octet-stream']
