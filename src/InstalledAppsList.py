@@ -14,7 +14,7 @@ from .components.CustomComponents import NoAppsFoundRow
 from .components.AppListBoxItem import AppListBoxItem
 from .preferences import Preferences
 from .WelcomeScreen import WelcomeScreen
-from .lib.utils import get_application_window
+from .lib.utils import get_application_window, check_internet
 from .lib.async_utils import _async, idle
 from .models.UpdateManagerChecker import UpdateManagerChecker
 
@@ -141,6 +141,9 @@ class InstalledAppsList(Gtk.ScrolledWindow):
     @_async
     def fetch_updates(self, cache=False):
         global fetch_updates_cache
+
+        if not check_internet():
+            return
 
         logging.debug('Fetching for updates for all apps')
 

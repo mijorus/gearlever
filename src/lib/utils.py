@@ -7,6 +7,7 @@ import logging
 import shlex
 import gi
 import hashlib
+import socket
 from . import terminal
 
 gi.require_version('Gtk', '4.0')
@@ -283,3 +284,12 @@ def gnu_naturalsize(value, precision=1):
     
     # Return formatted string (e.g., 953.7M)
     return f"{v:.{precision}f} {suffixes[i]}"
+
+def check_internet(host="1.1.1.1", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error as ex:
+        logging.warning(f"No internet connection detected")
+        return False

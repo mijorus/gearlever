@@ -1,6 +1,7 @@
 import time
 import logging
 from .lib.terminal import sandbox_sh
+from .lib.utils import check_internet
 from .lib.constants import UPDATES_AVAILABLE_LABEL, ONE_UPDATE_AVAILABLE_LABEL, APP_ID
 from .providers.AppImageProvider import AppImageProvider
 from .models.UpdateManagerChecker import UpdateManagerChecker
@@ -9,6 +10,9 @@ class BackgroudUpdatesFetcher():
     @staticmethod
     def fetch():
         logging.warn('Fetching updates in the background')
+
+        if not check_internet():
+            return
 
         provider = AppImageProvider()
         installed = provider.list_installed()

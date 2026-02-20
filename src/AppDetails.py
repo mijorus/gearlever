@@ -18,7 +18,7 @@ from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
 from .lib.json_config import read_json_config, set_json_config, read_config_for_app, save_config_for_app, \
     remove_update_config
-from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog, gnu_naturalsize
+from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog, gnu_naturalsize, check_internet
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
 from .components.AdwEntryRowDefault import AdwEntryRowDefault
@@ -658,6 +658,9 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @_async
     def check_updates(self):
+        if not check_internet():
+            return
+
         manager = self.update_manager
 
         if not manager:
