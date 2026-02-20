@@ -55,7 +55,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin_top=10, margin_bottom=10, margin_start=20, margin_end=20)
 
         # 1st row
-        self.details_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        self.details_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         self.icon_slot = Gtk.Box()
 
         title_col = CenteringBox(orientation=Gtk.Orientation.VERTICAL, hexpand=True, spacing=2)
@@ -68,6 +68,11 @@ class AppDetails(Gtk.ScrolledWindow):
             max_width_chars=100,
             selectable=True,
         )
+
+        self.app_info_pills = Adw.ToggleGroup(can_target=False, css_classes=['round'], 
+                                              halign=Gtk.Align.CENTER,
+                                              margin_top=20,
+                                              margin_bottom=10)
 
         [title_col.append(el) for el in [self.title, self.app_subtitle]]
 
@@ -97,28 +102,20 @@ class AppDetails(Gtk.ScrolledWindow):
         [self.primary_action_buttons_row.append(el) for el in [self.secondary_action_button, self.primary_action_button]]
         [action_buttons_row.append(el) for el in [self.primary_action_buttons_row, self.update_action_button]]
 
-        [self.details_row.append(el) for el in [self.icon_slot, title_col, action_buttons_row]]
-
-        # preview row
-        self.previews_row = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL,
-            spacing=10,
-            margin_top=20,
-        )
+        [self.details_row.append(el) for el in [self.icon_slot, title_col, self.app_info_pills, action_buttons_row]]
 
         # row
-        self.desc_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin_top=20, margin_bottom=20)
-        self.description = Gtk.Label(label='', halign=Gtk.Align.START, wrap=True, selectable=True)
+        self.spinner_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin_top=20, margin_bottom=20)
 
         self.desc_row_spinner = Gtk.Spinner(spinning=True, visible=True)
-        [self.desc_row.append(el) for el in [self.desc_row_spinner, self.description]]
+        [self.spinner_row.append(el) for el in [self.desc_row_spinner]]
 
         # row
         self.third_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.extra_data = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=self.EXTRA_DATA_SPACING)
         self.third_row.append(self.extra_data)
 
-        [self.main_box.append(el) for el in [self.details_row, self.previews_row, self.desc_row, self.third_row]]
+        [self.main_box.append(el) for el in [self.details_row, self.spinner_row, self.third_row]]
 
         clamp = Adw.Clamp(child=self.main_box, maximum_size=600, margin_top=10, margin_bottom=20)
 
@@ -175,18 +172,26 @@ class AppDetails(Gtk.ScrolledWindow):
         self.details_row.prepend(self.icon_slot)
         self.title.set_label(self.app_list_element.name)
 
-        subtitle_s = []
-        if self.app_list_element.version:
-            subtitle_s.append(self.app_list_element.version)
-        subtitle_s.append(gnu_naturalsize(self.app_list_element.size))
-
-        self.app_subtitle.set_text(' · '.join(subtitle_s))
-        self.app_subtitle.set_visible(self.app_list_element.version != None)
-        self.app_subtitle.set_selectable(self.app_list_element.installed_status is not InstalledStatus.INSTALLED)
-
-        self.description.set_label(
-            self.provider.get_description(self.app_list_element)
+        self.app_subtitle.set_text(self.app_list_element.description)
+        self.app_subtitle.set_visible(
+            len(self.app_list_element.description.strip()) > 0
         )
+
+        self.app_info_pills.remove_all()
+
+        if self.app_list_element.version:
+            t1 = Adw.Toggle(label=self.app_list_element.version)
+            self.app_info_pills.add(t1)
+
+        t2 = Adw.Toggle(label=gnu_naturalsize(self.app_list_element.size))
+        self.app_info_pills.add(t2)
+
+        if generation:
+            t3 = Adw.Toggle(label=f'{self.provider.name} Type. {generation}')
+            self.app_info_pills.add(t3)
+
+        self.app_info_pills.set_active(0)
+        self.app_info_pills.set_visible(not self.minimal_ui)
 
         if self.extra_data:
             self.third_row.remove(self.extra_data)
@@ -198,9 +203,6 @@ class AppDetails(Gtk.ScrolledWindow):
 
         # Load the boxed list with additional information
         gtk_list = Gtk.ListBox(css_classes=['boxed-list'])
-
-        # Package info
-        gtk_list.append(self.create_package_info_row(generation))
 
         # The path of the executable
         gtk_list.append(self.create_exec_path_row())
@@ -214,8 +216,6 @@ class AppDetails(Gtk.ScrolledWindow):
         self.secondary_action_button.set_visible(True)
         self.primary_action_button.set_visible(True)
         self.title.set_visible(True)
-        self.app_subtitle.set_visible(True)
-        self.description.set_visible(True)
 
         system_arch = platform.machine()
 
@@ -302,10 +302,10 @@ class AppDetails(Gtk.ScrolledWindow):
         self.show_row_spinner(True)
         self.title.set_visible(False)
         self.app_subtitle.set_visible(False)
-        self.description.set_visible(False)
         self.secondary_action_button.set_visible(False)
         self.primary_action_button.set_visible(False)
         self.window_banner.set_revealed(False)
+        self.app_info_pills.set_visible(False)
 
         if self.icon_slot:
             self.details_row.remove(self.icon_slot)
@@ -317,15 +317,13 @@ class AppDetails(Gtk.ScrolledWindow):
 
     def set_minimal_ui(self, enabled=True):
         self.minimal_ui = enabled
+        self.third_row.set_visible(not enabled)
+        self.app_info_pills.set_visible(not enabled)
 
         if enabled:
-            self.third_row.set_visible(False)
-            self.desc_row.set_visible(False)
             self.primary_action_buttons_row.set_orientation(Gtk.Orientation.VERTICAL)
             self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
         else:
-            self.third_row.set_visible(True)
-            self.desc_row.set_visible(True)
             self.primary_action_buttons_row.set_orientation(Gtk.Orientation.HORIZONTAL)
             self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
