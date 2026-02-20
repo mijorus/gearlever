@@ -167,14 +167,9 @@ class CodebergUpdater(UpdateManager):
         target_asset = self.fetch_target_asset()
 
         if target_asset:
-            content_type = requests.head(target_asset['browser_download_url']).headers.get('content-type', None)
-            ct_supported = content_type in [*AppImageProvider.supported_mimes, 'raw',
-                                                    'binary/octet-stream', 'application/octet-stream']
-
-            if ct_supported:
-                old_size = os.path.getsize(el.file_path)
-                is_size_different = target_asset['size'] != old_size
-                return is_size_different
+            old_size = os.path.getsize(el.file_path)
+            is_size_different = target_asset['size'] != old_size
+            return is_size_different
 
         return False
     

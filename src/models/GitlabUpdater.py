@@ -210,20 +210,16 @@ class GitlabUpdater(UpdateManager):
 
         if target_asset:
             asset_head_req = requests.head(target_asset['direct_asset_url'])
-            content_type = asset_head_req.headers.get('content-type', None)
-            ct_supported = content_type in [*AppImageProvider.supported_mimes, 'raw',
-                                                    'binary/octet-stream', 'application/octet-stream']
 
-            if ct_supported:
-                is_size_different = False
-                old_size = os.path.getsize(el.file_path)
-                asset_size = asset_head_req.headers.get('content-length', None)
+            is_size_different = False
+            old_size = os.path.getsize(el.file_path)
+            asset_size = asset_head_req.headers.get('content-length', None)
 
-                if asset_size:
-                    asset_size = int(asset_size)
-                    is_size_different = asset_size != old_size
+            if asset_size:
+                asset_size = int(asset_size)
+                is_size_different = asset_size != old_size
 
-                return is_size_different
+            return is_size_different
 
         return False
     

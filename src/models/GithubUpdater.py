@@ -247,30 +247,26 @@ class GithubUpdater(UpdateManager):
             return False
 
         if target_asset:
-            ct_supported = target_asset['asset']['content_type'] in [*AppImageProvider.supported_mimes, 'raw',
-                                                    'binary/octet-stream', 'application/octet-stream']
+            if target_asset['zsync']:
+                logging.debug('GithubUpdated: checking zsync file at ' + target_asset['zsync']['browser_download_url'])
+                zsync_file = requests.get(target_asset['zsync']['browser_download_url']).text
+                zsync_file_header = zsync_file.split('\n\n', 1)[0]
+                sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
+                curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha1')
 
-            if ct_supported:
-                if target_asset['zsync']:
-                    logging.debug('GithubUpdated: checking zsync file at ' + target_asset['zsync']['browser_download_url'])
-                    zsync_file = requests.get(target_asset['zsync']['browser_download_url']).text
-                    zsync_file_header = zsync_file.split('\n\n', 1)[0]
-                    sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
-                    curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha1')
+                match = re.search(sha_pattern, zsync_file_header)
+                if match:
+                    return match.group(1) != curr_version_hash
 
-                    match = re.search(sha_pattern, zsync_file_header)
-                    if match:
-                        return match.group(1) != curr_version_hash
+            else:
+                digest = target_asset['asset'].get('digest', '')
+                if digest and digest.startswith('sha256:'):
+                    curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha256')
+                    return f'sha256:{curr_version_hash}' != digest
 
-                else:
-                    digest = target_asset['asset'].get('digest', '')
-                    if digest and digest.startswith('sha256:'):
-                        curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha256')
-                        return f'sha256:{curr_version_hash}' != digest
-
-                    old_size = os.path.getsize(el.file_path)
-                    is_size_different = target_asset['asset']['size'] != old_size
-                    return is_size_different
+                old_size = os.path.getsize(el.file_path)
+                is_size_different = target_asset['asset']['size'] != old_size
+                return is_size_different
 
         return False
 
