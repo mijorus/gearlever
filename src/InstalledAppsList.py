@@ -112,18 +112,14 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
     def refresh_list(self):
         self.installed_apps_list.remove_all()
-        # if self.installed_apps_list:
-        #     self.installed_apps_list_slot.remove(self.installed_apps_list)
-
         self.updates_btn.set_label(self.CHECK_FOR_UPDATES_LABEL)
-        # self.installed_apps_list= Gtk.ListBox(css_classes=["boxed-list"])
         self.installed_apps_list_rows = []
 
         installed: List[AppImageListElement] = appimage_provider.list_installed()
 
         for i in installed:
             list_row = AppListBoxItem(i, activatable=True, selectable=False, hexpand=True)
-            list_row.set_update_version(i.version)
+            list_row.set_update_version(i.version, i.size)
 
             list_row.load_icon()
             self.installed_apps_list_rows.append(list_row)

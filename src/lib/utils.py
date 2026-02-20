@@ -263,7 +263,7 @@ def gnu_naturalsize(value, precision=1):
         return f"-{gnu_naturalsize(abs(value), precision)}"
     
     # Standard GNU suffixes
-    suffixes = ('B', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
+    suffixes = ('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB')
     
     # Set the base for binary (1024)
     base = 1024.0
@@ -282,4 +282,4 @@ def gnu_naturalsize(value, precision=1):
     v = value / math.pow(base, i)
     
     # Return formatted string (e.g., 953.7M)
-    return f"{v:.{precision}f}{suffixes[i]}"
+    return f"{v:.{precision}f} {suffixes[i]}"

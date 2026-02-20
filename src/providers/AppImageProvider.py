@@ -60,6 +60,7 @@ class AppImageListElement():
     local_file: Optional[bool] = None
     external_folder: bool = False
     desktop_file_path: Optional[str] = None
+    size: int = 0
 
     def set_installed_status(self, installed_status: InstalledStatus):
         self.installed_status = installed_status
@@ -114,6 +115,7 @@ class AppImageProvider():
                         exec_in_defalut_folder = os.path.isfile(
                                 os.path.join(default_folder_path, exec_gfile.get_basename()))
                         exec_in_folder = True if manage_from_outside else exec_in_defalut_folder
+                        app_version = self._get_app_version(None, desktop_entry=entry, return_hash=False)
                         file_size = os.stat(exec_location).st_size
 
                         if exec_in_folder and self.can_install_file(exec_gfile):
@@ -121,7 +123,7 @@ class AppImageProvider():
                                 name=entry.getName(),
                                 desktop_file_path=gfile.get_path(),
                                 description=entry.getComment(),
-                                version=' · '.join([self._get_app_version(None, desktop_entry=entry), gnu_naturalsize(file_size)]),
+                                version=(app_version or None),
                                 installed_status=InstalledStatus.INSTALLED,
                                 file_path=exec_location,
                                 provider=self.name,
@@ -130,6 +132,7 @@ class AppImageProvider():
                                 external_folder=(not exec_in_defalut_folder),
                                 exec_arguments=exec_arguments,
                                 env_variables=exec_command_data['env_vars'],
+                                size=file_size,
                             )
 
                             list_element.architecture = None
@@ -269,7 +272,7 @@ class AppImageProvider():
 
         try:
             extracted_appimage = self._load_appimage_metadata(el)
-            version = self._get_app_version(extracted_appimage)
+            version = self._get_app_version(extracted_appimage, return_hash=False)
             dest_file_info = extracted_appimage.appimage_file.query_info('*', Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS)
 
             # Move .appimage to its default location
@@ -314,7 +317,7 @@ class AppImageProvider():
                 # if there is already an app with the same name,
                 # we try not to overwrite
                 while appimage_filename in files_in_dest_dir:
-                    if i == 0:
+                    if i == 0 and version:
                         appimage_filename = app_name_without_ext + '_' + version.replace('.', '_')
                     else:
                         appimage_filename = app_name_without_ext + f'_{i}'
@@ -375,7 +378,8 @@ class AppImageProvider():
             jd_desktop_entry.Exec = shlex.join([dest_appimage_file.get_path(), *exec_arguments])
 
             if el.update_logic is AppImageUpdateLogic.KEEP:
-                final_app_name = extracted_appimage.desktop_entry.getName() + f' ({version})'
+                v_version = self._get_app_version(extracted_appimage, return_hash=True)
+                final_app_name = extracted_appimage.desktop_entry.getName() + f' ({v_version})'
                 jd_desktop_entry.Name.default_text = final_app_name
 
             desktop_icon = f'applications-other'
@@ -389,25 +393,10 @@ class AppImageProvider():
                 action.Icon = desktop_icon
                 action.Exec = shlex.join([dest_appimage_file.get_path(), *a_exec_args['arguments']])
 
+            if version:
+                jd_desktop_entry.CustomKeys['X-AppImage-Version'] = version
+            jd_desktop_entry.CustomKeys['X-AppImage-Name'] = extracted_appimage.desktop_entry.getName()
             desktop_file_content = jd_desktop_entry.get_text()
-
-            desktop_file_entry_section_match = self.desk_entry_section_regex.search(desktop_file_content)
-            original_desktop_entry_section = desktop_file_content
-
-            if desktop_file_entry_section_match:
-                original_desktop_entry_section = desktop_file_entry_section_match.group(0)
-
-            desktop_file_entry_section = original_desktop_entry_section
-            desktop_file_entry_section = re.sub(r'^X-AppImage-Version=.*$', "", desktop_file_entry_section, flags=re.MULTILINE)
-            desktop_file_entry_section += f'\nX-AppImage-Version={version}\n'
-            desktop_file_entry_section += f'\nX-AppImage-Name={extracted_appimage.desktop_entry.getName()}\n'
-
-            desktop_file_content = desktop_file_content.replace(
-                original_desktop_entry_section,
-                desktop_file_entry_section,
-            )
-
-            desktop_file_content = re.sub(r'\n\n(?!\[)', '\n', desktop_file_content)
 
             # finally, write the new .desktop file
             if (not os.path.exists(self.user_desktop_files_path)) and os.path.exists(self.user_local_share_path):
@@ -494,13 +483,15 @@ class AppImageProvider():
         app_name: str = os.path.basename(file.get_parse_name())
         preview_enabled = False
 
+        file_size = os.stat(file.get_path()).st_size
         el = AppImageListElement(
             name=re.sub(r'\.appimage$', '', app_name, 1, re.IGNORECASE),
             description='',
-            version='',
+            version=None,
             provider=self.name,
             installed_status=InstalledStatus.NOT_INSTALLED,
             file_path=file.get_path(),
+            size=file_size,
             desktop_entry=None,
             local_file=True,
             trusted=(not preview_enabled)
@@ -886,15 +877,13 @@ class AppImageProvider():
         folder = Settings.settings.get_string('appimages-default-folder')
         return re.sub(r'^~', GLib.get_home_dir(), folder)
 
-    def _get_app_version(self, extracted_appimage: Optional[ExtractedAppImage], desktop_entry: Optional[DesktopEntry] = None):
+    def _get_app_version(self, extracted_appimage: Optional[ExtractedAppImage], desktop_entry: Optional[DesktopEntry] = None, return_hash=True):
         if not desktop_entry:
             desktop_entry = extracted_appimage.desktop_entry
 
-        version = desktop_entry.get(
-            'X-AppImage-Version'
-        )
+        version = desktop_entry.get('X-AppImage-Version', '')
 
-        if (not version) and extracted_appimage:
+        if (not version) and extracted_appimage and return_hash:
             version = extracted_appimage.md5[0:6]
 
         return version

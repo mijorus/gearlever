@@ -18,7 +18,7 @@ from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
 from .lib.json_config import read_json_config, set_json_config, read_config_for_app, save_config_for_app, \
     remove_update_config
-from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog
+from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog, gnu_naturalsize
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
 from .components.AdwEntryRowDefault import AdwEntryRowDefault
@@ -50,7 +50,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.minimal_ui = False
 
         self.app_list_element: AppImageListElement | None = None
-        self.common_btn_css_classes = ['pill', 'text-button']
+        self.common_btn_css_classes = ['big-btn', 'text-button']
 
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, margin_top=10, margin_bottom=10, margin_start=20, margin_end=20)
 
@@ -175,8 +175,13 @@ class AppDetails(Gtk.ScrolledWindow):
         self.details_row.prepend(self.icon_slot)
         self.title.set_label(self.app_list_element.name)
 
-        self.app_subtitle.set_text(self.app_list_element.version)
-        self.app_subtitle.set_visible(len(self.app_list_element.version))
+        subtitle_s = []
+        if self.app_list_element.version:
+            subtitle_s.append(self.app_list_element.version)
+        subtitle_s.append(gnu_naturalsize(self.app_list_element.size))
+
+        self.app_subtitle.set_text(' · '.join(subtitle_s))
+        self.app_subtitle.set_visible(self.app_list_element.version != None)
         self.app_subtitle.set_selectable(self.app_list_element.installed_status is not InstalledStatus.INSTALLED)
 
         self.description.set_label(
@@ -219,6 +224,8 @@ class AppDetails(Gtk.ScrolledWindow):
             self.command_line_arguments_row = self.create_show_exec_args_row()
             gtk_list.append(self.command_line_arguments_row)
 
+            self.primary_action_buttons_row.set_orientation(Gtk.Orientation.HORIZONTAL)
+
             # A custom link to a website
             gtk_list.append(self.create_edit_custom_website_row())
 
@@ -237,6 +244,8 @@ class AppDetails(Gtk.ScrolledWindow):
             else:
                 self.window_banner.set_revealed(False)
         else:
+            self.primary_action_buttons_row.set_orientation(Gtk.Orientation.VERTICAL)
+
             if self.app_list_element.trusted:
                 if system_arch and system_arch != self.app_list_element.architecture:
                     self.show_invalid_arch_banner()

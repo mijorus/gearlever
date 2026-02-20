@@ -2,6 +2,7 @@ from urllib import request
 from gi.repository import Gtk, Pango, GObject
 from typing import Dict, List, Optional
 from ..lib.async_utils import idle, _async
+from ..lib.utils import gnu_naturalsize
 
 from ..models.AppListElement import InstalledStatus
 from ..providers.AppImageProvider import AppImageListElement
@@ -88,9 +89,16 @@ class AppListBoxItem(Gtk.ListBoxRow):
         image.set_pixel_size(45)
         self.image_container.append(image)
 
-    def set_update_version(self, text: Optional[str]):
-        self.update_version.set_visible(text != None)
-        self.update_version.set_label(text if text else '')
+    def set_update_version(self, text: Optional[str], size: int):
+        c = []
+
+        if text:
+            c.append(text)
+        c.append(gnu_naturalsize(size))
+        
+
+        self.update_version.set_visible(True)
+        self.update_version.set_label(' · '.join(c))
 
     def show_updatable_badge(self):
         self.update_available_btn.set_visible(True)

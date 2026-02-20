@@ -341,7 +341,8 @@ class Cli():
             update_url = app_conf.get('update_url', None)
             manager = UpdateManagerChecker.check_url_for_app(a)
             update_mng = f'[{manager.name}]' if manager else '[UpdatesNotAvailable]'
-            table.append([a.name, f'[{a.version}]', update_mng, a.file_path])
+            v = a.version or 'Not specified'
+            table.append([a.name, f'[{v}]', update_mng, a.file_path])
 
         Cli._print_table(table)
 
