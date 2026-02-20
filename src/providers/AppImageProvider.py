@@ -74,7 +74,9 @@ class AppImageListElement():
         return read_config_for_app(self)
 
 class AppImageProvider():
-    supported_mimes = ['application/x-iso9660-appimage', 'application/vnd.appimage', 'application/x-appimage']
+    # https://cgit.freedesktop.org/xdg/shared-mime-info/tree/data/freedesktop.org.xml.in#n2114
+    supported_mimes = ['application/x-iso9660-appimage', 'application/vnd.appimage', 'application/x-appimage',
+                    'application/vnd.efi.iso']
 
     def __init__(self):
         self.name = 'AppImage'
