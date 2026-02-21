@@ -1,0 +1,571 @@
+# Georgian translation for gearlever.
+# Copyright (C) 2026 gearlever's authors.
+# This file is distributed under the same license as the gearlever package.
+# Ekaterine Papava <papava.e@gtu.ge>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gearlever\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-19 10:31+0100\n"
+"PO-Revision-Date: 2026-02-21 03:59+0100\n"
+"Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
+"Language-Team: Georgian <(nothing)>\n"
+"Language: ka\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+
+#: data/it.mijorus.gearlever.desktop.in:2
+msgid "Gear Lever"
+msgstr "Gear Lever"
+
+#: data/it.mijorus.gearlever.desktop.in:3
+msgid "An utility to manage AppImages with ease!"
+msgstr "პროგრამა AppImage-ების იოლად სამართავად!"
+
+#: data/it.mijorus.gearlever.desktop.in:11
+msgid "AppImage;"
+msgstr "AppImage;"
+
+#: src/main.py:112
+msgid "translator_credits"
+msgstr "ეკატერინე პაპავა"
+
+#: src/AppDetails.py:35 src/AppDetails.py:84 src/AppDetails.py:479
+msgid "Update"
+msgstr "განახლება"
+
+#: src/AppDetails.py:36
+msgid "Save"
+msgstr "შენახვა"
+
+#: src/AppDetails.py:37
+msgid "Saved"
+msgstr "შენახულია"
+
+#: src/AppDetails.py:38
+msgid "Invalid data"
+msgstr "არასწორი მონაცემები"
+
+#: src/AppDetails.py:39
+msgid "Cancel update"
+msgstr "განახლების გაუქმება"
+
+#: src/AppDetails.py:40 src/InstalledAppsList.py:31
+msgid "Checking updates..."
+msgstr "განახლებების შემოწმება..."
+
+#: src/AppDetails.py:41
+msgid "No updates available"
+msgstr "განახლებების ვერ ვიპოვე"
+
+#: src/AppDetails.py:42
+msgid "This application includes update information provided by the developer"
+msgstr ""
+"ეს აპლიკაცია შეიცავს პროგრამისტის მიერ მოწოდებულ განახლების ინფორმაციას"
+
+#: src/AppDetails.py:43
+msgid "Manage update details for this application"
+msgstr "განახლების დეტალების მართვა ამ აპლიკაციისთვის"
+
+#: src/AppDetails.py:236
+msgid ""
+"This app is located outside the default folder\n"
+"<small>You can hide external apps in the settings</small>"
+msgstr ""
+"ეს აპი ნაგულისხმევი საქაღალდის გარეთაა მოთავსებული\n"
+"<small>გარე აპების დამალვა პარამეტრებში შეგიძლიათ</small>"
+
+#: src/AppDetails.py:247
+msgid "Please, verify the source of this app before opening it"
+msgstr "შეამოწმეთ ამ აპის წყარო მის გახსნამდე"
+
+#: src/AppDetails.py:248
+msgid "Unlock"
+msgstr "განბლოკვა"
+
+#: src/AppDetails.py:347
+msgid "Unkown Error"
+msgstr "უცნობი შეცდომა"
+
+#: src/AppDetails.py:396
+msgid "Launching..."
+msgstr "გაშვება..."
+
+#: src/AppDetails.py:447
+#, python-brace-format
+msgid ""
+"{app_name} is running, please close it before proceeding with the update"
+msgstr "{app_name} გაშვებულია. დახურეთ ის, სანამ განახლებას დაიწყებდეთ"
+
+#: src/AppDetails.py:501
+msgid "Update error"
+msgstr "განახლების შეცდომა"
+
+#: src/AppDetails.py:505
+msgid "Close"
+msgstr "დახურვა"
+
+#: src/AppDetails.py:512
+msgid "Do you really want to remove this app?"
+msgstr "მართლა გნებავთ ამ აპის წაშლა?"
+
+#: src/AppDetails.py:515 src/components/AppDetailsConflictModal.py:14
+msgid "Cancel"
+msgstr "გაუქმება"
+
+#: src/AppDetails.py:516 src/AppDetails.py:555
+msgid "Remove"
+msgstr "წაშლა"
+
+#: src/AppDetails.py:551 src/AppDetails.py:571
+msgid "This app runs in the terminal"
+msgstr "ეს აპი ტერმინალში ეშვება"
+
+#: src/AppDetails.py:553 src/AppDetails.py:568 src/AppDetails.py:574
+msgid "Launch"
+msgstr "გაშვება"
+
+#: src/AppDetails.py:559
+msgid "Uninstalling..."
+msgstr "წაშლა..."
+
+#: src/AppDetails.py:563
+msgid "Installing..."
+msgstr "დაყენება..."
+
+#: src/AppDetails.py:576
+msgid "Move to the app menu"
+msgstr "აპის მენიუში გადატანა"
+
+#: src/AppDetails.py:589
+msgid "Error"
+msgstr "შეცდომა"
+
+#: src/AppDetails.py:600
+msgid "This app might not be compatible with your system architecture"
+msgstr "ეს აპი, შეიძლება, თქვენი სისტემის არქიტექტურასთან თავსებადი არ იყოს"
+
+#: src/AppDetails.py:909
+msgid "Add a website"
+msgstr "ვებსაიტის დამატება"
+
+#: src/AppDetails.py:913
+msgid "Website"
+msgstr "ვებგვერდი"
+
+#: src/AppDetails.py:926
+msgid "Open URL"
+msgstr "URL-ის გახსნა"
+
+#: src/AppDetails.py:943
+msgid "How it works"
+msgstr "როგორ მუშაობს"
+
+#: src/AppDetails.py:965
+msgid "Update management"
+msgstr "განახლებების მართვა"
+
+#: src/AppDetails.py:972
+msgid "Default"
+msgstr "ნაგულისხმევი"
+
+#: src/AppDetails.py:978
+msgid "Source"
+msgstr "წყარო"
+
+#: src/AppDetails.py:979
+msgid "Select the source type"
+msgstr "აირჩიეთ წყაროს ტიპი"
+
+#: src/AppDetails.py:1005
+msgid "Reload metadata"
+msgstr "მეტამონაცემების თავიდან ჩატვირთვა"
+
+#: src/AppDetails.py:1006
+msgid ""
+"Update information like icon, version and description.\n"
+"Useful if the app updated itself."
+msgstr ""
+"ისეთი ინფორმაციის განახლება, როგორიცაა ხატულა, ვერსია და აღწერა.\n"
+"სასარგებლოა, თუ აპი თავის თავს ანახლებს."
+
+#: src/AppDetails.py:1018
+msgid "Command line arguments"
+msgstr "ბრძანების სტრიქონის არგუმენტები"
+
+#: src/AppDetails.py:1036
+msgid "Hash"
+msgstr "ჰეში"
+
+#: src/AppDetails.py:1046
+msgid "Path"
+msgstr "ბილიკი"
+
+#: src/AppDetails.py:1048
+msgid "Open Folder"
+msgstr "საქაღალდის გახსნა"
+
+#: src/AppDetails.py:1058
+msgid "Package type"
+msgstr "პაკეტის ტიპი"
+
+#: src/AppDetails.py:1076
+msgid "Key"
+msgstr "გასაღები"
+
+#: src/AppDetails.py:1077
+msgid "Value"
+msgstr "მნიშვნელობა"
+
+#: src/AppDetails.py:1116
+msgid "Environment variables"
+msgstr "გარემოს ცვლადები"
+
+#: src/AppDetails.py:1117
+msgid "Add or customize environment for this application"
+msgstr "გარემოს დამატება, ან მორგება ამ აპლიკაციისთვის"
+
+#: src/GearleverWindow.py:39
+msgid "Open a new AppImage"
+msgstr "ახალი AppImage-ის გახსნა"
+
+#: src/GearleverWindow.py:51
+msgid "Open"
+msgstr "გახსნა"
+
+#: src/GearleverWindow.py:299
+msgid "Open a file"
+msgstr "ფაილის გახსნა"
+
+#: src/InstalledAppsList.py:29
+msgid "Check for updates"
+msgstr "განახლებების შემოწმება"
+
+#: src/InstalledAppsList.py:30
+msgid "No updates found"
+msgstr "განახლებები ვერ ვიპოვე"
+
+#: src/InstalledAppsList.py:32
+msgid "Update all"
+msgstr "ყველას განახლება"
+
+#: src/InstalledAppsList.py:55
+msgid "Filter installed applications"
+msgstr "დაყენებული აპლიკაციების გაფილტვრა"
+
+#: src/InstalledAppsList.py:62
+msgid "Installed applications"
+msgstr "დაყენებული აპლიკაციები"
+
+#: src/preferences.py:29
+msgid "General"
+msgstr "ზოგადი"
+
+#: src/preferences.py:34
+msgid "AppImage default location"
+msgstr "AppImage-ის ნაგულისხმევი მდებარეობა"
+
+#: src/preferences.py:43
+msgid "Show integrated AppImages outside the default folder"
+msgstr "ინტეგრირებული AppImage-ების ნაგულისხმევი საქაღალდის გარეთ ჩვენება"
+
+#: src/preferences.py:45
+msgid ""
+"List AppImages that have been integrated into the system menu but are "
+"located outside the default folder"
+msgstr ""
+"AppImage-ების სია, რომლებიც ინტეგრირებულია სისტემურ მენიუში, მაგრამ "
+"მოთავსებულია ნაგულისხმევი საქაღალდის გარეთ"
+
+#: src/preferences.py:52
+msgid "Updates management"
+msgstr "განახლებების მართვა"
+
+#: src/preferences.py:54
+msgid "Check updates on system startup"
+msgstr "განახლებების შემოწმება სისტემის გაშვებისას"
+
+#: src/preferences.py:56
+msgid ""
+"Receive a notification when a new update is detected; updates will not be "
+"installed automatically"
+msgstr ""
+"შეტყობინების მიღება, როცა აღმოჩენილია ახალი განახლება. განახლებების დაყენება "
+"ავტომატურად არ მოხდება"
+
+#: src/preferences.py:63
+msgid "File management"
+msgstr "ფაილების მართვა"
+
+#: src/preferences.py:65
+msgid "Move AppImages into the destination folder"
+msgstr "Appimage-ის გადატანა სამიზნე საქაღალდეში"
+
+#: src/preferences.py:66
+msgid "Reduce disk usage"
+msgstr "დისკის მოხმარების შემცირება"
+
+#: src/preferences.py:70
+msgid "Clone AppImages into the destination folder"
+msgstr "Appimage-ის დაკლონვა სამიზნე საქაღალდეში"
+
+#: src/preferences.py:71
+msgid "Keep the original file and create a copy in the destination folder"
+msgstr "ორიგინალი ფაილის შენარჩუნება და ასლის შექმნა სამიზნე საქაღალდეში"
+
+#: src/preferences.py:97
+msgid "Naming conventions"
+msgstr "შეთანხმება სახელებზე"
+
+#: src/preferences.py:99
+msgid "Use executable name for integrated terminal apps"
+msgstr "გამშვები ფაილის სახელის გამოყენება ინტეგრირებული ტერმინალის აპებისთვის"
+
+#: src/preferences.py:101
+msgid ""
+"If enabled, apps that run in the terminal are renamed as their executable.\n"
+"You would need to add the aforementioned folder to your $PATH manually.\n"
+"\n"
+"For example, \"golang_x86_64.appimage\" will be saved as \"go\""
+msgstr ""
+"თუ ჩართულია, აპების, რომლებიც ტერმინალში ეშვება სახელი მათ გამშვებ ფაილზე "
+"იცვლება.\n"
+"მოხსენიებული საქაღალდის თქვენს $PATH-ში ჩამატება ხელით მოგიწევთ.\n"
+"\n"
+"მაგალითად, \"golang_x86_64.appimage\" შენახული იქნება, როგორც \"go\""
+
+#: src/preferences.py:107
+msgid "Preview new apps in a minimal UI"
+msgstr "ახალი აპების გადახედვა მინიმალურ ინტერფეისში"
+
+#: src/preferences.py:112
+msgid "Use safe mechanisms to load metadata"
+msgstr "უსაფრთხო მექანიზმების გამოყენება მეტამონაცემების ჩასატვირთად"
+
+#: src/preferences.py:114
+msgid ""
+"If enabled, the app will try to load an Appimage without using the built-in "
+"appimage-extract command.\n"
+"Disable only if you trust your sources: malicious apps could execute code "
+"when loading the metadata."
+msgstr ""
+"თი ჩართულია, აპი სცდის, AppImage ჩაშენებული appimage-extract ბრძანების "
+"გარეშე ჩატვირთოს.\n"
+"გამორთეთ, მხოლოდ, მაშინ, თუ ენდობით თქვენს წყაროს: მავნე აპებს "
+"მეტამონაცემების ჩატვირთვისას კოდის შესრულება შეუძლიათ."
+
+#: src/preferences.py:121
+msgid "Debugging"
+msgstr "გამართვა"
+
+#: src/preferences.py:123
+msgid "Enable debug logs"
+msgstr "გამართვის ჟურნალის ჩართვა"
+
+#: src/preferences.py:125
+msgid ""
+"Increases log verbosity, occupying more disk space and potentially impacting "
+"performance.\n"
+"Requires a restart."
+msgstr ""
+"ჟურნალის ჩანაწერების დეტალიზაციის გაზრდა. ეს მეტ ადგილს იკავებს დისკზე და "
+"შეიძლება, წარმადობაზე ჰქონდეს გავლენა.\n"
+"საჭიროებს გადატვირთვას."
+
+#: src/preferences.py:152
+msgid "The folder must writeable"
+msgstr "საქაღალდე ჩაწერადი უნდა იყოს"
+
+#: src/preferences.py:155 src/WelcomeScreen.py:118
+msgid "Select a folder"
+msgstr "აირჩიეთ საქაღალდე"
+
+#: src/WelcomeScreen.py:115
+msgid "The folder must be in your home directory"
+msgstr "საქაღალდე თქვენს საწყის საქაღალდეში უნდა იყოს"
+
+#: src/gtk/main-menu.ui:6
+msgid "_Preferences"
+msgstr "_მორგება"
+
+#: src/gtk/main-menu.ui:10
+msgid "_Open Log File"
+msgstr "_ჟურნალის ფაილის გახსნა"
+
+#: src/gtk/main-menu.ui:14
+msgid "_Show tutorial"
+msgstr "_სახელმძღვანელოს ჩვენება"
+
+#: src/gtk/main-menu.ui:18
+msgid "_About Gear lever"
+msgstr "Gear lever-ის შეს_ახებ"
+
+#: src/components/AppDetailsConflictModal.py:10
+#, python-brace-format
+msgid "Conflict with \"{app_name}\""
+msgstr "კონფლიქტი აპთან \"{app_name}\""
+
+#: src/components/AppDetailsConflictModal.py:11
+msgid "There is already an app with the same name, how do you want to proceed?"
+msgstr "აპი ამ სახელით უკვე არსებობს. როგორ გნებავთ, მოვიქცე?"
+
+#: src/components/AppDetailsConflictModal.py:17
+msgid "Keep both"
+msgstr "ორივეს დატოვება"
+
+#: src/components/AppDetailsConflictModal.py:19
+msgid "Replace"
+msgstr "ჩანაცვლება"
+
+#: src/gtk/drag-drop.ui:18
+msgid "Drop your file here"
+msgstr "ჩააგდეთ თქვენი ფაილი აქ"
+
+#: src/gtk/empty-list-placeholder.ui:18
+msgid "Get started"
+msgstr "დაიწყეთ"
+
+#: src/gtk/empty-list-placeholder.ui:30
+msgid "Drag and drop an AppImage here or click on the \"+\" icon."
+msgstr "გადმოაგდეთ და დააგდეთ AppImage აქ, ან დააწკაპუნეთ ხატულაზე \"+\"."
+
+#: src/gtk/empty-list-placeholder.ui:35
+msgid "If you don't see your apps, check if the selected folder is correct."
+msgstr ""
+"თუ თქვენს აპებს ვერ ხედავთ, შეამოწმეთ, სწორია, თუ არა არჩეული საქაღალდე."
+
+#: src/gtk/empty-list-placeholder.ui:46
+msgid "Show welcome screen"
+msgstr "საწყისი ეკრანის ჩვენება"
+
+#: src/gtk/empty-list-placeholder.ui:56
+msgid "Open Preferences"
+msgstr "მორგების ფანჯრის გახსნა"
+
+#: src/gtk/help-overlay.ui:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "ზოგადი"
+
+#: src/gtk/help-overlay.ui:14
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "მალსახმობების ჩვენება"
+
+#: src/gtk/help-overlay.ui:20
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "გასვლა"
+
+#: src/gtk/tutorial/1.ui:26
+msgid "Hi, welcome to Gear lever"
+msgstr "გამარჯობა. მოგესალმებათ Gear lever"
+
+#: src/gtk/tutorial/1.ui:35
+msgid "An app that helps you integrate AppImages into your system."
+msgstr "აპი, რომელიც AppImage-ების სისტემაში ინტეგრაციაში დაგეხმარებათ."
+
+#: src/gtk/tutorial/1.ui:43
+msgid "Click \"Next\" to follow this tutorial."
+msgstr ""
+"იმისათვის, რომ მიჰყვეთ ამ სახელმძღვანელოს, დააწკაპუნეთ ღილაკზე 'შემდეგი'."
+
+#: src/gtk/tutorial/2.ui:12
+msgid "Set the AppImage location"
+msgstr "AppImage-ის მდებარეობის დაყენება"
+
+#: src/gtk/tutorial/2.ui:13
+msgid ""
+"Gear lever groups all your AppImages into a specific folder and keeps them "
+"organized."
+msgstr ""
+"Gear lever აჯგუფებს თქვენს AppImage-ებს მითითებულ საქაღალდეში და მათ "
+"ორგანიზებულად ინარჩუნებს."
+
+#: src/gtk/tutorial/2.ui:21
+msgid "<b>By default, AppImages are saved at: {location}</b>"
+msgstr "<b>ნაგულისხმევად AppImage-ები შენახულია საქაღალდეში: {location}</b>"
+
+#: src/gtk/tutorial/2.ui:29
+msgid "Change AppImage location"
+msgstr "AppImage-ის მდებარეობის შეცვლა"
+
+#: src/gtk/tutorial/2.ui:38
+msgid "You can customize it later in the preferences."
+msgstr "ამის შეცვლა მოგვიანებით, მორგების ფანჯარაში შეგიძლიათ."
+
+#: src/gtk/tutorial/3.ui:23
+msgid "Set Gear lever as default"
+msgstr "Gear lever-ის ნაგულისხმევად დაყენება"
+
+#: src/gtk/tutorial/3.ui:32
+msgid ""
+"Click on the button to open a demo folder, containing a sample AppImage."
+msgstr ""
+"დააწკაპუნეთ ღილაკზე სადემონსტრაციო საქაღალდის გასახსნელად, რომელიც ნიმუშ "
+"AppImage-ს შეიცავს."
+
+#: src/gtk/tutorial/3.ui:40
+msgid ""
+"Use the right-click menu to set Gear lever as the default app for "
+"\".appimage\" files"
+msgstr ""
+"გამოიყენეთ მარჯვენა-წკაპის მენიუ, რომ დააყენოთ Gear lever ნაგულისხმევ აპად "
+"\".appimage\" ფაილებისთვის"
+
+#: src/gtk/tutorial/3.ui:54
+msgid "Open demo folder"
+msgstr "დემოს საქაღალდის გახსნა"
+
+#: src/gtk/tutorial/3.ui:63
+msgid "This step is optional"
+msgstr "ეს ნაბიჯი სავალდებულო არაა"
+
+#: src/gtk/tutorial/last.ui:21
+msgid "All done, let's go!"
+msgstr "ყველაფერი მზადაა. წავედით!"
+
+#: src/gtk/tutorial/last.ui:24
+msgid "Close tutorial"
+msgstr "&სახელმძღვანელოს დახურვა"
+
+#: src/models/AppListElement.py:19
+msgid "No description provided"
+msgstr "აღწერის გარეშე"
+
+#: src/providers/AppImageProvider.py:589
+msgid ""
+"The downloaded file is not a valid appimage, please check if the provided "
+"URL is correct"
+msgstr ""
+"გადმოწერილი ფაილი სწორი appimage არაა. შეამოწმეთ მოწოდებული URL-ის სისწორე"
+
+#: src/providers/AppImageProvider.py:650
+msgid "Running AppImages on NixOS requires appimage-run"
+msgstr "AppImage-ების NixOS-ზე გაშვებას appimage-run სჭირდება"
+
+#: src/providers/AppImageProvider.py:664
+#, python-brace-format
+msgid ""
+"AppImages require FUSE to run. You might still be able to run it with --"
+"appimage-extract-and-run in the command line arguments. \n"
+"\n"
+"Click the link below for more information. \n"
+"{url}"
+msgstr ""
+"AppImage-ებს გასაშვებად FUSE სჭირდება. მათი გაშვება, შეიძლება, მაინც "
+"გამოგივიდეთ არგუმენტებით --appimage-extract-and-run.\n"
+"\n"
+"მეტი ინფორმაციისთვის დააწკაპუნეთ ბმულს ქვემოთ.\n"
+"{url}"
+
+#: src/providers/AppImageProvider.py:751
+msgid ""
+"Any attempts at loading this app's metadata failed; if you want proceed "
+"using appimage-extract, please disable the security option in the settings."
+msgstr ""
+"აპის მეტამონაცემების ჩატვირთვის ყველა მცდელობა ჩავარდა. თუ გნებავთ, appimage-"
+"extract-ით გააგრძელოთ, გამორთეთ უსაფრთხოების პარამეტრი მორგების ფანჯარაში."
