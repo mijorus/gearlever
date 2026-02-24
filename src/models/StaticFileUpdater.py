@@ -3,8 +3,10 @@ import requests
 import shutil
 import os
 import re
+from gi.repository import Adw, Gio
 from typing import Optional, Literal
 
+from ..lib.utils import terminal
 from ..lib.utils import get_random_string, url_is_valid, get_file_hash
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 from .Models import DownloadInterruptedException
@@ -14,19 +16,27 @@ from .UpdateManager import UpdateManager
 
 class StaticFileUpdater(UpdateManager):
     label = _('Static URL')
+    handles_embedded = 'zsync|'
     name = 'StaticFileUpdater'
     currend_download: Optional[requests.Response]
 
     @staticmethod
     def can_handle_link(url: str):
+        is_embedded = True
+        if StaticFileUpdater.handles_embedded and \
+            url.startswith(StaticFileUpdater.handles_embedded):
+            l = len(StaticFileUpdater.handles_embedded)
+            url = url[l:]
+            is_embedded = True
+
         if not url_is_valid(url):
             return False
 
         ct = ''
 
-        if url.endswith('.zsync'):
+        if is_embedded:
             # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#zsync-1
-            url = re.sub(r"\.zsync$", "", url)
+            return True
 
         headers = StaticFileUpdater.get_url_headers(url)
         ct = headers.get('content-type', '')
@@ -77,13 +87,25 @@ class StaticFileUpdater(UpdateManager):
         logging.info(f'Downloading file from {self.url}')
 
     def download(self, status_update_cb) -> tuple[str, str]:
-        self.currend_download = requests.get(self.url, stream=True)
         random_name = get_random_string()
         fname = f'{self.download_folder}/{random_name}.appimage'
 
         if not os.path.exists(self.download_folder):
             os.makedirs(self.download_folder)
 
+        if self.embedded and self.url.endswith('.zsync'):
+            if not self.el:
+                raise Exception('Missing AppImageElement model')
+
+            status_update_cb(-1)
+
+            # download zsync file
+            logging.info('Downloading zsync file from ' + self.url)
+            terminal.sandbox_sh(['zsync', '-u', self.url, '-i', self.el.file_path, '-o', fname, '-q'])
+            h = get_file_hash(Gio.File.new_for_path(fname))
+            return (fname, h)
+
+        self.currend_download = requests.get(self.url, stream=True)
         etag = self.currend_download.headers.get("etag", '')
         total_size = int(self.currend_download.headers.get("content-length", 0))
         status = 0
@@ -123,6 +145,16 @@ class StaticFileUpdater(UpdateManager):
             shutil.rmtree(self.download_folder)
 
     def is_update_available(self, el: AppImageListElement):
+        if self.embedded:
+            zsync_file = requests.get(self.url).text
+            zsync_file_header = zsync_file.split('\n\n', 1)[0]
+            sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
+            curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha1')
+
+            match = re.search(sha_pattern, zsync_file_header)
+            if match:
+                return match.group(1) != curr_version_hash
+
         headers = StaticFileUpdater.get_url_headers(self.url)
         resp_cl = int(headers.get('content-length', '0'))
         old_size = os.path.getsize(el.file_path)
@@ -137,7 +169,10 @@ class StaticFileUpdater(UpdateManager):
 
     def set_url(self, url: str):
         if self.embedded:
-            url = re.sub(r"\.zsync$", "", url).strip()
+            if StaticFileUpdater.handles_embedded and \
+            url.startswith(StaticFileUpdater.handles_embedded):
+                l = len(StaticFileUpdater.handles_embedded)
+                url = url[l:]
 
         self.url = url
         self.config = {

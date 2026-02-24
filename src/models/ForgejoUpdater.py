@@ -2,6 +2,7 @@ import logging
 import requests
 import os
 import re
+from fnmatch import fnmatch
 from typing import Optional, Literal
 from gi.repository import Adw, Gio
 from urllib.parse import urlsplit, urljoin
@@ -103,26 +104,6 @@ class ForgejoUpdater(UpdateManager):
         if self.staticfile_manager:
             self.staticfile_manager.cleanup()
 
-    def convert_glob_to_regex(self, glob_str):
-        """
-        Converts a string with glob patterns to a regular expression.
-
-        Args:
-            glob_str: A string containing glob patterns.
-
-        Returns:
-            A regular expression string equivalent to the glob patterns.
-        """
-        regex = ""
-        for char in glob_str:
-            if char == "*":
-                regex += r".*"
-            else:
-                regex += re.escape(char)
-
-        regex = f'^{regex}$'
-        return regex
-
     def fetch_target_asset(self):
         if not self.url_data:
             return
@@ -173,11 +154,10 @@ class ForgejoUpdater(UpdateManager):
         logging.debug(f'Found {len(release["assets"])} assets from {rel_url}')
 
         download_asset = None
-        target_re = re.compile(self.convert_glob_to_regex(self.url_data['filename']))
 
         possible_targets = []
         for asset in release['assets']:
-            if re.match(target_re, asset['name']):
+            if fnmatch(asset['name'], self.url_data['filename']):
                 possible_targets.append(asset)
 
         if len(possible_targets) == 1:

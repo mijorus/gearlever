@@ -13,7 +13,7 @@ class UpdateManager(ABC):
     name = ''
     url = ''
     label = ''
-    embedded = False
+    handles_embedded: Optional[str] = None
     config = {}
     el: Optional[AppImageListElement] = None
     system_arch = platform.machine()
@@ -24,6 +24,7 @@ class UpdateManager(ABC):
     def __init__(self, url: str, embedded: str|Literal[False]=False, el=None) -> None:
         self.el = el
         self.download_folder = os.path.join(TMP_DIR, 'downloads')
+        self.embedded = embedded
         self.set_url(url)
 
     def cleanup(self):

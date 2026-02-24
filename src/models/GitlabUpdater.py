@@ -2,6 +2,7 @@ import logging
 import requests
 import os
 import re
+from fnmatch import fnmatch
 from typing import Optional
 from urllib.parse import urlsplit, quote, unquote
 
@@ -120,26 +121,6 @@ class GitlabUpdater(UpdateManager):
         if self.staticfile_manager:
             self.staticfile_manager.cleanup()
 
-    def convert_glob_to_regex(self, glob_str):
-        """
-        Converts a string with glob patterns to a regular expression.
-
-        Args:
-            glob_str: A string containing glob patterns.
-
-        Returns:
-            A regular expression string equivalent to the glob patterns.
-        """
-        regex = ""
-        for char in glob_str:
-            if char == "*":
-                regex += r".*"
-            else:
-                regex += re.escape(char)
-
-        regex = f'^{regex}$'
-        return regex
-
     def fetch_target_asset(self):
         if not self.url_data:
             return
@@ -172,13 +153,12 @@ class GitlabUpdater(UpdateManager):
             return
 
         download_asset = None
-        target_re = re.compile(self.convert_glob_to_regex(self.url_data['filename']))
 
         possible_targets = []
         assets = rel_data[0]['assets']
         for asset in assets['links']:
             link_res_name = asset['url'].split('/')[-1]
-            if re.match(target_re, link_res_name):
+            if fnmatch(link_res_name, self.url_data['filename']):
                 asset['name'] = link_res_name
                 possible_targets.append(asset)
 
