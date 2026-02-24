@@ -58,14 +58,16 @@ class AppDetails(Gtk.ScrolledWindow):
         self.details_row = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         self.icon_slot = Gtk.Box()
 
-        title_col = CenteringBox(orientation=Gtk.Orientation.VERTICAL, hexpand=True, spacing=2)
+        title_col = CenteringBox(orientation=Gtk.Orientation.VERTICAL, hexpand=True, spacing=2, margin_top=5)
         self.title = Gtk.Label(label='', css_classes=['title-1'], hexpand=True, halign=Gtk.Align.CENTER, wrap=True)
         self.app_subtitle = Gtk.Label(
             label='',
             halign=Gtk.Align.CENTER,
             css_classes=['dim-label', 'subtitle'],
             ellipsize=Pango.EllipsizeMode.END,
-            max_width_chars=100,
+            max_width_chars=50,
+            lines=2,
+            justify=Gtk.Justification.CENTER,
             selectable=True,
         )
 
