@@ -179,9 +179,7 @@ class StaticFileUpdater(UpdateManager):
                 url = url[l:]
 
         self.url = url
-        self.config = {
-            'url': url
-        }
+        self.config = {'url': url}
 
     def load_form_rows(self, embedded=False):
         self.form_row = AdwEntryRowDefault(
