@@ -107,6 +107,8 @@ class StaticFileUpdater(UpdateManager):
                 urlparsed = urlparse(self.url)
                 pp = posixpath.join(posixpath.dirname(urlparsed.path), zsyncfile_url)
                 dwnl_url = urlparsed._replace(path=pp,query='',fragment='').geturl()
+            else:
+                dwnl_url = re.sub(r"\.zsync$", "", dwnl_url)
 
         
         self.currend_download = requests.get(dwnl_url, stream=True)
