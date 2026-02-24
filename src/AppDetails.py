@@ -468,7 +468,7 @@ class AppDetails(Gtk.ScrolledWindow):
         try:
             self.emit('update-started', None)
             update_result = appimage_provider.update_from_url(self.update_manager, self.app_list_element, status_cb= lambda s: \
-                GLib.idle_add(lambda:  self.update_action_button.set_label(str(round(s * 100) + ' %')  if s > 0  else '...')
+                GLib.idle_add(lambda:  self.update_action_button.set_label(str(round(s * 100)) + ' %')
             ))
 
             if update_result == None:

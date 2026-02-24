@@ -2,6 +2,8 @@ import logging
 import requests
 import shutil
 import os
+import posixpath
+from  urllib.parse import urlparse
 import re
 from gi.repository import Adw, Gio
 from typing import Optional, Literal
@@ -93,19 +95,21 @@ class StaticFileUpdater(UpdateManager):
         if not os.path.exists(self.download_folder):
             os.makedirs(self.download_folder)
 
+        dwnl_url = self.url
         if self.embedded and self.url.endswith('.zsync'):
-            if not self.el:
-                raise Exception('Missing AppImageElement model')
+            zsync_file = requests.get(self.url).text
+            zsync_file_header = zsync_file.split('\n\n', 1)[0]
+            sha_pattern = r"URL:\s(.*)"
+            match = re.search(sha_pattern, zsync_file_header)
 
-            status_update_cb(-1)
+            if match:
+                zsyncfile_url = match.group(1)
+                urlparsed = urlparse(self.url)
+                pp = posixpath.join(posixpath.dirname(urlparsed.path), zsyncfile_url)
+                dwnl_url = urlparsed._replace(path=pp,query='',fragment='').geturl()
 
-            # download zsync file
-            logging.info('Downloading zsync file from ' + self.url)
-            terminal.sandbox_sh(['zsync', '-u', self.url, '-i', self.el.file_path, '-o', fname, '-q'])
-            h = get_file_hash(Gio.File.new_for_path(fname))
-            return (fname, h)
-
-        self.currend_download = requests.get(self.url, stream=True)
+        
+        self.currend_download = requests.get(dwnl_url, stream=True)
         etag = self.currend_download.headers.get("etag", '')
         total_size = int(self.currend_download.headers.get("content-length", 0))
         status = 0
