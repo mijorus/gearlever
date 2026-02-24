@@ -181,33 +181,8 @@ class GithubUpdater(UpdateManager):
             if found:
                 break
 
-
-
-        # if allow_prereleases:
-        #     for r in rel_data:
-        #         if r['draft'] == False:
-        #             release = r
-        #             break
-        # else:
-        #     release = rel_data
-
-        # if not release:
-        #     logging.error('Empty release list')
-        #     return
-
-        # logging.debug(f'Found {len(release["assets"])} assets from {rel_url}')
-
-        # tmp_target_file = None
-
-        # possible_targets = []
-        # for asset in release['assets']:
-        #     if self.embedded:
-        #         if fnmatch.fnmatch(asset['name'], self.url_data['filename']):
-        #             possible_targets = [asset]
-        #             break
-        #     else:
-        #         if fnmatch.fnmatch(asset['name'], self.url_data['filename']):
-        #             possible_targets.append(asset)
+        if not release:
+            return
 
         if len(possible_targets) == 1:
             tmp_target_file = possible_targets[0]
