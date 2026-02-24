@@ -41,17 +41,6 @@
             ]
         },
         {
-            "name": "zsync",
-            "buildsystem": "autotools",
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://zsync.moria.org.uk/download/zsync-0.6.3.tar.bz2",
-                    "sha256": "293b6191821641d3ed6248206f8f9df0bf46e6ee2cf8b4dd97cfd1d5909edb9a"
-                }
-            ]
-        },
-        {
             "name": "unsquashfs",
             "buildsystem": "simple",
             "build-commands": [
