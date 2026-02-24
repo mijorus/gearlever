@@ -2,9 +2,13 @@ import logging
 import requests
 import shutil
 import os
+import posixpath
+from  urllib.parse import urlparse
 import re
+from gi.repository import Adw, Gio
 from typing import Optional, Literal
 
+from ..lib.utils import terminal
 from ..lib.utils import get_random_string, url_is_valid, get_file_hash
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 from .Models import DownloadInterruptedException
@@ -14,19 +18,27 @@ from .UpdateManager import UpdateManager
 
 class StaticFileUpdater(UpdateManager):
     label = _('Static URL')
+    handles_embedded = 'zsync|'
     name = 'StaticFileUpdater'
     currend_download: Optional[requests.Response]
 
     @staticmethod
     def can_handle_link(url: str):
+        is_embedded = True
+        if StaticFileUpdater.handles_embedded and \
+            url.startswith(StaticFileUpdater.handles_embedded):
+            l = len(StaticFileUpdater.handles_embedded)
+            url = url[l:]
+            is_embedded = True
+
         if not url_is_valid(url):
             return False
 
         ct = ''
 
-        if url.endswith('.zsync'):
+        if is_embedded:
             # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#zsync-1
-            url = re.sub(r"\.zsync$", "", url)
+            return True
 
         headers = StaticFileUpdater.get_url_headers(url)
         ct = headers.get('content-type', '')
@@ -77,13 +89,27 @@ class StaticFileUpdater(UpdateManager):
         logging.info(f'Downloading file from {self.url}')
 
     def download(self, status_update_cb) -> tuple[str, str]:
-        self.currend_download = requests.get(self.url, stream=True)
         random_name = get_random_string()
         fname = f'{self.download_folder}/{random_name}.appimage'
 
         if not os.path.exists(self.download_folder):
             os.makedirs(self.download_folder)
 
+        dwnl_url = self.url
+        if self.embedded and self.url.endswith('.zsync'):
+            zsync_file = requests.get(self.url).text
+            zsync_file_header = zsync_file.split('\n\n', 1)[0]
+            sha_pattern = r"URL:\s(.*)"
+            match = re.search(sha_pattern, zsync_file_header)
+
+            if match:
+                zsyncfile_url = match.group(1)
+                urlparsed = urlparse(self.url)
+                pp = posixpath.join(posixpath.dirname(urlparsed.path), zsyncfile_url)
+                dwnl_url = urlparsed._replace(path=pp,query='',fragment='').geturl()
+
+        
+        self.currend_download = requests.get(dwnl_url, stream=True)
         etag = self.currend_download.headers.get("etag", '')
         total_size = int(self.currend_download.headers.get("content-length", 0))
         status = 0
@@ -123,6 +149,16 @@ class StaticFileUpdater(UpdateManager):
             shutil.rmtree(self.download_folder)
 
     def is_update_available(self, el: AppImageListElement):
+        if self.embedded:
+            zsync_file = requests.get(self.url).text
+            zsync_file_header = zsync_file.split('\n\n', 1)[0]
+            sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
+            curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha1')
+
+            match = re.search(sha_pattern, zsync_file_header)
+            if match:
+                return match.group(1) != curr_version_hash
+
         headers = StaticFileUpdater.get_url_headers(self.url)
         resp_cl = int(headers.get('content-length', '0'))
         old_size = os.path.getsize(el.file_path)
@@ -137,12 +173,13 @@ class StaticFileUpdater(UpdateManager):
 
     def set_url(self, url: str):
         if self.embedded:
-            url = re.sub(r"\.zsync$", "", url).strip()
+            if StaticFileUpdater.handles_embedded and \
+            url.startswith(StaticFileUpdater.handles_embedded):
+                l = len(StaticFileUpdater.handles_embedded)
+                url = url[l:]
 
         self.url = url
-        self.config = {
-            'url': url
-        }
+        self.config = {'url': url}
 
     def load_form_rows(self, embedded=False):
         self.form_row = AdwEntryRowDefault(

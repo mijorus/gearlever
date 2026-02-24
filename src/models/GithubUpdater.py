@@ -2,9 +2,10 @@ import logging
 import requests
 import os
 import re
+import fnmatch
 from typing import Optional, Literal
 from gi.repository import Adw, Gio
-from urllib.parse import urlsplit, urljoin
+from urllib.parse import urlsplit
 
 from ..lib.utils import get_file_hash
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
@@ -15,6 +16,7 @@ from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
 
 class GithubUpdater(UpdateManager):
+    handles_embedded = 'gh-releases-zsync|'
     staticfile_manager: Optional[StaticFileUpdater]
     label = 'Github'
     name = 'GithubUpdater'
@@ -125,26 +127,6 @@ class GithubUpdater(UpdateManager):
         if self.staticfile_manager:
             self.staticfile_manager.cleanup()
 
-    def convert_glob_to_regex(self, glob_str):
-        """
-        Converts a string with glob patterns to a regular expression.
-
-        Args:
-            glob_str: A string containing glob patterns.
-
-        Returns:
-            A regular expression string equivalent to the glob patterns.
-        """
-        regex = ""
-        for char in glob_str:
-            if char == "*":
-                regex += r".*"
-            else:
-                regex += re.escape(char)
-
-        regex = f'^{regex}$'
-        return regex
-
     def fetch_target_asset(self):
         if not self.url_data:
             return
@@ -160,6 +142,8 @@ class GithubUpdater(UpdateManager):
             'releases',
         ])
 
+        rel_data = []
+
         if not allow_prereleases:
             rel_url += f'/{release_name}'
 
@@ -167,6 +151,8 @@ class GithubUpdater(UpdateManager):
             rel_data_resp = requests.get(rel_url)
             rel_data_resp.raise_for_status()
             rel_data = rel_data_resp.json()
+            if not allow_prereleases:
+                rel_data = [rel_data]
         except Exception as e:
             if 'rate limit exceeded' in str(e):
                 print(str(e))
@@ -176,40 +162,30 @@ class GithubUpdater(UpdateManager):
 
         release = None
 
-        if allow_prereleases:
-            for r in rel_data:
-                if r['draft'] == False:
-                    release = r
-                    break
-        else:
-            release = rel_data
+        possible_targets = []
+        tmp_target_file = None
+
+        for release in rel_data:
+            found = False
+
+            if not allow_prereleases and release['draft']:
+                continue
+
+            for asset in release['assets']:
+                if fnmatch.fnmatch(asset['name'], self.url_data['filename']):
+                    found = True
+                    possible_targets.append(asset)
+                    if self.embedded:
+                        break
+
+            if found:
+                break
 
         if not release:
-            logging.error('Empty release list')
             return
-
-        logging.debug(f'Found {len(release["assets"])} assets from {rel_url}')
-
-        zsync_file = None
-        target_re = re.compile(self.convert_glob_to_regex(self.url_data['filename']))
-        target_tag = re.compile(self.convert_glob_to_regex(self.url_data['tag_name']))
-
-        if not re.match(target_tag, release['tag_name']):
-            logging.debug(f'Release tag names do not match: {release["tag_name"]} != {self.url_data["tag_name"]}')
-            return
-
-        possible_targets = []
-        for asset in release['assets']:
-            if self.embedded:
-                if re.match(target_re, asset['name']) and asset['name'].endswith('.zsync'):
-                    possible_targets = [asset]
-                    break
-            else:
-                if re.match(target_re, asset['name']):
-                    possible_targets.append(asset)
 
         if len(possible_targets) == 1:
-            zsync_file = possible_targets[0]
+            tmp_target_file = possible_targets[0]
         else:
             logging.info(f'found {len(possible_targets)} possible file targets')
             
@@ -220,23 +196,23 @@ class GithubUpdater(UpdateManager):
             if self.system_arch == 'x86_64':
                 for t in possible_targets:
                     if self.is_x86.search(t['name']) or not self.is_arm.search(t['name']):
-                        zsync_file = t
+                        tmp_target_file = t
                         logging.info('found possible target: ' + t['name'])
                         break
 
-        if not zsync_file:
+        if not tmp_target_file:
             logging.debug(f'No matching assets found from {rel_url}')
             return
 
-        is_zsync = self.embedded and zsync_file['name'].endswith('.zsync')
-        target_file = re.sub(r'\.zsync$', '', zsync_file['name'])
+        is_zsync = self.embedded and tmp_target_file['name'].endswith('.zsync')
+        target_file = re.sub(r'\.zsync$', '', tmp_target_file['name'])
 
         for asset in release['assets']:
             if asset['name'] == target_file:
                 logging.debug(f'Found 1 matching asset: {asset["name"]}')
 
                 if is_zsync:
-                    return {'asset': asset, 'zsync': zsync_file}
+                    return {'asset': asset, 'zsync': tmp_target_file}
 
                 return {'asset': asset, 'zsync': None}
 

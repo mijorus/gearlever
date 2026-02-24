@@ -59,15 +59,18 @@ class UpdateManagerChecker():
                     break
         
         if el:
-            embedded_app_data = UpdateManagerChecker.check_app(el)
+            embedded_app_data = UpdateManagerChecker.check_app_embedded_url(el)
 
             if embedded_app_data:
                 for m in models:
-                    logging.debug(f'Checking embedded url with {m.__name__}')
-                    if m.can_handle_link(embedded_app_data):
-                        embedded_url = embedded_app_data
-                        model = m
-                        break
+                    if m.handles_embedded and \
+                        embedded_app_data.startswith(m.handles_embedded):
+
+                        logging.debug(f'Checking embedded url with {m.__name__}')
+                        if m.can_handle_link(embedded_app_data):
+                            embedded_url = embedded_app_data
+                            model = m
+                            break
 
         if model:
             if model_url and embedded_url:
@@ -82,10 +85,7 @@ class UpdateManagerChecker():
         return None
 
     @staticmethod
-    def check_app(el: AppImageListElement) -> Optional[str]:
-        # if not terminal.sandbox_sh(['which', 'readelf']):
-        #     return
-
+    def check_app_embedded_url(el: AppImageListElement) -> Optional[str]:
         readelf_out = terminal.sandbox_sh(['readelf', '--string-dump=.upd_info', '--wide', el.file_path])
         readelf_out = readelf_out.replace('\n', ' ') + ' '
 
@@ -103,7 +103,7 @@ class UpdateManagerChecker():
         matches = re.search(pattern_link, readelf_out)
 
         if matches:
-            return re.sub(r"\szsync\|", '', matches[0]).strip()
+            return matches[0].strip()
 
         return None
 
