@@ -31,7 +31,7 @@ class UpdateManagerChecker():
         return None
 
     @staticmethod
-    def check_url_for_app(el: AppImageListElement=None):
+    def check_url_for_app(el: AppImageListElement):
         app_conf = read_config_for_app(el)
         update_url = app_conf.get('update_url', None)
         update_url_manager = app_conf.get('update_url_manager', None)
@@ -39,7 +39,7 @@ class UpdateManagerChecker():
             model=UpdateManagerChecker.get_model_by_name(update_url_manager))
 
     @staticmethod
-    def check_url(url: Optional[str], el: Optional[AppImageListElement]=None,
+    def check_url(url: Optional[str]=None, el: Optional[AppImageListElement]=None,
                     model: Optional[UpdateManager]=None) -> Optional[UpdateManager]:
 
         models = UpdateManagerChecker.get_models()
@@ -50,14 +50,10 @@ class UpdateManagerChecker():
         model_url: str | None = None
         embedded_url: str | None = None
 
-        if url:
-            for m in models:
-                logging.debug(f'Checking url with {m.__name__}')
-                if m.can_handle_link(url):
-                    model_url = url
-                    model = m
-                    break
-        
+        if url and model:
+            if model.can_handle_link(url):
+                model_url = url
+
         if el:
             embedded_app_data = UpdateManagerChecker.check_app_embedded_url(el)
 

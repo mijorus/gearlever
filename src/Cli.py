@@ -182,6 +182,10 @@ class Cli():
         if manager_name:
             selected_manager = UpdateManagerChecker.get_model_by_name(manager_name)
 
+        if not selected_manager:
+            print('Error: missing or invalid update manager')
+            sys.exit(1)
+
         manager = UpdateManagerChecker.check_url(update_url, el, model=selected_manager)
 
         if manager:
@@ -283,24 +287,24 @@ class Cli():
 
         g_file = Cli._get_file_from_args(argv)
 
-        el = appimage_provider.create_list_element_from_file(g_file)
-        if appimage_provider.is_installed(el):
+        list_element = appimage_provider.create_list_element_from_file(g_file)
+        if appimage_provider.is_installed(list_element):
             print('This AppImage is already integrated')
             sys.exit(0)
 
-        el.update_logic = AppImageUpdateLogic.KEEP
-        appimage_provider.refresh_data(el)
+        list_element.update_logic = AppImageUpdateLogic.KEEP
+        appimage_provider.refresh_data(list_element)
 
         if '--replace' in argv:
-            el.update_logic = AppImageUpdateLogic.REPLACE
+            list_element.update_logic = AppImageUpdateLogic.REPLACE
 
-        manager = UpdateManagerChecker.check_url(None, el)
+        manager = UpdateManagerChecker.check_url(el=list_element)
 
         apps = appimage_provider.list_installed()
 
         already_installed = None
         for a in apps:
-            if a.name == el.name:
+            if a.name == list_element.name:
                 already_installed = a
                 break
 
@@ -308,9 +312,9 @@ class Cli():
             and '-y' not in argv:
 
             info_table = [
-                ['Name', el.name,],
-                ['Version', el.version or 'Not specified',],
-                ['Description', el.description or 'None',],
+                ['Name', list_element.name,],
+                ['Version', list_element.version or 'Not specified',],
+                ['Description', list_element.description or 'None',],
                 ['Update Source', 'None' if not manager else manager.name],
             ]
 
@@ -325,11 +329,11 @@ class Cli():
                     ['k', 'r', 'K', 'R'])
 
             if ans.lower() == 'r':
-                el.update_logic = AppImageUpdateLogic.REPLACE
-                el.updating_from = already_installed
+                list_element.update_logic = AppImageUpdateLogic.REPLACE
+                list_element.updating_from = already_installed
 
-        appimage_provider.install_file(el)
-        print(f'{el.file_path} was integrated successfully')
+        appimage_provider.install_file(list_element)
+        print(f'{list_element.file_path} was integrated successfully')
 
     @staticmethod
     def list_installed(argv):

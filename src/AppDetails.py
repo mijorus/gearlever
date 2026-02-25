@@ -711,7 +711,7 @@ class AppDetails(Gtk.ScrolledWindow):
                 if self.app_list_element:
                     remove_update_config(self.app_list_element)
 
-                self.update_manager = UpdateManagerChecker.check_url(url='', el=self.app_list_element)
+                self.update_manager = UpdateManagerChecker.check_url(el=self.app_list_element)
 
         [self.update_url_group.remove(r) for r in 
             self.update_url_form_rows]
