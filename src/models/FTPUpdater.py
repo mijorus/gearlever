@@ -45,10 +45,9 @@ class FTPUpdater(UpdateManager):
         return FTPUpdater.get_url_data(url) != None
 
 
-    def __init__(self, url, **kwargs) -> None:
-        super().__init__(url, **kwargs)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.staticfile_manager = None
-        self.set_url(url)
         self.embedded = False
 
         self.url_row = None
@@ -230,7 +229,7 @@ class FTPUpdater(UpdateManager):
         is_size_different = target_asset['size'] != old_size
         return is_size_different
 
-    def load_form_rows(self, embedded=False): 
+    def load_form_rows(self, embedded=None): 
         ftp_url = self.config['url']
         filename = self.config['filename']
         

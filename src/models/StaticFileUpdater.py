@@ -183,7 +183,7 @@ class StaticFileUpdater(UpdateManager):
         self.url = url
         self.config = {'url': url}
 
-    def load_form_rows(self, embedded=False):
+    def load_form_rows(self, embedded=None):
         self.form_row = AdwEntryRowDefault(
             text=self.config['url'],
             icon_name='gl-earth',

@@ -21,11 +21,11 @@ class UpdateManager(ABC):
     is_arm = re.compile(r'(\-|\_|\.)(arm64|aarch64|armv7l)(\-|\_|\.)')
 
     @abstractmethod
-    def __init__(self, url: str, embedded: str|Literal[False]=False, el=None) -> None:
+    def __init__(self, embedded: Optional[str]=None, el=None) -> None:
         self.el = el
         self.download_folder = os.path.join(TMP_DIR, 'downloads')
         self.embedded = embedded
-        self.set_url(url)
+        # self.set_url(url)
 
     def cleanup(self):
         pass

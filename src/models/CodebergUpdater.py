@@ -48,13 +48,12 @@ class CodebergUpdater(UpdateManager):
         return CodebergUpdater.get_url_data(url) != None
 
 
-    def __init__(self, url, **kwargs) -> None:
-        super().__init__(url, **kwargs)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.staticfile_manager = None
         self.embedded = False
         self.repo_url_row = None
         self.repo_filename_row = None
-        self.set_url(url)
 
     def set_url(self, url: str):
         self.url = url
@@ -153,7 +152,7 @@ class CodebergUpdater(UpdateManager):
 
         return False
     
-    def load_form_rows(self, embedded=False): 
+    def load_form_rows(self, embedded=None): 
         repo_url = self.config.get('repo_url')
         filename = self.config.get('repo_filename')
 

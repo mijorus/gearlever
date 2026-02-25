@@ -33,13 +33,17 @@ class UpdateManagerChecker():
     @staticmethod
     def check_url_for_app(el: AppImageListElement):
         app_conf = read_config_for_app(el)
-        update_url = app_conf.get('update_url', None)
-        update_url_manager = app_conf.get('update_url_manager', None)
-        return UpdateManagerChecker.check_url(update_url, el, 
-            model=UpdateManagerChecker.get_model_by_name(update_url_manager))
+        # update_url = app_conf.get('update_url', None)
+        update_url_manager: str | None = app_conf.get('update_url_manager', None)
+
+        model = None
+        if update_url_manager:
+            model = UpdateManagerChecker.get_model_by_name(update_url_manager)
+
+        return UpdateManagerChecker.check_url(el, model=model)
 
     @staticmethod
-    def check_url(url: Optional[str]=None, el: Optional[AppImageListElement]=None,
+    def check_url(el: Optional[AppImageListElement]=None,
                     model: Optional[UpdateManager]=None) -> Optional[UpdateManager]:
 
         models = UpdateManagerChecker.get_models()
@@ -50,9 +54,9 @@ class UpdateManagerChecker():
         model_url: str | None = None
         embedded_url: str | None = None
 
-        if url and model:
-            if model.can_handle_link(url):
-                model_url = url
+        # if url and model:
+        #     if model.can_handle_link(url):
+        #         model_url = url
 
         if el:
             embedded_app_data = UpdateManagerChecker.check_app_embedded_url(el)
@@ -63,20 +67,20 @@ class UpdateManagerChecker():
                         embedded_app_data.startswith(m.handles_embedded):
 
                         logging.debug(f'Checking embedded url with {m.__name__}')
-                        if m.can_handle_link(embedded_app_data):
-                            embedded_url = embedded_app_data
-                            model = m
-                            break
+                        model = m
+                        # if m.can_handle_link(embedded_app_data):
+                        #     embedded_url = embedded_app_data
+                        #     break
 
         if model:
-            if model_url and embedded_url:
-                return model(model_url, embedded=embedded_url, el=el)
+            return model.__init__(model_url, embedded=embedded_url, el=el)
+            # if model_url and embedded_url:
             
-            if model_url:
-                return model(model_url, embedded=embedded_url, el=el)
+            # if model_url:
+            #     return model(model_url, embedded=embedded_url, el=el)
             
-            if embedded_url:
-                return model(embedded_url, embedded=embedded_url, el=el)
+            # if embedded_url:
+            #     return model(embedded_url, embedded=embedded_url, el=el)
 
         return None
 

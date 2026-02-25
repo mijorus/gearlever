@@ -48,10 +48,10 @@ class ForgejoUpdater(UpdateManager):
         return ForgejoUpdater.get_url_data(url) != None
 
 
-    def __init__(self, url, **kwargs) -> None:
-        super().__init__(url, **kwargs)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.staticfile_manager = None
-        self.url_data = ForgejoUpdater.get_url_data(url)
+        # self.url_data = ForgejoUpdater.get_url_data(url)
         self.url = url
         self.embedded = False
 
@@ -192,7 +192,7 @@ class ForgejoUpdater(UpdateManager):
 
         return False
     
-    def load_form_rows(self, embedded=False): 
+    def load_form_rows(self, embedded=None): 
         repo_url = self.config.get('repo_url')
         filename = self.config.get('repo_filename')
 

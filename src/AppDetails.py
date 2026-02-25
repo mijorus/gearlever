@@ -706,7 +706,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
             if selected_model:
                 update_url = app_conf.get('update_url', '')
-                self.update_manager = selected_model(url=update_url, embedded=False, el=self.app_list_element)
+                self.update_manager = selected_model(url=update_url, embedded=None, el=self.app_list_element)
             else:
                 if self.app_list_element:
                     remove_update_config(self.app_list_element)
@@ -773,24 +773,24 @@ class AppDetails(Gtk.ScrolledWindow):
             self.on_app_update_url_reset()
             return
 
-        text = self.update_manager.get_url_from_form()
-        text = text.strip()
+        # text = self.update_manager.get_url_from_form()
+        # text = text.strip()
 
-        if not text:
-            self.on_app_update_url_error()
+        # if not text:
+        #     self.on_app_update_url_error()
 
-            time.sleep(def_sleep)
-            self.on_app_update_url_reset()
-            return
+        #     time.sleep(def_sleep)
+        #     self.on_app_update_url_reset()
+        #     return
 
-        if not self.update_manager.can_handle_link(url=text):
-            self.on_app_update_url_error()
+        # if not self.update_manager.can_handle_link(url=text):
+        #     self.on_app_update_url_error()
             
-            time.sleep(def_sleep)
-            self.on_app_update_url_reset()
-            return
+        #     time.sleep(def_sleep)
+        #     self.on_app_update_url_reset()
+        #     return
 
-        self.update_manager.set_url(text)
+        # self.update_manager.set_url(text)
         self.update_manager.update_config_from_form()
 
         if not self.update_manager.embedded:
