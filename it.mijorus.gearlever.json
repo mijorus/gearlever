@@ -68,8 +68,8 @@
             "sources": [
                 {
                     "type": "file",
-                    "url": "https://github.com/ip7z/7zip/releases/download/25.01/7z2501-linux-x64.tar.xz",
-                    "sha256": "4ca3b7c6f2f67866b92622818b58233dc70367be2f36b498eb0bdeaaa44b53f4",
+                    "url": "https://github.com/ip7z/7zip/releases/download/26.00/7z2600-linux-x64.tar.xz",
+                    "sha256": "c74dc4a48492cde43f5fec10d53fb2a66f520e4a62a69d630c44cb22c477edc6",
                     "dest": "7z",
                     "dest-filename": "7z.tar.xz",
                     "only-arches": [
@@ -78,8 +78,8 @@
                 },
                 {
                     "type": "file",
-                    "url": "https://github.com/ip7z/7zip/releases/download/25.01/7z2501-linux-arm64.tar.xz",
-                    "sha256": "39c5140f02ce4436599303c59a149f654cb1bbc47cdc105a942120d747ae040d",
+                    "url": "https://github.com/ip7z/7zip/releases/download/26.00/7z2600-linux-arm64.tar.xz",
+                    "sha256": "aa8f3d0a19af9674d3af0ec788b4e261501071e626cd75ad149f1c2c176cc87d",
                     "dest": "7z",
                     "dest-filename": "7z.tar.xz",
                     "only-arches": [
@@ -101,8 +101,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "sha256": "6685622e6bf1edea138023dfb5a84ec241c6a57619ec5d7ee86344057d89296b",
-                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.12.1/dwarfs-0.12.1-Linux-x86_64.tar.xz",
+                    "sha256": "7dba2bc4482defc5987652643ab0d58330b74e73be0f4d2d184879e7815c2476",
+                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.14.1/dwarfs-0.14.1-Linux-x86_64.tar.xz",
                     "dest": "dwarfs",
                     "only-arches": [
                         "x86_64"
@@ -110,8 +110,8 @@
                 },
                 {
                     "type": "archive",
-                    "sha256": "f61d49436ad6b02e7e496f746ce09d69a3f050592286b5ff3d6e3edba765b82a",
-                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.12.1/dwarfs-0.12.1-Linux-aarch64.tar.xz",
+                    "sha256": "8c17434c4fc8c33ba303e06eb62904047ee1aab3ea7bd98d2797b04d86b426eb",
+                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.14.1/dwarfs-0.14.1-Linux-aarch64.tar.xz",
                     "dest": "dwarfs",
                     "only-arches": [
                         "aarch64"
