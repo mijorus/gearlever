@@ -164,7 +164,9 @@ class StaticFileUpdater(UpdateManager):
 
             match = re.search(sha_pattern, zsync_file_header)
             if match:
-                return match.group(1) != curr_version_hash
+                updatable = match.group(1) != curr_version_hash
+                logging.info('SHA-1 detected, app updatable: ' + str(updatable))
+                return updatable
 
         headers = StaticFileUpdater.get_url_headers(self.url)
         resp_cl = int(headers.get('content-length', '0'))
