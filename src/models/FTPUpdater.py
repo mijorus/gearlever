@@ -268,7 +268,7 @@ class FTPUpdater(UpdateManager):
             kwargs.get('filename', ''),
         ])
     
-    def update_config_from_form(self):
+    def get_config_from_form(self):
         url = None
         filename = None
 

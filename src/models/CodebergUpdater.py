@@ -189,7 +189,7 @@ class CodebergUpdater(UpdateManager):
             kwargs.get('repo_filename', ''),
         ])
     
-    def update_config_from_form(self):
+    def get_config_from_form(self):
         repo_url = None
         repo_filename = None
 

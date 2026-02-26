@@ -202,7 +202,7 @@ class StaticFileUpdater(UpdateManager):
     def get_url_from_params(self, **kwargs):
         return kwargs.get('url', '')
     
-    def update_config_from_form(self):
+    def get_config_from_form(self):
         url = ''
 
         if self.form_row:

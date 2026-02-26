@@ -790,11 +790,11 @@ class AppDetails(Gtk.ScrolledWindow):
         #     return
 
         # self.update_manager.set_url(text)
-        self.update_manager.update_config_from_form()
+        form_config = self.update_manager.get_config_from_form()
 
         if not self.update_manager.embedded:
             app_conf['update_url_manager'] = self.update_manager.name
-            app_conf['update_manager_config'] = self.update_manager.config
+            app_conf['update_manager_config'] = form_config
             save_config_for_app(app_conf)
 
         self.on_app_update_url_success()

@@ -206,14 +206,17 @@ class Cli():
         u_managers = ', '.join([n.name for n in UpdateManagerChecker.get_models()])
 
         manager_name = Cli._get_arg_value(argv, '--manager')
+        manager_config = {}
         selected_model = None
 
         if manager_name:
             selected_model = UpdateManagerChecker.get_model_by_name(manager_name)
             manager: UpdateManager = selected_model(url='', embedded=None)
+            manager_config = manager.get_config()
+
             Cli._print_help_if_requested(argv, [
                 [f'--manager {manager_name}'],
-                *[[f'OPTION {k}=<value>'] for k in manager.config.keys()]
+                *[[f'OPTION {k}=<value>'] for k in manager_config.keys()]
             ], text='Usage: --set-update-source <file_path> --manager <manager> [...OPTIONS]')
 
         Cli._print_help_if_requested(argv, [
@@ -242,19 +245,14 @@ class Cli():
             print('Error: "%s" is not a valid update manager' % manager_name)
             sys.exit(1)
 
-        manager: UpdateManager = selected_model(embedded=None, el=el)
-        if set(manager.config.keys()) != set(update_options.keys()):
-            print('Missing or invalid update configuration, required keys: ' + ', '.join(manager.config.keys()))
-            sys.exit(1)
-
-        manager_url = manager.get_url_from_params(**update_options)
-        
-        if not manager.can_handle_link(manager_url):
-            print('Invalid configuration for ' + manager_name)
+        manager: UpdateManager = selected_model(embedded=None, el=el, **update_options)
+        manager_config = manager.get_config()
+        if set(manager_config.keys()) != set(update_options.keys()):
+            print('Missing or invalid update configuration, required keys: ' + ', '.join(manager_config.keys()))
             sys.exit(1)
 
         boolean_vals = ['0', '1', 'false', 'true']
-        for k, v in manager.config.items():
+        for k, v in manager_config.items():
             if type(v) == bool:
                 if update_options[k] not in boolean_vals:
                     print(f'{k} is not a boolean value, allowed values: ' + '/'.join(boolean_vals))
@@ -269,7 +267,7 @@ class Cli():
 
         app_conf = el.get_config()
         app_conf['update_url_manager'] = manager.name
-        app_conf['update_manager_config'] = manager.config
+        app_conf['update_manager_config'] = manager.get_config()
         save_config_for_app(app_conf)
 
         sys.exit(0)

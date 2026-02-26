@@ -60,10 +60,6 @@ class GitlabUpdater(UpdateManager):
                 'repo': '/'.join(paths[2:4])
             }
 
-    @staticmethod
-    def can_handle_link(url: str):
-        return GitlabUpdater.get_url_data(url) != None
-
     def __init__(self, url, **kwargs) -> None:
         super().__init__(url, **kwargs)
         self.staticfile_manager = None
@@ -240,14 +236,14 @@ class GitlabUpdater(UpdateManager):
                 repo_url,
                 filename
             ]).strip()
-        
+
     def get_url_from_params(self, **kwargs):
         return '#'.join([
             kwargs.get('repo_url', ''),
             kwargs.get('repo_filename', ''),
         ])
 
-    def update_config_from_form(self):
+    def get_config_from_form(self):
         repo_url = None
         repo_filename = None
 

@@ -16,7 +16,6 @@ class UpdateManager(ABC):
     url = ''
     label = ''
     handles_embedded: Optional[str] = None
-    config = {}
     el: Optional[AppImageListElement] = None
     system_arch = platform.machine()
     is_x86 = re.compile(r'(\-|\_|\.)x86(\-|\_|\.)')
@@ -27,7 +26,6 @@ class UpdateManager(ABC):
         self.el = el
         self.download_folder = os.path.join(TMP_DIR, 'downloads')
         self.embedded = embedded
-        # self.set_url(url)
 
     def cleanup(self):
         pass
@@ -53,22 +51,23 @@ class UpdateManager(ABC):
     def can_handle_link(url: str) -> bool:
         pass
 
-    @abstractmethod
-    def get_url_from_form(self) -> str:
-        pass
+    # @abstractmethod
+    # def get_url_from_form(self) -> str:
+    #     pass
+
+    # @abstractmethod
+    # def get_url_from_params(self, **kwargs) -> str:
+    #     pass
 
     @abstractmethod
-    def get_url_from_params(self, **kwargs) -> str:
+    def get_config_from_form(self) -> dict:
         pass
 
-    def update_config_from_form(self):
-        pass
+    # @abstractmethod
+    # def set_url(self, url: str):
+    #     self.url = url
 
-    @abstractmethod
-    def set_url(self, url: str):
-        self.url = url
-
-    def get_saved_config(self):
+    def get_config(self):
         config = {}
 
         if self.el:
@@ -82,7 +81,7 @@ class UpdateManager(ABC):
 
             if app_config.get('update_url') and (app_config.get('update_manager_config', None) is None):
                 logging.info('Performing config migration from v1 to v2 for ' + self.el.name)
-                app_config['update_manager_config'] = self.get_saved_config()
+                app_config['update_manager_config'] = self.get_config()
                 del app_config['update_url']
 
                 save_config_for_app(app_config)

@@ -66,7 +66,7 @@ class ForgejoUpdater(UpdateManager):
         self.config = {
             'repo_url': '',
             'repo_filename': '',
-            'allow_prereleases': self.get_saved_config().get('allow_prereleases', False)
+            'allow_prereleases': self.get_config().get('allow_prereleases', False)
         }
 
         if self.url_data:
@@ -237,7 +237,7 @@ class ForgejoUpdater(UpdateManager):
             self.repo_filename_row.get_text()
         ])
 
-    def update_config_from_form(self):
+    def get_config_from_form(self):
         allow_prereleases = False
         repo_url = None
         repo_filename = None

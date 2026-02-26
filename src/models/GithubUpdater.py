@@ -21,67 +21,42 @@ class GithubUpdater(UpdateManager):
     label = 'Github'
     name = 'GithubUpdater'
 
-    # @staticmethod
-    # def get_url_data(url: str):
-    #     # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
-    #     # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#github-releases
-
-    #     tag_name = '*'
-    #     if url.startswith('https://'):
-    #         logging.debug(f'GithubUpdater: found http url, trying to detect github data')
-    #         urldata = urlsplit(url)
-
-    #         if urldata.netloc != 'github.com':
-    #             return None
-
-    #         paths = urldata.path.split('/')
-
-    #         if len(paths) != 7:
-    #             return None
-
-    #         if paths[3] != 'releases' or paths[4] != 'download':
-    #             return None
-
-    #         rel_name = 'latest'
-    #         tag_name = paths[5]
-
-    #         url = f'|{paths[1]}|{paths[2]}|{rel_name}|{paths[6]}'
-    #         logging.debug(f'GithubUpdater: generated appimages-like update string "{url}"')
-
-    #     items = url.split('|')
-
-    #     if len(items) != 5:
-    #         return None
-
-    #     return {
-    #         'username': items[1],
-    #         'repo': items[2],
-    #         'release': items[3],
-    #         'filename': items[4],
-    #         'tag_name': tag_name
-    #     }
-
-    # @staticmethod
-    # def can_handle_link(url: str):
-    #     return GithubUpdater.get_url_data(url) != None
-
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self.staticfile_manager = None
         self.repo_url_row = None
         self.repo_filename_row = None
         self.allow_prereleases_row = None
-        self.config = self.get_saved_config()
 
-    def get_url_data(self):
+    def get_config(self):
+        config = {}
+
+        if self.el:
+            app_config = self.el.get_config()
+
+            if 'update_manager_config' in app_config:
+                config = app_config.get('update_manager_config', {})
+            elif 'update_url' in app_config:
+                url_data = self.get_url_data(app_config['update_url'])
+
+                if url_data:
+                    config = {
+                        'allow_prereleases': False,
+                        'repo_url': '/'.join(['https://github.com', url_data['username'], url_data['repo']]),
+                        'repo_filename': url_data['filename'],
+                    }
+
+        return config
+
+    def get_url_data(self, url=None):
         # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
         # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#github-releases
 
-        url = ''
-        if self.embedded:
-            url = self.embedded
-        else:
-            url = self.get_saved_config().get('repo_url', '')
+        if not url:
+            if self.embedded:
+                url = self.embedded
+            else:
+                url = self.get_config().get('repo_url', '')
 
         tag_name = '*'
         if url.startswith('https://'):
@@ -126,30 +101,9 @@ class GithubUpdater(UpdateManager):
             if url_data:
                 allow_prereleases = url_data['release'] in ['latest-pre', 'latest-all']
         else:
-            allow_prereleases = self.config.get('allow_prereleases', False)
+            allow_prereleases = self.get_config().get('allow_prereleases', False)
 
         return allow_prereleases
-
-    # def set_url(self, url: str):
-        # self.url = url
-        # url_data = self.get_url_data()
-
-        # self.config = {
-        #     'repo_url': '',
-        #     'repo_filename': '',
-        #     'allow_prereleases': self.does_allow_prereleases()
-        # }
-
-        # if url_data:
-        #     # self.url = self.get_url_string_from_data(url_data)
-        #     self.config['repo_url'] =  '/'.join(['https://github.com', url_data['username'], url_data['repo']])
-        #     self.config['repo_filename'] =  url_data['filename']
-        pass
-
-    def get_url_string_from_data(self, url_data):
-        url = f'https://github.com/{url_data["username"]}/{url_data["repo"]}'
-        url += f'/releases/download/{url_data["tag_name"]}/{url_data["filename"]}'
-        return url
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -293,8 +247,9 @@ class GithubUpdater(UpdateManager):
         return False
 
     def load_form_rows(self, embedded=None): 
-        repo_url = self.config.get('repo_url')
-        filename = self.config.get('repo_filename')
+        config = self.get_config()
+        repo_url = config.get('repo_url')
+        filename = config.get('repo_filename')
 
         self.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
@@ -329,24 +284,7 @@ class GithubUpdater(UpdateManager):
             self.allow_prereleases_row
         ]
 
-    # def get_url_from_form(self) -> str:
-    #     if (not self.repo_filename_row) or (not self.repo_url_row):
-    #         return ''
-        
-    #     return '/'.join([
-    #         self.repo_url_row.get_text(),
-    #         'releases/download/*',
-    #         self.repo_filename_row.get_text()
-        # ])
-
-    # def get_url_from_params(self, **kwargs):
-    #     return '/'.join([
-    #         kwargs.get('repo_url', ''),
-    #         'releases/download/*',
-    #         kwargs.get('repo_filename', ''),
-    #     ])
-
-    def update_config_from_form(self):
+    def get_config_from_form(self):
         allow_prereleases = False
         repo_url = None
         repo_filename = None
@@ -360,7 +298,9 @@ class GithubUpdater(UpdateManager):
         if self.repo_filename_row:
             repo_filename = self.repo_filename_row.get_text()
 
-        self.config = {
+
+        return {
+            **self.get_config(),
             'allow_prereleases': allow_prereleases,
             'repo_url': repo_url,
             'repo_filename': repo_filename,
