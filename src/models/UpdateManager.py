@@ -13,7 +13,7 @@ from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 
 class UpdateManager(ABC):
     name = ''
-    url = ''
+    # url = ''
     label = ''
     handles_embedded: Optional[str] = None
     el: Optional[AppImageListElement] = None

@@ -788,7 +788,14 @@ class AppDetails(Gtk.ScrolledWindow):
         #     return
 
         # self.update_manager.set_url(text)
-        form_config = self.update_manager.get_config_from_form()
+        try:
+            form_config = self.update_manager.get_config_from_form()
+        except Exception as e:
+            self.on_app_update_url_error()
+            
+            time.sleep(def_sleep)
+            self.on_app_update_url_reset()
+            return
 
         if not self.update_manager.embedded:
             app_conf['update_url_manager'] = self.update_manager.name

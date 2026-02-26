@@ -42,11 +42,14 @@ class GithubUpdater(UpdateManager):
                 if url_data:
                     config = {
                         'allow_prereleases': False,
-                        'repo_url': '/'.join(['https://github.com', url_data['username'], url_data['repo']]),
+                        'repo_url': self.get_github_repo_url(url_data['username'], url_data['repo']),
                         'repo_filename': url_data['filename'],
                     }
 
         return config
+    
+    def get_github_repo_url(self, usrn, repo):
+        return '/'.join(['https://github.com', usrn, repo])
 
     def get_url_data(self, url=None):
         # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
@@ -246,10 +249,11 @@ class GithubUpdater(UpdateManager):
 
         return False
 
-    def load_form_rows(self, embedded=None): 
+    def load_form_rows(self): 
         config = self.get_config()
         repo_url = config.get('repo_url')
         filename = config.get('repo_filename')
+        url_data = self.get_url_data(repo_url)
 
         self.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
@@ -286,7 +290,7 @@ class GithubUpdater(UpdateManager):
             allow_prereleases = self.allow_prereleases_row.get_active()
 
         if self.repo_url_row:
-            repo_url = self.repo_url_row.get_text()
+            repo_url = self.repo_url_row.get_text().strip()
 
         if self.repo_filename_row:
             repo_filename = self.repo_filename_row.get_text()

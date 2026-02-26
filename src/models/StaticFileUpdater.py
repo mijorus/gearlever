@@ -190,16 +190,7 @@ class StaticFileUpdater(UpdateManager):
         )
 
         return [self.form_row]
-    
-    def get_url_from_form(self) -> str:
-        if (not self.form_row):
-            return ''
-        
-        return self.form_row.get_text().strip()
-    
-    def get_url_from_params(self, **kwargs):
-        return kwargs.get('url', '')
-    
+
     def get_config_from_form(self):
         url = ''
 
@@ -207,5 +198,5 @@ class StaticFileUpdater(UpdateManager):
             url = self.form_row.get_text()
 
         config = self.get_config()
-        config['url'] = url
+        config['url'] = url.strip()
         return config
