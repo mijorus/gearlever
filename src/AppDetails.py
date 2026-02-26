@@ -717,9 +717,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_url_form_rows = []
 
         if self.update_manager:
-            rows = self.update_manager.load_form_rows(
-                embedded=self.update_manager.embedded
-            )
+            rows = self.update_manager.load_form_rows()
 
             for r in rows:
                 self.update_url_form_rows.append(r)

@@ -22,34 +22,34 @@ class StaticFileUpdater(UpdateManager):
     name = 'StaticFileUpdater'
     currend_download: Optional[requests.Response]
 
-    @staticmethod
-    def can_handle_link(url: str):
-        is_embedded = True
-        if StaticFileUpdater.handles_embedded and \
-            url.startswith(StaticFileUpdater.handles_embedded):
-            l = len(StaticFileUpdater.handles_embedded)
-            url = url[l:]
-            is_embedded = True
+    # @staticmethod
+    # def can_handle_link(url: str):
+    #     is_embedded = True
+    #     if StaticFileUpdater.handles_embedded and \
+    #         url.startswith(StaticFileUpdater.handles_embedded):
+    #         l = len(StaticFileUpdater.handles_embedded)
+    #         url = url[l:]
+    #         is_embedded = True
 
-        if not url_is_valid(url):
-            return False
+    #     if not url_is_valid(url):
+    #         return False
 
-        ct = ''
+    #     ct = ''
 
-        if is_embedded:
-            # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#zsync-1
-            return True
+    #     if is_embedded:
+    #         # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#zsync-1
+    #         return True
 
-        headers = StaticFileUpdater.get_url_headers(url)
-        ct = headers.get('content-type', '')
+    #     headers = StaticFileUpdater.get_url_headers(url)
+    #     ct = headers.get('content-type', '')
 
-        logging.debug(f'{url} responded with content-type: {ct}')
-        ct_supported = ct in [*AppImageProvider.supported_mimes, 'binary/octet-stream', 'application/octet-stream']
+    #     logging.debug(f'{url} responded with content-type: {ct}')
+    #     ct_supported = ct in [*AppImageProvider.supported_mimes, 'binary/octet-stream', 'application/octet-stream']
 
-        if not ct_supported:
-            logging.warn(f'Provided url "{url}" does not return a valid content-type header')
+    #     if not ct_supported:
+    #         logging.warn(f'Provided url "{url}" does not return a valid content-type header')
 
-        return ct_supported
+    #     return ct_supported
 
     @staticmethod
     def get_url_headers(url):
@@ -84,8 +84,6 @@ class StaticFileUpdater(UpdateManager):
         super().__init__(url, **kwargs)
         self.form_row = None
         self.embedded = embedded
-        self.set_url(url)
-
         logging.info(f'Downloading file from {self.url}')
 
     def download(self, status_update_cb) -> tuple[str, str]:
@@ -173,22 +171,22 @@ class StaticFileUpdater(UpdateManager):
         is_size_different = resp_cl != old_size
         return is_size_different
 
-    def set_url(self, url: str):
-        if self.embedded:
-            if StaticFileUpdater.handles_embedded and \
-            url.startswith(StaticFileUpdater.handles_embedded):
-                l = len(StaticFileUpdater.handles_embedded)
-                url = url[l:]
+    def get_config(self):
+        config = super().get_config()
+        app_config = {}
 
-        self.url = url
-        self.config = {'url': url}
+        if self.el:
+            if app_config.get('update_url') and (app_config.get('update_manager_config') is None):
+                config['url'] = app_config.get('update_url')
+        return config
 
-    def load_form_rows(self, embedded=None):
+    def load_form_rows(self):
+        config = self.get_config()
         self.form_row = AdwEntryRowDefault(
-            text=self.config['url'],
+            text=config['url'],
             icon_name='gl-earth',
             title=_('Update URL'),
-            sensitive=(not embedded)
+            sensitive=(not self.embedded)
         )
 
         return [self.form_row]
@@ -208,4 +206,6 @@ class StaticFileUpdater(UpdateManager):
         if self.form_row:
             url = self.form_row.get_text()
 
-        self.config['url'] = url
+        config = self.get_config()
+        config['url'] = url
+        return config

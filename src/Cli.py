@@ -245,7 +245,7 @@ class Cli():
             print('Error: "%s" is not a valid update manager' % manager_name)
             sys.exit(1)
 
-        manager: UpdateManager = selected_model(embedded=None, el=el, **update_options)
+        manager: UpdateManager = selected_model(embedded=None, el=el)
         manager_config = manager.get_config()
         if set(manager_config.keys()) != set(update_options.keys()):
             print('Missing or invalid update configuration, required keys: ' + ', '.join(manager_config.keys()))
@@ -260,14 +260,15 @@ class Cli():
 
                 update_options[k] = (update_options[k] in ['1', 'true'])
 
-        manager.config = update_options
+        # manager.config = update_options
         # manager.set_url(manager_url)
 
+        manager_config = {**manager.get_config(), **update_options}
         remove_update_config(el)
 
         app_conf = el.get_config()
         app_conf['update_url_manager'] = manager.name
-        app_conf['update_manager_config'] = manager.get_config()
+        app_conf['update_manager_config'] = manager_config
         save_config_for_app(app_conf)
 
         sys.exit(0)

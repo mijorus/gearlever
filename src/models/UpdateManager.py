@@ -43,13 +43,13 @@ class UpdateManager(ABC):
         pass
 
     @abstractmethod
-    def load_form_rows(self, embedded: bool) -> list:
+    def load_form_rows(self) -> list:
         pass
 
-    @staticmethod
-    @abstractmethod
-    def can_handle_link(url: str) -> bool:
-        pass
+    # @staticmethod
+    # @abstractmethod
+    # def can_handle_link(url: str) -> bool:
+    #     pass
 
     # @abstractmethod
     # def get_url_from_form(self) -> str:

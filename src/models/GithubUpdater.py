@@ -254,29 +254,22 @@ class GithubUpdater(UpdateManager):
         self.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
             icon_name='gl-git',
-            sensitive=(not embedded),
+            sensitive=(not self.embedded),
             title=_('Repo URL')
         )
 
         self.repo_filename_row = AdwEntryRowDefault(
             text=filename,
             icon_name='gl-paper',
-            sensitive=(not embedded),
+            sensitive=(not self.embedded),
             title=_('Release file name')
         )
         
         self.allow_prereleases_row = Adw.SwitchRow(
             title=_('Allow pre-releases'),
-            sensitive=(not embedded),
+            sensitive=(not self.embedded),
             active=self.does_allow_prereleases()
         )
-
-        if embedded:
-            return [
-                self.repo_url_row, 
-                self.repo_filename_row,
-                self.allow_prereleases_row
-            ]
 
         return [
             self.repo_url_row, 
