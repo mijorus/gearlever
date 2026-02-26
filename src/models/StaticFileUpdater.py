@@ -99,14 +99,19 @@ class StaticFileUpdater(UpdateManager):
         if self.embedded and self.url.endswith('.zsync'):
             zsync_file = requests.get(self.url).text
             zsync_file_header = zsync_file.split('\n\n', 1)[0]
-            sha_pattern = r"URL:\s(.*)"
-            match = re.search(sha_pattern, zsync_file_header)
+            url_pattern = r"URL:\s(.*)"
+            match = re.search(url_pattern, zsync_file_header)
 
             if match:
                 zsyncfile_url = match.group(1)
-                urlparsed = urlparse(self.url)
-                pp = posixpath.join(posixpath.dirname(urlparsed.path), zsyncfile_url)
-                dwnl_url = urlparsed._replace(path=pp,query='',fragment='').geturl()
+
+                if zsyncfile_url.startswith('https://') or \
+                    zsyncfile_url.startswith('http://'):
+                    dwnl_url = zsyncfile_url
+                else:
+                    urlparsed = urlparse(self.url)
+                    pp = posixpath.join(posixpath.dirname(urlparsed.path), zsyncfile_url)
+                    dwnl_url = urlparsed._replace(path=pp,query='',fragment='').geturl()
             else:
                 dwnl_url = re.sub(r"\.zsync$", "", dwnl_url)
 
