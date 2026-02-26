@@ -1,0 +1,34 @@
+# Docker ignore file for GearLever AppImage build
+
+# Version control files
+.git
+.gitignore
+
+# Docker files (to avoid layer cache invalidation when these change)
+.docker
+.dockerignore
+
+# Build artifacts & temporary files
+build/
+builddir/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Development environment
+.vscode/
+.idea/
+*.code-workspace
+
+# Documentation & non-essential files
+docs/
+README.md
+CONTRIBUTING.md
+LICENSE
+COPYING
+*.md
+
+# Testing
+tests/
