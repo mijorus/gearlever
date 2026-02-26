@@ -190,7 +190,6 @@ class Cli():
 
         if manager:
             app_conf = read_config_for_app(el)
-            app_conf['update_url'] = update_url
             app_conf['update_url_manager'] = manager.name
             save_config_for_app(app_conf)
 
@@ -243,7 +242,7 @@ class Cli():
             print('Error: "%s" is not a valid update manager' % manager_name)
             sys.exit(1)
 
-        manager: UpdateManager = selected_model(url='', embedded=None, el=el)
+        manager: UpdateManager = selected_model(embedded=None, el=el)
         if set(manager.config.keys()) != set(update_options.keys()):
             print('Missing or invalid update configuration, required keys: ' + ', '.join(manager.config.keys()))
             sys.exit(1)
@@ -269,7 +268,6 @@ class Cli():
         remove_update_config(el)
 
         app_conf = el.get_config()
-        app_conf['update_url'] = manager.url
         app_conf['update_url_manager'] = manager.name
         app_conf['update_manager_config'] = manager.config
         save_config_for_app(app_conf)
@@ -345,8 +343,6 @@ class Cli():
 
         table = []
         for a in apps:
-            app_conf = read_config_for_app(a)
-            update_url = app_conf.get('update_url', None)
             manager = UpdateManagerChecker.check_url_for_app(a)
             update_mng = f'[{manager.name}]' if manager else '[UpdatesNotAvailable]'
             v = a.version or 'Not specified'

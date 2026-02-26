@@ -705,8 +705,7 @@ class AppDetails(Gtk.ScrolledWindow):
             app_conf = self.get_config_for_app()
 
             if selected_model:
-                update_url = app_conf.get('update_url', '')
-                self.update_manager = selected_model(url=update_url, embedded=None, el=self.app_list_element)
+                self.update_manager = selected_model(embedded=None, el=self.app_list_element)
             else:
                 if self.app_list_element:
                     remove_update_config(self.app_list_element)
@@ -794,7 +793,6 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_manager.update_config_from_form()
 
         if not self.update_manager.embedded:
-            app_conf['update_url'] = self.update_manager.url
             app_conf['update_url_manager'] = self.update_manager.name
             app_conf['update_manager_config'] = self.update_manager.config
             save_config_for_app(app_conf)

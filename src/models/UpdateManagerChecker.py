@@ -33,7 +33,6 @@ class UpdateManagerChecker():
     @staticmethod
     def check_url_for_app(el: AppImageListElement):
         app_conf = read_config_for_app(el)
-        # update_url = app_conf.get('update_url', None)
         update_url_manager: str | None = app_conf.get('update_url_manager', None)
 
         model = None
