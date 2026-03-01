@@ -712,14 +712,20 @@ class AppDetails(Gtk.ScrolledWindow):
 
                 self.update_manager = UpdateManagerChecker.check_url(el=self.app_list_element)
 
-        [self.update_url_group.remove(r) for r in 
-            self.update_url_form_rows]
+        for r in self.update_url_form_rows:
+            self.update_url_group.remove(r)   
+
         self.update_url_form_rows = []
 
         if self.update_manager:
             rows = self.update_manager.load_form_rows()
 
             for r in rows:
+                if isinstance(r, Adw.SwitchRow):
+                    r.connect('activated', self.on_update_form_rows_change)
+                elif isinstance(r, Adw.EntryRow):
+                    r.connect('changed', self.on_update_form_rows_change)
+                    
                 self.update_url_form_rows.append(r)
                 self.update_url_group.add(r)
 
@@ -728,7 +734,11 @@ class AppDetails(Gtk.ScrolledWindow):
             else:
                 self.update_url_group.set_description(self.UPDATE_INFO_NOT_EMBEDDED)
 
+            self.update_url_save_btn.set_sensitive(False)
             self.check_updates()
+
+    def on_update_form_rows_change(self, *args):
+        self.update_url_save_btn.set_sensitive(True)
 
     @idle
     def on_app_update_url_success(self):
@@ -765,9 +775,6 @@ class AppDetails(Gtk.ScrolledWindow):
                 remove_update_config(self.app_list_element)
 
             self.on_app_update_url_success()
-
-            time.sleep(def_sleep)
-            self.on_app_update_url_reset()
             return
 
         # text = self.update_manager.get_url_from_form()

@@ -80,11 +80,9 @@ class StaticFileUpdater(UpdateManager):
         return headers
 
 
-    def __init__(self, url, embedded: str|Literal[False]=False, **kwargs) -> None:
-        super().__init__(url, **kwargs)
+    def __init__(self, embedded, el) -> None:
+        super().__init__(embedded=embedded, el=el)
         self.form_row = None
-        self.embedded = embedded
-        logging.info(f'Downloading file from {self.url}')
 
     def download(self, status_update_cb) -> tuple[str, str]:
         random_name = get_random_string()
@@ -93,22 +91,26 @@ class StaticFileUpdater(UpdateManager):
         if not os.path.exists(self.download_folder):
             os.makedirs(self.download_folder)
 
-        dwnl_url = self.url
-        if self.embedded and self.url.endswith('.zsync'):
-            zsync_file = requests.get(self.url).text
+        dwnl_url = self.get_config().get('url')
+        edwnl_url = self.get_embedded_url()
+
+        if edwnl_url:
+            zsync_file = requests.get(edwnl_url).text
             zsync_file_header = zsync_file.split('\n\n', 1)[0]
             sha_pattern = r"URL:\s(.*)"
             match = re.search(sha_pattern, zsync_file_header)
 
             if match:
                 zsyncfile_url = match.group(1)
-                urlparsed = urlparse(self.url)
+                urlparsed = urlparse(edwnl_url)
                 pp = posixpath.join(posixpath.dirname(urlparsed.path), zsyncfile_url)
                 dwnl_url = urlparsed._replace(path=pp,query='',fragment='').geturl()
             else:
-                dwnl_url = re.sub(r"\.zsync$", "", dwnl_url)
+                dwnl_url = re.sub(r"\.zsync$", "", edwnl_url)
 
-        
+        if not dwnl_url:
+            raise Exception('Missing download URL')
+
         self.currend_download = requests.get(dwnl_url, stream=True)
         etag = self.currend_download.headers.get("etag", '')
         total_size = int(self.currend_download.headers.get("content-length", 0))
@@ -148,9 +150,19 @@ class StaticFileUpdater(UpdateManager):
         if os.path.exists(self.download_folder):
             shutil.rmtree(self.download_folder)
 
+    def get_embedded_url(self):
+        if not self.embedded:
+            return None
+        
+        l = len(self.handles_embedded)
+        return self.embedded[l:]
+
     def is_update_available(self, el: AppImageListElement):
-        if self.embedded:
-            zsync_file = requests.get(self.url).text
+        e_url = self.get_embedded_url()
+        dwnl_url = self.get_config().get('url')
+
+        if e_url:
+            zsync_file = requests.get(e_url).text
             zsync_file_header = zsync_file.split('\n\n', 1)[0]
             sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
             curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha1')
@@ -158,8 +170,9 @@ class StaticFileUpdater(UpdateManager):
             match = re.search(sha_pattern, zsync_file_header)
             if match:
                 return match.group(1) != curr_version_hash
-
-        headers = StaticFileUpdater.get_url_headers(self.url)
+            
+        dwnl_url = e_url
+        headers = StaticFileUpdater.get_url_headers(dwnl_url)
         resp_cl = int(headers.get('content-length', '0'))
         old_size = os.path.getsize(el.file_path)
 
@@ -181,9 +194,13 @@ class StaticFileUpdater(UpdateManager):
         return config
 
     def load_form_rows(self):
-        config = self.get_config()
+        url = self.get_config().get('url', '')
+        if self.get_embedded_url():
+            url = self.get_embedded_url()
+            print(url)
+
         self.form_row = AdwEntryRowDefault(
-            text=config['url'],
+            text=url,
             icon_name='gl-earth',
             title=_('Update URL'),
             sensitive=(not self.embedded)

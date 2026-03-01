@@ -67,12 +67,12 @@ class UpdateManagerChecker():
 
                         logging.debug(f'Checking embedded url with {m.__name__}')
                         model = m
+                        embedded_url = embedded_app_data
                         # if m.can_handle_link(embedded_app_data):
-                        #     embedded_url = embedded_app_data
                         #     break
 
         if model:
-            return model.__init__(model_url, embedded=embedded_url, el=el)
+            return model(embedded=embedded_url, el=el)
             # if model_url and embedded_url:
             
             # if model_url:

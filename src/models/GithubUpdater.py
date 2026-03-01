@@ -21,8 +21,8 @@ class GithubUpdater(UpdateManager):
     label = 'Github'
     name = 'GithubUpdater'
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
+    def __init__(self, embedded, el) -> None:
+        super().__init__(embedded=embedded, el=el)
         self.staticfile_manager = None
         self.repo_url_row = None
         self.repo_filename_row = None
@@ -253,21 +253,30 @@ class GithubUpdater(UpdateManager):
         config = self.get_config()
         repo_url = config.get('repo_url')
         filename = config.get('repo_filename')
-        url_data = self.get_url_data(repo_url)
+
+        if self.embedded:
+            url_data = self.get_url_data()
+            if url_data:
+                repo_url = self.get_github_repo_url(url_data['username'], url_data['repo'])
+                filename = url_data['filename']
 
         self.repo_url_row = AdwEntryRowDefault(
-            text=repo_url,
             icon_name='gl-git',
             sensitive=(not self.embedded),
             title=_('Repo URL')
         )
 
         self.repo_filename_row = AdwEntryRowDefault(
-            text=filename,
             icon_name='gl-paper',
             sensitive=(not self.embedded),
             title=_('Release file name')
         )
+
+        if filename:
+            self.repo_filename_row.set_text(filename)
+        
+        if repo_url:
+            self.repo_url_row.set_text(repo_url)
         
         self.allow_prereleases_row = Adw.SwitchRow(
             title=_('Allow pre-releases'),

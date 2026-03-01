@@ -13,7 +13,6 @@ from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 
 class UpdateManager(ABC):
     name = ''
-    # url = ''
     label = ''
     handles_embedded: Optional[str] = None
     el: Optional[AppImageListElement] = None
@@ -21,7 +20,6 @@ class UpdateManager(ABC):
     is_x86 = re.compile(r'(\-|\_|\.)x86(\-|\_|\.)')
     is_arm = re.compile(r'(\-|\_|\.)(arm64|aarch64|armv7l)(\-|\_|\.)')
 
-    @abstractmethod
     def __init__(self, embedded: Optional[str]=None, el=None) -> None:
         self.el = el
         self.download_folder = os.path.join(TMP_DIR, 'downloads')
