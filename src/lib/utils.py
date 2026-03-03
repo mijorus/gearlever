@@ -283,7 +283,7 @@ def gnu_naturalsize(value, precision=1):
 def check_internet(timeout=3):
     try:
         r = requests.get(
-            url='https://fedoraproject.org/static/hotspot.txt',
+            url='http://fedoraproject.org/static/hotspot.txt',
             timeout=timeout
         )
 
