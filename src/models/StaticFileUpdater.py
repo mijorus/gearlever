@@ -8,7 +8,6 @@ import re
 from gi.repository import Adw, Gio
 from typing import Optional, Literal
 
-from ..lib.utils import terminal
 from ..lib.utils import get_random_string, url_is_valid, get_file_hash
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 from .Models import DownloadInterruptedException
