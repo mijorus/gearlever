@@ -7,8 +7,7 @@ import logging
 import shlex
 import gi
 import hashlib
-import socket
-from . import terminal
+import requests
 
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
@@ -174,17 +173,13 @@ def show_message_dialog(message, header=None, markup=False):
 
 def get_osinfo():
     os_release_file = "/run/host/os-release"
-
-    if not terminal.is_flatpak():
+    if os.environ.get('FLATPAK_ID', None) is None:
         os_release_file = "/etc/os-release"
 
     output = ''
-
-    try:
-        output = terminal.sandbox_sh(['cat', os_release_file])
-    except Exception as e:
-        logging.error(e)
-
+    if os.path.exists(os_release_file):
+        with open(os_release_file, 'r') as f:
+            output = f.read()
     return output
 
 # thank you mate ❤️
@@ -285,11 +280,16 @@ def gnu_naturalsize(value, precision=1):
     # Return formatted string (e.g., 953.7M)
     return f"{v:.{precision}f} {suffixes[i]}"
 
-def check_internet(host="1.1.1.1", port=53, timeout=3):
+def check_internet(timeout=3):
     try:
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-        return True
-    except socket.error as ex:
+        r = requests.get(
+            url='https://fedoraproject.org/static/hotspot.txt',
+            timeout=timeout
+        )
+
+        r.raise_for_status()
+    except Exception as e:
         logging.warning(f"No internet connection detected")
         return False
+    
+    return True
