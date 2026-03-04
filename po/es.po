@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 16:17+0100\n"
-"PO-Revision-Date: 2025-12-11 13:37-0300\n"
+"POT-Creation-Date: 2026-02-19 10:31+0100\n"
+"PO-Revision-Date: 2026-03-04 12:07-0300\n"
 "Last-Translator: Racsu <racsufkoficial@gmail.com>\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.8\n"
 
-#: data/it.mijorus.gearlever.desktop.in:3
+#: data/it.mijorus.gearlever.desktop.in:2
 msgid "Gear Lever"
 msgstr "Gear lever"
 
-#: data/it.mijorus.gearlever.desktop.in:4
+#: data/it.mijorus.gearlever.desktop.in:3
 msgid "An utility to manage AppImages with ease!"
 msgstr "¡Una utilidad para gestionar AppImages con facilidad!"
 
-#: data/it.mijorus.gearlever.desktop.in:12
+#: data/it.mijorus.gearlever.desktop.in:11
 msgid "AppImage;"
 msgstr "AppImage;"
 
@@ -33,45 +33,45 @@ msgstr "AppImage;"
 msgid "translator_credits"
 msgstr "racsu <racsu.com>"
 
-#: src/AppDetails.py:32 src/AppDetails.py:80 src/AppDetails.py:437
+#: src/AppDetails.py:35 src/AppDetails.py:84 src/AppDetails.py:479
 msgid "Update"
 msgstr "Actualizar"
 
-#: src/AppDetails.py:33
+#: src/AppDetails.py:36
 msgid "Save"
 msgstr "Guardar"
 
-#: src/AppDetails.py:34
+#: src/AppDetails.py:37
 msgid "Saved"
 msgstr "Guardado"
 
-#: src/AppDetails.py:35
+#: src/AppDetails.py:38
 msgid "Invalid data"
 msgstr "Datos no válidos"
 
-#: src/AppDetails.py:36
+#: src/AppDetails.py:39
 msgid "Cancel update"
 msgstr "Cancelar actualización"
 
-#: src/AppDetails.py:37 src/InstalledAppsList.py:31
+#: src/AppDetails.py:40 src/InstalledAppsList.py:31
 msgid "Checking updates..."
 msgstr "Comprobando actualizaciones..."
 
-#: src/AppDetails.py:38
+#: src/AppDetails.py:41
 msgid "No updates available"
 msgstr "No hay actualizaciones disponibles"
 
-#: src/AppDetails.py:39
+#: src/AppDetails.py:42
 msgid "This application includes update information provided by the developer"
 msgstr ""
 "Esta aplicación incluye información actualizada proporcionada por el "
 "desarrollador"
 
-#: src/AppDetails.py:40
+#: src/AppDetails.py:43
 msgid "Manage update details for this application"
 msgstr "Gestionar los datos de actualización de esta aplicación"
 
-#: src/AppDetails.py:233
+#: src/AppDetails.py:236
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -79,106 +79,117 @@ msgstr ""
 "Esta aplicacion se encuentra fuera del directorio predeterminado\n"
 "<small>Puedes esconder aplicaciones externas en los ajustes</small>"
 
-#: src/AppDetails.py:244
+#: src/AppDetails.py:247
 msgid "Please, verify the source of this app before opening it"
 msgstr "Por favor, verifique la fuente de esta aplicación antes de abrirla"
 
-#: src/AppDetails.py:245
+#: src/AppDetails.py:248
 msgid "Unlock"
 msgstr "Desbloquear"
 
-#: src/AppDetails.py:365
+#: src/AppDetails.py:347
+msgid "Unkown Error"
+msgstr "Error desconocido"
+
+#: src/AppDetails.py:396
 msgid "Launching..."
 msgstr "Lanzando..."
 
-#: src/AppDetails.py:372 src/AppDetails.py:547
-#: src/providers/AppImageProvider.py:645
-msgid "Error"
-msgstr "Error"
+#: src/AppDetails.py:447
+#, python-brace-format
+msgid ""
+"{app_name} is running, please close it before proceeding with the update"
+msgstr ""
+"{app_name} se está ejecutando, ciérrela antes de continuar con la "
+"actualización"
 
-#: src/AppDetails.py:459
+#: src/AppDetails.py:501
 msgid "Update error"
 msgstr "Error de actualización"
 
-#: src/AppDetails.py:463
+#: src/AppDetails.py:505
 msgid "Close"
 msgstr "Cerrar"
 
-#: src/AppDetails.py:470
+#: src/AppDetails.py:512
 msgid "Do you really want to remove this app?"
 msgstr "¿Realmente desea eliminar esta aplicación?"
 
-#: src/AppDetails.py:473 src/components/AppDetailsConflictModal.py:14
+#: src/AppDetails.py:515 src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: src/AppDetails.py:474 src/AppDetails.py:513
+#: src/AppDetails.py:516 src/AppDetails.py:555
 msgid "Remove"
 msgstr "Eliminar"
 
-#: src/AppDetails.py:509 src/AppDetails.py:529
+#: src/AppDetails.py:551 src/AppDetails.py:571
 msgid "This app runs in the terminal"
 msgstr "Esta app corre via terminal"
 
-#: src/AppDetails.py:511 src/AppDetails.py:526 src/AppDetails.py:532
+#: src/AppDetails.py:553 src/AppDetails.py:568 src/AppDetails.py:574
 msgid "Launch"
 msgstr "Lanzar"
 
-#: src/AppDetails.py:517
+#: src/AppDetails.py:559
 msgid "Uninstalling..."
 msgstr "Desinstalando..."
 
-#: src/AppDetails.py:521
+#: src/AppDetails.py:563
 msgid "Installing..."
 msgstr "Instalando..."
 
-#: src/AppDetails.py:534
+#: src/AppDetails.py:576
 msgid "Move to the app menu"
 msgstr "Mover al menu de aplicaciones"
 
-#: src/AppDetails.py:558
+#: src/AppDetails.py:589
+msgid "Error"
+msgstr "Error"
+
+#: src/AppDetails.py:600
 msgid "This app might not be compatible with your system architecture"
 msgstr ""
 "Es posible que esta aplicación no sea compatible con la arquitectura de tu "
 "sistema"
 
-#: src/AppDetails.py:860
+#: src/AppDetails.py:909
 msgid "Add a website"
 msgstr "Agregar un sitio web"
 
-#: src/AppDetails.py:864
+#: src/AppDetails.py:913
 msgid "Website"
 msgstr "Sitio Web"
 
-#: src/AppDetails.py:877
+#: src/AppDetails.py:926
 msgid "Open URL"
 msgstr "Abrir URL"
 
-#: src/AppDetails.py:894
+#: src/AppDetails.py:943
 msgid "How it works"
 msgstr "Cómo funciona"
 
-#: src/AppDetails.py:916
+#: src/AppDetails.py:965
 msgid "Update management"
 msgstr "Gestión de la actualización"
 
-#: src/AppDetails.py:923
+#: src/AppDetails.py:972
 msgid "Default"
 msgstr "Por defecto"
 
-#: src/AppDetails.py:929
+#: src/AppDetails.py:978
 msgid "Source"
 msgstr "Fuente"
 
-#: src/AppDetails.py:930
+#: src/AppDetails.py:979
 msgid "Select the source type"
 msgstr "Seleccione el tipo de fuente"
 
-#: src/AppDetails.py:956
+#: src/AppDetails.py:1005
 msgid "Reload metadata"
 msgstr "Recargar metada"
 
-#: src/AppDetails.py:957
+#: src/AppDetails.py:1006
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -186,39 +197,39 @@ msgstr ""
 "Actualizar información como icono, versión y descripción.\n"
 "Útil si la aplicación se actualizó por si misma."
 
-#: src/AppDetails.py:969
+#: src/AppDetails.py:1018
 msgid "Command line arguments"
 msgstr "Argumentos de la línea de comandos"
 
-#: src/AppDetails.py:987
+#: src/AppDetails.py:1036
 msgid "Hash"
 msgstr "Hash"
 
-#: src/AppDetails.py:997
+#: src/AppDetails.py:1046
 msgid "Path"
 msgstr "Directorio"
 
-#: src/AppDetails.py:999
+#: src/AppDetails.py:1048
 msgid "Open Folder"
 msgstr "Abrir carpeta"
 
-#: src/AppDetails.py:1009
+#: src/AppDetails.py:1058
 msgid "Package type"
 msgstr "Tipo de paquete"
 
-#: src/AppDetails.py:1027
+#: src/AppDetails.py:1076
 msgid "Key"
 msgstr "Clave"
 
-#: src/AppDetails.py:1028
+#: src/AppDetails.py:1077
 msgid "Value"
 msgstr "Valor"
 
-#: src/AppDetails.py:1067
+#: src/AppDetails.py:1116
 msgid "Environment variables"
 msgstr "Variables de entorno"
 
-#: src/AppDetails.py:1068
+#: src/AppDetails.py:1117
 msgid "Add or customize environment for this application"
 msgstr "Añadir o personalizar el entorno para esta aplicación"
 
@@ -230,7 +241,7 @@ msgstr "Abrir una nueva AppImage"
 msgid "Open"
 msgstr "Abrir"
 
-#: src/GearleverWindow.py:294
+#: src/GearleverWindow.py:299
 msgid "Open a file"
 msgstr "Abrir un archivo"
 
@@ -332,31 +343,35 @@ msgstr ""
 "Por ejemplo, \"golang_x86_64.appimage\" sera guardo como \"go\""
 
 #: src/preferences.py:107
-msgid "Preview hashes for new apps before loading metadata"
+msgid "Preview new apps in a minimal UI"
 msgstr ""
-"Previsualizar los hash de las nuevas aplicaciones antes de cargar los "
-"metadatos"
+"Previsualiza nuevas aplicaciones en una interfaz de usuario minimalista"
 
-#: src/preferences.py:109
+#: src/preferences.py:112
+msgid "Use safe mechanisms to load metadata"
+msgstr "Utilice mecanismos seguros para cargar metadatos"
+
+#: src/preferences.py:114
 msgid ""
-"If enabled, a preview of the file you are trying to open is shown.\n"
+"If enabled, the app will try to load an Appimage without using the built-in "
+"appimage-extract command.\n"
 "Disable only if you trust your sources: malicious apps could execute code "
 "when loading the metadata."
 msgstr ""
-"Si está habilitada, se muestra una vista previa del archivo que está "
-"intentando abrir.\n"
-"Deshabilítela solo si confía en sus fuentes: las aplicaciones maliciosas "
+"Si está habilitado, la aplicación intentará cargar una Appimage sin utilizar "
+"el comando appimage-extract integrado.\n"
+"Desactívelo solo si confía en sus fuentes: las aplicaciones maliciosas "
 "podrían ejecutar código al cargar los metadatos."
 
-#: src/preferences.py:115
+#: src/preferences.py:121
 msgid "Debugging"
 msgstr "Depurando"
 
-#: src/preferences.py:117
+#: src/preferences.py:123
 msgid "Enable debug logs"
 msgstr "Habilitar registros de depuración"
 
-#: src/preferences.py:119
+#: src/preferences.py:125
 msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
@@ -366,11 +381,11 @@ msgstr ""
 "afectando potencialmente a el rendimiento.\n"
 "Requiere un reinicio."
 
-#: src/preferences.py:146
+#: src/preferences.py:152
 msgid "The folder must writeable"
 msgstr "La carpeta debe tener permisos de escritura"
 
-#: src/preferences.py:149 src/WelcomeScreen.py:118
+#: src/preferences.py:155 src/WelcomeScreen.py:118
 msgid "Select a folder"
 msgstr "Selecciona una carpeta"
 
@@ -424,9 +439,9 @@ msgid "Drag and drop an AppImage here or click on the \"+\" icon."
 msgstr "Arrastra y suelta una AppImage aqui o da click al icono \"+\"."
 
 #: src/gtk/empty-list-placeholder.ui:35
-msgid " If you don't see your apps, check if the selected folder is correct."
+msgid "If you don't see your apps, check if the selected folder is correct."
 msgstr ""
-" Si es que no ves tus aplicaciones, revisa que la carpeta seleccionada es "
+"Si no ves tus aplicaciones, comprueba que la carpeta seleccionada sea la "
 "correcta."
 
 #: src/gtk/empty-list-placeholder.ui:46
@@ -477,7 +492,6 @@ msgstr ""
 "mantiene organizadas."
 
 #: src/gtk/tutorial/2.ui:21
-#, python-brace-format
 msgid "<b>By default, AppImages are saved at: {location}</b>"
 msgstr "<b>Por defecto, las AppImages se guardan en: {location}</b>"
 
@@ -528,7 +542,7 @@ msgstr "Cerrar tutorial"
 msgid "No description provided"
 msgstr "Sin descripción"
 
-#: src/providers/AppImageProvider.py:585
+#: src/providers/AppImageProvider.py:589
 msgid ""
 "The downloaded file is not a valid appimage, please check if the provided "
 "URL is correct"
@@ -536,11 +550,11 @@ msgstr ""
 "El archivo descargado no es una appimage válida, por favor compruebe si la "
 "URL proporcionada es correcta"
 
-#: src/providers/AppImageProvider.py:631
+#: src/providers/AppImageProvider.py:650
 msgid "Running AppImages on NixOS requires appimage-run"
 msgstr "Ejecutar AppImages en NixOS requiere appimage-run"
 
-#: src/providers/AppImageProvider.py:646
+#: src/providers/AppImageProvider.py:664
 #, python-brace-format
 msgid ""
 "AppImages require FUSE to run. You might still be able to run it with --"
@@ -555,6 +569,20 @@ msgstr ""
 "\n"
 "Haga clic en el siguiente enlace para obtener más información. \n"
 "{url}"
+
+#: src/providers/AppImageProvider.py:751
+msgid ""
+"Any attempts at loading this app's metadata failed; if you want proceed "
+"using appimage-extract, please disable the security option in the settings."
+msgstr ""
+"Cualquier intento de cargar los metadatos de esta aplicación ha fallado; si "
+"desea continuar utilizando appimage-extract, desactive la opción de "
+"seguridad en la configuración."
+
+#~ msgid "Preview hashes for new apps before loading metadata"
+#~ msgstr ""
+#~ "Previsualizar los hash de las nuevas aplicaciones antes de cargar los "
+#~ "metadatos"
 
 #~ msgid "Update URL"
 #~ msgstr "Actualizar URL"
