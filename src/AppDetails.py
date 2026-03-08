@@ -1058,12 +1058,54 @@ class AppDetails(Gtk.ScrolledWindow):
     def create_exec_path_row(self) -> Adw.ActionRow:
         row = Adw.ActionRow(title=_('Path'), subtitle=self.app_list_element.file_path, subtitle_selectable=True, selectable=False)
         row_img = Gtk.Image(icon_name='gearlever-file-manager-symbolic', pixel_size=self.ACTION_ROW_ICON_SIZE)
-        row_btn = Gtk.Button(icon_name='gl-arrow2-top-right-symbolic', valign=Gtk.Align.CENTER, tooltip_text=_('Open Folder'))
+        
+        row_btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6, valign=Gtk.Align.CENTER)
+
+        move_btn = Gtk.Button(icon_name='folder-new-symbolic', tooltip_text=_('Move to subfolder'))
+        move_btn.connect('clicked', self.on_move_to_subfolder_clicked)
+        
+        # Only show the button if it's not already in a subfolder within the managed directory
+        # This is a bit tricky to determine perfectly without more state, but we can check 
+        # if the parent directory is the default AppImages folder itself.
+        default_folder = appimage_provider._get_appimages_default_destination_path()
+        current_dir = os.path.dirname(self.app_list_element.file_path)
+        
+        # If it's directly in the default folder (not a subfolder), show the button
+        move_btn.set_visible(os.path.abspath(current_dir) == os.path.abspath(default_folder))
+
+        row_btn = Gtk.Button(icon_name='gl-arrow2-top-right-symbolic', tooltip_text=_('Open Folder'))
         row_btn.connect('clicked', self.on_open_folder_clicked)
+        
+        row_btn_box.append(move_btn)
+        row_btn_box.append(row_btn)
+
         row.add_prefix(row_img)
-        row.add_suffix(row_btn)
+        row.add_suffix(row_btn_box)
 
         return row
+
+    def on_move_to_subfolder_clicked(self, widget):
+        if self.provider.is_app_running(self.app_list_element):
+            show_message_dialog(
+                _('The application is currently running. Please close it before moving it to a subfolder.'),
+                _('Cannot move the application')
+            )
+            return
+
+        try:
+            self.provider.move_to_subfolder(self.app_list_element)
+            # Refresh the view
+            self.load()
+            show_message_dialog(
+                _('The application has been moved to its own subfolder.'),
+                _('Success')
+            )
+        except Exception as e:
+            logging.error(f'Error moving app to subfolder: {e}')
+            show_message_dialog(
+                f'{_("An error occurred while moving the application")}: {e}',
+                _('Error')
+            )
 
     def create_package_info_row(self, gen) -> Adw.ActionRow:
         row = Adw.ActionRow(
