@@ -252,7 +252,8 @@ class AppImageProvider():
 
                 if gtk_launch and el.desktop_file_path:
                     desktop_file_name = os.path.basename(el.desktop_file_path)
-                    terminal.host_threaded_sh(['gtk-launch', desktop_file_name], callback=self._check_launch_output, return_stderr=True)
+                    cwd = os.path.dirname(el.file_path)
+                    terminal.host_threaded_sh(['gtk-launch', desktop_file_name], callback=self._check_launch_output, return_stderr=True, cwd=cwd)
                 else:
                     self._run_from_desktopentry(el)
             else:
@@ -669,10 +670,11 @@ class AppImageProvider():
     # Private methods
     def _run_filepath(self, el: AppImageListElement):
         is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) != None
+        cwd = os.path.dirname(el.file_path)
 
         if is_nixos:
             self._nixos_checks()
-            terminal.host_threaded_sh(['appimage-run', el.file_path], callback=self._check_launch_output, return_stderr=True)
+            terminal.host_threaded_sh(['appimage-run', el.file_path], callback=self._check_launch_output, return_stderr=True, cwd=cwd)
             return
 
         exec_args = []
@@ -680,20 +682,22 @@ class AppImageProvider():
             exec_args = shlex.split(el.desktop_entry.getExec())[1:]
             exec_args = [i for i in exec_args if i not in self.desktop_exec_codes]
 
-        terminal.host_threaded_sh([el.file_path, *exec_args], callback=self._check_launch_output, return_stderr=True)
+        terminal.host_threaded_sh([el.file_path, *exec_args], callback=self._check_launch_output, return_stderr=True, cwd=cwd)
 
     def _run_from_desktopentry(self, el: AppImageListElement):
         is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) != None
+        cwd = os.path.dirname(el.file_path)
 
         if is_nixos:
             self._nixos_checks()
             cmd = ['appimage-run', el.desktop_entry.getTryExec()]
+            terminal.host_threaded_sh(cmd, callback=self._check_launch_output, return_stderr=True, cwd=cwd)
             return
 
         cmd = shlex.split(el.desktop_entry.getExec())
         cmd = [i for i in cmd if i not in self.desktop_exec_codes]
 
-        terminal.host_threaded_sh(cmd, callback=self._check_launch_output, return_stderr=True)
+        terminal.host_threaded_sh(cmd, callback=self._check_launch_output, return_stderr=True, cwd=cwd)
 
     def _nixos_checks(self):
         try:
