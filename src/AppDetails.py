@@ -18,7 +18,7 @@ from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
 from .lib.json_config import read_json_config, set_json_config, read_config_for_app, save_config_for_app, \
     remove_update_config
-from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog, gnu_naturalsize, check_internet
+from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog, gnu_naturalsize, check_internet, NO_CONNECTION_LABEL
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
 from .components.AdwEntryRowDefault import AdwEntryRowDefault
@@ -659,6 +659,20 @@ class AppDetails(Gtk.ScrolledWindow):
     @_async
     def check_updates(self):
         if not check_internet():
+            def _show_no_connection():
+                if self.update_url_save_btn:
+                    self.update_url_save_btn.set_label(NO_CONNECTION_LABEL)
+                    self.update_url_save_btn.add_css_class('destructive-action')
+                    self.update_url_save_btn.set_sensitive(True)
+
+            def _reset_btn():
+                if self.update_url_save_btn:
+                    self.update_url_save_btn.set_label(self.BTN_SAVE)
+                    self.update_url_save_btn.remove_css_class('destructive-action')
+                return GLib.SOURCE_REMOVE
+
+            GLib.idle_add(_show_no_connection)
+            GLib.timeout_add_seconds(3, _reset_btn)
             return
 
         manager = self.update_manager

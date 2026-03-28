@@ -14,7 +14,7 @@ from .components.CustomComponents import NoAppsFoundRow
 from .components.AppListBoxItem import AppListBoxItem
 from .preferences import Preferences
 from .WelcomeScreen import WelcomeScreen
-from .lib.utils import get_application_window, check_internet
+from .lib.utils import get_application_window, check_internet, NO_CONNECTION_LABEL
 from .lib.async_utils import _async, idle
 from .models.UpdateManagerChecker import UpdateManagerChecker
 
@@ -143,6 +143,18 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         global fetch_updates_cache
 
         if not check_internet():
+            def _show_no_connection():
+                self.updates_btn.set_label(NO_CONNECTION_LABEL)
+                self.updates_btn.add_css_class('destructive-action')
+                self.updates_btn.set_sensitive(True)
+
+            def _reset_btn():
+                self.updates_btn.set_label(self.CHECK_FOR_UPDATES_LABEL)
+                self.updates_btn.remove_css_class('destructive-action')
+                return GLib.SOURCE_REMOVE
+
+            GLib.idle_add(_show_no_connection)
+            GLib.timeout_add_seconds(3, _reset_btn)
             return
 
         logging.debug('Fetching for updates for all apps')

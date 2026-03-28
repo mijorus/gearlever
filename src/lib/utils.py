@@ -280,16 +280,21 @@ def gnu_naturalsize(value, precision=1):
     # Return formatted string (e.g., 953.7M)
     return f"{v:.{precision}f} {suffixes[i]}"
 
-def check_internet(timeout=3):
-    try:
-        r = requests.get(
-            url='http://fedoraproject.org/static/hotspot.txt',
-            timeout=timeout
-        )
+NO_CONNECTION_LABEL = _('No Connection')
 
-        r.raise_for_status()
-    except Exception as e:
-        logging.warning(f"No internet connection detected")
-        return False
-    
-    return True
+def check_internet(timeout=3):
+    urls = [
+        'https://fedoraproject.org/static/hotspot.txt',
+        'http://fedoraproject.org/static/hotspot.txt',
+    ]
+
+    for url in urls:
+        try:
+            r = requests.get(url=url, timeout=timeout, allow_redirects=False)
+            if r.status_code < 400:
+                return True
+        except Exception:
+            continue
+
+    logging.warning("No internet connection detected")
+    return False
