@@ -280,8 +280,6 @@ def gnu_naturalsize(value, precision=1):
     # Return formatted string (e.g., 953.7M)
     return f"{v:.{precision}f} {suffixes[i]}"
 
-NO_CONNECTION_LABEL = _('No Connection')
-
 def check_internet(timeout=3):
     urls = [
         'https://fedoraproject.org/static/hotspot.txt',

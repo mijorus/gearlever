@@ -5,7 +5,7 @@ import logging
 
 from .State import state
 from time import sleep
-from .lib.constants import APP_ID, ONE_UPDATE_AVAILABLE_LABEL, UPDATES_AVAILABLE_LABEL
+from .lib.constants import NO_CONNECTION_LABEL
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageListElement
 from .models.AppListElement import InstalledStatus
@@ -14,7 +14,7 @@ from .components.CustomComponents import NoAppsFoundRow
 from .components.AppListBoxItem import AppListBoxItem
 from .preferences import Preferences
 from .WelcomeScreen import WelcomeScreen
-from .lib.utils import get_application_window, check_internet, NO_CONNECTION_LABEL
+from .lib.utils import get_application_window, check_internet
 from .lib.async_utils import _async, idle
 from .models.UpdateManagerChecker import UpdateManagerChecker
 
@@ -29,6 +29,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
     CHECK_FOR_UPDATES_LABEL = _('Check for updates')
     NO_UPDATES_FOUND_LABEL = _('No updates found')
     CHECKING_FOR_UPDATES_LABEL = _('Checking updates...')
+    NO_CONNECTION_LABEL = _('No Connection')
     UPDATE_ALL_LABEL = _('Update all')
 
     def __init__(self):
@@ -144,7 +145,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
         if not check_internet():
             def _show_no_connection():
-                self.updates_btn.set_label(NO_CONNECTION_LABEL)
+                self.updates_btn.set_label(self.NO_CONNECTION_LABEL)
                 self.updates_btn.add_css_class('destructive-action')
                 self.updates_btn.set_sensitive(True)
 
