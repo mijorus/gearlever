@@ -5,7 +5,6 @@ import logging
 
 from .State import state
 from time import sleep
-from .lib.constants import NO_CONNECTION_LABEL
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageListElement
 from .models.AppListElement import InstalledStatus
