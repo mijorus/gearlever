@@ -53,10 +53,6 @@ class UpdateManagerChecker():
         model_url: str | None = None
         embedded_url: str | None = None
 
-        # if url and model:
-        #     if model.can_handle_link(url):
-        #         model_url = url
-
         if el:
             embedded_app_data = UpdateManagerChecker.check_app_embedded_url(el)
 
@@ -66,20 +62,12 @@ class UpdateManagerChecker():
                         embedded_app_data.startswith(m.handles_embedded):
 
                         logging.debug(f'Checking embedded url with {m.__name__}')
+
                         model = m
                         embedded_url = embedded_app_data
-                        # if m.can_handle_link(embedded_app_data):
-                        #     break
 
         if model:
             return model(embedded=embedded_url, el=el)
-            # if model_url and embedded_url:
-            
-            # if model_url:
-            #     return model(model_url, embedded=embedded_url, el=el)
-            
-            # if embedded_url:
-            #     return model(embedded_url, embedded=embedded_url, el=el)
 
         return None
 

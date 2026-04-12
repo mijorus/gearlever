@@ -44,26 +44,9 @@ class UpdateManager(ABC):
     def load_form_rows(self) -> list:
         pass
 
-    # @staticmethod
-    # @abstractmethod
-    # def can_handle_link(url: str) -> bool:
-    #     pass
-
-    # @abstractmethod
-    # def get_url_from_form(self) -> str:
-    #     pass
-
-    # @abstractmethod
-    # def get_url_from_params(self, **kwargs) -> str:
-    #     pass
-
     @abstractmethod
     def get_config_from_form(self) -> dict:
         pass
-
-    # @abstractmethod
-    # def set_url(self, url: str):
-    #     self.url = url
 
     def get_config(self):
         config = {}

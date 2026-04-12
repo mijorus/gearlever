@@ -43,11 +43,6 @@ class ForgejoUpdater(UpdateManager):
         
         return None
     
-    @staticmethod
-    def can_handle_link(url: str):
-        return ForgejoUpdater.get_url_data(url) != None
-
-
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self.staticfile_manager = None
@@ -58,25 +53,6 @@ class ForgejoUpdater(UpdateManager):
         self.repo_url_row = None
         self.repo_filename_row = None
         self.allow_prereleases_row = None
-
-    def set_url(self, url: str):
-        self.url = url
-        self.url_data = self.get_url_data(url)
-
-        self.config = {
-            'repo_url': '',
-            'repo_filename': '',
-            'allow_prereleases': self.get_config().get('allow_prereleases', False)
-        }
-
-        if self.url_data:
-            self.url = self.get_url_string_from_data(self.url_data)
-            self.config['repo_filename'] = self.url_data['filename']
-            self.config['repo_url'] = '/'.join([
-                'https://' + self.url_data['netloc'],
-                self.url_data['username'],
-                self.url_data['repo'],
-            ])
 
     def get_url_string_from_data(self, url_data):
         url = f'https://{url_data["netloc"]}/{url_data["username"]}/{url_data["repo"]}'
@@ -227,16 +203,6 @@ class ForgejoUpdater(UpdateManager):
             self.allow_prereleases_row
         ]
 
-    def get_url_from_form(self, **kwargs) -> str:
-        if (not self.repo_filename_row) or (not self.repo_url_row):
-            return ''
-
-        return '/'.join([
-            self.repo_url_row.get_text(),
-            'releases/download/*',
-            self.repo_filename_row.get_text()
-        ])
-
     def get_config_from_form(self):
         allow_prereleases = False
         repo_url = None
@@ -251,15 +217,8 @@ class ForgejoUpdater(UpdateManager):
         if self.repo_filename_row:
             repo_filename = self.repo_filename_row.get_text()
 
-        self.config = {
+        return {
             'allow_prereleases': allow_prereleases,
             'repo_url': repo_url,
             'repo_filename': repo_filename,
         }
-
-    def get_url_from_params(self, **kwargs):
-        return '/'.join([
-            kwargs.get('repo_url', ''),
-            'releases/download/*',
-            kwargs.get('repo_filename', ''),
-        ])

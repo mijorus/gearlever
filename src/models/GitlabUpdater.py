@@ -76,25 +76,6 @@ class GitlabUpdater(UpdateManager):
             'repo_filename': config.get('repo_filename', None),
         }
 
-    def set_url(self, url: str):
-        self.url_data = self.get_url_data(url)
-        self.url = url
-
-        self.config = {
-            'repo_url': '',
-            'repo_filename': '',
-        }
-
-        if self.url_data:
-            repo_url = ''
-            if self.url_data['project_id']:
-                repo_url = '/'.join(['https://gitlab.com', 'api/v4/projects', self.url_data['project_id']])
-            else:
-                repo_url = '/'.join(['https://gitlab.com', self.url_data['username'], self.url_data['repo']])
-
-            self.config['repo_url'] = repo_url
-            self.config['repo_filename'] = self.url_data['filename']
-
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
         if not target_asset:
@@ -218,31 +199,6 @@ class GitlabUpdater(UpdateManager):
 
         return [self.repo_url_row, self.repo_filename_row]
 
-    def get_url_from_form(self, ) -> str:
-        if (not self.repo_filename_row) or (not self.repo_url_row):
-            return ''
-        
-        repo_url = self.repo_url_row.get_text()
-        filename = self.repo_filename_row.get_text()
-
-        if repo_url.startswith('https://gitlab.com/api'):
-            return '/'.join([
-                repo_url,
-                'packages/generic/<package_name>',
-                filename
-            ]).strip()
-        else:
-            return '#'.join([
-                repo_url,
-                filename
-            ]).strip()
-
-    def get_url_from_params(self, **kwargs):
-        return '#'.join([
-            kwargs.get('repo_url', ''),
-            kwargs.get('repo_filename', ''),
-        ])
-
     def get_config_from_form(self):
         repo_url = None
         repo_filename = None
@@ -253,7 +209,7 @@ class GitlabUpdater(UpdateManager):
         if self.repo_filename_row:
             repo_filename = self.repo_filename_row.get_text()
 
-        self.config = {
+        return {
             'repo_url': repo_url,
             'repo_filename': repo_filename,
         }

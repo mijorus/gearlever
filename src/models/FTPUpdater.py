@@ -40,11 +40,6 @@ class FTPUpdater(UpdateManager):
             'path': splitted.path,
         }
 
-    @staticmethod
-    def can_handle_link(url: str):
-        return FTPUpdater.get_url_data(url) != None
-
-
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self.staticfile_manager = None
@@ -62,19 +57,6 @@ class FTPUpdater(UpdateManager):
             'url': config.get('url', None),
             'filename': config.get('filename', None),
         }
-
-    def set_url(self, url: str):
-        self.url_data = self.get_url_data(url)
-        self.url = url
-
-        self.config = {
-            'url': '',
-            'filename': '',
-        }
-
-        if self.url_data:
-            self.config['url'] = self.url_data['server']
-            self.config['filename'] = self.url_data['path']
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -249,25 +231,6 @@ class FTPUpdater(UpdateManager):
 
         return [self.url_row, self.filename_row]
 
-    def get_url_from_form(self, ) -> str:
-        if (not self.filename_row) or (not self.url_row):
-            return ''
-        
-        filename = self.filename_row.get_text()
-        if filename.startswith('/'):
-            filename = filename[1:]
-        
-        return '/'.join([
-            self.url_row.get_text(),
-            filename
-        ])
-
-    def get_url_from_params(self, **kwargs):
-        return '/'.join([
-            kwargs.get('url', ''),
-            kwargs.get('filename', ''),
-        ])
-    
     def get_config_from_form(self):
         url = None
         filename = None
@@ -278,7 +241,7 @@ class FTPUpdater(UpdateManager):
         if self.filename_row:
             filename = self.filename_row.get_text()
 
-        self.config = {
+        return {
             'url': url,
             'filename': filename,
         }

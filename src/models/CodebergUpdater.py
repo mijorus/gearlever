@@ -43,30 +43,12 @@ class CodebergUpdater(UpdateManager):
         
         return None
 
-    @staticmethod
-    def can_handle_link(url: str):
-        return CodebergUpdater.get_url_data(url) != None
-
-
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self.staticfile_manager = None
         self.embedded = False
         self.repo_url_row = None
         self.repo_filename_row = None
-
-    def set_url(self, url: str):
-        self.url = url
-        self.url_data = self.get_url_data(url)
-
-        self.config = {
-            'repo_url': '',
-            'repo_filename': '',
-        }
-
-        if self.url_data:
-            self.config['repo_url'] =  '/'.join(['https://codeberg.org', self.url_data['username'], self.url_data['repo']])
-            self.config['repo_filename'] =  self.url_data['filename']
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -172,23 +154,6 @@ class CodebergUpdater(UpdateManager):
 
         return [self.repo_url_row, self.repo_filename_row]
 
-    def get_url_from_form(self, ) -> str:
-        if (not self.repo_filename_row) or (not self.repo_url_row):
-            return ''
-        
-        return '/'.join([
-            self.repo_url_row.get_text(),
-            'releases/download/*',
-            self.repo_filename_row.get_text()
-        ])
-
-    def get_url_from_params(self, **kwargs):
-        return '/'.join([
-            kwargs.get('repo_url', ''),
-            'releases/download/*',
-            kwargs.get('repo_filename', ''),
-        ])
-    
     def get_config_from_form(self):
         repo_url = None
         repo_filename = None
@@ -199,7 +164,7 @@ class CodebergUpdater(UpdateManager):
         if self.repo_filename_row:
             repo_filename = self.repo_filename_row.get_text()
 
-        self.config = {
+        return {
             'repo_url': repo_url,
             'repo_filename': repo_filename,
         }

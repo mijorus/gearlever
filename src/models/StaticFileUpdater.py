@@ -22,35 +22,6 @@ class StaticFileUpdater(UpdateManager):
     name = 'StaticFileUpdater'
     currend_download: Optional[requests.Response]
 
-    # @staticmethod
-    # def can_handle_link(url: str):
-    #     is_embedded = True
-    #     if StaticFileUpdater.handles_embedded and \
-    #         url.startswith(StaticFileUpdater.handles_embedded):
-    #         l = len(StaticFileUpdater.handles_embedded)
-    #         url = url[l:]
-    #         is_embedded = True
-
-    #     if not url_is_valid(url):
-    #         return False
-
-    #     ct = ''
-
-    #     if is_embedded:
-    #         # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#zsync-1
-    #         return True
-
-    #     headers = StaticFileUpdater.get_url_headers(url)
-    #     ct = headers.get('content-type', '')
-
-    #     logging.debug(f'{url} responded with content-type: {ct}')
-    #     ct_supported = ct in [*AppImageProvider.supported_mimes, 'binary/octet-stream', 'application/octet-stream']
-
-    #     if not ct_supported:
-    #         logging.warn(f'Provided url "{url}" does not return a valid content-type header')
-
-    #     return ct_supported
-
     @staticmethod
     def get_url_headers(url):
         headers = {}
