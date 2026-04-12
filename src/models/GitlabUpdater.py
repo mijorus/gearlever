@@ -22,12 +22,12 @@ class GitlabUpdater(UpdateManager):
     repo_url_row = None
     repo_filename_row = None
 
-    @staticmethod
-    def get_url_data(url: str):
+    def get_url_data(self, url=None):
+        url = self.config.get('repo_url') or ''
+
         if not url.startswith('https://'):
             return None
 
-        paths = []
         logging.debug(f'GitlabUpdater: found http url, trying to detect gitlab data')
         urldata = urlsplit(url)
 
@@ -38,7 +38,7 @@ class GitlabUpdater(UpdateManager):
 
         if len(paths) not in [4, 10]:
             return None
-        
+
         if paths[1] == 'api':
             if paths[2] != 'v4' or paths[5] != 'packages':
                 return None
@@ -50,21 +50,20 @@ class GitlabUpdater(UpdateManager):
                 'repo': None
             }
         else:
-            if not urldata.fragment:
+            filename = self.config.get('repo_filename')
+            if not filename:
                 return None
 
             return {
                 'project_id': None,
-                'filename': urldata.fragment,
+                'filename': filename,
                 'username': paths[1],
                 'repo': '/'.join(paths[2:4])
             }
 
-    def __init__(self, url, **kwargs) -> None:
-        super().__init__(url, **kwargs)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.staticfile_manager = None
-        self.url_data = GitlabUpdater.get_url_data(url)
-        self.url = url
         self.embedded = False
 
         config = {}
@@ -75,6 +74,8 @@ class GitlabUpdater(UpdateManager):
             'repo_url': config.get('repo_url', None),
             'repo_filename': config.get('repo_filename', None),
         }
+
+        self.url_data = self.get_url_data()
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
