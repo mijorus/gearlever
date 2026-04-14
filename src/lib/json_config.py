@@ -2,6 +2,7 @@ import logging
 import json
 import gi
 import os
+import configparser
 import base64
 
 gi.require_version('Gtk', '4.0')

@@ -22,14 +22,13 @@ import shutil
 import os
 
 from .models.Settings import Settings
-from .lib.terminal import sandbox_sh
-from .lib.utils import make_option
+from .lib.ini_config import Config
+from .models.UpdateManagerChecker import UpdateManagerChecker
 from .lib.constants import APP_ID, APP_NAME, APP_DATA, TMP_DIR
 from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
 from  .WelcomeScreen import WelcomeScreen
 from .preferences import Preferences
-from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
 from  .Cli import Cli
 
 gi.require_version('Gtk', '4.0')
@@ -182,6 +181,17 @@ def main(version, pkgdatadir):
         level= logging.DEBUG if Settings.settings.get_boolean('debug-logs') else logging.INFO,
         force=True
     )
+
+    if not Config.exists():
+        installed_apps = appimage_provider.list_installed()
+
+        for app in installed_apps:
+            update_manager = UpdateManagerChecker.check_url_for_app(app)
+
+            if update_manager:
+                update_manager.migrate_v2()
+
+        Config.write()
 
     if len(sys.argv) > 1:
         Cli.from_options(sys.argv)

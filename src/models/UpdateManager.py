@@ -6,7 +6,8 @@ from typing import Optional, Callable, Literal
 from abc import ABC, abstractmethod
 
 from ..lib.constants import TMP_DIR
-from ..lib.json_config import save_config_for_app
+from ..lib.json_config import save_config_for_app, read_config_for_app
+from ..lib.ini_config import Config
 from ..lib import terminal
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 
@@ -57,14 +58,4 @@ class UpdateManager(ABC):
         return config
     
     def migrate_v2(self):
-        if self.el:
-            app_config = self.el.get_config()
-
-            if app_config.get('update_url') and (app_config.get('update_manager_config', None) is None):
-                logging.info('Performing config migration from v1 to v2 for ' + self.el.name)
-                app_config['update_manager_config'] = self.get_config()
-                del app_config['update_url']
-
-                save_config_for_app(app_config)
-
-
+        pass

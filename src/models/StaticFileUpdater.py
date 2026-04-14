@@ -10,6 +10,8 @@ from typing import Optional, Literal
 
 from ..lib.utils import terminal
 from ..lib.utils import get_random_string, url_is_valid, get_file_hash
+from ..lib import json_config
+from ..lib.ini_config import Config
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 from .Models import DownloadInterruptedException
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
@@ -182,3 +184,15 @@ class StaticFileUpdater(UpdateManager):
         config = self.get_config()
         config['url'] = url.strip()
         return config
+
+    
+    def migrate_v2(self):
+        if self.el:
+            app_config = json_config.read_config_for_app(self.el)
+
+            if app_config.get('update_url'):
+                logging.info('Performing config migration from v1 to v2 for ' + self.el.file_path)
+                Config.set_app_config(self.el, {})
+                Config.set_app_update_config(self.el, self, {
+                    'url':  app_config.get('update_url')
+                })

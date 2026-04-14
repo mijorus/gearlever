@@ -71,6 +71,7 @@ class AppImageListElement():
         self.trusted = True
 
     def get_config(self):
+        return {}
         return read_config_for_app(self)
 
 class AppImageProvider():

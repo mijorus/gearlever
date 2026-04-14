@@ -67,9 +67,8 @@ class UpdateManagerChecker():
 
         if model:
             m: UpdateManager = model(embedded=embedded_url, el=el)
-            m.migrate_v2()
-
             return m
+
         return None
 
     @staticmethod
