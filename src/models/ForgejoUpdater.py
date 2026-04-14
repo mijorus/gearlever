@@ -47,17 +47,10 @@ class ForgejoUpdater(UpdateManager):
         super().__init__(**kwargs)
         self.staticfile_manager = None
         # self.url_data = ForgejoUpdater.get_url_data(url)
-        self.url = url
         self.embedded = False
-
         self.repo_url_row = None
         self.repo_filename_row = None
         self.allow_prereleases_row = None
-
-    def get_url_string_from_data(self, url_data):
-        url = f'https://{url_data["netloc"]}/{url_data["username"]}/{url_data["repo"]}'
-        url += f'/releases/download/*/{url_data["filename"]}'
-        return url
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -84,6 +77,7 @@ class ForgejoUpdater(UpdateManager):
         if not self.url_data:
             return
 
+        url_data = self.get_url_data()
         api_version = 'v1'
         allow_prereleases = False
 
@@ -158,7 +152,7 @@ class ForgejoUpdater(UpdateManager):
         logging.debug(f'Found 1 matching asset: {download_asset["browser_download_url"]}')
         return download_asset
 
-    def is_update_available(self, el: AppImageListElement):
+    def is_update_available(self):
         target_asset = self.fetch_target_asset()
 
         if target_asset:
@@ -167,10 +161,11 @@ class ForgejoUpdater(UpdateManager):
             return is_size_different
 
         return False
-    
+
     def load_form_rows(self, embedded=None): 
-        repo_url = self.config.get('repo_url')
-        filename = self.config.get('repo_filename')
+        config = self.get_config()
+        repo_url = config.get('repo_url')
+        filename = config.get('repo_filename')
 
         self.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
@@ -190,12 +185,6 @@ class ForgejoUpdater(UpdateManager):
             title=_('Allow pre-releases'),
             active=self.config.get('allow_prereleases', False)
         )
-
-        if embedded:
-            return [
-                self.repo_url_row, 
-                self.repo_filename_row,
-            ]
 
         return [
             self.repo_url_row, 
