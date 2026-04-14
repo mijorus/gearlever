@@ -672,7 +672,7 @@ class AppDetails(Gtk.ScrolledWindow):
         is_updatable = False
 
         try:
-            is_updatable = manager.is_update_available(self.app_list_element)
+            is_updatable = manager.is_update_available()
         except Exception as e:
             logging.error('Update error', exc_info=e)
             self.show_update_error_dialog(str(e))
@@ -702,10 +702,8 @@ class AppDetails(Gtk.ScrolledWindow):
                     selected_model = m
                     break
 
-            app_conf = self.get_config_for_app()
-
             if selected_model:
-                self.update_manager = selected_model(embedded=None, el=self.app_list_element)
+                self.update_manager = UpdateManagerChecker.check_url(model=selected_model, el=self.app_list_element)
             else:
                 if self.app_list_element:
                     remove_update_config(self.app_list_element)

@@ -15,7 +15,7 @@ class UpdateManager(ABC):
     name = ''
     label = ''
     handles_embedded: Optional[str] = None
-    el: Optional[AppImageListElement] = None
+    el: AppImageListElement = None
     system_arch = platform.machine()
     is_x86 = re.compile(r'(\-|\_|\.)x86(\-|\_|\.)')
     is_arm = re.compile(r'(\-|\_|\.)(arm64|aarch64|armv7l)(\-|\_|\.)')
@@ -29,7 +29,7 @@ class UpdateManager(ABC):
         pass
 
     @abstractmethod
-    def is_update_available(self, el: AppImageListElement) -> bool:
+    def is_update_available(self) -> bool:
         pass
 
     @abstractmethod

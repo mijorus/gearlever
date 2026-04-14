@@ -219,10 +219,13 @@ class GithubUpdater(UpdateManager):
 
                 return {'asset': asset, 'zsync': None}
 
-    def is_update_available(self, el: AppImageListElement):
+    def is_update_available(self):
+        if not self.el:
+            return False
+
         target_asset = self.fetch_target_asset()
 
-        if not os.path.exists(el.file_path):
+        if not os.path.exists(self.el.file_path):
             return False
 
         if target_asset:
@@ -231,7 +234,7 @@ class GithubUpdater(UpdateManager):
                 zsync_file = requests.get(target_asset['zsync']['browser_download_url']).text
                 zsync_file_header = zsync_file.split('\n\n', 1)[0]
                 sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
-                curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha1')
+                curr_version_hash = get_file_hash(Gio.File.new_for_path(self.el.file_path), alg='sha1')
 
                 match = re.search(sha_pattern, zsync_file_header)
                 if match:
@@ -240,10 +243,10 @@ class GithubUpdater(UpdateManager):
             else:
                 digest = target_asset['asset'].get('digest', '')
                 if digest and digest.startswith('sha256:'):
-                    curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha256')
+                    curr_version_hash = get_file_hash(Gio.File.new_for_path(self.el.file_path), alg='sha256')
                     return f'sha256:{curr_version_hash}' != digest
 
-                old_size = os.path.getsize(el.file_path)
+                old_size = os.path.getsize(self.el.file_path)
                 is_size_different = target_asset['asset']['size'] != old_size
                 return is_size_different
 

@@ -21,14 +21,14 @@ class UpdateManagerChecker():
         return [StaticFileUpdater, GithubUpdater, GitlabUpdater, CodebergUpdater, FTPUpdater, ForgejoUpdater]
 
     @staticmethod
-    def get_model_by_name(manager_label: str) -> Optional[UpdateManager]:
+    def get_model_by_name(manager_label: str) -> UpdateManager:
         item = list(filter(lambda m: m.name == manager_label, 
                                     UpdateManagerChecker.get_models()))
 
-        if item:
-            return item[0]
+        if not item:
+            raise Exception('Invalid model name: ' + manager_label)
 
-        return None
+        return item[0]
 
     @staticmethod
     def check_url_for_app(el: AppImageListElement):
@@ -50,7 +50,6 @@ class UpdateManagerChecker():
         if model:
             models = list(filter(lambda m: m is model, models))
 
-        model_url: str | None = None
         embedded_url: str | None = None
 
         if el:
@@ -67,8 +66,10 @@ class UpdateManagerChecker():
                         embedded_url = embedded_app_data
 
         if model:
-            return model(embedded=embedded_url, el=el)
+            m: UpdateManager = model(embedded=embedded_url, el=el)
+            m.migrate_v2()
 
+            return m
         return None
 
     @staticmethod

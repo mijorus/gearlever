@@ -128,15 +128,18 @@ class StaticFileUpdater(UpdateManager):
         l = len(self.handles_embedded)
         return self.embedded[l:]
 
-    def is_update_available(self, el: AppImageListElement):
+    def is_update_available(self):
         e_url = self.get_embedded_url()
         dwnl_url = self.get_config().get('url')
+
+        if not self.el.file_path:
+            return False
 
         if e_url:
             zsync_file = requests.get(e_url).text
             zsync_file_header = zsync_file.split('\n\n', 1)[0]
             sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
-            curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha1')
+            curr_version_hash = get_file_hash(Gio.File.new_for_path(self.el.file_path), alg='sha1')
 
             match = re.search(sha_pattern, zsync_file_header)
             if match:
@@ -145,7 +148,7 @@ class StaticFileUpdater(UpdateManager):
         dwnl_url = e_url
         headers = StaticFileUpdater.get_url_headers(dwnl_url)
         resp_cl = int(headers.get('content-length', '0'))
-        old_size = os.path.getsize(el.file_path)
+        old_size = os.path.getsize(self.el.file_path)
 
         logging.debug(f'StaticFileUpdater: new url has length {resp_cl}, old was {old_size}')
 
@@ -155,20 +158,11 @@ class StaticFileUpdater(UpdateManager):
         is_size_different = resp_cl != old_size
         return is_size_different
 
-    def get_config(self):
-        config = super().get_config()
-        app_config = {}
-
-        if self.el:
-            if app_config.get('update_url') and (app_config.get('update_manager_config') is None):
-                config['url'] = app_config.get('update_url')
-        return config
-
     def load_form_rows(self):
         url = self.get_config().get('url', '')
+
         if self.get_embedded_url():
             url = self.get_embedded_url()
-            print(url)
 
         self.form_row = AdwEntryRowDefault(
             text=url,
