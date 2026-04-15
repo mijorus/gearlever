@@ -6,10 +6,8 @@ from typing import Optional, Callable, Literal
 from abc import ABC, abstractmethod
 
 from ..lib.constants import TMP_DIR
-from ..lib.json_config import save_config_for_app, read_config_for_app
 from ..lib.ini_config import Config
-from ..lib import terminal
-from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
+from ..providers.AppImageProvider import AppImageListElement
 
 
 class UpdateManager(ABC):
@@ -21,7 +19,7 @@ class UpdateManager(ABC):
     is_x86 = re.compile(r'(\-|\_|\.)x86(\-|\_|\.)')
     is_arm = re.compile(r'(\-|\_|\.)(arm64|aarch64|armv7l)(\-|\_|\.)')
 
-    def __init__(self, embedded: Optional[str]=None, el=None) -> None:
+    def __init__(self, el, embedded: Optional[str]=None) -> None:
         self.el = el
         self.download_folder = os.path.join(TMP_DIR, 'downloads')
         self.embedded = embedded
@@ -50,12 +48,7 @@ class UpdateManager(ABC):
         pass
 
     def get_config(self):
-        config = {}
-
-        if self.el:
-            config = self.el.get_config().get('update_manager_config', {})
-
-        return config
+        return Config.get_app_update_config(self.el)
     
     def migrate_v2(self):
         pass

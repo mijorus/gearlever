@@ -185,14 +185,11 @@ class StaticFileUpdater(UpdateManager):
         config['url'] = url.strip()
         return config
 
-    
     def migrate_v2(self):
-        if self.el:
-            app_config = json_config.read_config_for_app(self.el)
+        app_config = json_config.read_config_for_app(self.el)
 
-            if app_config.get('update_url'):
-                logging.info('Performing config migration from v1 to v2 for ' + self.el.file_path)
-                Config.set_app_config(self.el, {})
-                Config.set_app_update_config(self.el, self, {
-                    'url':  app_config.get('update_url')
-                })
+        if app_config.get('update_url'):
+            logging.info('Performing config migration from v1 to v2 for ' + self.el.file_path)
+            Config.set_app_update_config(self.el, self, {
+                'url':  app_config.get('update_url')
+            })

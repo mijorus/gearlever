@@ -14,7 +14,8 @@ from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.constants import TMP_DIR
 from ..lib import terminal
 from ..lib.async_utils import idle
-from ..lib.json_config import read_config_for_app, remove_update_config, save_config_for_app
+from ..lib.ini_config import Config
+from ..lib.json_config import remove_update_config
 from ..lib.utils import get_giofile_content_type, gio_copy, get_file_hash, \
     remove_special_chars, get_random_string, get_osinfo, extract_terminal_arguments, show_message_dialog, gnu_naturalsize
 from ..models.Models import AppUpdateElement, InternalError, DownloadInterruptedException
@@ -71,8 +72,7 @@ class AppImageListElement():
         self.trusted = True
 
     def get_config(self):
-        return {}
-        return read_config_for_app(self)
+        return Config.get_app_config(self)
 
 class AppImageProvider():
     # https://cgit.freedesktop.org/xdg/shared-mime-info/tree/data/freedesktop.org.xml.in#n2114

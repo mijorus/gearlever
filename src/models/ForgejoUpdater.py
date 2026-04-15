@@ -7,10 +7,8 @@ from typing import Optional, Literal
 from gi.repository import Adw, Gio
 from urllib.parse import urlsplit, urljoin
 
-from ..lib.utils import get_file_hash
-from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
-from .Models import DownloadInterruptedException
-
+from ..lib import json_config
+from ..lib.ini_config import Config
 from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
@@ -22,8 +20,15 @@ class ForgejoUpdater(UpdateManager):
     label = 'Forgejo'
     name = 'ForgejoUpdater'
 
-    @staticmethod
-    def get_url_data(url: str):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.staticfile_manager = None
+        self.embedded = False
+        self.repo_url_row = None
+        self.repo_filename_row = None
+        self.allow_prereleases_row = None
+
+    def get_url_data(self, url: str):
         paths = []
         if url.startswith('https://'):
             logging.debug(f'ForgejoUpdater: found http url, trying to detect forgejo data')
@@ -42,15 +47,23 @@ class ForgejoUpdater(UpdateManager):
             }
         
         return None
-    
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-        self.staticfile_manager = None
-        # self.url_data = ForgejoUpdater.get_url_data(url)
-        self.embedded = False
-        self.repo_url_row = None
-        self.repo_filename_row = None
-        self.allow_prereleases_row = None
+
+    def migrate_v2(self):
+        app_config = json_config.read_config_for_app(self.el)
+        config = None
+
+        if 'update_manager_config' in app_config:
+            url_data = self.get_url_data(app_config['update_url'])
+
+            if url_data:
+                config = {
+                    'allow_prereleases': app_config.get('update_manager_config', {}).get('allow_prereleases', False),
+                    'repo_url': '/'.join(['https://', url_data['netloc'], url_data['username'], url_data['repo']]),
+                    'repo_filename': url_data['filename'],
+                }
+
+        if config:
+            Config.set_app_update_config(self.el, self, config)
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -74,25 +87,22 @@ class ForgejoUpdater(UpdateManager):
             self.staticfile_manager.cleanup()
 
     def fetch_target_asset(self):
-        if not self.url_data:
+        conf = self.get_config()
+        url_data = self.get_url_data(conf['repo_url'])
+
+        if not url_data:
             return
 
-        url_data = self.get_url_data()
         api_version = 'v1'
-        allow_prereleases = False
-
-        if self.el:
-            allow_prereleases = self.el.get_config() \
-                .get('update_manager_config', {}) \
-                .get('allow_prereleases', False)
+        allow_prereleases = conf.get('allow_prereleases', False)
 
         rel_url = '/'.join([
-            f'https://{self.url_data["netloc"]}',
+            f'https://{url_data["netloc"]}',
             'api', 
             api_version,
             'repos',
-            self.url_data["username"],
-            self.url_data["repo"],
+            url_data["username"],
+            url_data["repo"],
             'releases'
         ])
 
@@ -123,11 +133,13 @@ class ForgejoUpdater(UpdateManager):
 
         logging.debug(f'Found {len(release["assets"])} assets from {rel_url}')
 
-        download_asset = None
+        if not conf.get('filename'):
+            return
 
+        download_asset = None
         possible_targets = []
         for asset in release['assets']:
-            if fnmatch(asset['name'], self.url_data['filename']):
+            if fnmatch(asset['name'], conf.get('filename', '')):
                 possible_targets.append(asset)
 
         if len(possible_targets) == 1:
@@ -156,7 +168,7 @@ class ForgejoUpdater(UpdateManager):
         target_asset = self.fetch_target_asset()
 
         if target_asset:
-            old_size = os.path.getsize(el.file_path)
+            old_size = os.path.getsize(self.el.file_path)
             is_size_different = target_asset['size'] != old_size
             return is_size_different
 
@@ -183,7 +195,7 @@ class ForgejoUpdater(UpdateManager):
 
         self.allow_prereleases_row = Adw.SwitchRow(
             title=_('Allow pre-releases'),
-            active=self.config.get('allow_prereleases', False)
+            active=config.get('allow_prereleases', False)
         )
 
         return [

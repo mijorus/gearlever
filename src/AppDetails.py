@@ -8,6 +8,7 @@ import shlex
 from typing import Optional, Callable
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
 
+from .lib.ini_config import Config
 from .lib.terminal import sandbox_sh
 from .models.Models import InternalError
 from .models.UpdateManager import UpdateManager
@@ -16,8 +17,6 @@ from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
-from .lib.json_config import read_json_config, set_json_config, read_config_for_app, save_config_for_app, \
-    remove_update_config
 from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog, gnu_naturalsize, check_internet
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
@@ -428,14 +427,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
             self.provider.uninstall(self.app_list_element)
             
-            app_config = self.get_config_for_app()
-            conf = read_json_config('apps')
-
-            if 'b64name' in app_config and app_config['b64name'] in conf:
-                del conf[app_config['b64name']]
-                set_json_config('apps', conf)
-            else:
-                logging.warn('Missing app key from app config')
+            Config.delete_app_config(self.app_list_element)
 
             self.emit('uninstalled-app', self)
 
@@ -642,7 +634,7 @@ class AppDetails(Gtk.ScrolledWindow):
             widget.remove_css_class('error')
 
         app_conf['website'] = text
-        save_config_for_app(app_conf)
+        Config.set_app_config(self.app_list_element, app_conf)
 
     @idle
     def set_app_as_updatable(self):
@@ -706,7 +698,7 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.update_manager = UpdateManagerChecker.check_url(model=selected_model, el=self.app_list_element)
             else:
                 if self.app_list_element:
-                    remove_update_config(self.app_list_element)
+                    Config.delete_app_update_config(self.app_list_element)
 
                 self.update_manager = UpdateManagerChecker.check_url(el=self.app_list_element)
 
@@ -770,7 +762,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         if not self.update_manager:
             if self.app_list_element:
-                remove_update_config(self.app_list_element)
+                Config.delete_app_update_config(self.app_list_element)
 
             self.on_app_update_url_success()
             return
@@ -803,9 +795,7 @@ class AppDetails(Gtk.ScrolledWindow):
             return
 
         if not self.update_manager.embedded:
-            app_conf['update_url_manager'] = self.update_manager.name
-            app_conf['update_manager_config'] = form_config
-            save_config_for_app(app_conf)
+            Config.set_app_update_config(self.app_list_element, self.update_manager, form_config)
 
         self.on_app_update_url_success()
 
@@ -956,7 +946,7 @@ class AppDetails(Gtk.ScrolledWindow):
         return row
 
     def create_edit_update_url_row(self) -> Adw.EntryRow:
-        app_config = self.get_config_for_app()
+        app_config = Config.get_app_update_config(self.app_list_element)
 
         row_btn = Gtk.Button(
             icon_name='gl-info-symbolic', 
@@ -992,7 +982,8 @@ class AppDetails(Gtk.ScrolledWindow):
 
         combo_model.append(_('Default'))
 
-        selected_model_name = app_config.get('update_url_manager', None)
+        selected_model_name = app_config.get('manager', None)
+        print(app_config)
         selected_model: Optional[UpdateManager] = None
 
         self.update_url_source = Adw.ComboRow(

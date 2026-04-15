@@ -4,7 +4,7 @@ from typing import Optional, Callable
 
 from ..lib.constants import TMP_DIR
 from ..lib import terminal
-from ..lib.json_config import read_config_for_app
+from ..lib.ini_config import Config
 from ..providers.AppImageProvider import AppImageListElement
 
 from .UpdateManager import UpdateManager
@@ -32,7 +32,7 @@ class UpdateManagerChecker():
 
     @staticmethod
     def check_url_for_app(el: AppImageListElement):
-        app_conf = read_config_for_app(el)
+        app_conf = Config.get_app_update_config(el)
         update_url_manager: str | None = app_conf.get('update_url_manager', None)
 
         model = None

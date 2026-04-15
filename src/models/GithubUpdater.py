@@ -8,6 +8,8 @@ from gi.repository import Adw, Gio
 from urllib.parse import urlsplit
 
 from ..lib.utils import get_file_hash
+from ..lib import json_config
+from ..lib.ini_config import Config
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 from .Models import DownloadInterruptedException
 
@@ -28,25 +30,24 @@ class GithubUpdater(UpdateManager):
         self.repo_filename_row = None
         self.allow_prereleases_row = None
 
-    def get_config(self):
-        config = {}
+    def migrate_v2(self):
+        app_config = json_config.read_config_for_app(self.el)
+        config = None
 
-        if self.el:
-            app_config = self.el.get_config()
+        if 'update_manager_config' in app_config:
+            config = app_config.get('update_manager_config', {})
+        elif 'update_url' in app_config:
+            url_data = self.get_url_data(app_config['update_url'])
 
-            if 'update_manager_config' in app_config:
-                config = app_config.get('update_manager_config', {})
-            elif 'update_url' in app_config:
-                url_data = self.get_url_data(app_config['update_url'])
-
-                if url_data:
-                    config = {
-                        'allow_prereleases': False,
-                        'repo_url': self.get_github_repo_url(url_data['username'], url_data['repo']),
-                        'repo_filename': url_data['filename'],
-                    }
-
-        return config
+            if url_data:
+                config = {
+                    'allow_prereleases': False,
+                    'repo_url': self.get_github_repo_url(url_data['username'], url_data['repo']),
+                    'repo_filename': url_data['filename'],
+                }
+        
+        if config:
+            Config.set_app_update_config(self.el, self, config)
     
     def get_github_repo_url(self, usrn, repo):
         return '/'.join(['https://github.com', usrn, repo])

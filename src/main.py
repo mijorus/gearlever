@@ -23,6 +23,7 @@ import os
 
 from .models.Settings import Settings
 from .lib.ini_config import Config
+from .lib import json_config
 from .models.UpdateManagerChecker import UpdateManagerChecker
 from .lib.constants import APP_ID, APP_NAME, APP_DATA, TMP_DIR
 from .providers.providers_list import appimage_provider
@@ -182,16 +183,29 @@ def main(version, pkgdatadir):
         force=True
     )
 
-    if not Config.exists():
+    if True:
         installed_apps = appimage_provider.list_installed()
 
         for app in installed_apps:
-            update_manager = UpdateManagerChecker.check_url_for_app(app)
+            app_conf = json_config.read_config_for_app(app)
+            Config.set_app_config(app, {
+                'website': app_conf.get('website', '')
+            })
 
-            if update_manager:
-                update_manager.migrate_v2()
+            update_url_manager: str | None = app_conf.get('update_url_manager', None)
+
+            if update_url_manager:
+                model = None
+                if update_url_manager:
+                    model = UpdateManagerChecker.get_model_by_name(update_url_manager)
+
+                update_manager = UpdateManagerChecker.check_url(app, model=model)
+                if update_manager:
+                    update_manager.migrate_v2()
 
         Config.write()
+
+    Config.refresh()
 
     if len(sys.argv) > 1:
         Cli.from_options(sys.argv)
