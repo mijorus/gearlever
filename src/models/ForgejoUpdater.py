@@ -72,7 +72,7 @@ class ForgejoUpdater(UpdateManager):
             raise Exception(f'Missing target_asset for {self.name} instance')
 
         dwnl = target_asset['browser_download_url']
-        self.staticfile_manager = StaticFileUpdater(dwnl, self.el)
+        self.staticfile_manager = StaticFileUpdater(self.el, dwnl)
         fname, etag = self.staticfile_manager.download(status_update_cb)
 
         self.staticfile_manager = None

@@ -10,7 +10,7 @@ gi.require_version('Adw', '1')
 from gi.repository import GLib  # noqa
 
 
-class Config():
+class Config:
     path = os.path.join(GLib.get_user_config_dir(), 'gearlever.conf')
     parser = configparser.ConfigParser()
 
@@ -64,6 +64,7 @@ class Config():
         data['name'] = el.name
         data['file_path'] = el.file_path
         Config.parser[f'app.{h}'] = data
+        Config.write()
 
     @staticmethod
     def get_app_update_config(el):
@@ -81,6 +82,7 @@ class Config():
         logging.info(f'Setting update config for {el.name} (app.{h}.update_manager), manager={manager.name}: {data}')
         Config.parser[f'app.{h}.update_manager'] = data
         Config.parser[f'app.{h}.update_manager']['manager'] = manager.name
+        Config.write()
 
     @staticmethod
     def delete_app_update_config(el):

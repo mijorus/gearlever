@@ -58,36 +58,6 @@ class UpdateManagerChecker():
         return None
 
     @staticmethod
-    def check_url(el: Optional[AppImageListElement]=None,
-                    model: Optional[UpdateManager]=None, check_embedded=True) -> Optional[UpdateManager]:
-
-        models = UpdateManagerChecker.get_models()
-
-        if model:
-            models = list(filter(lambda m: m is model, models))
-
-        embedded_url: str | None = None
-
-        if el:
-            embedded_app_data = UpdateManagerChecker.check_app_embedded_url(el)
-
-            if embedded_app_data:
-                for m in models:
-                    if m.handles_embedded and \
-                        embedded_app_data.startswith(m.handles_embedded):
-
-                        logging.debug(f'Checking embedded url with {m.__name__}')
-
-                        model = m
-                        embedded_url = embedded_app_data
-
-        if model:
-            m: UpdateManager = model(embedded=embedded_url, el=el)
-            return m
-
-        return None
-
-    @staticmethod
     def check_app_embedded_url(el: AppImageListElement) -> Optional[str]:
         readelf_out = terminal.sandbox_sh(['readelf', '--string-dump=.upd_info', '--wide', el.file_path])
         readelf_out = readelf_out.replace('\n', ' ') + ' '

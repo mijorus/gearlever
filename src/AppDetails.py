@@ -695,12 +695,12 @@ class AppDetails(Gtk.ScrolledWindow):
                     break
 
             if selected_model:
-                self.update_manager = UpdateManagerChecker.check_url(model=selected_model, el=self.app_list_element)
+                self.update_manager = selected_model(el=self.app_list_element)
             else:
                 if self.app_list_element:
                     Config.delete_app_update_config(self.app_list_element)
 
-                self.update_manager = UpdateManagerChecker.check_url(el=self.app_list_element)
+                self.update_manager = UpdateManagerChecker.check_url_for_app(el=self.app_list_element)
 
         for r in self.update_url_form_rows:
             self.update_url_group.remove(r)   

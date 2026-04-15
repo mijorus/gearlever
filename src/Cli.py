@@ -157,6 +157,8 @@ class Cli():
     @staticmethod
     def set_update_source(argv):
         u_managers = ', '.join([n.name for n in UpdateManagerChecker.get_models()])
+        el = appimage_provider.create_list_element_from_file(g_file)
+
 
         manager_name = Cli._get_arg_value(argv, '--manager')
         manager_config = {}
@@ -164,7 +166,7 @@ class Cli():
 
         if manager_name:
             selected_model = UpdateManagerChecker.get_model_by_name(manager_name)
-            manager: UpdateManager = selected_model(url='', embedded=None)
+            manager: UpdateManager = selected_model(el=el)
             manager_config = manager.get_config()
 
             Cli._print_help_if_requested(argv, [
@@ -241,7 +243,7 @@ class Cli():
         if '--replace' in argv:
             list_element.update_logic = AppImageUpdateLogic.REPLACE
 
-        manager = UpdateManagerChecker.check_url(el=list_element)
+        manager = UpdateManagerChecker.check_url_for_app(el=list_element)
 
         apps = appimage_provider.list_installed()
 

@@ -171,9 +171,10 @@ def migrate_to_v2_config():
             if update_url_manager:
                 model = UpdateManagerChecker.get_model_by_name(update_url_manager)
 
-            update_manager = UpdateManagerChecker.check_url(app, model=model)
-            if update_manager:
-                update_manager.migrate_v2()
+            if model:
+                update_manager = model(el=app)
+                if update_manager:
+                    update_manager.migrate_v2()
 
     Config.write()
 

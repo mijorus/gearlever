@@ -23,7 +23,7 @@ class GithubUpdater(UpdateManager):
     label = 'Github'
     name = 'GithubUpdater'
 
-    def __init__(self, embedded, el) -> None:
+    def __init__(self, el, embedded) -> None:
         super().__init__(embedded=embedded, el=el)
         self.staticfile_manager = None
         self.repo_url_row = None
@@ -131,7 +131,7 @@ class GithubUpdater(UpdateManager):
             raise Exception(f'Missing target_asset for {self.name} instance')
 
         dwnl = target_asset['asset']['browser_download_url']
-        self.staticfile_manager = StaticFileUpdater(dwnl, self.e)
+        self.staticfile_manager = StaticFileUpdater(self.el, dwnl)
         fname, etag = self.staticfile_manager.download(status_update_cb)
 
         self.staticfile_manager = None
