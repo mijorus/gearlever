@@ -201,7 +201,7 @@ class Cli():
             sys.exit(1)
 
         manager: UpdateManager = selected_model(embedded=None, el=el)
-        manager_config = manager.get_config()
+        manager_config = manager.get_config_from_form()
         if set(manager_config.keys()) != set(update_options.keys()):
             print('Missing or invalid update configuration, required keys: ' + ', '.join(manager_config.keys()))
             sys.exit(1)
@@ -215,7 +215,9 @@ class Cli():
 
                 update_options[k] = (update_options[k] in ['1', 'true'])
 
-        manager_config = {**manager.get_config(), **update_options}
+        manager_config = {**update_options}
+        manager.validate_config(manager_config)
+
         Config.delete_app_update_config(el)
         Config.set_app_update_config(el, manager, manager_config)
 

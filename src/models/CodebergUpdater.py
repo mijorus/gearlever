@@ -212,3 +212,9 @@ class CodebergUpdater(UpdateManager):
             'repo_url': repo_url,
             'repo_filename': repo_filename,
         }
+
+    def validate_config(self, config):
+        data = self.get_url_data(config['repo_url'])
+
+        if not data:
+            raise Exception(f'Invalid {self.name} url')

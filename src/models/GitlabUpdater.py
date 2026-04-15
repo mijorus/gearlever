@@ -6,14 +6,12 @@ from fnmatch import fnmatch
 from typing import Optional
 from urllib.parse import urlsplit, quote, unquote
 
-from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
-
+from ..lib import json_config
+from ..lib.ini_config import Config
 from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
 
-
-# TODO:
 
 # Example:
 # https://gitlab.com/librewolf-community/browser/appimage/-/releases
@@ -25,9 +23,12 @@ class GitlabUpdater(UpdateManager):
     repo_url_row = None
     repo_filename_row = None
 
-    def get_url_data(self, url=None):
-        url = self.config.get('repo_url') or ''
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.staticfile_manager = None
+        self.embedded = False
 
+    def get_url_data(self, url):
         if not url.startswith('https://'):
             return None
 
@@ -53,7 +54,7 @@ class GitlabUpdater(UpdateManager):
                 'repo': None
             }
         else:
-            filename = self.config.get('repo_filename')
+            filename = self.get_config().get('repo_filename')
             if not filename:
                 return None
 
@@ -64,21 +65,26 @@ class GitlabUpdater(UpdateManager):
                 'repo': '/'.join(paths[2:4])
             }
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-        self.staticfile_manager = None
-        self.embedded = False
+    def migrate_v2(self):
+        app_config = json_config.read_config_for_app(self.el)
+        config = None
 
-        config = {}
-        if self.el:
-            config = self.el.get_config().get('update_manager_config', {})
+        if 'update_manager_config' in app_config:
+            config = app_config.get('update_manager_config', {})
+        elif 'update_url' in app_config:
+            urldata = urlsplit(app_config['update_url'])
+            paths = urldata.path.split('/')
 
-        self.config = {
-            'repo_url': config.get('repo_url', None),
-            'repo_filename': config.get('repo_filename', None),
-        }
+            # Old download URLs have the form:
+            # https://gitlab.com/username/repo/-/releases/download/tag/filename
+            if urldata.netloc == 'gitlab.com' and len(paths) >= 8:
+                config = {
+                    'repo_url': f'https://gitlab.com/{paths[1]}/{paths[2]}',
+                    'repo_filename': paths[7],
+                }
 
-        self.url_data = self.get_url_data()
+        if config:
+            Config.set_app_update_config(self.el, self, config)
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -102,14 +108,17 @@ class GitlabUpdater(UpdateManager):
             self.staticfile_manager.cleanup()
 
     def fetch_target_asset(self):
-        if not self.url_data:
+        conf = self.get_config()
+        url_data = self.get_url_data(conf.get('repo_url', ''))
+
+        if not url_data:
             return
 
-        project_id = self.url_data['project_id']
+        project_id = url_data['project_id']
 
         if not project_id:
             project_id = quote(
-                self.url_data['username'] + '/' + self.url_data['repo'], 
+                url_data['username'] + '/' + url_data['repo'],
                 safe=''
             )
 
@@ -138,7 +147,7 @@ class GitlabUpdater(UpdateManager):
         assets = rel_data[0]['assets']
         for asset in assets['links']:
             link_res_name = asset['url'].split('/')[-1]
-            if fnmatch(link_res_name, self.url_data['filename']):
+            if fnmatch(link_res_name, url_data['filename']):
                 asset['name'] = link_res_name
                 possible_targets.append(asset)
 
@@ -146,7 +155,7 @@ class GitlabUpdater(UpdateManager):
             download_asset = possible_targets[0]
         else:
             logging.info(f'found {len(possible_targets)} possible file targets')
-            
+
             for t in possible_targets:
                 logging.info(' - ' + t['name'])
 
@@ -165,14 +174,14 @@ class GitlabUpdater(UpdateManager):
         logging.debug(f'Found 1 matching asset: {download_asset["direct_asset_url"]}')
         return download_asset
 
-    def is_update_available(self, el: AppImageListElement):
+    def is_update_available(self):
         target_asset = self.fetch_target_asset()
 
         if target_asset:
             asset_head_req = requests.head(target_asset['direct_asset_url'])
 
             is_size_different = False
-            old_size = os.path.getsize(el.file_path)
+            old_size = os.path.getsize(self.el.file_path)
             asset_size = asset_head_req.headers.get('content-length', None)
 
             if asset_size:
@@ -182,10 +191,11 @@ class GitlabUpdater(UpdateManager):
             return is_size_different
 
         return False
-    
-    def load_form_rows(self, embedded=None): 
-        repo_url = self.config['repo_url']
-        filename = self.config['repo_filename']
+
+    def load_form_rows(self, embedded=None):
+        config = self.get_config()
+        repo_url = config.get('repo_url')
+        filename = config.get('repo_filename')
 
         self.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
@@ -217,3 +227,9 @@ class GitlabUpdater(UpdateManager):
             'repo_url': repo_url,
             'repo_filename': repo_filename,
         }
+
+    def validate_config(self, config):
+        data = self.get_url_data(config['repo_url'])
+
+        if not data:
+            raise Exception(f'Invalid {self.name} url')

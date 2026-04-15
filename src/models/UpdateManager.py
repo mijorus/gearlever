@@ -50,5 +50,9 @@ class UpdateManager(ABC):
     def get_config(self):
         return Config.get_app_update_config(self.el)
     
+    def validate_config(self, config: dict):
+        """Validates the configuration or raises an exception"""
+        pass
+    
     def migrate_v2(self):
         pass

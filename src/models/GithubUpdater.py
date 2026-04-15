@@ -23,7 +23,7 @@ class GithubUpdater(UpdateManager):
     label = 'Github'
     name = 'GithubUpdater'
 
-    def __init__(self, el, embedded) -> None:
+    def __init__(self, el, embedded=False) -> None:
         super().__init__(embedded=embedded, el=el)
         self.staticfile_manager = None
         self.repo_url_row = None
@@ -42,7 +42,7 @@ class GithubUpdater(UpdateManager):
             if url_data:
                 config = {
                     'allow_prereleases': False,
-                    'repo_url': self.get_github_repo_url(url_data['username'], url_data['repo']),
+                    'repo': '/'.join([url_data['username'], url_data['repo']]),
                     'repo_filename': url_data['filename'],
                 }
         
@@ -152,15 +152,22 @@ class GithubUpdater(UpdateManager):
         if self.embedded:
             update_data = self.get_embedded_data()
         else:
-            url = self.get_config().get('repo_url', '')
-            update_data = self.get_url_data(url)
+            config = self.get_config()
+            repo = config.get('repo', '').split('/')
+
+            if len(repo) < 2:
+                return
+
+            update_data = {
+                'username': repo[0],
+                'repo': repo[1], 
+                'filename': config.get('repo_filename'),
+            }
         
         if not update_data:
             return
         
         allow_prereleases = self.does_allow_prereleases()
-
-        release_name = update_data["release"]
 
         rel_url = '/'.join([
             'https://api.github.com/repos',
@@ -172,7 +179,7 @@ class GithubUpdater(UpdateManager):
         rel_data = []
 
         if not allow_prereleases:
-            rel_url += f'/{release_name}'
+            rel_url += f'/latest'
 
         try:
             rel_data_resp = requests.get(rel_url)
@@ -278,13 +285,13 @@ class GithubUpdater(UpdateManager):
 
     def load_form_rows(self): 
         config = self.get_config()
-        repo_url = config.get('repo_url')
-        filename = config.get('repo_filename')
+        repo = config.get('repo', '')
+        filename = config.get('repo_filename', '')
 
         if self.embedded:
             url_data = self.get_embedded_data()
             if url_data:
-                repo_url = self.get_github_repo_url(url_data['username'], url_data['repo'])
+                repo = '/'.join([url_data['username'], url_data['repo']])
                 filename = url_data['filename']
 
         self.repo_url_row = AdwEntryRowDefault(
@@ -302,8 +309,8 @@ class GithubUpdater(UpdateManager):
         if filename:
             self.repo_filename_row.set_text(filename)
         
-        if repo_url:
-            self.repo_url_row.set_text(repo_url)
+        if repo:
+            self.repo_url_row.set_text(repo)
         
         self.allow_prereleases_row = Adw.SwitchRow(
             title=_('Allow pre-releases'),
@@ -319,21 +326,24 @@ class GithubUpdater(UpdateManager):
 
     def get_config_from_form(self):
         allow_prereleases = False
-        repo_url = None
+        repo = None
         repo_filename = None
 
         if self.allow_prereleases_row:
             allow_prereleases = self.allow_prereleases_row.get_active()
 
         if self.repo_url_row:
-            repo_url = self.repo_url_row.get_text().strip()
+            repo = self.repo_url_row.get_text().strip()
 
         if self.repo_filename_row:
             repo_filename = self.repo_filename_row.get_text()
 
         return {
-            **self.get_config(),
             'allow_prereleases': allow_prereleases,
-            'repo_url': repo_url,
+            'repo': repo,
             'repo_filename': repo_filename,
         }
+
+    def validate_config(self, config):
+        if len(config.get('repo', '').split('/')) != 2:
+            raise Exception(f'Invalid data, please enter <username>/<repo>')

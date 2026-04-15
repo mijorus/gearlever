@@ -408,7 +408,6 @@ class AppDetails(Gtk.ScrolledWindow):
                         self.provider.run(self.app_list_element)
                     except Exception as e:
                         traceback.print_exc()
-                        print('sono qui')
                         self.handle_exception(e)
 
                     self.post_launch_animation(restore_as=pre_launch_label)
@@ -695,7 +694,7 @@ class AppDetails(Gtk.ScrolledWindow):
                     break
 
             if selected_model:
-                self.update_manager = selected_model(el=self.app_list_element)
+                self.update_manager = selected_model(el=self.app_list_element, embedded=False)
             else:
                 if self.app_list_element:
                     Config.delete_app_update_config(self.app_list_element)
@@ -787,9 +786,11 @@ class AppDetails(Gtk.ScrolledWindow):
         # self.update_manager.set_url(text)
         try:
             form_config = self.update_manager.get_config_from_form()
+            self.update_manager.validate_config(form_config)
         except Exception as e:
-            self.on_app_update_url_error()
-            
+            logging.error(traceback.format_exc())
+            self.show_update_error_dialog(str(e))
+
             time.sleep(def_sleep)
             self.on_app_update_url_reset()
             return
@@ -983,7 +984,6 @@ class AppDetails(Gtk.ScrolledWindow):
         combo_model.append(_('Default'))
 
         selected_model_name = app_config.get('manager', None)
-        print(app_config)
         selected_model: Optional[UpdateManager] = None
 
         self.update_url_source = Adw.ComboRow(

@@ -40,7 +40,7 @@ class UpdateManagerChecker():
         if update_url_manager:
             model = UpdateManagerChecker.get_model_by_name(update_url_manager)
         else:
-            models = list(filter(lambda m: m is model, UpdateManagerChecker.get_models()))
+            models = UpdateManagerChecker.get_models()
             embedded_app_data = UpdateManagerChecker.check_app_embedded_url(el)
 
             if embedded_app_data:
@@ -52,6 +52,7 @@ class UpdateManagerChecker():
 
                         model = m
                         embedded_url = embedded_app_data
+                        break
 
         if model:
             return model(embedded=embedded_url, el=el)

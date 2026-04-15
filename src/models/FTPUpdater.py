@@ -236,5 +236,9 @@ class FTPUpdater(UpdateManager):
             'url': url,
             'filename': filename,
         }
+    
+    def validate_config(self, config):
+        if not config.get('url', '').startswith('ftp://'):
+            raise Exception(f'Invalid {self.name} url')
 
 

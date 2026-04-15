@@ -181,9 +181,9 @@ class StaticFileUpdater(UpdateManager):
         if self.form_row:
             url = self.form_row.get_text()
 
-        config = self.get_config()
-        config['url'] = url.strip()
-        return config
+        return {
+            'url': url.strip()
+        }
 
     def migrate_v2(self):
         app_config = json_config.read_config_for_app(self.el)
@@ -193,3 +193,8 @@ class StaticFileUpdater(UpdateManager):
             Config.set_app_update_config(self.el, self, {
                 'url':  app_config.get('update_url')
             })
+
+    def validate_config(self, config):
+        url = config.get('url', '')
+        if not url.startswith('http://') or url.startswith('https://'):
+            raise Exception('Enter a valid HTTP url')
