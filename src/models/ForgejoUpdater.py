@@ -36,14 +36,13 @@ class ForgejoUpdater(UpdateManager):
 
             paths = urldata.path.split('/')
 
-            if len(paths) != 7:
+            if len(paths) < 3:
                 return None
 
             return {
                 'netloc': urldata.netloc,
                 'username': paths[1],
                 'repo': paths[2],
-                'filename': paths[6],
             }
         
         return None
@@ -54,12 +53,14 @@ class ForgejoUpdater(UpdateManager):
 
         if 'update_manager_config' in app_config:
             url_data = self.get_url_data(app_config['update_url'])
+            urldata = urlsplit(app_config['update_url'])
+            paths = urldata.path.split('/')
 
-            if url_data:
+            if url_data and paths >= 7:
                 config = {
                     'allow_prereleases': app_config.get('update_manager_config', {}).get('allow_prereleases', False),
                     'repo_url': '/'.join(['https://', url_data['netloc'], url_data['username'], url_data['repo']]),
-                    'repo_filename': url_data['filename'],
+                    'repo_filename': paths[6],
                 }
 
         if config:
@@ -71,7 +72,7 @@ class ForgejoUpdater(UpdateManager):
             raise Exception(f'Missing target_asset for {self.name} instance')
 
         dwnl = target_asset['browser_download_url']
-        self.staticfile_manager = StaticFileUpdater(dwnl)
+        self.staticfile_manager = StaticFileUpdater(dwnl, self.el)
         fname, etag = self.staticfile_manager.download(status_update_cb)
 
         self.staticfile_manager = None

@@ -34,16 +34,32 @@ class UpdateManagerChecker():
     def check_url_for_app(el: AppImageListElement):
         app_conf = Config.get_app_update_config(el)
         update_url_manager: str | None = app_conf.get('update_url_manager', None)
+        embedded_url = None
 
         model = None
         if update_url_manager:
             model = UpdateManagerChecker.get_model_by_name(update_url_manager)
+        else:
+            models = list(filter(lambda m: m is model, UpdateManagerChecker.get_models()))
+            embedded_app_data = UpdateManagerChecker.check_app_embedded_url(el)
 
-        return UpdateManagerChecker.check_url(el, model=model)
+            if embedded_app_data:
+                for m in models:
+                    if m.handles_embedded and \
+                        embedded_app_data.startswith(m.handles_embedded):
+
+                        logging.debug(f'Checking embedded url with {m.__name__}')
+
+                        model = m
+                        embedded_url = embedded_app_data
+
+        if model:
+            return model(embedded=embedded_url, el=el)
+        return None
 
     @staticmethod
     def check_url(el: Optional[AppImageListElement]=None,
-                    model: Optional[UpdateManager]=None) -> Optional[UpdateManager]:
+                    model: Optional[UpdateManager]=None, check_embedded=True) -> Optional[UpdateManager]:
 
         models = UpdateManagerChecker.get_models()
 

@@ -52,15 +52,31 @@ class GithubUpdater(UpdateManager):
     def get_github_repo_url(self, usrn, repo):
         return '/'.join(['https://github.com', usrn, repo])
 
-    def get_url_data(self, url=None):
+    def get_embedded_data(self):
         # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
         # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#github-releases
+        if not self.embedded:
+            return None
 
-        if not url:
-            if self.embedded:
-                url = self.embedded
-            else:
-                url = self.get_config().get('repo_url', '')
+        url = self.embedded
+
+        tag_name = '*'
+        items = url.split('|')
+
+        if len(items) != 5:
+            return None
+
+        return {
+            'username': items[1],
+            'repo': items[2],
+            'release': items[3],
+            'filename': items[4],
+            'tag_name': tag_name
+        }
+    
+    def get_url_data(self, url: str):
+        # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
+        # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#github-releases
 
         tag_name = '*'
         if url.startswith('https://'):
@@ -72,7 +88,7 @@ class GithubUpdater(UpdateManager):
 
             paths = urldata.path.split('/')
 
-            if len(paths) != 7:
+            if len(paths) < 7:
                 return None
 
             if paths[3] != 'releases' or paths[4] != 'download':
@@ -101,9 +117,9 @@ class GithubUpdater(UpdateManager):
         allow_prereleases = False
 
         if self.embedded:
-            url_data = self.get_url_data()
-            if url_data:
-                allow_prereleases = url_data['release'] in ['latest-pre', 'latest-all']
+            embedded_data = self.get_embedded_data()
+            if embedded_data:
+                allow_prereleases = embedded_data['release'] in ['latest-pre', 'latest-all']
         else:
             allow_prereleases = self.get_config().get('allow_prereleases', False)
 
@@ -115,7 +131,7 @@ class GithubUpdater(UpdateManager):
             raise Exception(f'Missing target_asset for {self.name} instance')
 
         dwnl = target_asset['asset']['browser_download_url']
-        self.staticfile_manager = StaticFileUpdater(dwnl)
+        self.staticfile_manager = StaticFileUpdater(dwnl, self.e)
         fname, etag = self.staticfile_manager.download(status_update_cb)
 
         self.staticfile_manager = None
@@ -131,18 +147,25 @@ class GithubUpdater(UpdateManager):
             self.staticfile_manager.cleanup()
 
     def fetch_target_asset(self):
-        url_data = self.get_url_data()
-        if not url_data:
+        update_data = None
+
+        if self.embedded:
+            update_data = self.get_embedded_data()
+        else:
+            url = self.get_config().get('repo_url', '')
+            update_data = self.get_url_data(url)
+        
+        if not update_data:
             return
         
         allow_prereleases = self.does_allow_prereleases()
 
-        release_name = url_data["release"]
+        release_name = update_data["release"]
 
         rel_url = '/'.join([
             'https://api.github.com/repos',
-            url_data["username"],
-            url_data["repo"],
+            update_data["username"],
+            update_data["repo"],
             'releases',
         ])
 
@@ -176,7 +199,7 @@ class GithubUpdater(UpdateManager):
                 continue
 
             for asset in release['assets']:
-                if fnmatch.fnmatch(asset['name'], url_data['filename']):
+                if fnmatch.fnmatch(asset['name'], update_data['filename']):
                     found = True
                     possible_targets.append(asset)
                     if self.embedded:
@@ -259,7 +282,7 @@ class GithubUpdater(UpdateManager):
         filename = config.get('repo_filename')
 
         if self.embedded:
-            url_data = self.get_url_data()
+            url_data = self.get_embedded_data()
             if url_data:
                 repo_url = self.get_github_repo_url(url_data['username'], url_data['repo'])
                 filename = url_data['filename']
