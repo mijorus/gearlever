@@ -209,7 +209,7 @@ def main(version, pkgdatadir):
         force=True
     )
 
-    if True:
+    if not Config.exists():
         migrate_to_v2_config()
 
     # old_configs_to_delete = ['settings', 'apps']
