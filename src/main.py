@@ -152,6 +152,31 @@ class GearleverApplication(Adw.Application):
         if self.win:
             tutorial.present(self.win)
 
+def migrate_to_v2_config():
+    bg_update_k = 'fetch-updates-in-background'
+    settings_conf = json_config.read_json_config('settings')
+    Config.parser[Config.parser.default_section][bg_update_k] = Config.return_boolean(settings_conf.get(bg_update_k, False))
+    installed_apps = appimage_provider.list_installed()
+
+    for app in installed_apps:
+        app_conf = json_config.read_config_for_app(app)
+        Config.set_app_config(app, {
+            'website': app_conf.get('website', '')
+        })
+
+        update_url_manager: str | None = app_conf.get('update_url_manager', None)
+
+        if update_url_manager:
+            model = None
+            if update_url_manager:
+                model = UpdateManagerChecker.get_model_by_name(update_url_manager)
+
+            update_manager = UpdateManagerChecker.check_url(app, model=model)
+            if update_manager:
+                update_manager.migrate_v2()
+
+    Config.write()
+
 def main(version, pkgdatadir):
     """The application's entry point."""
     APP_DATA['PKGDATADIR'] = pkgdatadir
@@ -184,26 +209,14 @@ def main(version, pkgdatadir):
     )
 
     if True:
-        installed_apps = appimage_provider.list_installed()
+        migrate_to_v2_config()
 
-        for app in installed_apps:
-            app_conf = json_config.read_config_for_app(app)
-            Config.set_app_config(app, {
-                'website': app_conf.get('website', '')
-            })
-
-            update_url_manager: str | None = app_conf.get('update_url_manager', None)
-
-            if update_url_manager:
-                model = None
-                if update_url_manager:
-                    model = UpdateManagerChecker.get_model_by_name(update_url_manager)
-
-                update_manager = UpdateManagerChecker.check_url(app, model=model)
-                if update_manager:
-                    update_manager.migrate_v2()
-
-        Config.write()
+    # old_configs_to_delete = ['settings', 'apps']
+    # for name in old_configs_to_delete:
+    #     p = os.path.join(GLib.get_user_config_dir(), f'{name}.json')
+        
+    #     if os.path.exists(p):
+    #         os.remove(p)
 
     Config.refresh()
 

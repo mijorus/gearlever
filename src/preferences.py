@@ -7,10 +7,9 @@ from .lib.constants import FETCH_UPDATES_ARG
 from .models.Models import InternalError
 from .models.Settings import Settings
 from .lib.utils import portal
-from .lib.json_config import read_json_config, set_json_config
+from .lib.ini_config import Config
 from .State import state
 from dbus import Array as DBusArray
-from .lib.terminal import sandbox_sh
 
 gi.require_version('Gtk', '4.0')
 
@@ -173,13 +172,11 @@ class Preferences(Adw.PreferencesWindow):
         key = 'fetch-updates-in-background'
         value: bool = self.settings.get_boolean(key)
 
-        conf = read_json_config('settings')
-        conf[key] = value
-
-        set_json_config('settings', conf)
+        Config.parser[Config.parser.default_section][key] = Config.return_boolean(value)
+        Config.write()
         
         inter = portal("org.freedesktop.portal.Background")
-        res = inter.RequestBackground('', {
+        inter.RequestBackground('', {
             'reason': 'Gear Lever background updates fetch', 
             'autostart': value, 
             'background': True, 

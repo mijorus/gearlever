@@ -15,6 +15,10 @@ class Config():
     parser = configparser.ConfigParser()
 
     @staticmethod
+    def return_boolean(v):
+        return 'yes' if v else 'no'
+
+    @staticmethod
     def exists():
         return os.path.exists(Config.path)
 

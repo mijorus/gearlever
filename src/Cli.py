@@ -8,7 +8,7 @@ from .lib.constants import FETCH_UPDATES_ARG
 from .lib.utils import make_option, check_internet
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageUpdateLogic, AppImageListElement
-from .lib.json_config import read_config_for_app, save_config_for_app, remove_update_config
+from .lib.ini_config import Config
 from .models.UpdateManagerChecker import UpdateManagerChecker
 from .models.UpdateManager import UpdateManager
 
@@ -155,53 +155,6 @@ class Cli():
             print(f'{el.file_path} was removed sucessfully')
 
     @staticmethod
-    def set_update_url(argv):
-        u_managers = ', '.join([n.name for n in UpdateManagerChecker.get_models()])
-
-        Cli._print_help_if_requested(argv, [
-            ['--manager <manager>', f'Optional: specify an update manager between: {u_managers}'],
-            ['--unset', f'Unset a custom config for an app'],
-        ], text='Deprecated (use --set-update-source), usage: --set-update-url <file_path> --url <url>')
-
-        update_url = None
-        update_url = Cli._get_arg_value(argv, '--url')
-        manager_name = Cli._get_arg_value(argv, '--manager')
-
-        if (not update_url):
-            print('Error: "%s" is not a valid URL' % update_url)
-            sys.exit(1)
-
-        g_file = Cli._get_file_from_args(argv)
-        el = appimage_provider.create_list_element_from_file(g_file)
-
-        if '--unset' in argv:
-            remove_update_config(el)
-            sys.exit(0)
-
-        selected_manager = None
-        if manager_name:
-            selected_manager = UpdateManagerChecker.get_model_by_name(manager_name)
-
-        if not selected_manager:
-            print('Error: missing or invalid update manager')
-            sys.exit(1)
-
-        manager = UpdateManagerChecker.check_url(update_url, el, model=selected_manager)
-
-        if manager:
-            app_conf = read_config_for_app(el)
-            app_conf['update_url_manager'] = manager.name
-            save_config_for_app(app_conf)
-
-            print(f'Saved update url for: {manager.name}')
-        else:
-            if selected_manager:
-                print(f'The provided url is not supported by: {manager_name}')
-            else:
-                print(f'The provided url is not supported by any of the following providers: {u_managers}')
-            sys.exit(1)
-
-    @staticmethod
     def set_update_source(argv):
         u_managers = ', '.join([n.name for n in UpdateManagerChecker.get_models()])
 
@@ -234,7 +187,7 @@ class Cli():
         el = appimage_provider.create_list_element_from_file(g_file)
 
         if '--unset' in argv:
-            remove_update_config(el)
+            Config.delete_app_update_config(el)
             sys.exit(0)
 
         selected_model = None
@@ -260,16 +213,9 @@ class Cli():
 
                 update_options[k] = (update_options[k] in ['1', 'true'])
 
-        # manager.config = update_options
-        # manager.set_url(manager_url)
-
         manager_config = {**manager.get_config(), **update_options}
-        remove_update_config(el)
-
-        app_conf = el.get_config()
-        app_conf['update_url_manager'] = manager.name
-        app_conf['update_manager_config'] = manager_config
-        save_config_for_app(app_conf)
+        Config.delete_app_update_config(el)
+        Config.set_app_update_config(el, manager, manager_config)
 
         sys.exit(0)
 

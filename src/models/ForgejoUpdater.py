@@ -56,7 +56,7 @@ class ForgejoUpdater(UpdateManager):
             urldata = urlsplit(app_config['update_url'])
             paths = urldata.path.split('/')
 
-            if url_data and paths >= 7:
+            if url_data and len(paths) >= 7:
                 config = {
                     'allow_prereleases': app_config.get('update_manager_config', {}).get('allow_prereleases', False),
                     'repo_url': '/'.join(['https://', url_data['netloc'], url_data['username'], url_data['repo']]),
