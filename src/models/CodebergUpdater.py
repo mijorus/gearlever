@@ -61,7 +61,7 @@ class CodebergUpdater(UpdateManager):
             if urldata:
                 config = {
                     'allow_prereleases': app_config.get('update_manager_config', {}).get('allow_prereleases', False),
-                    'repo_url': f'https://codeberg.org/{paths[1]}/{paths[2]}',
+                    'repo': f'{paths[1]}/{paths[2]}',
                     'repo_filename': paths[6],
                 }
 
@@ -91,17 +91,17 @@ class CodebergUpdater(UpdateManager):
 
     def fetch_target_asset(self):
         conf = self.get_config()
-        url_data = self.get_url_data(conf.get('repo_url', ''))
+        url_data = conf.get('repo_url', '').split('/')
 
-        if not url_data:
+        if len(url_data) < 2:
             return
 
         allow_prereleases = conf.get('allow_prereleases', False)
 
         rel_url = '/'.join([
             'https://codeberg.org/api/v1/repos',
-            url_data['username'],
-            url_data['repo'],
+            url_data[0],
+            url_data[1],
             'releases'
         ])
 
@@ -165,7 +165,7 @@ class CodebergUpdater(UpdateManager):
 
     def load_form_rows(self, embedded=None):
         config = self.get_config()
-        repo_url = config.get('repo_url')
+        repo_url = config.get('repo')
         filename = config.get('repo_filename')
 
         self.repo_url_row = AdwEntryRowDefault(
@@ -209,12 +209,10 @@ class CodebergUpdater(UpdateManager):
 
         return {
             'allow_prereleases': allow_prereleases,
-            'repo_url': repo_url,
+            'repo': repo_url,
             'repo_filename': repo_filename,
         }
 
     def validate_config(self, config):
-        data = self.get_url_data(config['repo_url'])
-
-        if not data:
-            raise Exception(f'Invalid {self.name} url')
+        if (len(config.get('repo', '').split('/'))) != 2:
+            raise Exception(f'Invalid data, please enter <username>/<repo>')
