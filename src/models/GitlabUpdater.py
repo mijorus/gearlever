@@ -12,6 +12,9 @@ from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
 
+
+# TODO:
+
 # Example:
 # https://gitlab.com/librewolf-community/browser/appimage/-/releases
 

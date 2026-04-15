@@ -25,19 +25,6 @@ class FTPUpdater(UpdateManager):
     label = 'FTP'
     name = 'FTPUpdater'
 
-    def get_url_data(self, url: str):
-        if (not url.startswith('ftp://')):
-            return None
-
-        splitted = urlsplit(url)
-        if len(splitted.path) < 2:
-            return None
-
-        return {
-            'server': 'ftp://' + splitted.netloc,
-            'path': splitted.path,
-        }
-
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self.staticfile_manager = None
@@ -63,14 +50,13 @@ class FTPUpdater(UpdateManager):
 
     def download(self, status_update_cb) -> tuple[str, str]:
         conf = self.get_config()
-        url_data = self.get_url_data(conf.get('url', ''))
+
+        if not conf:
+            raise Exception('Missing url data for FTPUpdater')
 
         target_asset = self.fetch_target_asset()
         if not target_asset:
             raise Exception('Missing target asset for FTPUpdater')
-
-        if not url_data:
-            raise Exception('Missing url data for FTPUpdater')
 
         random_name = get_random_string()
 
@@ -79,7 +65,7 @@ class FTPUpdater(UpdateManager):
 
         fname = f'{self.download_folder}/{random_name}.appimage'
 
-        server = url_data['server'].replace('ftp://', '')
+        server = conf['server'].replace('ftp://', '')
 
         self.current_download = ftputil.FTPHost(server, 'anonymous', '')
         chunk_size = 8192
@@ -130,15 +116,10 @@ class FTPUpdater(UpdateManager):
 
     def fetch_target_asset(self):
         conf = self.get_config()
-        url_data = self.get_url_data(conf.get('url', ''))
-
-        if not url_data:
-            return
-
-        pattern = url_data['path']
+        pattern = conf['path']
         matching_file = None
 
-        server = url_data['server'].replace('ftp://', '')
+        server = conf['server'].replace('ftp://', '')
         with ftputil.FTPHost(server, 'anonymous', '') as ftp_host:
             # Parse the pattern to separate directory path from filename pattern
             parts = pattern.split('/')
