@@ -172,7 +172,8 @@ class TestGearLever(unittest.TestCase):
             os.path.join(self.installPath, appname), 
             '--manager','GithubUpdater',
             'repo=zen-browser/desktop',
-            'repo_filename=zen-x86_64.AppImage'
+            'repo_filename=zen-x86_64.AppImage',
+            'allow_prereleases=false'
         ])
 
         self.assertIn(appname, self.get_installed_files())
@@ -206,7 +207,8 @@ class TestGearLever(unittest.TestCase):
             os.path.join(self.installPath, appname), 
             '--manager','CodebergUpdater',
             'repo=JakobDev/pyproject-appimage',
-            'repo_filename=pyproject-appimage.AppImage'
+            'repo_filename=pyproject-appimage.AppImage',
+            'allow_prereleases=false'
         ])
 
         self.assertIn(appname, self.get_installed_files())
