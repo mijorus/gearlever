@@ -79,7 +79,7 @@ class StaticFileUpdater(UpdateManager):
                     zsyncfile_url.startswith('http://'):
                     dwnl_url = zsyncfile_url
                 else:
-                    urlparsed = urlparse(self.url)
+                    urlparsed = urlparse(edwnl_url)
                     pp = posixpath.join(posixpath.dirname(urlparsed.path), zsyncfile_url)
                     dwnl_url = urlparsed._replace(path=pp,query='',fragment='').geturl()
             else:
