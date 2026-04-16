@@ -1,6 +1,7 @@
 import sys
 import os
-
+import logging
+import traceback
 from .lib.constants import APP_ID
 from gi.repository import Gio # noqa
 from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
@@ -93,7 +94,7 @@ class Cli():
             for el in installed:
                 manager = UpdateManagerChecker.check_url_for_app(el)
 
-                if manager and manager.is_update_available(el):
+                if manager and manager.is_update_available():
                     updates.append(el)
         else:
             g_file = Cli._get_file_from_args(argv)
@@ -272,16 +273,22 @@ class Cli():
 
     @staticmethod
     def list_installed(argv):
-        Cli._print_help_if_requested(argv, [
-            ['-v', ' Show more info']
-        ])
+        Cli._print_help_if_requested(argv, [])
 
         apps = appimage_provider.list_installed()
 
         table = []
         for a in apps:
-            manager = UpdateManagerChecker.check_url_for_app(a)
-            update_mng = f'[{manager.name}]' if manager else '[UpdatesNotAvailable]'
+            manager: UpdateManager | None = UpdateManagerChecker.check_url_for_app(a)
+            update_mng = 'UpdatesNotAvailable'
+            if manager:
+                update_mng = manager.name
+
+                if manager.embedded:
+                    update_mng += '|embedded'
+
+            update_mng = f'[{update_mng}]'
+
             v = a.version or 'Not specified'
             table.append([a.name, f'[{v}]', update_mng, a.file_path])
 
@@ -300,19 +307,21 @@ class Cli():
 
         for el in installed:
             manager = UpdateManagerChecker.check_url_for_app(el)
-
             if not manager:
                 continue
 
             try:
-                if manager.is_update_available(el):
-                    row = [el.name, f'[Update available, {manager.name}]', el.file_path]
+                if manager.is_update_available():
+                    s = f'[Update available, {manager.name}]'
+                    if manager.embedded:
+                        s = f'[Update available, {manager.name}|embedded]'
+                    row = [el.name, s, el.file_path]
                     if '-v' in argv:
                         row.append(manager.url)
                     
                     table.append(row)
             except Exception as e:
-                pass
+                logging.error(traceback.format_exc())
 
         if not table:
             print('No updates available')

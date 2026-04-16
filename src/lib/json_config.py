@@ -8,7 +8,7 @@ import base64
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
-from gi.repository import GLib, GdkPixbuf  # noqa
+from gi.repository import GLib  # noqa
 
 
 def read_json_config(name: str):

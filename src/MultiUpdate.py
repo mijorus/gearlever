@@ -125,7 +125,7 @@ class MultiUpdate(Gtk.ScrolledWindow):
                 continue
 
             try:
-                if manager.is_update_available(el) and \
+                if manager.is_update_available() and \
                     (not appimage_provider.is_app_running(el)):
                     self.app_list.append(el)
                     self.create_app_row(el)

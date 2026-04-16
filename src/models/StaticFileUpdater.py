@@ -53,7 +53,7 @@ class StaticFileUpdater(UpdateManager):
         return headers
 
 
-    def __init__(self, el, embedded) -> None:
+    def __init__(self, el, embedded=False) -> None:
         super().__init__(embedded=embedded, el=el)
         self.form_row = None
 
