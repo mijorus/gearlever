@@ -65,7 +65,7 @@ class FTPUpdater(UpdateManager):
 
         fname = f'{self.download_folder}/{random_name}.appimage'
 
-        server = conf['server'].replace('ftp://', '')
+        server = conf['url'].replace('ftp://', '')
 
         self.current_download = ftputil.FTPHost(server, 'anonymous', '')
         chunk_size = 8192
@@ -116,10 +116,10 @@ class FTPUpdater(UpdateManager):
 
     def fetch_target_asset(self):
         conf = self.get_config()
-        pattern = conf['path']
+        pattern = conf['filename']
         matching_file = None
 
-        server = conf['server'].replace('ftp://', '')
+        server = conf['url'].replace('ftp://', '')
         with ftputil.FTPHost(server, 'anonymous', '') as ftp_host:
             # Parse the pattern to separate directory path from filename pattern
             parts = pattern.split('/')
