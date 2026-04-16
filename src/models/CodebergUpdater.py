@@ -172,7 +172,7 @@ class CodebergUpdater(UpdateManager):
             text=repo_url,
             icon_name='gl-git',
             sensitive=True,
-            title=_('Repo URL')
+            title=('Username/Repo')
         )
 
         self.repo_filename_row = AdwEntryRowDefault(

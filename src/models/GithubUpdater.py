@@ -35,7 +35,18 @@ class GithubUpdater(UpdateManager):
         config = None
 
         if 'update_manager_config' in app_config:
-            config = app_config.get('update_manager_config', {})
+            old_config = app_config.get('update_manager_config', {})
+            url_data = urlsplit(old_config.get('repo_url', '')).path.split('/')
+            repo = ''
+
+            if len(url_data) > 2:
+                repo = '/'.join([url_data[1], url_data[2]])
+
+            config = {
+                'allow_prereleases':  old_config.get('allow_prereleases', False),
+                'repo': repo,
+                'repo_filename': old_config.get('repo_filename', ''),
+            }
         elif 'update_url' in app_config:
             url_data = self.get_url_data(app_config['update_url'])
 
@@ -48,9 +59,6 @@ class GithubUpdater(UpdateManager):
         
         if config:
             Config.set_app_update_config(self.el, self, config)
-    
-    def get_github_repo_url(self, usrn, repo):
-        return '/'.join(['https://github.com', usrn, repo])
 
     def get_embedded_data(self):
         # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
@@ -297,7 +305,7 @@ class GithubUpdater(UpdateManager):
         self.repo_url_row = AdwEntryRowDefault(
             icon_name='gl-git',
             sensitive=(not self.embedded),
-            title=_('Repo URL')
+            title=('Username/Repo')
         )
 
         self.repo_filename_row = AdwEntryRowDefault(
