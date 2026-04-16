@@ -227,11 +227,10 @@ class Cli():
 
                 update_options[k] = (update_options[k] in ['1', 'true'])
 
-        manager_config_template = {**update_options}
         manager.validate_config(manager_config_template)
 
         Config.delete_app_update_config(el)
-        Config.set_app_update_config(el, manager, manager_config_template)
+        Config.set_app_update_config(el, manager, update_options)
 
         sys.exit(0)
 
