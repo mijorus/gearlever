@@ -42,7 +42,7 @@ class GitlabUpdater(UpdateManager):
 
         return {
             'netloc': urldata.netloc,
-            'repo': '/'.join(paths[1:])
+            'repo': '/'.join(paths[1:4])
         }
 
     def migrate_v2(self):
