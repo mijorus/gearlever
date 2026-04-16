@@ -231,6 +231,7 @@ class AppImageProvider():
 
         el.set_installed_status(InstalledStatus.NOT_INSTALLED)
         Config.delete_app_config(el)
+        Config.delete_app_update_config(el)
 
     def search(self, query: str) -> list[AppListElement]:
         return []
