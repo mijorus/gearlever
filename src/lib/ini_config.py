@@ -57,6 +57,8 @@ class Config:
                 logging.info(f'Deleting config section {l}')
                 Config.parser.remove_section(l)
 
+        Config.write()
+
     @staticmethod
     def set_app_config(el, data: dict):
         h = Config.get_app_hash(el)
@@ -91,3 +93,5 @@ class Config:
         if Config.parser.has_section(k):
             logging.info(f'Deleting update config section {k}')
             Config.parser.remove_section(k)
+
+        Config.write()

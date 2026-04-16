@@ -230,6 +230,7 @@ class AppImageProvider():
             Config.delete_app_update_config(el)
 
         el.set_installed_status(InstalledStatus.NOT_INSTALLED)
+        Config.delete_app_config(el)
 
     def search(self, query: str) -> list[AppListElement]:
         return []
@@ -425,6 +426,8 @@ class AppImageProvider():
             if not has_desktop_integration:
                 el.env_variables.append('DESKTOPINTEGRATION=1')
                 self.update_desktop_file(el)
+
+            Config.set_app_config(el, {})
 
         except Exception as e:
             logging.error('Appimage installation error: ' + str(e))

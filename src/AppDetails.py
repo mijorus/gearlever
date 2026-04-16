@@ -425,9 +425,6 @@ class AppDetails(Gtk.ScrolledWindow):
             self.update_installation_status()
 
             self.provider.uninstall(self.app_list_element)
-            
-            Config.delete_app_config(self.app_list_element)
-
             self.emit('uninstalled-app', self)
 
     @_async
