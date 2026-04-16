@@ -17,7 +17,8 @@ class Cli():
     options = [
         make_option('integrate', description='Integrate an AppImage file'),
         make_option('update', description='Update an AppImage file'),
-        make_option('remove', description='Trashes an AppImage, its .desktop file and icons  '),
+        make_option('remove', description='Trashes an AppImage, its .desktop file and icons'),
+        make_option('remove-all', description='Removes all AppImages'),
         make_option('list-installed', description='List integrated apps'),
         make_option('list-updates', description='List available updates'),
         make_option('list-update-managers', description='List available update managers'),
@@ -154,6 +155,28 @@ class Cli():
         if ans.lower() == 'y' or assume_yes:
             appimage_provider.uninstall(el, force_delete=force)
             print(f'{el.file_path} was removed sucessfully')
+
+    @staticmethod
+    def remove_all(argv):
+        Cli._print_help_if_requested(argv, [
+            ['Usage: --remove-all'],
+            ['--yes | -y', 'Skips any interactive question'],
+        ])
+
+        assume_yes = ('-y' in argv) or ('--yes' in argv)
+        apps = appimage_provider.list_installed()
+
+        q = 'Do you really want to delete all AppImages?'
+
+        ans = 'n'
+        if not assume_yes:
+            ans = Cli.ask(f'{q} (y/N)', ['y', 'Y', 'n', 'N'])
+
+        if ans.lower() == 'y' or assume_yes:
+            for el in apps:
+                if appimage_provider.is_installed(el):
+                    print(f'Removing {el.file_path}')
+                    appimage_provider.uninstall(el, force_delete=True)
 
     @staticmethod
     def set_update_source(argv):

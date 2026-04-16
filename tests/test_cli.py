@@ -1,7 +1,6 @@
 import unittest
 import subprocess
 import os
-import shutil
 import requests
 
 class TestGearLever(unittest.TestCase):
@@ -11,6 +10,8 @@ class TestGearLever(unittest.TestCase):
         self.isGh = os.environ.get('GITHUB_WORKSPACE') != None
         self.installPath = os.path.join(os.getenv('HOME'), 'AppImages')
         self.download_dir = os.path.join(self.cwd, 'testfiles')
+        self.runCommand(['--remove-all', '-y'])
+        self.was_cleaned_up = True
 
     def tearDown(self):
         pass
@@ -101,24 +102,24 @@ class TestGearLever(unittest.TestCase):
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         installed = self.runCommand(['--list-installed', '-v'])
         self.assertIn(appname, self.get_installed_files())
-        self.assertIn('mudlet.svg', self.get_icon_files())
+        self.assertIn('mudlet', self.get_icon_files())
         self.assertIn(appname, installed)
 
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
         self.assertNotIn(appname, self.get_installed_files())
-        self.assertNotIn('mudlet.svg', self.get_icon_files())
+        self.assertNotIn('mudlet', self.get_icon_files())
 
     def test_install_shutter_encoder(self):
         appname = 'shutter_encoder.appimage'
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         installed = self.runCommand(['--list-installed', '-v'])
         self.assertIn(appname, self.get_installed_files())
-        self.assertIn('shutter_encoder.png', self.get_icon_files())
+        self.assertIn('shutter_encoder', self.get_icon_files())
         self.assertIn(appname, installed)
 
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
         self.assertNotIn(appname, self.get_installed_files())
-        self.assertNotIn('shutter_encoder.png', self.get_icon_files())
+        self.assertNotIn('shutter_encoder', self.get_icon_files())
 
     def test_integrated_static_update_url(self):
         appname = 'librewolf.appimage'
@@ -156,7 +157,7 @@ class TestGearLever(unittest.TestCase):
         self.runCommand(['--set-update-source', 
             os.path.join(self.installPath, appname), 
             '--manager','StaticFileUpdater',
-            '--url', 'https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop'
+            'url=https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop'
         ])
 
         self.assertIn(appname, self.get_installed_files())
@@ -170,8 +171,8 @@ class TestGearLever(unittest.TestCase):
         self.runCommand(['--set-update-source', 
             os.path.join(self.installPath, appname), 
             '--manager','GithubUpdater',
-            '--repo', 'zen-browser/desktop'
-            '--filename', 'zen-x86_64.AppImage'
+            'repo=zen-browser/desktop',
+            'repo_filename=zen-x86_64.AppImage'
         ])
 
         self.assertIn(appname, self.get_installed_files())
@@ -187,8 +188,8 @@ class TestGearLever(unittest.TestCase):
         self.runCommand(['--set-update-source', 
             os.path.join(self.installPath, appname), 
             '--manager','GitlabUpdater',
-            '--repo_url', 'https://gitlab.com/librewolf-community/browser/appimage'
-            '--filename', 'LibreWolf-*.x86_64.AppImage'
+            'repo_url=https://gitlab.com/librewolf-community/browser/appimage',
+            'repo_filename=LibreWolf-*.x86_64.AppImage'
         ])
 
         self.assertIn(appname, self.get_installed_files())
@@ -198,15 +199,32 @@ class TestGearLever(unittest.TestCase):
 
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
 
-    def test_fetch_updates_explicit_url_ftp(self):
+    def test_fetch_updates_codeberg(self):
+        appname = 'helloworldappimage.appimage'
+        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
+        self.runCommand(['--set-update-source', 
+            os.path.join(self.installPath, appname), 
+            '--manager','CodebergUpdater',
+            'repo=JakobDev/pyproject-appimage',
+            'repo_filename=pyproject-appimage.AppImage'
+        ])
+
+        self.assertIn(appname, self.get_installed_files())
+
+        updates_list = self.runCommand(['--list-updates'])
+        self.assertIn(appname, updates_list)
+
+        self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
+
+    def test_fetch_updates_ftp(self):
         appname = 'showfoto.appimage'
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         self.runCommand([
             '--set-update-source', 
-            '--manager', 'FTPUpdater',
             os.path.join(self.installPath, appname), 
-            '--url', 'ftp://www-ftp.lip6.fr',
-            'filename' , '/pub/X11/kde/stable/digikam/*/digiKam-*-Qt6-x86-64.appimage'
+            '--manager', 'FTPUpdater',
+            'url=ftp://www-ftp.lip6.fr',
+            'filename=/pub/X11/kde/stable/digikam/*/digiKam-*-Qt6-x86-64.appimage'
         ])
 
 

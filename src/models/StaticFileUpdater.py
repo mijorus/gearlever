@@ -204,5 +204,5 @@ class StaticFileUpdater(UpdateManager):
 
     def validate_config(self, config):
         url = config.get('url', '')
-        if (not url.startswith('http://')) or (not url.startswith('https://')):
+        if (not url.startswith('http://')) and (not url.startswith('https://')):
             raise Exception('Enter a valid HTTP url')
