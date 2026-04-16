@@ -8,7 +8,6 @@ from .models.Models import InternalError
 from .models.Settings import Settings
 from .lib.utils import portal
 from .lib.ini_config import Config
-from .State import state
 from dbus import Array as DBusArray
 
 gi.require_version('Gtk', '4.0')
@@ -146,7 +145,6 @@ class Preferences(Adw.PreferencesWindow):
         if selected_file.query_exists() and os.access(file_path, os.W_OK):
             self.settings.set_string('appimages-default-folder', file_path)
             self.default_location_row.set_subtitle(file_path)
-            state.set__('appimages-default-folder', file_path)
         else:
             raise InternalError(_('The folder must writeable'))
 
