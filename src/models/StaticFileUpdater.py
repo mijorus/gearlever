@@ -131,6 +131,9 @@ class StaticFileUpdater(UpdateManager):
         if not self.embedded:
             return None
         
+        if self.embedded.startswith('https://') or self.embedded.startswith('http://'):
+            return self.embedded
+
         l = len(self.handles_embedded)
         return self.embedded[l:]
 
@@ -153,7 +156,7 @@ class StaticFileUpdater(UpdateManager):
                 logging.info('SHA-1 detected, app updatable: ' + str(updatable))
                 return updatable
 
-        headers = StaticFileUpdater.get_url_headers(self.url)
+        headers = StaticFileUpdater.get_url_headers(dwnl_url)
         resp_cl = int(headers.get('content-length', '0'))
         old_size = os.path.getsize(self.el.file_path)
 
