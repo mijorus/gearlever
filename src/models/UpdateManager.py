@@ -1,37 +1,34 @@
 import os
 import platform
 import re
+import logging
 from typing import Optional, Callable, Literal
 from abc import ABC, abstractmethod
 
 from ..lib.constants import TMP_DIR
-from ..lib import terminal
-from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
+from ..lib.ini_config import Config
+from ..providers.AppImageProvider import AppImageListElement
 
 
 class UpdateManager(ABC):
     name = ''
-    url = ''
     label = ''
     handles_embedded: Optional[str] = None
-    config = {}
-    el: Optional[AppImageListElement] = None
+    el: AppImageListElement = None
     system_arch = platform.machine()
     is_x86 = re.compile(r'(\-|\_|\.)x86(\-|\_|\.)')
     is_arm = re.compile(r'(\-|\_|\.)(arm64|aarch64|armv7l)(\-|\_|\.)')
 
-    @abstractmethod
-    def __init__(self, url: str, embedded: str|Literal[False]=False, el=None) -> None:
+    def __init__(self, el, embedded: Optional[str]=None) -> None:
         self.el = el
         self.download_folder = os.path.join(TMP_DIR, 'downloads')
         self.embedded = embedded
-        self.set_url(url)
 
     def cleanup(self):
         pass
 
     @abstractmethod
-    def is_update_available(self, el: AppImageListElement) -> bool:
+    def is_update_available(self) -> bool:
         pass
 
     @abstractmethod
@@ -43,33 +40,19 @@ class UpdateManager(ABC):
         pass
 
     @abstractmethod
-    def load_form_rows(self, embedded: bool) -> list:
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def can_handle_link(url: str) -> bool:
+    def load_form_rows(self) -> list:
         pass
 
     @abstractmethod
-    def get_url_from_form(self) -> str:
+    def get_config_from_form(self) -> dict:
         pass
 
-    @abstractmethod
-    def get_url_from_params(self, **kwargs) -> str:
+    def get_config(self):
+        return Config.get_app_update_config(self.el)
+    
+    def validate_config(self, config: dict):
+        """Validates the configuration or raises an exception"""
         pass
-
-    def update_config_from_form(self):
+    
+    def migrate_v2(self):
         pass
-
-    @abstractmethod
-    def set_url(self, url: str):
-        self.url = url
-
-    def get_saved_config(self):
-        config = {}
-
-        if self.el:
-            config = self.el.get_config().get('update_manager_config', {})
-
-        return config

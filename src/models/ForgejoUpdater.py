@@ -7,10 +7,8 @@ from typing import Optional, Literal
 from gi.repository import Adw, Gio
 from urllib.parse import urlsplit, urljoin
 
-from ..lib.utils import get_file_hash
-from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
-from .Models import DownloadInterruptedException
-
+from ..lib import json_config
+from ..lib.ini_config import Config
 from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
@@ -22,8 +20,15 @@ class ForgejoUpdater(UpdateManager):
     label = 'Forgejo'
     name = 'ForgejoUpdater'
 
-    @staticmethod
-    def get_url_data(url: str):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.staticfile_manager = None
+        self.embedded = False
+        self.repo_url_row = None
+        self.repo_filename_row = None
+        self.allow_prereleases_row = None
+
+    def get_url_data(self, url: str):
         paths = []
         if url.startswith('https://'):
             logging.debug(f'ForgejoUpdater: found http url, trying to detect forgejo data')
@@ -31,57 +36,35 @@ class ForgejoUpdater(UpdateManager):
 
             paths = urldata.path.split('/')
 
-            if len(paths) != 7:
+            if len(paths) < 3:
                 return None
 
             return {
                 'netloc': urldata.netloc,
                 'username': paths[1],
                 'repo': paths[2],
-                'filename': paths[6],
             }
         
         return None
-    
-    @staticmethod
-    def can_handle_link(url: str):
-        return ForgejoUpdater.get_url_data(url) != None
 
+    def migrate_v2(self):
+        app_config = json_config.read_config_for_app(self.el)
+        config = None
 
-    def __init__(self, url, **kwargs) -> None:
-        super().__init__(url, **kwargs)
-        self.staticfile_manager = None
-        self.url_data = ForgejoUpdater.get_url_data(url)
-        self.url = url
-        self.embedded = False
+        if 'update_manager_config' in app_config:
+            url_data = self.get_url_data(app_config['update_url'])
+            urldata = urlsplit(app_config['update_url'])
+            paths = urldata.path.split('/')
 
-        self.repo_url_row = None
-        self.repo_filename_row = None
-        self.allow_prereleases_row = None
+            if url_data and len(paths) >= 7:
+                config = {
+                    'allow_prereleases': app_config.get('update_manager_config', {}).get('allow_prereleases', False),
+                    'repo_url': '/'.join(['https://', url_data['netloc'], url_data['username'], url_data['repo']]),
+                    'repo_filename': paths[6],
+                }
 
-    def set_url(self, url: str):
-        self.url = url
-        self.url_data = self.get_url_data(url)
-
-        self.config = {
-            'repo_url': '',
-            'repo_filename': '',
-            'allow_prereleases': self.get_saved_config().get('allow_prereleases', False)
-        }
-
-        if self.url_data:
-            self.url = self.get_url_string_from_data(self.url_data)
-            self.config['repo_filename'] = self.url_data['filename']
-            self.config['repo_url'] = '/'.join([
-                'https://' + self.url_data['netloc'],
-                self.url_data['username'],
-                self.url_data['repo'],
-            ])
-
-    def get_url_string_from_data(self, url_data):
-        url = f'https://{url_data["netloc"]}/{url_data["username"]}/{url_data["repo"]}'
-        url += f'/releases/download/*/{url_data["filename"]}'
-        return url
+        if config:
+            Config.set_app_update_config(self.el, self, config)
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -89,7 +72,7 @@ class ForgejoUpdater(UpdateManager):
             raise Exception(f'Missing target_asset for {self.name} instance')
 
         dwnl = target_asset['browser_download_url']
-        self.staticfile_manager = StaticFileUpdater(dwnl)
+        self.staticfile_manager = StaticFileUpdater(self.el, dwnl)
         fname, etag = self.staticfile_manager.download(status_update_cb)
 
         self.staticfile_manager = None
@@ -105,24 +88,22 @@ class ForgejoUpdater(UpdateManager):
             self.staticfile_manager.cleanup()
 
     def fetch_target_asset(self):
-        if not self.url_data:
+        conf = self.get_config()
+        url_data = self.get_url_data(conf['repo_url'])
+
+        if not url_data:
             return
 
         api_version = 'v1'
-        allow_prereleases = False
-
-        if self.el:
-            allow_prereleases = self.el.get_config() \
-                .get('update_manager_config', {}) \
-                .get('allow_prereleases', False)
+        allow_prereleases = conf.get('allow_prereleases', False)
 
         rel_url = '/'.join([
-            f'https://{self.url_data["netloc"]}',
+            f'https://{url_data["netloc"]}',
             'api', 
             api_version,
             'repos',
-            self.url_data["username"],
-            self.url_data["repo"],
+            url_data["username"],
+            url_data["repo"],
             'releases'
         ])
 
@@ -153,11 +134,13 @@ class ForgejoUpdater(UpdateManager):
 
         logging.debug(f'Found {len(release["assets"])} assets from {rel_url}')
 
-        download_asset = None
+        if not conf.get('filename'):
+            return
 
+        download_asset = None
         possible_targets = []
         for asset in release['assets']:
-            if fnmatch(asset['name'], self.url_data['filename']):
+            if fnmatch(asset['name'], conf.get('filename', '')):
                 possible_targets.append(asset)
 
         if len(possible_targets) == 1:
@@ -182,19 +165,20 @@ class ForgejoUpdater(UpdateManager):
         logging.debug(f'Found 1 matching asset: {download_asset["browser_download_url"]}')
         return download_asset
 
-    def is_update_available(self, el: AppImageListElement):
+    def is_update_available(self):
         target_asset = self.fetch_target_asset()
 
         if target_asset:
-            old_size = os.path.getsize(el.file_path)
+            old_size = os.path.getsize(self.el.file_path)
             is_size_different = target_asset['size'] != old_size
             return is_size_different
 
         return False
-    
-    def load_form_rows(self, embedded=False): 
-        repo_url = self.config.get('repo_url')
-        filename = self.config.get('repo_filename')
+
+    def load_form_rows(self, embedded=None): 
+        config = self.get_config()
+        repo_url = config.get('repo_url')
+        filename = config.get('repo_filename')
 
         self.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
@@ -212,14 +196,8 @@ class ForgejoUpdater(UpdateManager):
 
         self.allow_prereleases_row = Adw.SwitchRow(
             title=_('Allow pre-releases'),
-            active=self.config.get('allow_prereleases', False)
+            active=config.get('allow_prereleases', False)
         )
-
-        if embedded:
-            return [
-                self.repo_url_row, 
-                self.repo_filename_row,
-            ]
 
         return [
             self.repo_url_row, 
@@ -227,17 +205,7 @@ class ForgejoUpdater(UpdateManager):
             self.allow_prereleases_row
         ]
 
-    def get_url_from_form(self, **kwargs) -> str:
-        if (not self.repo_filename_row) or (not self.repo_url_row):
-            return ''
-
-        return '/'.join([
-            self.repo_url_row.get_text(),
-            'releases/download/*',
-            self.repo_filename_row.get_text()
-        ])
-
-    def update_config_from_form(self):
+    def get_config_from_form(self):
         allow_prereleases = False
         repo_url = None
         repo_filename = None
@@ -251,15 +219,14 @@ class ForgejoUpdater(UpdateManager):
         if self.repo_filename_row:
             repo_filename = self.repo_filename_row.get_text()
 
-        self.config = {
+        return {
             'allow_prereleases': allow_prereleases,
             'repo_url': repo_url,
             'repo_filename': repo_filename,
         }
+    
+    def validate_config(self, config):
+        data = self.get_url_data(config['repo_url'])
 
-    def get_url_from_params(self, **kwargs):
-        return '/'.join([
-            kwargs.get('repo_url', ''),
-            'releases/download/*',
-            kwargs.get('repo_filename', ''),
-        ])
+        if not data:
+            raise Exception(f'Invalid {self.name} url')

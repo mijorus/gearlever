@@ -1,18 +1,18 @@
 import logging
 import requests
 import os
-import re
 from fnmatch import fnmatch
 from typing import Optional
-from urllib.parse import urlsplit, urlencode
+from urllib.parse import urlsplit
+from gi.repository import Adw
 
-from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
-
+from ..lib import json_config
+from ..lib.ini_config import Config
 from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
 
-# Example: 
+# Example:
 # https://codeberg.org/sonusmix/sonusmix/
 
 class CodebergUpdater(UpdateManager):
@@ -20,9 +20,15 @@ class CodebergUpdater(UpdateManager):
     label = 'Codeberg'
     name = 'CodebergUpdater'
 
-    @staticmethod
-    def get_url_data(url: str):
-        paths = []
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.staticfile_manager = None
+        self.embedded = False
+        self.repo_url_row = None
+        self.repo_filename_row = None
+        self.allow_prereleases_row = None
+
+    def get_url_data(self, url: str):
         if url.startswith('https://'):
             logging.debug(f'CodebergUpdater: found http url, trying to detect codeberg data')
             urldata = urlsplit(url)
@@ -32,42 +38,35 @@ class CodebergUpdater(UpdateManager):
 
             paths = urldata.path.split('/')
 
-            if len(paths) != 7:
+            if len(paths) < 3:
                 return None
 
             return {
                 'username': paths[1],
                 'repo': paths[2],
-                'filename': paths[6],
             }
-        
+
         return None
 
-    @staticmethod
-    def can_handle_link(url: str):
-        return CodebergUpdater.get_url_data(url) != None
+    def migrate_v2(self):
+        app_config = json_config.read_config_for_app(self.el)
+        config = None
 
+        if 'update_url' in app_config:
+            urldata = urlsplit(app_config['update_url'])
+            paths = urldata.path.split('/')
 
-    def __init__(self, url, **kwargs) -> None:
-        super().__init__(url, **kwargs)
-        self.staticfile_manager = None
-        self.embedded = False
-        self.repo_url_row = None
-        self.repo_filename_row = None
-        self.set_url(url)
+            # Old download URLs have the form:
+            # https://codeberg.org/username/repo/releases/download/tag/filename
+            if urldata:
+                config = {
+                    'allow_prereleases': app_config.get('update_manager_config', {}).get('allow_prereleases', False),
+                    'repo': f'{paths[1]}/{paths[2]}',
+                    'repo_filename': paths[6],
+                }
 
-    def set_url(self, url: str):
-        self.url = url
-        self.url_data = self.get_url_data(url)
-
-        self.config = {
-            'repo_url': '',
-            'repo_filename': '',
-        }
-
-        if self.url_data:
-            self.config['repo_url'] =  '/'.join(['https://codeberg.org', self.url_data['username'], self.url_data['repo']])
-            self.config['repo_filename'] =  self.url_data['filename']
+        if config:
+            Config.set_app_update_config(self.el, self, config)
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -75,7 +74,7 @@ class CodebergUpdater(UpdateManager):
             raise Exception(f'Missing target_asset for {self.name} instance')
 
         dwnl = target_asset['browser_download_url']
-        self.staticfile_manager = StaticFileUpdater(dwnl)
+        self.staticfile_manager = StaticFileUpdater(self.el, dwnl)
         fname, etag = self.staticfile_manager.download(status_update_cb)
 
         self.staticfile_manager = None
@@ -91,15 +90,25 @@ class CodebergUpdater(UpdateManager):
             self.staticfile_manager.cleanup()
 
     def fetch_target_asset(self):
-        if not self.url_data:
+        conf = self.get_config()
+        url_data = conf.get('repo_url', '').split('/')
+
+        if len(url_data) < 2:
             return
 
+        allow_prereleases = conf.get('allow_prereleases', False)
+
         rel_url = '/'.join([
-            f'https://codeberg.org/api/v1/repos', 
-            self.url_data["username"],
-            self.url_data["repo"],
-            'releases?pre-release=exclude&draft=exclude'
+            'https://codeberg.org/api/v1/repos',
+            url_data[0],
+            url_data[1],
+            'releases'
         ])
+
+        if allow_prereleases:
+            rel_url += '?draft=exclude'
+        else:
+            rel_url += '?pre-release=exclude&draft=exclude'
 
         try:
             rel_data_resp = requests.get(rel_url)
@@ -108,17 +117,18 @@ class CodebergUpdater(UpdateManager):
         except Exception as e:
             logging.error(e)
             return
-        
 
-        logging.debug(f'Found {len(rel_data)} assets from {rel_url}')
+        logging.debug(f'Found {len(rel_data)} releases from {rel_url}')
         if not rel_data:
             return
 
-        download_asset = None
+        if not conf.get('repo_filename'):
+            return
 
+        download_asset = None
         possible_targets = []
         for asset in rel_data[0]['assets']:
-            if fnmatch(asset['name'], self.url_data['filename']):
+            if fnmatch(asset['name'], conf.get('repo_filename', '')):
                 possible_targets.append(asset)
 
         if len(possible_targets) == 1:
@@ -143,56 +153,53 @@ class CodebergUpdater(UpdateManager):
         logging.debug(f'Found 1 matching asset: {download_asset["browser_download_url"]}')
         return download_asset
 
-    def is_update_available(self, el: AppImageListElement):
+    def is_update_available(self):
         target_asset = self.fetch_target_asset()
 
         if target_asset:
-            old_size = os.path.getsize(el.file_path)
+            old_size = os.path.getsize(self.el.file_path)
             is_size_different = target_asset['size'] != old_size
             return is_size_different
 
         return False
-    
-    def load_form_rows(self, embedded=False): 
-        repo_url = self.config.get('repo_url')
-        filename = self.config.get('repo_filename')
+
+    def load_form_rows(self, embedded=None):
+        config = self.get_config()
+        repo_url = config.get('repo')
+        filename = config.get('repo_filename')
 
         self.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
             icon_name='gl-git',
-            sensitive=(not embedded),
-            title=_('Repo URL')
+            sensitive=True,
+            title=('Username/Repo')
         )
 
         self.repo_filename_row = AdwEntryRowDefault(
             text=filename,
             icon_name='gl-paper',
-            sensitive=(not embedded),
+            sensitive=True,
             title=_('Release file name')
         )
 
-        return [self.repo_url_row, self.repo_filename_row]
+        self.allow_prereleases_row = Adw.SwitchRow(
+            title=_('Allow pre-releases'),
+            active=config.get('allow_prereleases', False)
+        )
 
-    def get_url_from_form(self, ) -> str:
-        if (not self.repo_filename_row) or (not self.repo_url_row):
-            return ''
-        
-        return '/'.join([
-            self.repo_url_row.get_text(),
-            'releases/download/*',
-            self.repo_filename_row.get_text()
-        ])
+        return [
+            self.repo_url_row,
+            self.repo_filename_row,
+            self.allow_prereleases_row
+        ]
 
-    def get_url_from_params(self, **kwargs):
-        return '/'.join([
-            kwargs.get('repo_url', ''),
-            'releases/download/*',
-            kwargs.get('repo_filename', ''),
-        ])
-    
-    def update_config_from_form(self):
+    def get_config_from_form(self):
+        allow_prereleases = False
         repo_url = None
         repo_filename = None
+
+        if self.allow_prereleases_row:
+            allow_prereleases = self.allow_prereleases_row.get_active()
 
         if self.repo_url_row:
             repo_url = self.repo_url_row.get_text()
@@ -200,10 +207,12 @@ class CodebergUpdater(UpdateManager):
         if self.repo_filename_row:
             repo_filename = self.repo_filename_row.get_text()
 
-        self.config = {
-            'repo_url': repo_url,
+        return {
+            'allow_prereleases': allow_prereleases,
+            'repo': repo_url,
             'repo_filename': repo_filename,
         }
 
-
-
+    def validate_config(self, config):
+        if (len(config.get('repo', '').split('/'))) != 2:
+            raise Exception(f'Invalid data, please enter <username>/<repo>')

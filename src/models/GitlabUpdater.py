@@ -4,13 +4,14 @@ import os
 import re
 from fnmatch import fnmatch
 from typing import Optional
-from urllib.parse import urlsplit, quote, unquote
+from urllib.parse import urlsplit, quote, urlencode
 
-from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
-
+from ..lib import json_config
+from ..lib.ini_config import Config
 from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
+
 
 # Example:
 # https://gitlab.com/librewolf-community/browser/appimage/-/releases
@@ -22,83 +23,48 @@ class GitlabUpdater(UpdateManager):
     repo_url_row = None
     repo_filename_row = None
 
-    @staticmethod
-    def get_url_data(url: str):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.staticfile_manager = None
+        self.embedded = False
+
+    def get_url_data(self, url):
         if not url.startswith('https://'):
             return None
 
-        paths = []
         logging.debug(f'GitlabUpdater: found http url, trying to detect gitlab data')
         urldata = urlsplit(url)
 
-        if urldata.netloc != 'gitlab.com':
-            return None
-
         paths = urldata.path.split('/')
 
-        if len(paths) not in [4, 10]:
+        if len(paths) < 3:
             return None
-        
-        if paths[1] == 'api':
-            if paths[2] != 'v4' or paths[5] != 'packages':
-                return None
 
-            return {
-                'project_id': paths[4],
-                'filename': paths[9],
-                'username': None,
-                'repo': None
-            }
-        else:
-            if not urldata.fragment:
-                return None
-
-            return {
-                'project_id': None,
-                'filename': urldata.fragment,
-                'username': paths[1],
-                'repo': '/'.join(paths[2:4])
-            }
-
-    @staticmethod
-    def can_handle_link(url: str):
-        return GitlabUpdater.get_url_data(url) != None
-
-
-    def __init__(self, url, **kwargs) -> None:
-        super().__init__(url, **kwargs)
-        self.staticfile_manager = None
-        self.url_data = GitlabUpdater.get_url_data(url)
-        self.url = url
-        self.embedded = False
-
-        config = {}
-        if self.el:
-            config = self.el.get_config().get('update_manager_config', {})
-
-        self.config = {
-            'repo_url': config.get('repo_url', None),
-            'repo_filename': config.get('repo_filename', None),
+        return {
+            'netloc': urldata.netloc,
+            'repo': '/'.join(paths[1:4])
         }
 
-    def set_url(self, url: str):
-        self.url_data = self.get_url_data(url)
-        self.url = url
+    def migrate_v2(self):
+        app_config = json_config.read_config_for_app(self.el)
+        config = None
 
-        self.config = {
-            'repo_url': '',
-            'repo_filename': '',
-        }
+        if 'update_manager_config' in app_config:
+            config = app_config.get('update_manager_config', {})
+        elif 'update_url' in app_config:
+            urldata = urlsplit(app_config['update_url'])
+            paths = urldata.path.split('/')
 
-        if self.url_data:
-            repo_url = ''
-            if self.url_data['project_id']:
-                repo_url = '/'.join(['https://gitlab.com', 'api/v4/projects', self.url_data['project_id']])
-            else:
-                repo_url = '/'.join(['https://gitlab.com', self.url_data['username'], self.url_data['repo']])
+            # Old download URLs have the form:
+            # https://gitlab.com/username/repo/-/releases/download/tag/filename
+            if urldata.netloc == 'gitlab.com' and len(paths) >= 8:
+                config = {
+                    'repo_url': f'https://gitlab.com/{paths[1]}/{paths[2]}',
+                    'repo_filename': paths[7],
+                }
 
-            self.config['repo_url'] = repo_url
-            self.config['repo_filename'] = self.url_data['filename']
+        if config:
+            Config.set_app_update_config(self.el, self, config)
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -106,7 +72,7 @@ class GitlabUpdater(UpdateManager):
             raise Exception(f'Missing target_asset for {self.name} instance')
 
         dwnl = target_asset['direct_asset_url']
-        self.staticfile_manager = StaticFileUpdater(dwnl)
+        self.staticfile_manager = StaticFileUpdater(self.el, dwnl)
         fname, etag = self.staticfile_manager.download(status_update_cb)
 
         self.staticfile_manager = None
@@ -122,20 +88,16 @@ class GitlabUpdater(UpdateManager):
             self.staticfile_manager.cleanup()
 
     def fetch_target_asset(self):
-        if not self.url_data:
+        conf = self.get_config()
+        url_data = self.get_url_data(conf.get('repo_url', ''))
+
+        if not url_data:
             return
 
-        project_id = self.url_data['project_id']
-
-        if not project_id:
-            project_id = quote(
-                self.url_data['username'] + '/' + self.url_data['repo'], 
-                safe=''
-            )
-
         rel_url = '/'.join([
-            'https://gitlab.com/api/v4/projects',
-            project_id,
+            url_data['netloc'],
+            'api/v4/projects',
+            quote(url_data['repo']),
             'releases'
         ])
 
@@ -158,7 +120,7 @@ class GitlabUpdater(UpdateManager):
         assets = rel_data[0]['assets']
         for asset in assets['links']:
             link_res_name = asset['url'].split('/')[-1]
-            if fnmatch(link_res_name, self.url_data['filename']):
+            if fnmatch(link_res_name, url_data['filename']):
                 asset['name'] = link_res_name
                 possible_targets.append(asset)
 
@@ -166,7 +128,7 @@ class GitlabUpdater(UpdateManager):
             download_asset = possible_targets[0]
         else:
             logging.info(f'found {len(possible_targets)} possible file targets')
-            
+
             for t in possible_targets:
                 logging.info(' - ' + t['name'])
 
@@ -185,14 +147,14 @@ class GitlabUpdater(UpdateManager):
         logging.debug(f'Found 1 matching asset: {download_asset["direct_asset_url"]}')
         return download_asset
 
-    def is_update_available(self, el: AppImageListElement):
+    def is_update_available(self):
         target_asset = self.fetch_target_asset()
 
         if target_asset:
             asset_head_req = requests.head(target_asset['direct_asset_url'])
 
             is_size_different = False
-            old_size = os.path.getsize(el.file_path)
+            old_size = os.path.getsize(self.el.file_path)
             asset_size = asset_head_req.headers.get('content-length', None)
 
             if asset_size:
@@ -202,10 +164,11 @@ class GitlabUpdater(UpdateManager):
             return is_size_different
 
         return False
-    
-    def load_form_rows(self, embedded=False): 
-        repo_url = self.config['repo_url']
-        filename = self.config['repo_filename']
+
+    def load_form_rows(self, embedded=None):
+        config = self.get_config()
+        repo_url = config.get('repo_url')
+        filename = config.get('repo_filename')
 
         self.repo_url_row = AdwEntryRowDefault(
             text=repo_url,
@@ -223,32 +186,7 @@ class GitlabUpdater(UpdateManager):
 
         return [self.repo_url_row, self.repo_filename_row]
 
-    def get_url_from_form(self, ) -> str:
-        if (not self.repo_filename_row) or (not self.repo_url_row):
-            return ''
-        
-        repo_url = self.repo_url_row.get_text()
-        filename = self.repo_filename_row.get_text()
-
-        if repo_url.startswith('https://gitlab.com/api'):
-            return '/'.join([
-                repo_url,
-                'packages/generic/<package_name>',
-                filename
-            ]).strip()
-        else:
-            return '#'.join([
-                repo_url,
-                filename
-            ]).strip()
-        
-    def get_url_from_params(self, **kwargs):
-        return '#'.join([
-            kwargs.get('repo_url', ''),
-            kwargs.get('repo_filename', ''),
-        ])
-
-    def update_config_from_form(self):
+    def get_config_from_form(self):
         repo_url = None
         repo_filename = None
 
@@ -258,7 +196,13 @@ class GitlabUpdater(UpdateManager):
         if self.repo_filename_row:
             repo_filename = self.repo_filename_row.get_text()
 
-        self.config = {
+        return {
             'repo_url': repo_url,
             'repo_filename': repo_filename,
         }
+
+    def validate_config(self, config):
+        data = self.get_url_data(config['repo_url'])
+
+        if not data:
+            raise Exception(f'Invalid {self.name} url')

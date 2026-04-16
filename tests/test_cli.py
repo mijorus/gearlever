@@ -134,37 +134,63 @@ class TestGearLever(unittest.TestCase):
         self.assertNotIn(appname, self.get_installed_files())
 
     def test_install_dwarfs(self):
-        appname = 'citron.appimage'
-        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
-        installed = self.runCommand(['--list-installed', '-v'])
-        self.assertIn(appname, self.get_installed_files())
-        self.assertIn('citron.svg', self.get_icon_files())
-        self.assertIn(appname, installed)
-
-        self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
-        self.assertNotIn(appname, self.get_installed_files())
-        self.assertNotIn('citron', self.get_icon_files())
-
         # Test dwarfs with symbolic links
         appname = 'ghostty.appimage'
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         self.assertIn(appname, self.get_installed_files())
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
 
-    def test_fetch_updates(self):
-        appname = 'citron.appimage'
-        self.runCommand(['--integrate', os.path.join(self.download_dir, 'citron-old.appimage'), '-y'])
+    def test_fetch_embedded_updates(self):
+        appname = 'vscodium.appimage'
+        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         self.assertIn(appname, self.get_installed_files())
 
         updates_list = self.runCommand(['--list-updates'])
-        self.assertIn('citron.appimage', updates_list)
+        self.assertIn(appname, updates_list)
 
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
 
     def test_fetch_updates_explicit_url(self):
         appname = 'beeper.appimage'
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
-        self.runCommand(['--set-update-url', os.path.join(self.installPath, appname), '--url', 'https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop'])
+        self.runCommand(['--set-update-source', 
+            os.path.join(self.installPath, appname), 
+            '--manager','StaticFileUpdater',
+            '--url', 'https://api.beeper.com/desktop/download/linux/x64/stable/com.automattic.beeper.desktop'
+        ])
+
+        self.assertIn(appname, self.get_installed_files())
+
+        updates_list = self.runCommand(['--list-updates'])
+        self.assertIn(appname, updates_list)
+
+    def test_fetch_updates_github(self):
+        appname = 'zen_browser.appimage'
+        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
+        self.runCommand(['--set-update-source', 
+            os.path.join(self.installPath, appname), 
+            '--manager','GithubUpdater',
+            '--repo', 'zen-browser/desktop'
+            '--filename', 'zen-x86_64.AppImage'
+        ])
+
+        self.assertIn(appname, self.get_installed_files())
+
+        updates_list = self.runCommand(['--list-updates'])
+        self.assertIn(appname, updates_list)
+
+        self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
+
+    def test_fetch_updates_gitlab(self):
+        appname = 'librewolf.appimage'
+        self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
+        self.runCommand(['--set-update-source', 
+            os.path.join(self.installPath, appname), 
+            '--manager','GitlabUpdater',
+            '--repo_url', 'https://gitlab.com/librewolf-community/browser/appimage'
+            '--filename', 'LibreWolf-*.x86_64.AppImage'
+        ])
+
         self.assertIn(appname, self.get_installed_files())
 
         updates_list = self.runCommand(['--list-updates'])
@@ -175,7 +201,13 @@ class TestGearLever(unittest.TestCase):
     def test_fetch_updates_explicit_url_ftp(self):
         appname = 'showfoto.appimage'
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
-        self.runCommand(['--set-update-url', os.path.join(self.installPath, appname), '--url', 'ftp://www-ftp.lip6.fr/pub/X11/kde/stable/digikam/*/digiKam-*-Qt6-x86-64.appimage'])
+        self.runCommand([
+            '--set-update-source', 
+            '--manager', 'FTPUpdater',
+            os.path.join(self.installPath, appname), 
+            '--url', 'ftp://www-ftp.lip6.fr',
+            'filename' , '/pub/X11/kde/stable/digikam/*/digiKam-*-Qt6-x86-64.appimage'
+        ])
 
 
         self.assertIn(appname, self.get_installed_files())

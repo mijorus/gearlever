@@ -1,14 +1,15 @@
 import sys
 import os
-
+import logging
+import traceback
 from .lib.constants import APP_ID
-from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GObject # noqa
+from gi.repository import Gio # noqa
 from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
 from .lib.constants import FETCH_UPDATES_ARG
 from .lib.utils import make_option, check_internet
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageUpdateLogic, AppImageListElement
-from .lib.json_config import read_config_for_app, save_config_for_app, remove_update_config
+from .lib.ini_config import Config
 from .models.UpdateManagerChecker import UpdateManagerChecker
 from .models.UpdateManager import UpdateManager
 
@@ -93,7 +94,7 @@ class Cli():
             for el in installed:
                 manager = UpdateManagerChecker.check_url_for_app(el)
 
-                if manager and manager.is_update_available(el):
+                if manager and manager.is_update_available():
                     updates.append(el)
         else:
             g_file = Cli._get_file_from_args(argv)
@@ -155,103 +156,47 @@ class Cli():
             print(f'{el.file_path} was removed sucessfully')
 
     @staticmethod
-    def set_update_url(argv):
+    def set_update_source(argv):
         u_managers = ', '.join([n.name for n in UpdateManagerChecker.get_models()])
+        el = None
+
+        manager_name = Cli._get_arg_value(argv, '--manager')
+        selected_model: UpdateManager = UpdateManagerChecker.get_model_by_name(manager_name or '')
+        manager_config_template = []
+
+        if (not manager_name) or (not selected_model):
+            Cli._print_help_if_requested(argv, [
+                ['--manager <manager>', f'Specify an update manager between: {u_managers}'],
+                ['--unset', f'Unset a custom config for an app'],
+            ], text='Usage: --set-update-source <file_path> --manager <manager> [...OPTIONS]')
+
+            print('Error: "%s" is not a valid update manager' % manager_name)
+            sys.exit(1)
+
+        manager: UpdateManager = selected_model(el=None)
+        manager_config_template = manager.get_config_from_form()
 
         Cli._print_help_if_requested(argv, [
-            ['--manager <manager>', f'Optional: specify an update manager between: {u_managers}'],
-            ['--unset', f'Unset a custom config for an app'],
-        ], text='Deprecated (use --set-update-source), usage: --set-update-url <file_path> --url <url>')
-
-        update_url = None
-        update_url = Cli._get_arg_value(argv, '--url')
-        manager_name = Cli._get_arg_value(argv, '--manager')
-
-        if (not update_url):
-            print('Error: "%s" is not a valid URL' % update_url)
-            sys.exit(1)
+            [f'--manager {manager_name}'],
+            *[[f'OPTION {k}=<value>'] for k in manager_config_template.keys()]
+        ], text='Usage: --set-update-source <file_path> --manager <manager> [...OPTIONS]')
 
         g_file = Cli._get_file_from_args(argv)
         el = appimage_provider.create_list_element_from_file(g_file)
-
-        if '--unset' in argv:
-            remove_update_config(el)
-            sys.exit(0)
-
-        selected_manager = None
-        if manager_name:
-            selected_manager = UpdateManagerChecker.get_model_by_name(manager_name)
-
-        manager = UpdateManagerChecker.check_url(update_url, el, model=selected_manager)
-
-        if manager:
-            app_conf = read_config_for_app(el)
-            app_conf['update_url'] = update_url
-            app_conf['update_url_manager'] = manager.name
-            save_config_for_app(app_conf)
-
-            print(f'Saved update url for: {manager.name}')
-        else:
-            if selected_manager:
-                print(f'The provided url is not supported by: {manager_name}')
-            else:
-                print(f'The provided url is not supported by any of the following providers: {u_managers}')
-            sys.exit(1)
-
-    @staticmethod
-    def set_update_source(argv):
-        u_managers = ', '.join([n.name for n in UpdateManagerChecker.get_models()])
-
-        manager_name = Cli._get_arg_value(argv, '--manager')
-        selected_model = None
-
-        if manager_name:
-            selected_model = UpdateManagerChecker.get_model_by_name(manager_name)
-            manager: UpdateManager = selected_model(url='', embedded=False)
-            Cli._print_help_if_requested(argv, [
-                [f'--manager {manager_name}'],
-                *[[f'OPTION {k}=<value>'] for k in manager.config.keys()]
-            ], text='Usage: --set-update-source <file_path> --manager <manager> [...OPTIONS]')
-
-        Cli._print_help_if_requested(argv, [
-            ['--manager <manager>', f'Specify an update manager between: {u_managers}'],
-            ['--unset', f'Unset a custom config for an app'],
-        ], text='Usage: --set-update-source <file_path> --manager <manager> [...OPTIONS]')
+        manager: UpdateManager = selected_model(el=el, embedded=None) # type: ignore
 
         update_options = Cli._get_key_pairs(argv)
 
-        if (not manager_name):
-            print('Error: "%s" is not a valid update manager' % manager_name)
-            sys.exit(1)
-
-        g_file = Cli._get_file_from_args(argv)
-        el = appimage_provider.create_list_element_from_file(g_file)
-
         if '--unset' in argv:
-            remove_update_config(el)
+            Config.delete_app_update_config(el)
             sys.exit(0)
 
-        selected_model = None
-        if manager_name:
-            selected_model = UpdateManagerChecker.get_model_by_name(manager_name)
-
-        if not selected_model:
-            print('Error: "%s" is not a valid update manager' % manager_name)
-            sys.exit(1)
-
-        manager: UpdateManager = selected_model(url='', embedded=False, el=el)
-        if set(manager.config.keys()) != set(update_options.keys()):
-            print('Missing or invalid update configuration, required keys: ' + ', '.join(manager.config.keys()))
-            sys.exit(1)
-
-        manager_url = manager.get_url_from_params(**update_options)
-        
-        if not manager.can_handle_link(manager_url):
-            print('Invalid configuration for ' + manager_name)
+        if set(manager_config_template.keys()) != set(update_options.keys()):
+            print('Missing or invalid update configuration, required keys: ' + ', '.join(manager_config_template.keys()))
             sys.exit(1)
 
         boolean_vals = ['0', '1', 'false', 'true']
-        for k, v in manager.config.items():
+        for k, v in manager_config_template.items():
             if type(v) == bool:
                 if update_options[k] not in boolean_vals:
                     print(f'{k} is not a boolean value, allowed values: ' + '/'.join(boolean_vals))
@@ -259,16 +204,11 @@ class Cli():
 
                 update_options[k] = (update_options[k] in ['1', 'true'])
 
-        manager.config = update_options
-        manager.set_url(manager_url)
+        manager_config_template = {**update_options}
+        manager.validate_config(manager_config_template)
 
-        remove_update_config(el)
-
-        app_conf = el.get_config()
-        app_conf['update_url'] = manager.url
-        app_conf['update_url_manager'] = manager.name
-        app_conf['update_manager_config'] = manager.config
-        save_config_for_app(app_conf)
+        Config.delete_app_update_config(el)
+        Config.set_app_update_config(el, manager, manager_config_template)
 
         sys.exit(0)
 
@@ -283,24 +223,24 @@ class Cli():
 
         g_file = Cli._get_file_from_args(argv)
 
-        el = appimage_provider.create_list_element_from_file(g_file)
-        if appimage_provider.is_installed(el):
+        list_element = appimage_provider.create_list_element_from_file(g_file)
+        if appimage_provider.is_installed(list_element):
             print('This AppImage is already integrated')
             sys.exit(0)
 
-        el.update_logic = AppImageUpdateLogic.KEEP
-        appimage_provider.refresh_data(el)
+        list_element.update_logic = AppImageUpdateLogic.KEEP
+        appimage_provider.refresh_data(list_element)
 
         if '--replace' in argv:
-            el.update_logic = AppImageUpdateLogic.REPLACE
+            list_element.update_logic = AppImageUpdateLogic.REPLACE
 
-        manager = UpdateManagerChecker.check_url(None, el)
+        manager = UpdateManagerChecker.check_url_for_app(el=list_element)
 
         apps = appimage_provider.list_installed()
 
         already_installed = None
         for a in apps:
-            if a.name == el.name:
+            if a.name == list_element.name:
                 already_installed = a
                 break
 
@@ -308,9 +248,9 @@ class Cli():
             and '-y' not in argv:
 
             info_table = [
-                ['Name', el.name,],
-                ['Version', el.version or 'Not specified',],
-                ['Description', el.description or 'None',],
+                ['Name', list_element.name,],
+                ['Version', list_element.version or 'Not specified',],
+                ['Description', list_element.description or 'None',],
                 ['Update Source', 'None' if not manager else manager.name],
             ]
 
@@ -325,26 +265,30 @@ class Cli():
                     ['k', 'r', 'K', 'R'])
 
             if ans.lower() == 'r':
-                el.update_logic = AppImageUpdateLogic.REPLACE
-                el.updating_from = already_installed
+                list_element.update_logic = AppImageUpdateLogic.REPLACE
+                list_element.updating_from = already_installed
 
-        appimage_provider.install_file(el)
-        print(f'{el.file_path} was integrated successfully')
+        appimage_provider.install_file(list_element)
+        print(f'{list_element.file_path} was integrated successfully')
 
     @staticmethod
     def list_installed(argv):
-        Cli._print_help_if_requested(argv, [
-            ['-v', ' Show more info']
-        ])
+        Cli._print_help_if_requested(argv, [])
 
         apps = appimage_provider.list_installed()
 
         table = []
         for a in apps:
-            app_conf = read_config_for_app(a)
-            update_url = app_conf.get('update_url', None)
-            manager = UpdateManagerChecker.check_url_for_app(a)
-            update_mng = f'[{manager.name}]' if manager else '[UpdatesNotAvailable]'
+            manager: UpdateManager | None = UpdateManagerChecker.check_url_for_app(a)
+            update_mng = 'UpdatesNotAvailable'
+            if manager:
+                update_mng = manager.name
+
+                if manager.embedded:
+                    update_mng += '|embedded'
+
+            update_mng = f'[{update_mng}]'
+
             v = a.version or 'Not specified'
             table.append([a.name, f'[{v}]', update_mng, a.file_path])
 
@@ -363,19 +307,21 @@ class Cli():
 
         for el in installed:
             manager = UpdateManagerChecker.check_url_for_app(el)
-
             if not manager:
                 continue
 
             try:
-                if manager.is_update_available(el):
-                    row = [el.name, f'[Update available, {manager.name}]', el.file_path]
+                if manager.is_update_available():
+                    s = f'[Update available, {manager.name}]'
+                    if manager.embedded:
+                        s = f'[Update available, {manager.name}|embedded]'
+                    row = [el.name, s, el.file_path]
                     if '-v' in argv:
                         row.append(manager.url)
                     
                     table.append(row)
             except Exception as e:
-                pass
+                logging.error(traceback.format_exc())
 
         if not table:
             print('No updates available')

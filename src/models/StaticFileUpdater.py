@@ -9,6 +9,8 @@ from gi.repository import Adw, Gio
 from typing import Optional, Literal
 
 from ..lib.utils import get_random_string, url_is_valid, get_file_hash
+from ..lib import json_config
+from ..lib.ini_config import Config
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 from .Models import DownloadInterruptedException
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
@@ -20,35 +22,6 @@ class StaticFileUpdater(UpdateManager):
     handles_embedded = 'zsync|'
     name = 'StaticFileUpdater'
     currend_download: Optional[requests.Response]
-
-    @staticmethod
-    def can_handle_link(url: str):
-        is_embedded = True
-        if StaticFileUpdater.handles_embedded and \
-            url.startswith(StaticFileUpdater.handles_embedded):
-            l = len(StaticFileUpdater.handles_embedded)
-            url = url[l:]
-            is_embedded = True
-
-        if not url_is_valid(url):
-            return False
-
-        ct = ''
-
-        if is_embedded:
-            # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#zsync-1
-            return True
-
-        headers = StaticFileUpdater.get_url_headers(url)
-        ct = headers.get('content-type', '')
-
-        logging.debug(f'{url} responded with content-type: {ct}')
-        ct_supported = ct in [*AppImageProvider.supported_mimes, 'binary/octet-stream', 'application/octet-stream']
-
-        if not ct_supported:
-            logging.warn(f'Provided url "{url}" does not return a valid content-type header')
-
-        return ct_supported
 
     @staticmethod
     def get_url_headers(url):
@@ -79,13 +52,9 @@ class StaticFileUpdater(UpdateManager):
         return headers
 
 
-    def __init__(self, url, embedded: str|Literal[False]=False, **kwargs) -> None:
-        super().__init__(url, **kwargs)
+    def __init__(self, el, embedded=False) -> None:
+        super().__init__(embedded=embedded, el=el)
         self.form_row = None
-        self.embedded = embedded
-        self.set_url(url)
-
-        logging.info(f'Downloading file from {self.url}')
 
     def download(self, status_update_cb) -> tuple[str, str]:
         random_name = get_random_string()
@@ -94,9 +63,11 @@ class StaticFileUpdater(UpdateManager):
         if not os.path.exists(self.download_folder):
             os.makedirs(self.download_folder)
 
-        dwnl_url = self.url
-        if self.embedded and self.url.endswith('.zsync'):
-            zsync_file = requests.get(self.url).text
+        dwnl_url = self.get_config().get('url')
+        edwnl_url = self.get_embedded_url()
+
+        if edwnl_url:
+            zsync_file = requests.get(edwnl_url).text
             zsync_file_header = zsync_file.split('\n\n', 1)[0]
             url_pattern = r"URL:\s(.*)"
             match = re.search(url_pattern, zsync_file_header)
@@ -112,9 +83,11 @@ class StaticFileUpdater(UpdateManager):
                     pp = posixpath.join(posixpath.dirname(urlparsed.path), zsyncfile_url)
                     dwnl_url = urlparsed._replace(path=pp,query='',fragment='').geturl()
             else:
-                dwnl_url = re.sub(r"\.zsync$", "", dwnl_url)
+                dwnl_url = re.sub(r"\.zsync$", "", edwnl_url)
 
-        
+        if not dwnl_url:
+            raise Exception('Missing download URL')
+
         self.currend_download = requests.get(dwnl_url, stream=True)
         etag = self.currend_download.headers.get("etag", '')
         total_size = int(self.currend_download.headers.get("content-length", 0))
@@ -154,12 +127,25 @@ class StaticFileUpdater(UpdateManager):
         if os.path.exists(self.download_folder):
             shutil.rmtree(self.download_folder)
 
-    def is_update_available(self, el: AppImageListElement):
-        if self.embedded:
-            zsync_file = requests.get(self.url).text
+    def get_embedded_url(self):
+        if not self.embedded:
+            return None
+        
+        l = len(self.handles_embedded)
+        return self.embedded[l:]
+
+    def is_update_available(self):
+        e_url = self.get_embedded_url()
+        dwnl_url = self.get_config().get('url')
+
+        if not self.el.file_path:
+            return False
+
+        if e_url:
+            zsync_file = requests.get(e_url).text
             zsync_file_header = zsync_file.split('\n\n', 1)[0]
             sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
-            curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha1')
+            curr_version_hash = get_file_hash(Gio.File.new_for_path(self.el.file_path), alg='sha1')
 
             match = re.search(sha_pattern, zsync_file_header)
             if match:
@@ -169,7 +155,7 @@ class StaticFileUpdater(UpdateManager):
 
         headers = StaticFileUpdater.get_url_headers(self.url)
         resp_cl = int(headers.get('content-length', '0'))
-        old_size = os.path.getsize(el.file_path)
+        old_size = os.path.getsize(self.el.file_path)
 
         logging.debug(f'StaticFileUpdater: new url has length {resp_cl}, old was {old_size}')
 
@@ -179,39 +165,41 @@ class StaticFileUpdater(UpdateManager):
         is_size_different = resp_cl != old_size
         return is_size_different
 
-    def set_url(self, url: str):
-        if self.embedded:
-            if StaticFileUpdater.handles_embedded and \
-            url.startswith(StaticFileUpdater.handles_embedded):
-                l = len(StaticFileUpdater.handles_embedded)
-                url = url[l:]
+    def load_form_rows(self):
+        url = self.get_config().get('url', '')
 
-        self.url = url
-        self.config = {'url': url}
+        if self.get_embedded_url():
+            url = self.get_embedded_url()
 
-    def load_form_rows(self, embedded=False):
         self.form_row = AdwEntryRowDefault(
-            text=self.config['url'],
+            text=url,
             icon_name='gl-earth',
             title=_('Update URL'),
-            sensitive=(not embedded)
+            sensitive=(not self.embedded)
         )
 
         return [self.form_row]
-    
-    def get_url_from_form(self) -> str:
-        if (not self.form_row):
-            return ''
-        
-        return self.form_row.get_text().strip()
-    
-    def get_url_from_params(self, **kwargs):
-        return kwargs.get('url', '')
-    
-    def update_config_from_form(self):
+
+    def get_config_from_form(self):
         url = ''
 
         if self.form_row:
             url = self.form_row.get_text()
 
-        self.config['url'] = url
+        return {
+            'url': url.strip()
+        }
+
+    def migrate_v2(self):
+        app_config = json_config.read_config_for_app(self.el)
+
+        if app_config.get('update_url'):
+            logging.info('Performing config migration from v1 to v2 for ' + self.el.file_path)
+            Config.set_app_update_config(self.el, self, {
+                'url':  app_config.get('update_url')
+            })
+
+    def validate_config(self, config):
+        url = config.get('url', '')
+        if (not url.startswith('http://')) or (not url.startswith('https://')):
+            raise Exception('Enter a valid HTTP url')

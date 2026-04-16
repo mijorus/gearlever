@@ -14,7 +14,7 @@ from ..models.AppListElement import AppListElement, InstalledStatus
 from ..lib.constants import TMP_DIR
 from ..lib import terminal
 from ..lib.async_utils import idle
-from ..lib.json_config import read_config_for_app, remove_update_config
+from ..lib.ini_config import Config
 from ..lib.utils import get_giofile_content_type, gio_copy, get_file_hash, \
     remove_special_chars, get_random_string, get_osinfo, extract_terminal_arguments, show_message_dialog, gnu_naturalsize
 from ..models.Models import AppUpdateElement, InternalError, DownloadInterruptedException
@@ -71,7 +71,7 @@ class AppImageListElement():
         self.trusted = True
 
     def get_config(self):
-        return read_config_for_app(self)
+        return Config.get_app_config(self)
 
 class AppImageProvider():
     # https://cgit.freedesktop.org/xdg/shared-mime-info/tree/data/freedesktop.org.xml.in#n2114
@@ -227,15 +227,11 @@ class AppImageProvider():
             os.remove(icon)
 
         if remove_configuration:
-            remove_update_config(el)
+            Config.delete_app_update_config(el)
 
         el.set_installed_status(InstalledStatus.NOT_INSTALLED)
-
-    def search(self, query: str) -> list[AppListElement]:
-        return []
-
-    def get_long_description(self, el: AppListElement) -> str:
-        return ''
+        Config.delete_app_config(el)
+        Config.delete_app_update_config(el)
 
     def run(self, el: AppImageListElement):
         if el.trusted:
@@ -425,6 +421,8 @@ class AppImageProvider():
             if not has_desktop_integration:
                 el.env_variables.append('DESKTOPINTEGRATION=1')
                 self.update_desktop_file(el)
+
+            Config.set_app_config(el, {})
 
         except Exception as e:
             logging.error('Appimage installation error: ' + str(e))

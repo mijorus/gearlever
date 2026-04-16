@@ -22,14 +22,14 @@ import shutil
 import os
 
 from .models.Settings import Settings
-from .lib.terminal import sandbox_sh
-from .lib.utils import make_option
+from .lib.ini_config import Config
+from .lib import json_config
+from .models.UpdateManagerChecker import UpdateManagerChecker
 from .lib.constants import APP_ID, APP_NAME, APP_DATA, TMP_DIR
 from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
 from  .WelcomeScreen import WelcomeScreen
 from .preferences import Preferences
-from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
 from  .Cli import Cli
 
 gi.require_version('Gtk', '4.0')
@@ -152,6 +152,32 @@ class GearleverApplication(Adw.Application):
         if self.win:
             tutorial.present(self.win)
 
+def migrate_to_v2_config():
+    bg_update_k = 'fetch-updates-in-background'
+    settings_conf = json_config.read_json_config('settings')
+    Config.parser[Config.parser.default_section][bg_update_k] = Config.return_boolean(settings_conf.get(bg_update_k, False))
+    installed_apps = appimage_provider.list_installed()
+
+    for app in installed_apps:
+        app_conf = json_config.read_config_for_app(app)
+        Config.set_app_config(app, {
+            'website': app_conf.get('website', '')
+        })
+
+        update_url_manager: str | None = app_conf.get('update_url_manager', None)
+
+        if update_url_manager:
+            model = None
+            if update_url_manager:
+                model = UpdateManagerChecker.get_model_by_name(update_url_manager)
+
+            if model:
+                update_manager = model(el=app)
+                if update_manager:
+                    update_manager.migrate_v2()
+
+    Config.write()
+
 def main(version, pkgdatadir):
     """The application's entry point."""
     APP_DATA['PKGDATADIR'] = pkgdatadir
@@ -182,6 +208,18 @@ def main(version, pkgdatadir):
         level= logging.DEBUG if Settings.settings.get_boolean('debug-logs') else logging.INFO,
         force=True
     )
+
+    if not Config.exists():
+        migrate_to_v2_config()
+
+    # old_configs_to_delete = ['settings', 'apps']
+    # for name in old_configs_to_delete:
+    #     p = os.path.join(GLib.get_user_config_dir(), f'{name}.json')
+        
+    #     if os.path.exists(p):
+    #         os.remove(p)
+
+    Config.refresh()
 
     if len(sys.argv) > 1:
         Cli.from_options(sys.argv)

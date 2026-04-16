@@ -6,13 +6,12 @@ from ftputil import FTPHost
 import fnmatch
 import shutil
 from typing import Optional
-from urllib.parse import urlsplit, urlencode
+from urllib.parse import urlsplit
 from ..lib.utils import get_random_string, get_file_hash
+from ..lib import json_config
+from ..lib.ini_config import Config
 
-
-from ..providers.AppImageProvider import  AppImageListElement
-
-from ..models.Models import DownloadInterruptedException
+from .Models import DownloadInterruptedException
 from .UpdateManager import UpdateManager
 from .StaticFileUpdater import StaticFileUpdater
 from ..components.AdwEntryRowDefault import AdwEntryRowDefault
@@ -26,64 +25,38 @@ class FTPUpdater(UpdateManager):
     label = 'FTP'
     name = 'FTPUpdater'
 
-    @staticmethod
-    def get_url_data(url: str):
-        if (not url.startswith('ftp://')):
-            return None
-
-        splitted = urlsplit(url)
-        if len(splitted.path) < 2:
-            return None
-
-        return {
-            'server': 'ftp://' + splitted.netloc,
-            'path': splitted.path,
-        }
-
-    @staticmethod
-    def can_handle_link(url: str):
-        return FTPUpdater.get_url_data(url) != None
-
-
-    def __init__(self, url, **kwargs) -> None:
-        super().__init__(url, **kwargs)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.staticfile_manager = None
-        self.set_url(url)
         self.embedded = False
 
         self.url_row = None
         self.filename_row = None
         self.current_download: FTPHost | None = None
 
-        config = {}
-        if self.el:
-            config = self.el.get_config().get('update_manager_config', {})
+    def migrate_v2(self):
+        app_config = json_config.read_config_for_app(self.el)
+        config = None
 
-        self.config = {
-            'url': config.get('url', None),
-            'filename': config.get('filename', None),
-        }
+        if 'update_manager_config' in app_config:
+            old_config = app_config.get('update_manager_config', {})
+            config = {
+                'url': old_config.get('url', None),
+                'filename': old_config.get('filename', None),
+            }
 
-    def set_url(self, url: str):
-        self.url_data = self.get_url_data(url)
-        self.url = url
-
-        self.config = {
-            'url': '',
-            'filename': '',
-        }
-
-        if self.url_data:
-            self.config['url'] = self.url_data['server']
-            self.config['filename'] = self.url_data['path']
+        if config:
+            Config.set_app_update_config(self.el, self, config)
 
     def download(self, status_update_cb) -> tuple[str, str]:
+        conf = self.get_config()
+
+        if not conf:
+            raise Exception('Missing url data for FTPUpdater')
+
         target_asset = self.fetch_target_asset()
         if not target_asset:
             raise Exception('Missing target asset for FTPUpdater')
-        
-        if not self.url_data:
-            raise Exception('Missing url data for FTPUpdater')
 
         random_name = get_random_string()
 
@@ -92,7 +65,7 @@ class FTPUpdater(UpdateManager):
 
         fname = f'{self.download_folder}/{random_name}.appimage'
 
-        server = self.url_data['server'].replace('ftp://', '')
+        server = conf['url'].replace('ftp://', '')
 
         self.current_download = ftputil.FTPHost(server, 'anonymous', '')
         chunk_size = 8192
@@ -142,13 +115,11 @@ class FTPUpdater(UpdateManager):
             shutil.rmtree(self.download_folder)
 
     def fetch_target_asset(self):
-        if not self.url_data:
-            return
-
-        pattern = self.url_data['path']
+        conf = self.get_config()
+        pattern = conf['filename']
         matching_file = None
 
-        server = self.url_data['server'].replace('ftp://', '')
+        server = conf['url'].replace('ftp://', '')
         with ftputil.FTPHost(server, 'anonymous', '') as ftp_host:
             # Parse the pattern to separate directory path from filename pattern
             parts = pattern.split('/')
@@ -220,19 +191,20 @@ class FTPUpdater(UpdateManager):
         logging.debug(f'Found 1 matching asset: {matching_file["item_path"]}')
         return matching_file
 
-    def is_update_available(self, el: AppImageListElement):
+    def is_update_available(self):
         target_asset = self.fetch_target_asset()
 
         if not target_asset:
             return False
 
-        old_size = os.path.getsize(el.file_path)
+        old_size = os.path.getsize(self.el.file_path)
         is_size_different = target_asset['size'] != old_size
         return is_size_different
 
-    def load_form_rows(self, embedded=False): 
-        ftp_url = self.config['url']
-        filename = self.config['filename']
+    def load_form_rows(self, embedded=None):
+        config = self.get_config()
+        ftp_url = config.get('url')
+        filename = config.get('filename')
         
         self.url_row = AdwEntryRowDefault(
             text=(ftp_url),
@@ -250,26 +222,7 @@ class FTPUpdater(UpdateManager):
 
         return [self.url_row, self.filename_row]
 
-    def get_url_from_form(self, ) -> str:
-        if (not self.filename_row) or (not self.url_row):
-            return ''
-        
-        filename = self.filename_row.get_text()
-        if filename.startswith('/'):
-            filename = filename[1:]
-        
-        return '/'.join([
-            self.url_row.get_text(),
-            filename
-        ])
-
-    def get_url_from_params(self, **kwargs):
-        return '/'.join([
-            kwargs.get('url', ''),
-            kwargs.get('filename', ''),
-        ])
-    
-    def update_config_from_form(self):
+    def get_config_from_form(self):
         url = None
         filename = None
 
@@ -279,9 +232,13 @@ class FTPUpdater(UpdateManager):
         if self.filename_row:
             filename = self.filename_row.get_text()
 
-        self.config = {
+        return {
             'url': url,
             'filename': filename,
         }
+    
+    def validate_config(self, config):
+        if not config.get('url', '').startswith('ftp://'):
+            raise Exception(f'Invalid {self.name} url')
 
 
