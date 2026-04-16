@@ -4,7 +4,7 @@ import os
 import re
 from fnmatch import fnmatch
 from typing import Optional
-from urllib.parse import urlsplit, quote, unquote
+from urllib.parse import urlsplit, quote, urlencode
 
 from ..lib import json_config
 from ..lib.ini_config import Config
@@ -35,35 +35,15 @@ class GitlabUpdater(UpdateManager):
         logging.debug(f'GitlabUpdater: found http url, trying to detect gitlab data')
         urldata = urlsplit(url)
 
-        if urldata.netloc != 'gitlab.com':
-            return None
-
         paths = urldata.path.split('/')
 
-        if len(paths) not in [4, 10]:
+        if len(paths) < 3:
             return None
 
-        if paths[1] == 'api':
-            if paths[2] != 'v4' or paths[5] != 'packages':
-                return None
-
-            return {
-                'project_id': paths[4],
-                'filename': paths[9],
-                'username': None,
-                'repo': None
-            }
-        else:
-            filename = self.get_config().get('repo_filename')
-            if not filename:
-                return None
-
-            return {
-                'project_id': None,
-                'filename': filename,
-                'username': paths[1],
-                'repo': '/'.join(paths[2:4])
-            }
+        return {
+            'netloc': urldata.netloc,
+            'repo': '/'.join(paths[1:])
+        }
 
     def migrate_v2(self):
         app_config = json_config.read_config_for_app(self.el)
@@ -114,17 +94,10 @@ class GitlabUpdater(UpdateManager):
         if not url_data:
             return
 
-        project_id = url_data['project_id']
-
-        if not project_id:
-            project_id = quote(
-                url_data['username'] + '/' + url_data['repo'],
-                safe=''
-            )
-
         rel_url = '/'.join([
-            'https://gitlab.com/api/v4/projects',
-            project_id,
+            url_data['netloc'],
+            'api/v4/projects',
+            quote(url_data['repo']),
             'releases'
         ])
 
