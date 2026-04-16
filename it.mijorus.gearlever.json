@@ -51,7 +51,7 @@
                 {
                     "type": "git",
                     "url": "https://github.com/plougher/squashfs-tools.git",
-                    "tag": "4.7.4"
+                    "commit": "708c59ae80853b0845017c33b42e56061cc546cd"
                 }
             ]
         },
@@ -101,8 +101,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "sha256": "7dba2bc4482defc5987652643ab0d58330b74e73be0f4d2d184879e7815c2476",
-                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.14.1/dwarfs-0.14.1-Linux-x86_64.tar.xz",
+                    "sha256": "2dba61946786ec563c96783f719316199eeb55a4cbde1436e1b5796f28494fa8",
+                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.15.3/dwarfs-0.15.3-Linux-x86_64.tar.xz",
                     "dest": "dwarfs",
                     "only-arches": [
                         "x86_64"
@@ -110,8 +110,8 @@
                 },
                 {
                     "type": "archive",
-                    "sha256": "8c17434c4fc8c33ba303e06eb62904047ee1aab3ea7bd98d2797b04d86b426eb",
-                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.14.1/dwarfs-0.14.1-Linux-aarch64.tar.xz",
+                    "sha256": "70edc89104233aa8afe7548c4b83c97625baf44c34f625fa99deff4b4b01f89f",
+                    "url": "https://github.com/mhx/dwarfs/releases/download/v0.15.3/dwarfs-0.15.3-Linux-aarch64.tar.xz",
                     "dest": "dwarfs",
                     "only-arches": [
                         "aarch64"

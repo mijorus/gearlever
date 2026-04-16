@@ -233,12 +233,6 @@ class AppImageProvider():
         Config.delete_app_config(el)
         Config.delete_app_update_config(el)
 
-    def search(self, query: str) -> list[AppListElement]:
-        return []
-
-    def get_long_description(self, el: AppListElement) -> str:
-        return ''
-
     def run(self, el: AppImageListElement):
         if el.trusted:
             if el.installed_status is InstalledStatus.INSTALLED:
