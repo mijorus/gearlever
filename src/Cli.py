@@ -2,7 +2,7 @@ import sys
 import os
 
 from .lib.constants import APP_ID
-from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GObject # noqa
+from gi.repository import Gio # noqa
 from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
 from .lib.constants import FETCH_UPDATES_ARG
 from .lib.utils import make_option, check_internet
@@ -157,57 +157,45 @@ class Cli():
     @staticmethod
     def set_update_source(argv):
         u_managers = ', '.join([n.name for n in UpdateManagerChecker.get_models()])
-        el = appimage_provider.create_list_element_from_file(g_file)
-
+        el = None
 
         manager_name = Cli._get_arg_value(argv, '--manager')
-        manager_config = {}
-        selected_model = None
+        selected_model: UpdateManager = UpdateManagerChecker.get_model_by_name(manager_name or '')
+        manager_config_template = []
 
-        if manager_name:
-            selected_model = UpdateManagerChecker.get_model_by_name(manager_name)
-            manager: UpdateManager = selected_model(el=el)
-            manager_config = manager.get_config()
-
+        if (not manager_name) or (not selected_model):
             Cli._print_help_if_requested(argv, [
-                [f'--manager {manager_name}'],
-                *[[f'OPTION {k}=<value>'] for k in manager_config.keys()]
+                ['--manager <manager>', f'Specify an update manager between: {u_managers}'],
+                ['--unset', f'Unset a custom config for an app'],
             ], text='Usage: --set-update-source <file_path> --manager <manager> [...OPTIONS]')
 
-        Cli._print_help_if_requested(argv, [
-            ['--manager <manager>', f'Specify an update manager between: {u_managers}'],
-            ['--unset', f'Unset a custom config for an app'],
-        ], text='Usage: --set-update-source <file_path> --manager <manager> [...OPTIONS]')
-
-        update_options = Cli._get_key_pairs(argv)
-
-        if (not manager_name):
             print('Error: "%s" is not a valid update manager' % manager_name)
             sys.exit(1)
 
+        manager: UpdateManager = selected_model(el=None)
+        manager_config_template = manager.get_config_from_form()
+
+        Cli._print_help_if_requested(argv, [
+            [f'--manager {manager_name}'],
+            *[[f'OPTION {k}=<value>'] for k in manager_config_template.keys()]
+        ], text='Usage: --set-update-source <file_path> --manager <manager> [...OPTIONS]')
+
         g_file = Cli._get_file_from_args(argv)
         el = appimage_provider.create_list_element_from_file(g_file)
+        manager: UpdateManager = selected_model(el=el, embedded=None) # type: ignore
+
+        update_options = Cli._get_key_pairs(argv)
 
         if '--unset' in argv:
             Config.delete_app_update_config(el)
             sys.exit(0)
 
-        selected_model = None
-        if manager_name:
-            selected_model = UpdateManagerChecker.get_model_by_name(manager_name)
-
-        if not selected_model:
-            print('Error: "%s" is not a valid update manager' % manager_name)
-            sys.exit(1)
-
-        manager: UpdateManager = selected_model(embedded=None, el=el)
-        manager_config = manager.get_config_from_form()
-        if set(manager_config.keys()) != set(update_options.keys()):
-            print('Missing or invalid update configuration, required keys: ' + ', '.join(manager_config.keys()))
+        if set(manager_config_template.keys()) != set(update_options.keys()):
+            print('Missing or invalid update configuration, required keys: ' + ', '.join(manager_config_template.keys()))
             sys.exit(1)
 
         boolean_vals = ['0', '1', 'false', 'true']
-        for k, v in manager_config.items():
+        for k, v in manager_config_template.items():
             if type(v) == bool:
                 if update_options[k] not in boolean_vals:
                     print(f'{k} is not a boolean value, allowed values: ' + '/'.join(boolean_vals))
@@ -215,11 +203,11 @@ class Cli():
 
                 update_options[k] = (update_options[k] in ['1', 'true'])
 
-        manager_config = {**update_options}
-        manager.validate_config(manager_config)
+        manager_config_template = {**update_options}
+        manager.validate_config(manager_config_template)
 
         Config.delete_app_update_config(el)
-        Config.set_app_update_config(el, manager, manager_config)
+        Config.set_app_update_config(el, manager, manager_config_template)
 
         sys.exit(0)
 
