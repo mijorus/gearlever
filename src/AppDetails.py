@@ -8,6 +8,7 @@ import shlex
 from typing import Optional, Callable
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, Pango, GLib
 
+from .lib.ini_config import Config
 from .lib.terminal import sandbox_sh
 from .models.Models import InternalError
 from .models.UpdateManager import UpdateManager
@@ -16,8 +17,6 @@ from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
-from .lib.json_config import read_json_config, set_json_config, read_config_for_app, save_config_for_app, \
-    remove_update_config
 from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog, gnu_naturalsize, check_internet
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
@@ -409,7 +408,6 @@ class AppDetails(Gtk.ScrolledWindow):
                         self.provider.run(self.app_list_element)
                     except Exception as e:
                         traceback.print_exc()
-                        print('sono qui')
                         self.handle_exception(e)
 
                     self.post_launch_animation(restore_as=pre_launch_label)
@@ -427,16 +425,6 @@ class AppDetails(Gtk.ScrolledWindow):
             self.update_installation_status()
 
             self.provider.uninstall(self.app_list_element)
-            
-            app_config = self.get_config_for_app()
-            conf = read_json_config('apps')
-
-            if 'b64name' in app_config and app_config['b64name'] in conf:
-                del conf[app_config['b64name']]
-                set_json_config('apps', conf)
-            else:
-                logging.warn('Missing app key from app config')
-
             self.emit('uninstalled-app', self)
 
     @_async
@@ -642,7 +630,7 @@ class AppDetails(Gtk.ScrolledWindow):
             widget.remove_css_class('error')
 
         app_conf['website'] = text
-        save_config_for_app(app_conf)
+        Config.set_app_config(self.app_list_element, app_conf)
 
     @idle
     def set_app_as_updatable(self):
@@ -672,7 +660,7 @@ class AppDetails(Gtk.ScrolledWindow):
         is_updatable = False
 
         try:
-            is_updatable = manager.is_update_available(self.app_list_element)
+            is_updatable = manager.is_update_available()
         except Exception as e:
             logging.error('Update error', exc_info=e)
             self.show_update_error_dialog(str(e))
@@ -702,27 +690,28 @@ class AppDetails(Gtk.ScrolledWindow):
                     selected_model = m
                     break
 
-            app_conf = self.get_config_for_app()
-
             if selected_model:
-                update_url = app_conf.get('update_url', '')
-                self.update_manager = selected_model(url=update_url, embedded=False, el=self.app_list_element)
+                self.update_manager = selected_model(el=self.app_list_element, embedded=False)
             else:
                 if self.app_list_element:
-                    remove_update_config(self.app_list_element)
+                    Config.delete_app_update_config(self.app_list_element)
 
-                self.update_manager = UpdateManagerChecker.check_url(url='', el=self.app_list_element)
+                self.update_manager = UpdateManagerChecker.check_url_for_app(el=self.app_list_element)
 
-        [self.update_url_group.remove(r) for r in 
-            self.update_url_form_rows]
+        for r in self.update_url_form_rows:
+            self.update_url_group.remove(r)   
+
         self.update_url_form_rows = []
 
         if self.update_manager:
-            rows = self.update_manager.load_form_rows(
-                embedded=self.update_manager.embedded
-            )
+            rows = self.update_manager.load_form_rows()
 
             for r in rows:
+                if isinstance(r, Adw.SwitchRow):
+                    r.connect('activated', self.on_update_form_rows_change)
+                elif isinstance(r, Adw.EntryRow):
+                    r.connect('changed', self.on_update_form_rows_change)
+                    
                 self.update_url_form_rows.append(r)
                 self.update_url_group.add(r)
 
@@ -731,7 +720,11 @@ class AppDetails(Gtk.ScrolledWindow):
             else:
                 self.update_url_group.set_description(self.UPDATE_INFO_NOT_EMBEDDED)
 
+            self.update_url_save_btn.set_sensitive(False)
             self.check_updates()
+
+    def on_update_form_rows_change(self, *args):
+        self.update_url_save_btn.set_sensitive(True)
 
     @idle
     def on_app_update_url_success(self):
@@ -765,39 +758,42 @@ class AppDetails(Gtk.ScrolledWindow):
 
         if not self.update_manager:
             if self.app_list_element:
-                remove_update_config(self.app_list_element)
+                Config.delete_app_update_config(self.app_list_element)
 
             self.on_app_update_url_success()
-
-            time.sleep(def_sleep)
-            self.on_app_update_url_reset()
             return
 
-        text = self.update_manager.get_url_from_form()
-        text = text.strip()
+        # text = self.update_manager.get_url_from_form()
+        # text = text.strip()
 
-        if not text:
-            self.on_app_update_url_error()
+        # if not text:
+        #     self.on_app_update_url_error()
 
-            time.sleep(def_sleep)
-            self.on_app_update_url_reset()
-            return
+        #     time.sleep(def_sleep)
+        #     self.on_app_update_url_reset()
+        #     return
 
-        if not self.update_manager.can_handle_link(url=text):
-            self.on_app_update_url_error()
+        # if not self.update_manager.can_handle_link(url=text):
+        #     self.on_app_update_url_error()
             
+        #     time.sleep(def_sleep)
+        #     self.on_app_update_url_reset()
+        #     return
+
+        # self.update_manager.set_url(text)
+        try:
+            form_config = self.update_manager.get_config_from_form()
+            self.update_manager.validate_config(form_config)
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            self.show_update_error_dialog(str(e))
+
             time.sleep(def_sleep)
             self.on_app_update_url_reset()
             return
-
-        self.update_manager.set_url(text)
-        self.update_manager.update_config_from_form()
 
         if not self.update_manager.embedded:
-            app_conf['update_url'] = self.update_manager.url
-            app_conf['update_url_manager'] = self.update_manager.name
-            app_conf['update_manager_config'] = self.update_manager.config
-            save_config_for_app(app_conf)
+            Config.set_app_update_config(self.app_list_element, self.update_manager, form_config)
 
         self.on_app_update_url_success()
 
@@ -948,7 +944,7 @@ class AppDetails(Gtk.ScrolledWindow):
         return row
 
     def create_edit_update_url_row(self) -> Adw.EntryRow:
-        app_config = self.get_config_for_app()
+        app_config = Config.get_app_update_config(self.app_list_element)
 
         row_btn = Gtk.Button(
             icon_name='gl-info-symbolic', 
@@ -984,7 +980,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
         combo_model.append(_('Default'))
 
-        selected_model_name = app_config.get('update_url_manager', None)
+        selected_model_name = app_config.get('manager', None)
         selected_model: Optional[UpdateManager] = None
 
         self.update_url_source = Adw.ComboRow(

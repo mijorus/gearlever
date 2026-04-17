@@ -7,10 +7,8 @@ from .lib.constants import FETCH_UPDATES_ARG
 from .models.Models import InternalError
 from .models.Settings import Settings
 from .lib.utils import portal
-from .lib.json_config import read_json_config, set_json_config
-from .State import state
+from .lib.ini_config import Config
 from dbus import Array as DBusArray
-from .lib.terminal import sandbox_sh
 
 gi.require_version('Gtk', '4.0')
 
@@ -147,7 +145,6 @@ class Preferences(Adw.PreferencesWindow):
         if selected_file.query_exists() and os.access(file_path, os.W_OK):
             self.settings.set_string('appimages-default-folder', file_path)
             self.default_location_row.set_subtitle(file_path)
-            state.set__('appimages-default-folder', file_path)
         else:
             raise InternalError(_('The folder must writeable'))
 
@@ -173,13 +170,11 @@ class Preferences(Adw.PreferencesWindow):
         key = 'fetch-updates-in-background'
         value: bool = self.settings.get_boolean(key)
 
-        conf = read_json_config('settings')
-        conf[key] = value
-
-        set_json_config('settings', conf)
+        Config.parser[Config.parser.default_section][key] = Config.return_boolean(value)
+        Config.write()
         
         inter = portal("org.freedesktop.portal.Background")
-        res = inter.RequestBackground('', {
+        inter.RequestBackground('', {
             'reason': 'Gear Lever background updates fetch', 
             'autostart': value, 
             'background': True, 

@@ -3,7 +3,6 @@ from typing import Dict, List, Optional
 
 import logging
 
-from .State import state
 from time import sleep
 from .providers.providers_list import appimage_provider
 from .providers.AppImageProvider import AppImageListElement
@@ -16,6 +15,7 @@ from .WelcomeScreen import WelcomeScreen
 from .lib.utils import get_application_window, check_internet
 from .lib.async_utils import _async, idle
 from .models.UpdateManagerChecker import UpdateManagerChecker
+from .models.Settings import Settings
 
 fetch_updates_cache = None
 
@@ -98,7 +98,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         self.container_stack.add_child(self.placeholder)
 
         self.set_child(self.container_stack)
-        state.connect__('appimages-default-folder', lambda k: self.refresh_list())
+        Settings.settings.connect('changed::appimages-default-folder', lambda *_: self.refresh_list())
 
     # Emit and event that changes the active page of the Stack in the parent widget
     def on_activated_row(self, listbox, row: Gtk.ListBoxRow):
@@ -183,10 +183,10 @@ class InstalledAppsList(Gtk.ScrolledWindow):
             if not manager:
                 continue
 
-            logging.debug(f'Found app with update url: {manager.url}')
+            logging.debug(f'Found app with update url: {manager.name}')
 
             try:
-                status = manager.is_update_available(row._app)
+                status = manager.is_update_available()
 
                 if status:
                     updates_available += 1

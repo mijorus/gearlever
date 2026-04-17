@@ -8,6 +8,8 @@ from gi.repository import Adw, Gio
 from urllib.parse import urlsplit
 
 from ..lib.utils import get_file_hash
+from ..lib import json_config
+from ..lib.ini_config import Config
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
 from .Models import DownloadInterruptedException
 
@@ -21,8 +23,66 @@ class GithubUpdater(UpdateManager):
     label = 'Github'
     name = 'GithubUpdater'
 
-    @staticmethod
-    def get_url_data(url: str):
+    def __init__(self, el, embedded=False) -> None:
+        super().__init__(embedded=embedded, el=el)
+        self.staticfile_manager = None
+        self.repo_url_row = None
+        self.repo_filename_row = None
+        self.allow_prereleases_row = None
+
+    def migrate_v2(self):
+        app_config = json_config.read_config_for_app(self.el)
+        config = None
+
+        if 'update_manager_config' in app_config:
+            old_config = app_config.get('update_manager_config', {})
+            url_data = urlsplit(old_config.get('repo_url', '')).path.split('/')
+            repo = ''
+
+            if len(url_data) > 2:
+                repo = '/'.join([url_data[1], url_data[2]])
+
+            config = {
+                'allow_prereleases':  old_config.get('allow_prereleases', False),
+                'repo': repo,
+                'repo_filename': old_config.get('repo_filename', ''),
+            }
+        elif 'update_url' in app_config:
+            url_data = self.get_url_data(app_config['update_url'])
+
+            if url_data:
+                config = {
+                    'allow_prereleases': False,
+                    'repo': '/'.join([url_data['username'], url_data['repo']]),
+                    'repo_filename': url_data['filename'],
+                }
+        
+        if config:
+            Config.set_app_update_config(self.el, self, config)
+
+    def get_embedded_data(self):
+        # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
+        # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#github-releases
+        if not self.embedded:
+            return None
+
+        url = self.embedded
+
+        tag_name = '*'
+        items = url.split('|')
+
+        if len(items) != 5:
+            return None
+
+        return {
+            'username': items[1],
+            'repo': items[2],
+            'release': items[3],
+            'filename': items[4],
+            'tag_name': tag_name
+        }
+    
+    def get_url_data(self, url: str):
         # Format gh-releases-zsync|probono|AppImages|latest|Subsurface-*x86_64.AppImage.zsync
         # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#github-releases
 
@@ -36,7 +96,7 @@ class GithubUpdater(UpdateManager):
 
             paths = urldata.path.split('/')
 
-            if len(paths) != 7:
+            if len(paths) < 7:
                 return None
 
             if paths[3] != 'releases' or paths[4] != 'download':
@@ -61,50 +121,17 @@ class GithubUpdater(UpdateManager):
             'tag_name': tag_name
         }
 
-    @staticmethod
-    def can_handle_link(url: str):
-        return GithubUpdater.get_url_data(url) != None
-
-    def __init__(self, url, embedded: str|Literal[False]=False, **kwargs) -> None:
-        super().__init__(url, embedded, **kwargs)
-        self.staticfile_manager = None
-        self.repo_url_row = None
-        self.repo_filename_row = None
-        self.allow_prereleases_row = None
-        self.embedded = embedded
-
-        self.set_url(url)
-
     def does_allow_prereleases(self):
         allow_prereleases = False
 
         if self.embedded:
-            if self.url_data:
-                allow_prereleases = self.url_data['release'] in ['latest-pre', 'latest-all']
+            embedded_data = self.get_embedded_data()
+            if embedded_data:
+                allow_prereleases = embedded_data['release'] in ['latest-pre', 'latest-all']
         else:
-            allow_prereleases = self.get_saved_config().get('allow_prereleases', False)
+            allow_prereleases = self.get_config().get('allow_prereleases', False)
 
         return allow_prereleases
-
-    def set_url(self, url: str):
-        self.url = url
-        self.url_data = self.get_url_data(url)
-
-        self.config = {
-            'repo_url': '',
-            'repo_filename': '',
-            'allow_prereleases': self.does_allow_prereleases()
-        }
-
-        if self.url_data:
-            self.url = self.get_url_string_from_data(self.url_data)
-            self.config['repo_url'] =  '/'.join(['https://github.com', self.url_data['username'], self.url_data['repo']])
-            self.config['repo_filename'] =  self.url_data['filename']
-
-    def get_url_string_from_data(self, url_data):
-        url = f'https://github.com/{url_data["username"]}/{url_data["repo"]}'
-        url += f'/releases/download/{url_data["tag_name"]}/{url_data["filename"]}'
-        return url
 
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
@@ -112,7 +139,7 @@ class GithubUpdater(UpdateManager):
             raise Exception(f'Missing target_asset for {self.name} instance')
 
         dwnl = target_asset['asset']['browser_download_url']
-        self.staticfile_manager = StaticFileUpdater(dwnl)
+        self.staticfile_manager = StaticFileUpdater(self.el, dwnl)
         fname, etag = self.staticfile_manager.download(status_update_cb)
 
         self.staticfile_manager = None
@@ -128,24 +155,39 @@ class GithubUpdater(UpdateManager):
             self.staticfile_manager.cleanup()
 
     def fetch_target_asset(self):
-        if not self.url_data:
+        update_data = None
+
+        if self.embedded:
+            update_data = self.get_embedded_data()
+        else:
+            config = self.get_config()
+            repo = config.get('repo', '').split('/')
+
+            if len(repo) < 2:
+                return
+
+            update_data = {
+                'username': repo[0],
+                'repo': repo[1], 
+                'filename': config.get('repo_filename'),
+            }
+        
+        if not update_data:
             return
         
         allow_prereleases = self.does_allow_prereleases()
 
-        release_name = self.url_data["release"]
-
         rel_url = '/'.join([
             'https://api.github.com/repos',
-            self.url_data["username"],
-            self.url_data["repo"],
+            update_data["username"],
+            update_data["repo"],
             'releases',
         ])
 
         rel_data = []
 
         if not allow_prereleases:
-            rel_url += f'/{release_name}'
+            rel_url += f'/latest'
 
         try:
             rel_data_resp = requests.get(rel_url)
@@ -172,7 +214,7 @@ class GithubUpdater(UpdateManager):
                 continue
 
             for asset in release['assets']:
-                if fnmatch.fnmatch(asset['name'], self.url_data['filename']):
+                if fnmatch.fnmatch(asset['name'], update_data['filename']):
                     found = True
                     possible_targets.append(asset)
                     if self.embedded:
@@ -216,10 +258,13 @@ class GithubUpdater(UpdateManager):
 
                 return {'asset': asset, 'zsync': None}
 
-    def is_update_available(self, el: AppImageListElement):
+    def is_update_available(self):
+        if not self.el:
+            return False
+
         target_asset = self.fetch_target_asset()
 
-        if not os.path.exists(el.file_path):
+        if not os.path.exists(self.el.file_path):
             return False
 
         if target_asset:
@@ -228,7 +273,7 @@ class GithubUpdater(UpdateManager):
                 zsync_file = requests.get(target_asset['zsync']['browser_download_url']).text
                 zsync_file_header = zsync_file.split('\n\n', 1)[0]
                 sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
-                curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha1')
+                curr_version_hash = get_file_hash(Gio.File.new_for_path(self.el.file_path), alg='sha1')
 
                 match = re.search(sha_pattern, zsync_file_header)
                 if match:
@@ -237,45 +282,49 @@ class GithubUpdater(UpdateManager):
             else:
                 digest = target_asset['asset'].get('digest', '')
                 if digest and digest.startswith('sha256:'):
-                    curr_version_hash = get_file_hash(Gio.File.new_for_path(el.file_path), alg='sha256')
+                    curr_version_hash = get_file_hash(Gio.File.new_for_path(self.el.file_path), alg='sha256')
                     return f'sha256:{curr_version_hash}' != digest
 
-                old_size = os.path.getsize(el.file_path)
+                old_size = os.path.getsize(self.el.file_path)
                 is_size_different = target_asset['asset']['size'] != old_size
                 return is_size_different
 
         return False
 
-    def load_form_rows(self, embedded=False): 
-        repo_url = self.config.get('repo_url')
-        filename = self.config.get('repo_filename')
+    def load_form_rows(self): 
+        config = self.get_config()
+        repo = config.get('repo', '')
+        filename = config.get('repo_filename', '')
+
+        if self.embedded:
+            url_data = self.get_embedded_data()
+            if url_data:
+                repo = '/'.join([url_data['username'], url_data['repo']])
+                filename = url_data['filename']
 
         self.repo_url_row = AdwEntryRowDefault(
-            text=repo_url,
             icon_name='gl-git',
-            sensitive=(not embedded),
-            title=_('Repo URL')
+            sensitive=(not self.embedded),
+            title=('Username/Repo')
         )
 
         self.repo_filename_row = AdwEntryRowDefault(
-            text=filename,
             icon_name='gl-paper',
-            sensitive=(not embedded),
+            sensitive=(not self.embedded),
             title=_('Release file name')
         )
+
+        if filename:
+            self.repo_filename_row.set_text(filename)
+        
+        if repo:
+            self.repo_url_row.set_text(repo)
         
         self.allow_prereleases_row = Adw.SwitchRow(
             title=_('Allow pre-releases'),
-            sensitive=(not embedded),
+            sensitive=(not self.embedded),
             active=self.does_allow_prereleases()
         )
-
-        if embedded:
-            return [
-                self.repo_url_row, 
-                self.repo_filename_row,
-                self.allow_prereleases_row
-            ]
 
         return [
             self.repo_url_row, 
@@ -283,39 +332,26 @@ class GithubUpdater(UpdateManager):
             self.allow_prereleases_row
         ]
 
-    def get_url_from_form(self) -> str:
-        if (not self.repo_filename_row) or (not self.repo_url_row):
-            return ''
-        
-        return '/'.join([
-            self.repo_url_row.get_text(),
-            'releases/download/*',
-            self.repo_filename_row.get_text()
-        ])
-
-    def get_url_from_params(self, **kwargs):
-        return '/'.join([
-            kwargs.get('repo_url', ''),
-            'releases/download/*',
-            kwargs.get('repo_filename', ''),
-        ])
-
-    def update_config_from_form(self):
+    def get_config_from_form(self):
         allow_prereleases = False
-        repo_url = None
+        repo = None
         repo_filename = None
 
         if self.allow_prereleases_row:
             allow_prereleases = self.allow_prereleases_row.get_active()
 
         if self.repo_url_row:
-            repo_url = self.repo_url_row.get_text()
+            repo = self.repo_url_row.get_text().strip()
 
         if self.repo_filename_row:
             repo_filename = self.repo_filename_row.get_text()
 
-        self.config = {
+        return {
             'allow_prereleases': allow_prereleases,
-            'repo_url': repo_url,
+            'repo': repo,
             'repo_filename': repo_filename,
         }
+
+    def validate_config(self, config):
+        if len(config.get('repo', '').split('/')) != 2:
+            raise Exception(f'Invalid data, please enter <username>/<repo>')
