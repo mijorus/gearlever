@@ -21,6 +21,12 @@
         <p>An utility to manage AppImages with ease! Gear lever will organize and manage AppImage files for you, generate desktop entries and app metadata, update apps in-place or keep multiple versions side-by-side.</p>
     </description>
     <releases>
+        <release type="stable" version="4.5.0" date="2026-04-17:00:00Z">
+            <description>
+                <p>- Under the hood improvements to the update system</p>
+                <p>- Fixed an issue causing the allow prerelease toggle to ignore user preferences</p>
+            </description>
+        </release>
         <release type="stable" version="4.5.0" date="2026-04-16:00:00Z">
             <description>
                 <p>- Under the hood improvements to the update system</p>
