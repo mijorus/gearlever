@@ -164,7 +164,7 @@ def migrate_to_v2_config():
             'website': app_conf.get('website', '')
         })
 
-        update_url_manager: str | None = app_conf.get('update_url_manager', None)
+        update_url_manager: str | None = app_conf.get('manager', None)
 
         if update_url_manager:
             model = None

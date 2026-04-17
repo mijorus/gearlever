@@ -91,7 +91,7 @@ class CodebergUpdater(UpdateManager):
 
     def fetch_target_asset(self):
         conf = self.get_config()
-        url_data = conf.get('repo_url', '').split('/')
+        url_data = conf.get('repo', '').split('/')
 
         if len(url_data) < 2:
             return
