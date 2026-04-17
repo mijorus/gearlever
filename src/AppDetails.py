@@ -708,7 +708,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
             for r in rows:
                 if isinstance(r, Adw.SwitchRow):
-                    r.connect('activated', self.on_update_form_rows_change)
+                    r.connect('notify::active', self.on_update_form_rows_change)
                 elif isinstance(r, Adw.EntryRow):
                     r.connect('changed', self.on_update_form_rows_change)
                     
