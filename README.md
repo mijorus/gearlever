@@ -35,13 +35,13 @@ Usage: flatpak run it.mijorus.gearlever [OPTION...]
 # OR gearlever [OPTION...] if using the alias
 
 
---integrate        Integrate an AppImage file
---update           Update an AppImage file
---remove           Trashes an AppImage, its .desktop file and icons
---list-installed   List integrated apps
---list-updates     List available updates
---set-update-url   Set/Unset a custom update url
---fetch-updates    Fetch updates in the background and sends a desktop notification, used on system startup
+--integrate         Integrate an AppImage file
+--update            Update an AppImage file
+--remove            Trashes an AppImage, its .desktop file and icons
+--list-installed    List integrated apps
+--list-updates      List available updates
+--set-update-source Set/Unset a custom update source
+--fetch-updates     Fetch updates in the background and sends a desktop notification, used on system startup
 
 ```
 
