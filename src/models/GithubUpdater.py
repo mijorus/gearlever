@@ -129,7 +129,7 @@ class GithubUpdater(UpdateManager):
             if embedded_data:
                 allow_prereleases = embedded_data['release'] in ['latest-pre', 'latest-all']
         else:
-            allow_prereleases = self.get_config().get('allow_prereleases', False)
+            allow_prereleases = self.get_config().getboolean('allow_prereleases', False)
 
         return allow_prereleases
 

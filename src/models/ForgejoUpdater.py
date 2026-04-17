@@ -95,7 +95,7 @@ class ForgejoUpdater(UpdateManager):
             return
 
         api_version = 'v1'
-        allow_prereleases = conf.get('allow_prereleases', False)
+        allow_prereleases = conf.getboolean('allow_prereleases', False)
 
         rel_url = '/'.join([
             f'https://{url_data["netloc"]}',
@@ -196,7 +196,7 @@ class ForgejoUpdater(UpdateManager):
 
         self.allow_prereleases_row = Adw.SwitchRow(
             title=_('Allow pre-releases'),
-            active=config.get('allow_prereleases', False)
+            active=config.getboolean('allow_prereleases', False)
         )
 
         return [

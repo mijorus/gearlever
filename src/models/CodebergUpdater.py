@@ -96,7 +96,7 @@ class CodebergUpdater(UpdateManager):
         if len(url_data) < 2:
             return
 
-        allow_prereleases = conf.get('allow_prereleases', False)
+        allow_prereleases = conf.getboolean('allow_prereleases', False)
 
         rel_url = '/'.join([
             'https://codeberg.org/api/v1/repos',
@@ -184,7 +184,7 @@ class CodebergUpdater(UpdateManager):
 
         self.allow_prereleases_row = Adw.SwitchRow(
             title=_('Allow pre-releases'),
-            active=config.get('allow_prereleases', False)
+            active=config.getboolean('allow_prereleases', False)
         )
 
         return [
