@@ -31,7 +31,7 @@ class UpdateManagerChecker():
         return item[0]
 
     @staticmethod
-    def check_url_for_app(el: AppImageListElement):
+    def check_url_for_app(el: AppImageListElement) -> Optional[UpdateManager]:
         app_conf = Config.get_app_update_config(el)
         update_url_manager: str | None = app_conf.get('manager', None)
         embedded_url = None
