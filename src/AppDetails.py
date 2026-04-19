@@ -480,7 +480,6 @@ class AppDetails(Gtk.ScrolledWindow):
 
         if update_success:
             self.update_manager = None
-            self.provider.reload_metadata(self.app_list_element)
 
             icon = self.provider.get_icon(self.app_list_element)
             self.provider.refresh_data(self.app_list_element)
