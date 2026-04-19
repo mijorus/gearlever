@@ -638,11 +638,6 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_action_button.set_visible(True)
         self.update_action_button.set_label(self.UPDATE_FETCHING)
         self.update_action_button.set_sensitive(False)
-        # if self.minimal_ui:
-        #     self.update_action_button.set_visible(False)
-        #     self.update_action_button.set_sensitive(False)
-        # else:
-        #     self.primary_action_buttons_row.set_orientation(Gtk.Orientation.HORIZONTAL)
 
     @_async
     def check_updates(self):
@@ -716,7 +711,8 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.update_url_group.add(r)
 
             if self.update_manager.embedded:
-                self.update_url_group.set_description(self.UPDATE_INFO_EMBEDDED)
+                desc = self.UPDATE_INFO_EMBEDDED + f' ({self.update_manager.label})'
+                self.update_url_group.set_description(desc)
             else:
                 self.update_url_group.set_description(self.UPDATE_INFO_NOT_EMBEDDED)
 
