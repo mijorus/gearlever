@@ -89,7 +89,7 @@ class ForgejoUpdater(UpdateManager):
 
     def fetch_target_asset(self):
         conf = self.get_config()
-        url_data = self.get_url_data(conf['repo_url'])
+        url_data = self.get_url_data(conf.get('repo_url', ''))
 
         if not url_data:
             return
@@ -134,13 +134,13 @@ class ForgejoUpdater(UpdateManager):
 
         logging.debug(f'Found {len(release["assets"])} assets from {rel_url}')
 
-        if not conf.get('filename'):
+        if not conf.get('repo_filename'):
             return
 
         download_asset = None
         possible_targets = []
         for asset in release['assets']:
-            if fnmatch(asset['name'], conf.get('filename', '')):
+            if fnmatch(asset['name'], conf.get('repo_filename', '')):
                 possible_targets.append(asset)
 
         if len(possible_targets) == 1:
@@ -150,13 +150,6 @@ class ForgejoUpdater(UpdateManager):
 
             for t in possible_targets:
                 logging.info(' - ' + t['name'])
-
-            if self.system_arch == 'x86_64':
-                for t in possible_targets:
-                    if self.is_x86.search(t['name']) or not self.is_arm.search(t['name']):
-                        download_asset = t
-                        logging.info('found possible target: ' + t['name'])
-                        break
 
         if not download_asset:
             logging.debug(f'No matching assets found from {rel_url}')
