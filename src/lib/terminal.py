@@ -60,10 +60,10 @@ def sandbox_sh(command: List[str], return_stderr=False, error_quiet=False, **kwa
     logging.debug(f'Done {cmd}')
     return re.sub(r'\n$', '', output_string)
 
-def host_threaded_sh(command: List[str], callback: Optional[Callable[[str], None]]=None, return_stderr=False):
-    def run_command(command: List[str], callback: Optional[Callable[[str], None]]=None):
+def host_threaded_sh(command: List[str], callback: Optional[Callable[[str], None]]=None, return_stderr=False, **kwargs):
+    def run_command(command: List[str], callback: Optional[Callable[[str], None]]=None, **kwargs):
         try:
-            output = host_sh(command, return_stderr)
+            output = host_sh(command, return_stderr, **kwargs)
 
             if callback:
                 callback(output)
@@ -72,5 +72,5 @@ def host_threaded_sh(command: List[str], callback: Optional[Callable[[str], None
             logging.error(e.stderr)
             raise e
 
-    thread = threading.Thread(target=run_command, daemon=True, args=(command, callback, ))
+    thread = threading.Thread(target=run_command, daemon=True, args=(command, callback, ), kwargs=kwargs)
     thread.start()
