@@ -73,10 +73,10 @@ class Config:
         h = Config.get_app_hash(el)
         k = f'app.{h}.update_manager'
 
-        if Config.parser.has_section(k):
-            return dict(Config.parser[f'app.{h}.update_manager'])
-        
-        return {}
+        if not Config.parser.has_section(k):
+            Config.parser.add_section(k)
+
+        return Config.parser[f'app.{h}.update_manager']
 
     @staticmethod
     def set_app_update_config(el, manager, data):

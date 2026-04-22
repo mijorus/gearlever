@@ -2,7 +2,7 @@ import unittest
 import subprocess
 import os
 import requests
-
+    
 class TestGearLever(unittest.TestCase):
     def setUp(self):
         self.cwd = os.environ.get('GITHUB_WORKSPACE', os.path.dirname(os.path.abspath(__file__)))
@@ -201,7 +201,7 @@ class TestGearLever(unittest.TestCase):
         self.runCommand(['--remove', os.path.join(self.installPath, appname), '-y'])
 
     def test_fetch_updates_codeberg(self):
-        appname = 'helloworldappimage.appimage'
+        appname = 'pyprojectappimage.appimage'
         self.runCommand(['--integrate', os.path.join(self.download_dir, appname), '-y'])
         self.runCommand(['--set-update-source', 
             os.path.join(self.installPath, appname), 

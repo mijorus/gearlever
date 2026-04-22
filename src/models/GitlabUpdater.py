@@ -95,9 +95,9 @@ class GitlabUpdater(UpdateManager):
             return
 
         rel_url = '/'.join([
-            url_data['netloc'],
+            ('https://' + url_data['netloc']),
             'api/v4/projects',
-            quote(url_data['repo']),
+            quote(url_data['repo'], safe=''),
             'releases'
         ])
 
@@ -119,9 +119,7 @@ class GitlabUpdater(UpdateManager):
         possible_targets = []
         assets = rel_data[0]['assets']
         for asset in assets['links']:
-            link_res_name = asset['url'].split('/')[-1]
-            if fnmatch(link_res_name, url_data['filename']):
-                asset['name'] = link_res_name
+            if fnmatch(asset['name'], conf['repo_filename']):
                 possible_targets.append(asset)
 
         if len(possible_targets) == 1:

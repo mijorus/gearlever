@@ -7,6 +7,12 @@
 	"settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
         "files.watcherExclude": {
+            ".git/objects/**": true,
+            ".git/subtree-cache/**": true,
+            ".hg/store/**": true,
+            "*/.git/objects/**": true,
+            "*/.git/subtree-cache/**": true,
+            "*/.hg/store/**": true,
             "**/.git/objects/**": true,
             "**/.git/subtree-cache/**": true,
             "**/.hg/store/**": true,

@@ -108,8 +108,8 @@ class StaticFileUpdater(UpdateManager):
                     d_perc = (status / total_size)
 
                     if d_perc > d_notify_at:
-                        d_notify_at += 0.1
-                        logging.info(f'Download status {d_perc * 100}')
+                        d_notify_at += 0.01
+                        # logging.info(f'Download status {d_perc * 100}')
                         status_update_cb(status / total_size)
 
         if os.path.getsize(fname) < total_size:

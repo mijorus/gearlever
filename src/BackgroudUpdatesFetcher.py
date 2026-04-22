@@ -24,7 +24,7 @@ class BackgroudUpdatesFetcher():
             if not manager:
                 continue
 
-            logging.debug(f'Found app with update url: {manager.url}')
+            logging.debug(f'Checking app with: {manager.name}')
 
             try:
                 status = manager.is_update_available()

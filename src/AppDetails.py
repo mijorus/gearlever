@@ -480,7 +480,6 @@ class AppDetails(Gtk.ScrolledWindow):
 
         if update_success:
             self.update_manager = None
-            self.provider.reload_metadata(self.app_list_element)
 
             icon = self.provider.get_icon(self.app_list_element)
             self.provider.refresh_data(self.app_list_element)
@@ -638,11 +637,6 @@ class AppDetails(Gtk.ScrolledWindow):
         self.update_action_button.set_visible(True)
         self.update_action_button.set_label(self.UPDATE_FETCHING)
         self.update_action_button.set_sensitive(False)
-        # if self.minimal_ui:
-        #     self.update_action_button.set_visible(False)
-        #     self.update_action_button.set_sensitive(False)
-        # else:
-        #     self.primary_action_buttons_row.set_orientation(Gtk.Orientation.HORIZONTAL)
 
     @_async
     def check_updates(self):
@@ -708,7 +702,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
             for r in rows:
                 if isinstance(r, Adw.SwitchRow):
-                    r.connect('activated', self.on_update_form_rows_change)
+                    r.connect('notify::active', self.on_update_form_rows_change)
                 elif isinstance(r, Adw.EntryRow):
                     r.connect('changed', self.on_update_form_rows_change)
                     
@@ -716,7 +710,8 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.update_url_group.add(r)
 
             if self.update_manager.embedded:
-                self.update_url_group.set_description(self.UPDATE_INFO_EMBEDDED)
+                desc = self.UPDATE_INFO_EMBEDDED + f' ({self.update_manager.label})'
+                self.update_url_group.set_description(desc)
             else:
                 self.update_url_group.set_description(self.UPDATE_INFO_NOT_EMBEDDED)
 

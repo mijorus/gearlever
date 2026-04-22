@@ -1,6 +1,7 @@
 import sys
 import os
 import logging
+import json
 import traceback
 from .lib.constants import APP_ID
 from gi.repository import Gio # noqa
@@ -121,7 +122,7 @@ class Cli():
                 if ans.lower() != 'y':
                     sys.exit(0)
 
-            print(f'Downloading update from: {manager.url}')
+            print(f'Downloading update from: {manager.name}')
             appimage_provider.update_from_url(manager, el, 
                 lambda s: print("\rStatus: " + str(round(s * 100)) + "%", end=""))
 
@@ -227,7 +228,7 @@ class Cli():
 
                 update_options[k] = (update_options[k] in ['1', 'true'])
 
-        manager.validate_config(manager_config_template)
+        manager.validate_config(update_options)
 
         Config.delete_app_update_config(el)
         Config.set_app_update_config(el, manager, update_options)
@@ -318,7 +319,7 @@ class Cli():
 
     @staticmethod
     def list_updates(argv):
-        Cli._print_help_if_requested(argv, [['-v', 'Prints update URL information']])
+        # Cli._print_help_if_requested(argv, [['-v', 'Prints update URL information']])
 
         installed = appimage_provider.list_installed()
         table = []
@@ -338,9 +339,9 @@ class Cli():
                     if manager.embedded:
                         s = f'[Update available, {manager.name}|embedded]'
                     row = [el.name, s, el.file_path]
-                    if '-v' in argv:
-                        row.append(manager.url)
-                    
+                    # if '-v' in argv:
+                    #     row.append(json.dumps(dict(manager.get_config())))
+
                     table.append(row)
             except Exception as e:
                 logging.error(traceback.format_exc())

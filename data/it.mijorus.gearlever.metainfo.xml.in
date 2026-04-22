@@ -21,6 +21,24 @@
         <p>An utility to manage AppImages with ease! Gear lever will organize and manage AppImage files for you, generate desktop entries and app metadata, update apps in-place or keep multiple versions side-by-side.</p>
     </description>
     <releases>
+        <release type="stable" version="4.5.3" date="2026-04-19:00:00Z">
+            <description>
+                <p>- Fixed an issue with Forgejo updates</p>
+            </description>
+        </release>
+        <release type="stable" version="4.5.2" date="2026-04-18:00:00Z">
+            <description>
+                <p>- Under the hood improvements to the update system</p>
+                <p>- Fixed an issue causing the allow prerelease toggle to ignore user preferences</p>
+                <p>- Fixed an issue with the background update checker</p>
+            </description>
+        </release>
+        <release type="stable" version="4.5.1" date="2026-04-17:00:00Z">
+            <description>
+                <p>- Under the hood improvements to the update system</p>
+                <p>- Fixed an issue causing the allow prerelease toggle to ignore user preferences</p>
+            </description>
+        </release>
         <release type="stable" version="4.5.0" date="2026-04-16:00:00Z">
             <description>
                 <p>- Under the hood improvements to the update system</p>
@@ -426,22 +444,17 @@
         <screenshot type="default">
             <caption>Application showcase</caption>
             <image type="source">
-                https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever3.png</image>
-        </screenshot>
-        <screenshot>
-            <caption>Application showcase</caption>
-            <image type="source">
                 https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever1.png</image>
         </screenshot>
         <screenshot>
             <caption>Application showcase</caption>
             <image type="source">
-                https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever4.png</image>
+                https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever2.png</image>
         </screenshot>
         <screenshot>
             <caption>Application showcase</caption>
             <image type="source">
-                https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever2.png</image>
+                https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever3.png</image>
         </screenshot>
     </screenshots>
     <content_rating type="oars-1.0" />
