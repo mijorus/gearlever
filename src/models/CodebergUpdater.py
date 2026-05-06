@@ -202,10 +202,10 @@ class CodebergUpdater(UpdateManager):
             allow_prereleases = self.allow_prereleases_row.get_active()
 
         if self.repo_url_row:
-            repo_url = self.repo_url_row.get_text()
+            repo_url = self.repo_url_row.get_text().strip()
 
         if self.repo_filename_row:
-            repo_filename = self.repo_filename_row.get_text()
+            repo_filename = self.repo_filename_row.get_text().strip()
 
         return {
             'allow_prereleases': allow_prereleases,

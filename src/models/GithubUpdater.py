@@ -344,7 +344,7 @@ class GithubUpdater(UpdateManager):
             repo = self.repo_url_row.get_text().strip()
 
         if self.repo_filename_row:
-            repo_filename = self.repo_filename_row.get_text()
+            repo_filename = self.repo_filename_row.get_text().strip()
 
         return {
             'allow_prereleases': allow_prereleases,
