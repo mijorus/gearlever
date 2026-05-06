@@ -159,12 +159,16 @@ class ForgejoUpdater(UpdateManager):
         return download_asset
 
     def is_update_available(self):
+        config = self.get_config()
         target_asset = self.fetch_target_asset()
 
         if target_asset:
             old_size = os.path.getsize(self.el.file_path)
             is_size_different = target_asset['size'] != old_size
             return is_size_different
+
+        if config.get('repo_filename'):
+            return None
 
         return False
 

@@ -161,6 +161,9 @@ class GitlabUpdater(UpdateManager):
 
             return is_size_different
 
+        if self.get_config().get('repo_filename'):
+            return None
+
         return False
 
     def load_form_rows(self, embedded=None):

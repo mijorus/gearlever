@@ -28,7 +28,7 @@ class UpdateManager(ABC):
         pass
 
     @abstractmethod
-    def is_update_available(self) -> bool:
+    def is_update_available(self) -> 'bool | None':
         pass
 
     @abstractmethod

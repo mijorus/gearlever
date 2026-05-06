@@ -289,6 +289,10 @@ class GithubUpdater(UpdateManager):
                 is_size_different = target_asset['asset']['size'] != old_size
                 return is_size_different
 
+        config = self.get_config()
+        if config.get('repo_filename'):
+            return None
+
         return False
 
     def load_form_rows(self): 
