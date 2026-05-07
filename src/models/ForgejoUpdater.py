@@ -159,12 +159,16 @@ class ForgejoUpdater(UpdateManager):
         return download_asset
 
     def is_update_available(self):
+        config = self.get_config()
         target_asset = self.fetch_target_asset()
 
         if target_asset:
             old_size = os.path.getsize(self.el.file_path)
             is_size_different = target_asset['size'] != old_size
             return is_size_different
+
+        if config.get('repo_filename'):
+            return None
 
         return False
 
@@ -207,10 +211,10 @@ class ForgejoUpdater(UpdateManager):
             allow_prereleases = self.allow_prereleases_row.get_active()
 
         if self.repo_url_row:
-            repo_url = self.repo_url_row.get_text()
+            repo_url = self.repo_url_row.get_text().strip()
 
         if self.repo_filename_row:
-            repo_filename = self.repo_filename_row.get_text()
+            repo_filename = self.repo_filename_row.get_text().strip()
 
         return {
             'allow_prereleases': allow_prereleases,
