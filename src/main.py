@@ -38,7 +38,7 @@ gi.require_version('Adw', '1')
 from gi.repository import Gtk, Gio, Adw, Gdk, GLib, GObject # noqa
 
 LOG_FILE_MAX_N_LINES = 5000
-LOG_FOLDER = os.path.join(GLib.get_user_cache_dir(), 'logs')
+LOG_FOLDER = os.path.join(GLib.get_user_state_dir(), APP_NAME)
 LOG_FILE = os.path.join(LOG_FOLDER, f'{APP_NAME}.log')
 
 class GearleverApplication(Adw.Application):
