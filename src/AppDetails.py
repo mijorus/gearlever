@@ -38,6 +38,7 @@ class AppDetails(Gtk.ScrolledWindow):
     CANCEL_UPDATE = _('Cancel update')
     UPDATE_FETCHING = _('Checking updates...')
     UPDATE_NOT_AVAIL_BTN_LABEL = _('No updates available')
+    UPDATE_NO_MATCH_BTN_LABEL = _('Release file not found')
     UPDATE_INFO_EMBEDDED = _('This application includes update information provided by the developer')
     UPDATE_INFO_NOT_EMBEDDED = _('Manage update details for this application')
 
@@ -664,6 +665,8 @@ class AppDetails(Gtk.ScrolledWindow):
         if is_updatable:
             logging.debug(f'{self.app_list_element.name} is_updatable')
             GLib.idle_add(lambda: self.update_action_button.set_label(self.UPDATE_BTN_LABEL))
+        elif is_updatable is None:
+            GLib.idle_add(lambda: self.update_action_button.set_label(self.UPDATE_NO_MATCH_BTN_LABEL))
         else:
             GLib.idle_add(lambda: self.update_action_button.set_label(self.UPDATE_NOT_AVAIL_BTN_LABEL))
 
