@@ -220,6 +220,11 @@ class GithubUpdater(UpdateManager):
                     if self.embedded:
                         break
 
+                if (not self.embedded) and asset['label'] and \
+                    fnmatch.fnmatch(asset['label'], update_data['filename']):
+                    found = True
+                    possible_targets.append(asset)
+
             if found:
                 break
 
