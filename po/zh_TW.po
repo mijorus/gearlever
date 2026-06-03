@@ -435,10 +435,6 @@ msgstr "顯示歡迎畫面"
 msgid "Open Preferences"
 msgstr "開啟設定"
 
-#: src/gtk/help-overlay.ui:11
-msgid "General"
-msgstr "一般"
-
 #: src/gtk/help-overlay.ui:14
 msgid "Show Shortcuts"
 msgstr "顯示快捷鍵"
