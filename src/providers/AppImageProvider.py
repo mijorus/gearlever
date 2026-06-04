@@ -114,9 +114,11 @@ class AppImageProvider():
 
                     if os.path.isfile(exec_location):
                         exec_gfile = Gio.File.new_for_path(exec_location)
-                        exec_in_defalut_folder = os.path.isfile(
-                                os.path.join(default_folder_path, exec_gfile.get_basename()))
-                        exec_in_folder = True if manage_from_outside else exec_in_defalut_folder
+                        
+                        # Check if the file is in the default folder (including subfolders)
+                        exec_in_default_folder = os.path.abspath(exec_location).startswith(os.path.abspath(default_folder_path))
+                        
+                        exec_in_folder = True if manage_from_outside else exec_in_default_folder
                         app_version = self._get_app_version(None, desktop_entry=entry, return_hash=False)
                         file_size = os.stat(exec_location).st_size
 
@@ -131,7 +133,7 @@ class AppImageProvider():
                                 provider=self.name,
                                 desktop_entry=entry,
                                 trusted=True,
-                                external_folder=(not exec_in_defalut_folder),
+                                external_folder=(not exec_in_default_folder),
                                 exec_arguments=exec_arguments,
                                 env_variables=exec_command_data['env_vars'],
                                 size=file_size,
@@ -246,7 +248,8 @@ class AppImageProvider():
 
                 if gtk_launch and el.desktop_file_path:
                     desktop_file_name = os.path.basename(el.desktop_file_path)
-                    terminal.host_threaded_sh(['gtk-launch', desktop_file_name], callback=self._check_launch_output, return_stderr=True)
+                    cwd = os.path.dirname(el.file_path)
+                    terminal.host_threaded_sh(['gtk-launch', desktop_file_name], callback=self._check_launch_output, return_stderr=True, cwd=cwd)
                 else:
                     self._run_from_desktopentry(el)
             else:
@@ -605,13 +608,71 @@ class AppImageProvider():
             
         return False
 
+    def move_to_subfolder(self, el: AppImageListElement):
+        if not el.file_path:
+            raise Exception('AppImage file path not specified')
+
+        current_path = el.file_path
+        current_dir = os.path.dirname(current_path)
+        filename = os.path.basename(current_path)
+        
+        # Create subfolder named after the filename
+        subfolder_name = os.path.splitext(filename)[0]
+        new_dir = os.path.join(current_dir, subfolder_name)
+
+        if os.path.exists(new_dir):
+            if os.path.isdir(new_dir):
+                # If it already exists and is a directory, we can still use it, 
+                # but let's check if the file is already there
+                pass
+            else:
+                raise Exception(f'Cannot create directory {new_dir}: a file with the same name already exists')
+        else:
+            os.makedirs(new_dir)
+
+        new_path = os.path.join(new_dir, filename)
+
+        if os.path.exists(new_path):
+            raise Exception(f'File {new_path} already exists')
+
+        # Move the AppImage
+        shutil.move(current_path, new_path)
+        el.file_path = new_path
+
+        # Update desktop file
+        if el.desktop_file_path:
+            jd_desktop_file = JdDesktopEntry.from_file(el.desktop_file_path)
+            jd_desktop_file.TryExec = new_path
+            
+            # Rebuild Exec command with env vars and arguments
+            exec_arguments = el.exec_arguments
+            env_vars = ' '.join(el.env_variables)
+            if exec_arguments:
+                exec_arguments = f' {exec_arguments}'
+            if env_vars:
+                env_vars = f'env {env_vars} '
+
+            jd_desktop_file.Exec = f'{env_vars}{shlex.quote(new_path)}{exec_arguments}'
+            
+            # Update Actions as well
+            for a, action in jd_desktop_file.Actions.items():
+                a_exec_args = extract_terminal_arguments(action.Exec)
+                action.Exec = shlex.join([new_path, *a_exec_args['arguments']])
+
+            jd_desktop_file.write_file(el.desktop_file_path)
+            el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
+            
+            update_dkt_db = terminal.host_sh(['update-desktop-database', self.user_desktop_files_path, '-q'], return_stderr=True)
+            logging.debug(update_dkt_db)
+
     # Private methods
     def _run_filepath(self, el: AppImageListElement):
         is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) != None
+        cwd = os.path.dirname(el.file_path)
 
         if is_nixos:
             self._nixos_checks()
-            terminal.host_threaded_sh(['appimage-run', el.file_path], callback=self._check_launch_output, return_stderr=True)
+            terminal.host_threaded_sh(['appimage-run', el.file_path], callback=self._check_launch_output, return_stderr=True, cwd=cwd)
             return
 
         exec_args = []
@@ -619,20 +680,22 @@ class AppImageProvider():
             exec_args = shlex.split(el.desktop_entry.getExec())[1:]
             exec_args = [i for i in exec_args if i not in self.desktop_exec_codes]
 
-        terminal.host_threaded_sh([el.file_path, *exec_args], callback=self._check_launch_output, return_stderr=True)
+        terminal.host_threaded_sh([el.file_path, *exec_args], callback=self._check_launch_output, return_stderr=True, cwd=cwd)
 
     def _run_from_desktopentry(self, el: AppImageListElement):
         is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) != None
+        cwd = os.path.dirname(el.file_path)
 
         if is_nixos:
             self._nixos_checks()
             cmd = ['appimage-run', el.desktop_entry.getTryExec()]
+            terminal.host_threaded_sh(cmd, callback=self._check_launch_output, return_stderr=True, cwd=cwd)
             return
 
         cmd = shlex.split(el.desktop_entry.getExec())
         cmd = [i for i in cmd if i not in self.desktop_exec_codes]
 
-        terminal.host_threaded_sh(cmd, callback=self._check_launch_output, return_stderr=True)
+        terminal.host_threaded_sh(cmd, callback=self._check_launch_output, return_stderr=True, cwd=cwd)
 
     def _nixos_checks(self):
         try:
