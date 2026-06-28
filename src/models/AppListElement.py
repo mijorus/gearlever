@@ -12,6 +12,7 @@ class InstalledStatus(Enum):
     INSTALLING = 6
     UPDATE_AVAILABLE = 7
     UPDATING = 8
+    PREPARING_UPDATE = 9
 
 class AppListElement():
     def __init__(self, name: str, description: str, provider: str, installed_status: InstalledStatus, size: float=0):

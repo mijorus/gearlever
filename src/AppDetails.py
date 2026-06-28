@@ -415,7 +415,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
                 except Exception as e:
                     logging.error(str(e))
-        elif self.app_list_element.installed_status == InstalledStatus.UPDATING:
+        elif self.app_list_element.installed_status in [InstalledStatus.UPDATING, InstalledStatus.PREPARING_UPDATE]:
             if self.update_manager:
                 self.update_manager.cancel_download()
                 self.update_installation_status()
@@ -448,7 +448,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
             return
 
-        self.app_list_element.set_installed_status(InstalledStatus.UPDATING)
+        self.app_list_element.set_installed_status(InstalledStatus.PREPARING_UPDATE)
         self.update_installation_status()
 
         if not self.update_manager:
@@ -458,9 +458,8 @@ class AppDetails(Gtk.ScrolledWindow):
 
         try:
             self.emit('update-started', None)
-            update_result = appimage_provider.update_from_url(self.update_manager, self.app_list_element, status_cb= lambda s: \
-                GLib.idle_add(lambda:  self.update_action_button.set_label(str(round(s * 100)) + ' %')
-            ))
+            update_result = appimage_provider.update_from_url(self.update_manager, self.app_list_element, 
+                status_cb=self.update_percentage_callback)
 
             if update_result == None:
                 update_success = False
@@ -489,6 +488,14 @@ class AppDetails(Gtk.ScrolledWindow):
             self.complete_load(icon, generation)
             self.update_installation_status()
 
+
+    @idle
+    def update_percentage_callback(self, perc: float):
+        if self.app_list_element.installed_status == InstalledStatus.PREPARING_UPDATE:
+            self.app_list_element.set_installed_status(InstalledStatus.UPDATING)
+            self.update_installation_status()
+        
+        self.update_action_button.set_label(str(round(perc * 100)) + ' %')
 
     @idle
     def show_update_error_dialog(self, msg: str):
@@ -575,13 +582,13 @@ class AppDetails(Gtk.ScrolledWindow):
 
         elif self.app_list_element.installed_status == InstalledStatus.UPDATE_AVAILABLE:
             pass
-        elif self.app_list_element.installed_status == InstalledStatus.UPDATING:
+        elif self.app_list_element.installed_status == InstalledStatus.PREPARING_UPDATE or \
+            self.app_list_element.installed_status == InstalledStatus.UPDATING:
             self.primary_action_button.set_sensitive(False)
             self.secondary_action_button.set_label(self.CANCEL_UPDATE)
-            self.secondary_action_button.set_sensitive(True)
+            self.secondary_action_button.set_sensitive(self.app_list_element.installed_status == InstalledStatus.UPDATING)
             self.secondary_action_button.set_css_classes([*self.common_btn_css_classes])
             self.update_action_button.set_sensitive(False)
-
         elif self.app_list_element.installed_status == InstalledStatus.ERROR:
             self.primary_action_button.set_label(_('Error'))
             self.primary_action_button.set_css_classes([*self.common_btn_css_classes, 'destructive-action'])
