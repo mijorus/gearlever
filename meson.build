@@ -1,5 +1,5 @@
 project('gearlever',
-          version: '4.5.4',
+          version: '4.5.5',
     meson_version: '>= 1.0.0',
   default_options: [ 'warning_level=2',
                    ],
