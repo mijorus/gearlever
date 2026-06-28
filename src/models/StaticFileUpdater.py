@@ -21,7 +21,7 @@ class StaticFileUpdater(UpdateManager):
     label = _('Static URL')
     handles_embedded = 'zsync|'
     name = 'StaticFileUpdater'
-    currend_download: Optional[requests.Response]
+    current_download: Optional[requests.Response]
 
     @staticmethod
     def get_url_headers(url):
@@ -55,6 +55,7 @@ class StaticFileUpdater(UpdateManager):
     def __init__(self, el, embedded=False) -> None:
         super().__init__(embedded=embedded, el=el)
         self.form_row = None
+        self.current_download = None
 
     def download(self, status_update_cb) -> tuple[str, str]:
         random_name = get_random_string()
@@ -88,9 +89,9 @@ class StaticFileUpdater(UpdateManager):
         if not dwnl_url:
             raise Exception('Missing download URL')
 
-        self.currend_download = requests.get(dwnl_url, stream=True)
-        etag = self.currend_download.headers.get("etag", '')
-        total_size = int(self.currend_download.headers.get("content-length", 0))
+        self.current_download = requests.get(dwnl_url, stream=True)
+        etag = self.current_download.headers.get("etag", '')
+        total_size = int(self.current_download.headers.get("content-length", 0))
         status = 0
         block_size = 1024
 
@@ -99,7 +100,7 @@ class StaticFileUpdater(UpdateManager):
 
         d_notify_at = 0.1
         with open(fname, 'wb') as f:
-            for chunk in self.currend_download.iter_content(block_size):
+            for chunk in self.current_download.iter_content(block_size):
                 f.write(chunk)
 
                 status += block_size
@@ -115,13 +116,13 @@ class StaticFileUpdater(UpdateManager):
         if os.path.getsize(fname) < total_size:
             raise DownloadInterruptedException()
 
-        self.currend_download = None
+        self.current_download = None
         return fname, etag
 
     def cancel_download(self):
-        if self.currend_download:
-            self.currend_download.close()
-            self.currend_download = None
+        if self.current_download:
+            self.current_download.close()
+            self.current_download = None
 
     def cleanup(self):
         if os.path.exists(self.download_folder):
