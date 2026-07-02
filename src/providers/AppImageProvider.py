@@ -263,9 +263,27 @@ class AppImageProvider():
     def can_install_file(self, file: Gio.File) -> bool:
         return get_giofile_content_type(file) in self.supported_mimes
 
+    def identity_name(self, el: AppImageListElement) -> str:
+        # The name to match apps by, independent of any custom display name:
+        # the AppImage's own name (X-AppImage-Name), falling back to the current
+        # name for entries created before that key existed / not yet installed.
+        if el.desktop_entry:
+            original = el.desktop_entry.get('X-AppImage-Name')
+            if original:
+                # A kept side-by-side copy is auto-named "<name> (<version>)";
+                # keep its own identity so it isn't mistaken for the live app
+                # during update/replace detection.
+                name = el.desktop_entry.getName()
+                if not el.desktop_entry.get('X-GearLever-CustomName') \
+                        and name != original \
+                        and name.startswith(f'{original} (') and name.endswith(')'):
+                    return name
+                return original
+        return el.name
+
     def is_updatable(self, el: AppImageListElement) -> bool:
         for item in self.list_installed():
-            if item.name == el.name:
+            if self.identity_name(item) == self.identity_name(el):
                 return True
 
         return False

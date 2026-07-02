@@ -261,9 +261,10 @@ class Cli():
 
         apps = appimage_provider.list_installed()
 
+        incoming_id = appimage_provider.identity_name(list_element)
         already_installed = None
         for a in apps:
-            if a.name == list_element.name:
+            if appimage_provider.identity_name(a) == incoming_id:
                 already_installed = a
                 break
 
