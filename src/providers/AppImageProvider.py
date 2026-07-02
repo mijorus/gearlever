@@ -366,6 +366,11 @@ class AppImageProvider():
             # Get default exec arguments
             term_arguments = extract_terminal_arguments(extracted_appimage.desktop_entry.getExec())
             exec_arguments = term_arguments['arguments']
+
+            # Preserve the user's custom exec arguments across updates (mirrors env_variables below)
+            if el.updating_from and el.updating_from.exec_arguments:
+                exec_arguments = shlex.split(el.updating_from.exec_arguments)
+
             el.exec_arguments = ' '.join(exec_arguments)
 
             jd_desktop_entry = JdDesktopEntry.from_file(
