@@ -1,0 +1,585 @@
+# Slovak translation of Gear lever
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Jozef Gaal <preklady@mayday.sk>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Gear lever 4.5.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-07 15:44+0200\n"
+"PO-Revision-Date: 2026-07-09 22:34+0200\n"
+"Last-Translator: Jozef Gaal <preklady@mayday.sk>\n"
+"Language-Team: Jozef Gaal <preklady@mayday.sk>\n"
+"Language: sk_SK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.9\n"
+
+#: data/it.mijorus.gearlever.desktop.in:3
+msgid "Gear Lever"
+msgstr "Gear Lever"
+
+#: data/it.mijorus.gearlever.desktop.in:4
+msgid "An utility to manage AppImages with ease!"
+msgstr "Nástroj na jednoduchú správu súborov AppImage!"
+
+#: data/it.mijorus.gearlever.desktop.in:12
+msgid "AppImage;"
+msgstr "AppImage;"
+
+#: src/main.py:112
+msgid "translator_credits"
+msgstr "Jozef Gaal <preklady@mayday.sk>"
+
+#: src/AppDetails.py:34 src/AppDetails.py:90 src/AppDetails.py:476
+msgid "Update"
+msgstr "Aktualizovať"
+
+#: src/AppDetails.py:35
+msgid "Save"
+msgstr "Uložiť"
+
+#: src/AppDetails.py:36
+msgid "Saved"
+msgstr "Uložené"
+
+#: src/AppDetails.py:37
+msgid "Invalid data"
+msgstr "Neplatné údaje"
+
+#: src/AppDetails.py:38
+msgid "Cancel update"
+msgstr "Zrušiť aktualizáciu"
+
+#: src/AppDetails.py:39 src/InstalledAppsList.py:30
+msgid "Checking updates..."
+msgstr "Kontrola aktualizácií..."
+
+#: src/AppDetails.py:40
+msgid "No updates available"
+msgstr "Nie sú k dispozícii žiadne aktualizácie"
+
+#: src/AppDetails.py:41
+msgid "This application includes update information provided by the developer"
+msgstr ""
+"Táto aplikácia obsahuje informácie o aktualizáciách poskytnuté vývojárom"
+
+#: src/AppDetails.py:42
+msgid "Manage update details for this application"
+msgstr "Spravovať podrobnosti aktualizácie pre túto aplikáciu"
+
+#: src/AppDetails.py:244
+msgid ""
+"This app is located outside the default folder\n"
+"<small>You can hide external apps in the settings</small>"
+msgstr ""
+"Táto aplikácia sa nachádza mimo predvoleného priečinka\n"
+"<small>Externé aplikácie môžete skryť v nastaveniach</small>"
+
+#: src/AppDetails.py:257
+msgid "Please, verify the source of this app before opening it"
+msgstr "Pred otvorením tejto aplikácie, si prosím overte jej zdroj"
+
+#: src/AppDetails.py:258
+msgid "Unlock"
+msgstr "Odomknúť"
+
+#: src/AppDetails.py:355
+msgid "Unkown Error"
+msgstr "Neznáma chyba"
+
+#: src/AppDetails.py:404
+msgid "Launching..."
+msgstr "Spúšťa sa..."
+
+#: src/AppDetails.py:444
+#, python-brace-format
+msgid ""
+"{app_name} is running, please close it before proceeding with the update"
+msgstr ""
+"Aplikácia {app_name} je spustená, pred pokračovaním s aktualizáciou ju "
+"prosím zatvorte"
+
+#: src/AppDetails.py:497
+msgid "Update error"
+msgstr "Chyba aktualizácie"
+
+#: src/AppDetails.py:501
+msgid "Close"
+msgstr "Zavrieť"
+
+#: src/AppDetails.py:508
+msgid "Do you really want to remove this app?"
+msgstr "Naozaj chcete odstrániť túto aplikáciu?"
+
+#: src/AppDetails.py:511 src/components/AppDetailsConflictModal.py:14
+msgid "Cancel"
+msgstr "Zrušiť"
+
+#: src/AppDetails.py:512 src/AppDetails.py:551
+msgid "Remove"
+msgstr "Odstrániť"
+
+#: src/AppDetails.py:547 src/AppDetails.py:567
+msgid "This app runs in the terminal"
+msgstr "Táto aplikácia beží v termináli"
+
+#: src/AppDetails.py:549 src/AppDetails.py:564 src/AppDetails.py:570
+msgid "Launch"
+msgstr "Spustiť"
+
+#: src/AppDetails.py:555
+msgid "Uninstalling..."
+msgstr "Prebieha odinštalovanie..."
+
+#: src/AppDetails.py:559
+msgid "Installing..."
+msgstr "Inštaluje sa..."
+
+#: src/AppDetails.py:572
+msgid "Move to the app menu"
+msgstr "Presunúť do ponuky aplikácie"
+
+#: src/AppDetails.py:585
+msgid "Error"
+msgstr "Chyba"
+
+#: src/AppDetails.py:596
+msgid "This app might not be compatible with your system architecture"
+msgstr "Táto aplikácia nemusí byť kompatibilná s architektúrou vášho systému"
+
+#: src/AppDetails.py:913
+msgid "Add a website"
+msgstr "Pridať webstránku"
+
+#: src/AppDetails.py:917
+msgid "Website"
+msgstr "Webstránka"
+
+#: src/AppDetails.py:930
+msgid "Open URL"
+msgstr "Otvoriť URL adresu"
+
+#: src/AppDetails.py:947
+msgid "How it works"
+msgstr "Ako to funguje"
+
+#: src/AppDetails.py:969
+msgid "Update management"
+msgstr "Správa aktualizácií"
+
+#: src/AppDetails.py:976
+msgid "Default"
+msgstr "Predvolené"
+
+#: src/AppDetails.py:982
+msgid "Source"
+msgstr "Zdroj"
+
+#: src/AppDetails.py:983
+msgid "Select the source type"
+msgstr "Vyberte typ zdroja"
+
+#: src/AppDetails.py:1009
+msgid "Reload metadata"
+msgstr "Obnovit metadáta"
+
+#: src/AppDetails.py:1010
+msgid ""
+"Update information like icon, version and description.\n"
+"Useful if the app updated itself."
+msgstr ""
+"Aktualizujte informácie, ako sú ikona, verzia a popis.\n"
+"Užitočné, ak sa aplikácia aktualizovala sama."
+
+#: src/AppDetails.py:1022
+msgid "Command line arguments"
+msgstr "Argumenty príkazového riadku"
+
+#: src/AppDetails.py:1040
+msgid "Hash"
+msgstr "Hash"
+
+#: src/AppDetails.py:1050
+msgid "Path"
+msgstr "Cesta"
+
+#: src/AppDetails.py:1052
+msgid "Open Folder"
+msgstr "Otvoriť priečinok"
+
+#: src/AppDetails.py:1062
+msgid "Package type"
+msgstr "Typ balíka"
+
+#: src/AppDetails.py:1080
+msgid "Key"
+msgstr "Kľúč"
+
+#: src/AppDetails.py:1081
+msgid "Value"
+msgstr "Hodnota"
+
+#: src/AppDetails.py:1120
+msgid "Environment variables"
+msgstr "Premenné prostredia"
+
+#: src/AppDetails.py:1121
+msgid "Add or customize environment for this application"
+msgstr "Pridať alebo prispôsobiť prostredie pre túto aplikáciu"
+
+#: src/GearleverWindow.py:39
+msgid "Open a new AppImage"
+msgstr "Otvoriť nový súbor AppImage"
+
+#: src/GearleverWindow.py:51
+msgid "Open"
+msgstr "Otvoriť"
+
+#: src/GearleverWindow.py:299
+msgid "Open a file"
+msgstr "Otvoriť súbor"
+
+#: src/InstalledAppsList.py:28
+msgid "Check for updates"
+msgstr "Skontrolovať aktualizácie"
+
+#: src/InstalledAppsList.py:29
+msgid "No updates found"
+msgstr "Nie sú k dispozícii žiadne aktualizácie"
+
+#: src/InstalledAppsList.py:31
+msgid "No Connection"
+msgstr "Žiadne pripojenie"
+
+#: src/InstalledAppsList.py:32
+msgid "Update all"
+msgstr "Aktualizovať všetky"
+
+#: src/InstalledAppsList.py:55
+msgid "Filter installed applications"
+msgstr "Filtrovať nainštalované aplikácie"
+
+#: src/InstalledAppsList.py:62
+msgid "Installed applications"
+msgstr "Nainštalované aplikácie"
+
+#: src/preferences.py:27
+msgid "General"
+msgstr "Všeobecné"
+
+#: src/preferences.py:32
+msgid "AppImage default location"
+msgstr "Predvolené umiestnenie súboru AppImage"
+
+#: src/preferences.py:41
+msgid "Show integrated AppImages outside the default folder"
+msgstr "Zobraziť integrované súbory AppImage mimo predvoleného priečinka"
+
+#: src/preferences.py:43
+msgid ""
+"List AppImages that have been integrated into the system menu but are "
+"located outside the default folder"
+msgstr ""
+"Zoznam aplikácií AppImage, ktoré boli integrované do systémového menu, ale "
+"nachádzajú sa mimo predvoleného priečinka"
+
+#: src/preferences.py:50
+msgid "Updates management"
+msgstr "Správa aktualizácií"
+
+#: src/preferences.py:52
+msgid "Check updates on system startup"
+msgstr "Skontrolovať aktualizácie pri spustení systému"
+
+#: src/preferences.py:54
+msgid ""
+"Receive a notification when a new update is detected; updates will not be "
+"installed automatically"
+msgstr ""
+"Prijať upozornenie, keď sa zistí nová aktualizácia; aktualizácie sa nebudú "
+"inštalovať automaticky"
+
+#: src/preferences.py:61
+msgid "File management"
+msgstr "Spravovanie súborov"
+
+#: src/preferences.py:63
+msgid "Move AppImages into the destination folder"
+msgstr "Presunúť súbory AppImage do cieľového priečinka"
+
+#: src/preferences.py:64
+msgid "Reduce disk usage"
+msgstr "Znížiť využitie diskového priestoru"
+
+#: src/preferences.py:68
+msgid "Clone AppImages into the destination folder"
+msgstr "Klonovať súbory AppImage do cieľového priečinka"
+
+#: src/preferences.py:69
+msgid "Keep the original file and create a copy in the destination folder"
+msgstr "Ponechať pôvodný súbor a vytvoriť jeho kópiu v cieľovom priečinku"
+
+#: src/preferences.py:95
+msgid "Naming conventions"
+msgstr "Pravidlá pomenovania"
+
+#: src/preferences.py:97
+msgid "Use executable name for integrated terminal apps"
+msgstr ""
+"Použiť názov spustiteľného súboru pre integrované terminálové aplikácie"
+
+#: src/preferences.py:99
+msgid ""
+"If enabled, apps that run in the terminal are renamed as their executable.\n"
+"You would need to add the aforementioned folder to your $PATH manually.\n"
+"\n"
+"For example, \"golang_x86_64.appimage\" will be saved as \"go\""
+msgstr ""
+"Ak je táto funkcia zapnutá, aplikácie spúšťané v termináli sa premenujú na "
+"názov svojho spustiteľného súboru.\n"
+"Uvedený priečinok budete musieť do premennej $PATH pridať ručne.\n"
+"\n"
+"Napríklad súbor „golang_x86_64.appimage“ sa uloží ako „go“."
+
+#: src/preferences.py:105
+msgid "Preview new apps in a minimal UI"
+msgstr "Náhľad nových aplikácií v minimalistickom používateľskom rozhraní"
+
+#: src/preferences.py:110
+msgid "Use safe mechanisms to load metadata"
+msgstr "Na načítanie metadát použiť bezpečné mechanizmy"
+
+#: src/preferences.py:112
+msgid ""
+"If enabled, the app will try to load an Appimage without using the built-in "
+"appimage-extract command.\n"
+"Disable only if you trust your sources: malicious apps could execute code "
+"when loading the metadata."
+msgstr ""
+"Ak je táto funkcia zapnutá, aplikácia sa pokúsi načítať súbor AppImage bez "
+"použitia vstavaného príkazu appimage-extract.\n"
+"Túto funkciu vypínajte len vtedy, ak dôverujete svojim zdrojom: škodlivé "
+"aplikácie by mohli pri načítaní metadát spustiť kód."
+
+#: src/preferences.py:119
+msgid "Debugging"
+msgstr "Odstraňovanie chýb"
+
+#: src/preferences.py:121
+msgid "Enable debug logs"
+msgstr "Povoliť režim ladenia"
+
+#: src/preferences.py:123
+msgid ""
+"Increases log verbosity, occupying more disk space and potentially impacting "
+"performance.\n"
+"Requires a restart."
+msgstr ""
+"Zvyšuje podrobnosť protokolovania, čím zaberá viac miesta na disku a môže "
+"mať vplyv na výkon.\n"
+"Vyžaduje reštart."
+
+#: src/preferences.py:149
+msgid "The folder must writeable"
+msgstr "Priečinok musí byť zapisovateľný"
+
+#: src/preferences.py:152 src/WelcomeScreen.py:117
+msgid "Select a folder"
+msgstr "Vybrať priečinok"
+
+#: src/WelcomeScreen.py:114
+msgid "The folder must be in your home directory"
+msgstr "Priečinok musí byť vo vašom domovskom adresári"
+
+#: src/gtk/main-menu.ui:6
+msgid "_Preferences"
+msgstr "_Predvoľby"
+
+#: src/gtk/main-menu.ui:10
+msgid "_Open Log File"
+msgstr "_Otvoriť súbor záznamu"
+
+#: src/gtk/main-menu.ui:14
+msgid "_Show tutorial"
+msgstr "_Zobraziť návod"
+
+#: src/gtk/main-menu.ui:18
+msgid "_About Gear lever"
+msgstr "O _aplikácii Gear lever"
+
+#: src/components/AppDetailsConflictModal.py:10
+#, python-brace-format
+msgid "Conflict with \"{app_name}\""
+msgstr "Konflikt s aplikáciou „{app_name}“"
+
+#: src/components/AppDetailsConflictModal.py:11
+msgid "There is already an app with the same name, how do you want to proceed?"
+msgstr "Už existuje aplikácia s rovnakým názvom, ako chcete postupovať?"
+
+#: src/components/AppDetailsConflictModal.py:17
+msgid "Keep both"
+msgstr "Ponechať obe"
+
+#: src/components/AppDetailsConflictModal.py:19
+msgid "Replace"
+msgstr "Nahradiť"
+
+#: src/gtk/drag-drop.ui:18
+msgid "Drop your file here"
+msgstr "Súbor vložte sem"
+
+#: src/gtk/empty-list-placeholder.ui:18
+msgid "Get started"
+msgstr "Začnime"
+
+#: src/gtk/empty-list-placeholder.ui:30
+msgid "Drag and drop an AppImage here or click on the \"+\" icon."
+msgstr "Pretiahnite sem súbor AppImage alebo kliknite na ikonu „+“."
+
+#: src/gtk/empty-list-placeholder.ui:35
+msgid "If you don't see your apps, check if the selected folder is correct."
+msgstr ""
+"Ak sa vám aplikácie nezobrazujú, skontrolujte, či je vybraný správny "
+"priečinok."
+
+#: src/gtk/empty-list-placeholder.ui:46
+msgid "Show welcome screen"
+msgstr "Zobraziť uvítaciu obrazovku"
+
+#: src/gtk/empty-list-placeholder.ui:56
+msgid "Open Preferences"
+msgstr "Otvoriť nastavenia"
+
+#: src/gtk/help-overlay.ui:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "Všeobecné"
+
+#: src/gtk/help-overlay.ui:14
+msgctxt "shortcut window"
+msgid "Show Shortcuts"
+msgstr "Zobraziť klávesové skratky"
+
+#: src/gtk/help-overlay.ui:20
+msgctxt "shortcut window"
+msgid "Quit"
+msgstr "Ukončiť"
+
+#: src/gtk/tutorial/1.ui:26
+msgid "Hi, welcome to Gear lever"
+msgstr "Ahojte, vitajte v aplikácii Gear lever"
+
+#: src/gtk/tutorial/1.ui:35
+msgid "An app that helps you integrate AppImages into your system."
+msgstr ""
+"Aplikácia, ktorá vám pomôže integrovať balíčky AppImage do vášho systému."
+
+#: src/gtk/tutorial/1.ui:43
+msgid "Click \"Next\" to follow this tutorial."
+msgstr "Kliknite na „Ďalej“, aby ste pokračovali v tomto návode."
+
+#: src/gtk/tutorial/2.ui:12
+msgid "Set the AppImage location"
+msgstr "Nastavte umiestnenie súboru AppImage"
+
+#: src/gtk/tutorial/2.ui:13
+msgid ""
+"Gear lever groups all your AppImages into a specific folder and keeps them "
+"organized."
+msgstr ""
+"Gear lever zoskupí všetky vaše súbory AppImage do konkrétneho priečinka a "
+"udržiava ich prehľadne usporiadané."
+
+#: src/gtk/tutorial/2.ui:21
+#, python-brace-format
+msgid "<b>By default, AppImages are saved at: {location}</b>"
+msgstr "<b>Súbory AppImage sa štandardne ukladajú do: {location}</b>"
+
+#: src/gtk/tutorial/2.ui:29
+msgid "Change AppImage location"
+msgstr "Zmeniť umiestnenie súborov AppImage"
+
+#: src/gtk/tutorial/2.ui:38
+msgid "You can customize it later in the preferences."
+msgstr "Toto si môžete neskôr prispôsobiť v nastaveniach."
+
+#: src/gtk/tutorial/3.ui:23
+msgid "Set Gear lever as default"
+msgstr "Nastaviť Gear lever ako predvolenú"
+
+#: src/gtk/tutorial/3.ui:32
+msgid ""
+"Click on the button to open a demo folder, containing a sample AppImage."
+msgstr ""
+"Kliknutím na tlačidlo otvoríte ukážkový priečinok, ktorá obsahuje ukážkový "
+"súbor AppImage."
+
+#: src/gtk/tutorial/3.ui:40
+msgid ""
+"Use the right-click menu to set Gear lever as the default app for "
+"\".appimage\" files"
+msgstr ""
+"Pomocou kontextového menu nastavte aplikáciu Gear lever ako predvolenú "
+"aplikáciu pre súbory s príponou „.appimage“"
+
+#: src/gtk/tutorial/3.ui:54
+msgid "Open demo folder"
+msgstr "Otvoriť ukážkový priečinok"
+
+#: src/gtk/tutorial/3.ui:63
+msgid "This step is optional"
+msgstr "Tento krok je voliteľný"
+
+#: src/gtk/tutorial/last.ui:21
+msgid "All done, let's go!"
+msgstr "Hotovo, poďme na to!"
+
+#: src/gtk/tutorial/last.ui:24
+msgid "Close tutorial"
+msgstr "Zatvoriť návod"
+
+#: src/models/AppListElement.py:19
+msgid "No description provided"
+msgstr "Žiadny popis nebol uvedený"
+
+#: src/providers/AppImageProvider.py:580
+msgid ""
+"The downloaded file is not a valid appimage, please check if the provided "
+"URL is correct"
+msgstr ""
+"The downloaded file is not a valid appimage, please check if the provided "
+"URL is correct"
+
+#: src/providers/AppImageProvider.py:641
+msgid "Running AppImages on NixOS requires appimage-run"
+msgstr ""
+"Na spustenie súborov AppImage v systéme NixOS je potrebný balík appimage-run"
+
+#: src/providers/AppImageProvider.py:655
+#, python-brace-format
+msgid ""
+"AppImages require FUSE to run. You might still be able to run it with --"
+"appimage-extract-and-run in the command line arguments. \n"
+"\n"
+"Click the link below for more information. \n"
+"{url}"
+msgstr ""
+"Na spustenie súborov AppImage je potrebný modul FUSE. Možno ich však budete "
+"môcť spustiť aj pomocou argumentu --appimage-extract-and-run v príkazovom "
+"riadku. \n"
+"\n"
+"Kliknite na nižšie uvedený odkaz, ak chcete získať ďalšie informácie. \n"
+"{url}"
+
+#: src/providers/AppImageProvider.py:742
+msgid ""
+"Any attempts at loading this app's metadata failed; if you want proceed "
+"using appimage-extract, please disable the security option in the settings."
+msgstr ""
+"Všetky pokusy o načítanie metadát tejto aplikácie zlyhali; ak chcete "
+"pokračovať pomocou appimage-extract, deaktivujte prosím bezpečnostnú voľbu v "
+"nastaveniach."
