@@ -237,6 +237,7 @@ class GearleverWindow(Adw.Window):
             self.left_button.set_visible(False)
         else:
             self.search_btn.set_visible(True)
+            self.left_button.set_visible(True)
             self.left_button.set_child(self.open_appimage_button_child)
 
         if in_apps_list:
