@@ -3,6 +3,7 @@ import os
 import logging
 import json
 import traceback
+from contextlib import redirect_stdout
 from .lib.constants import APP_ID
 from gi.repository import Gio # noqa
 from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
@@ -296,12 +297,22 @@ class Cli():
 
     @staticmethod
     def list_installed(argv):
-        Cli._print_help_if_requested(argv, [])
+        Cli._print_help_if_requested(argv, [
+            ['--json', 'Prints a versioned, machine-readable JSON document'],
+        ])
 
         apps = appimage_provider.list_installed()
+        json_output = '--json' in argv
 
         table = []
         for a in apps:
+            if json_output:
+                with redirect_stdout(sys.stderr):
+                    manager = UpdateManagerChecker.check_url_for_app(a)
+
+                table.append(Cli._make_app_json(a, manager))
+                continue
+
             manager: UpdateManager | None = UpdateManagerChecker.check_url_for_app(a)
             update_mng = 'UpdatesNotAvailable'
             if manager:
@@ -315,17 +326,29 @@ class Cli():
             v = a.version or 'Not specified'
             table.append([a.name, f'[{v}]', update_mng, a.file_path])
 
+        if json_output:
+            print(json.dumps({
+                'schema_version': 1,
+                'installed': table,
+            }, ensure_ascii=False))
+            return
+
         Cli._print_table(table)
 
     @staticmethod
     def list_updates(argv):
-        # Cli._print_help_if_requested(argv, [['-v', 'Prints update URL information']])
+        Cli._print_help_if_requested(argv, [
+            ['--json', 'Prints a versioned, machine-readable JSON document'],
+        ])
 
         installed = appimage_provider.list_installed()
         table = []
+        updates = []
+        json_output = '--json' in argv
 
         if not check_internet():
-            print('Internet connection not available')
+            print('Internet connection not available',
+                  file=sys.stderr if json_output else sys.stdout)
             sys.exit(1)
 
         for el in installed:
@@ -334,7 +357,17 @@ class Cli():
                 continue
 
             try:
-                if manager.is_update_available():
+                if json_output:
+                    with redirect_stdout(sys.stderr):
+                        update_available = manager.is_update_available()
+                else:
+                    update_available = manager.is_update_available()
+
+                if update_available:
+                    if json_output:
+                        updates.append(Cli._make_app_json(el, manager))
+                        continue
+
                     s = f'[Update available, {manager.name}]'
                     if manager.embedded:
                         s = f'[Update available, {manager.name}|embedded]'
@@ -346,11 +379,40 @@ class Cli():
             except Exception as e:
                 logging.error(traceback.format_exc())
 
+        if json_output:
+            print(json.dumps({
+                'schema_version': 1,
+                'updates': updates,
+            }, ensure_ascii=False))
+            return
+
         if not table:
             print('No updates available')
             return
 
         Cli._print_table(table)
+
+    @staticmethod
+    def _make_app_json(el, manager):
+        try:
+            with redirect_stdout(sys.stderr):
+                running = appimage_provider.is_app_running(el)
+        except Exception:
+            running = None
+            logging.error(traceback.format_exc())
+
+        desktop_file_path = getattr(el, 'desktop_file_path', None)
+        return {
+            'name': el.name,
+            'path': el.file_path,
+            'desktop_id': os.path.basename(desktop_file_path) if desktop_file_path else None,
+            'current_version': getattr(el, 'version', None),
+            'available_version': None,
+            'download_size': None,
+            'manager': manager.name if manager else None,
+            'embedded_source': bool(manager and manager.embedded),
+            'running': running,
+        }
 
     @staticmethod
     def list_update_managers(argv):

@@ -45,6 +45,19 @@ Usage: flatpak run it.mijorus.gearlever [OPTION...]
 
 ```
 
+Use `--json` with the list commands to get machine-readable JSON documents:
+
+```sh
+gearlever --list-installed --json
+gearlever --list-updates --json
+```
+
+The documents have `schema_version: 1` and an `installed` or `updates` array.
+Each entry contains its name, path, desktop ID, current and available versions,
+download size, update manager, whether its source is embedded, and whether the
+AppImage is running. Unavailable metadata is reported as `null`; an empty list
+is represented by an empty array.
+
 For an improved user experience, add the following line to your `.bashrc` file
 
 ```sh
