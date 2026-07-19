@@ -363,13 +363,21 @@ class AppImageProvider():
             dest_desktop_file_path = f'{os.path.join(self.user_desktop_files_path, prefixed_filename)}.desktop'
             dest_desktop_file_path = dest_desktop_file_path.replace(' ', '_')
 
-            # Get default exec arguments
+            # Get default exec arguments shipped by this version of the appimage
             term_arguments = extract_terminal_arguments(extracted_appimage.desktop_entry.getExec())
             exec_arguments = term_arguments['arguments']
+            new_default_exec_arguments = ' '.join(exec_arguments)
 
-            # Preserve the user's custom exec arguments across updates (mirrors env_variables below)
+            # Only preserve the previous exec arguments if the user actually customized them,
+            # i.e. they differ from the default that was shipped with the version being replaced.
+            # Otherwise, an update that ships a new set of default arguments would always be
+            # silently discarded in favor of the old, no-longer-relevant defaults.
             if el.updating_from and el.updating_from.exec_arguments:
-                exec_arguments = shlex.split(el.updating_from.exec_arguments)
+                previous_config = Config.get_app_config(el.updating_from)
+                previous_default_exec_arguments = previous_config.get('default_exec_arguments', '')
+
+                if el.updating_from.exec_arguments != previous_default_exec_arguments:
+                    exec_arguments = shlex.split(el.updating_from.exec_arguments)
 
             el.exec_arguments = ' '.join(exec_arguments)
 
@@ -427,7 +435,9 @@ class AppImageProvider():
                 el.env_variables.append('DESKTOPINTEGRATION=1')
                 self.update_desktop_file(el)
 
-            Config.set_app_config(el, {})
+            app_config = Config.get_app_config(el)
+            app_config['default_exec_arguments'] = new_default_exec_arguments
+            Config.set_app_config(el, app_config)
 
         except Exception as e:
             logging.error('Appimage installation error: ' + str(e))
