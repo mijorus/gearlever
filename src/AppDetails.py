@@ -1,3 +1,4 @@
+import shutil
 import time
 import logging
 import base64
@@ -103,6 +104,11 @@ class AppDetails(Gtk.ScrolledWindow):
         self.primary_action_buttons_row = CenteringBox(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         [self.primary_action_buttons_row.append(el) for el in [self.secondary_action_button, self.primary_action_button]]
         [action_buttons_row.append(el) for el in [self.primary_action_buttons_row, self.update_action_button]]
+
+        self.own_folder_checkbox = Gtk.CheckButton(
+            label = _('Install in its own folder'), halign = Gtk.Align.CENTER, margin_top = 10
+        )
+        action_buttons_row.append(self.own_folder_checkbox)
 
         [self.details_row.append(el) for el in [self.icon_slot, title_col, self.app_info_pills, action_buttons_row]]
 
@@ -212,7 +218,10 @@ class AppDetails(Gtk.ScrolledWindow):
         # Hashes
         if self.app_list_element.installed_status is not InstalledStatus.INSTALLED:
             gtk_list.append(self.create_app_hash_row())
-        
+
+        if self.app_list_element.installed_status is InstalledStatus.INSTALLED:
+            gtk_list.append(self.create_own_folder_info_row())
+
         self.update_installation_status()
 
         self.secondary_action_button.set_visible(True)
@@ -306,6 +315,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_subtitle.set_visible(False)
         self.secondary_action_button.set_visible(False)
         self.primary_action_button.set_visible(False)
+        self.own_folder_checkbox.set_visible(False)
         self.window_banner.set_revealed(False)
         self.app_info_pills.set_visible(False)
 
@@ -390,6 +400,7 @@ class AppDetails(Gtk.ScrolledWindow):
                     self.app_list_element.updating_from = old_version
                     self.provider.uninstall(old_version)
 
+                self.app_list_element.own_folder = self.own_folder_checkbox.get_active()
                 self.install_file(self.app_list_element)
 
         self.update_installation_status()
@@ -420,13 +431,45 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.update_manager.cancel_download()
                 self.update_installation_status()
 
+
+    def on_delete_own_folder_response(self, dialog, response: str, folder_path: str):
+        if response == 'delete':
+            try:
+                shutil.rmtree(folder_path)
+            except Exception as e:
+                logging.error(f'Failed to delete {folder_path}: {e}')
+
+    def show_delete_own_folder_dialog(self, folder_path: str):
+        dialog = Adw.MessageDialog(
+            transient_for=get_application_window(),
+            heading=_('Delete the app\'s data folder too?'),
+            body=_('This app kept extra files in its own folder besides the AppImage itself. Do you want to delete them as well?'),
+        )
+
+        dialog.add_response('keep', _('Keep data'))
+        dialog.add_response('delete', _('Delete data'))
+        dialog.set_response_appearance('delete', Adw.ResponseAppearance.DESTRUCTIVE)
+        dialog.set_close_response('keep')
+        dialog.connect('response', self.on_delete_own_folder_response, folder_path)
+
+        dialog.present()
+
     def on_remove_app_clicked(self, dialog, response: str):
         if response == 'remove':
             self.app_list_element.set_installed_status(InstalledStatus.UNINSTALLING)
             self.update_installation_status()
+            try:
+                leftover_folder = self.provider.uninstall(self.app_list_element)
+            except Exception as e:
+                app_name = self.app_list_element.name if self.app_list_element is not None else "unknown"
+                logging.error(f'Failed to uninstall {app_name}: {e}')
+                return
 
-            self.provider.uninstall(self.app_list_element)
             self.emit('uninstalled-app', self)
+
+            if leftover_folder:
+                self.show_delete_own_folder_dialog(leftover_folder)
+
 
     @_async
     def post_launch_animation(self, restore_as):
@@ -549,6 +592,9 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.primary_action_button.set_sensitive(True)
         self.secondary_action_button.set_sensitive(True)
+        self.own_folder_checkbox.set_visible(
+            self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED
+        )
 
         if self.app_list_element.installed_status == InstalledStatus.INSTALLED:
             if self.app_list_element.desktop_entry and self.app_list_element.desktop_entry.getTerminal():
@@ -1054,6 +1100,17 @@ class AppDetails(Gtk.ScrolledWindow):
         row_img = Gtk.Image(icon_name='gl-hash-symbolic', pixel_size=self.ACTION_ROW_ICON_SIZE)
         row.add_prefix(row_img)
 
+        return row
+
+    def create_own_folder_info_row(self) -> Adw.ActionRow:
+        subtitle = _('Yes') if self.app_list_element.own_folder else _('No')
+        row = Adw.ActionRow(
+            title=_('Installed in its own folder'),
+            subtitle=subtitle,
+            selectable=False
+        )
+        row_img = Gtk.Image(icon_name='gearlever-file-manager-symbolic', pixel_size=self.ACTION_ROW_ICON_SIZE)
+        row.add_prefix(row_img)
         return row
     
     def create_exec_path_row(self) -> Adw.ActionRow:

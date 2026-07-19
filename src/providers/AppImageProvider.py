@@ -1,3 +1,4 @@
+import errno
 import logging
 import glob
 import re
@@ -61,6 +62,7 @@ class AppImageListElement():
     external_folder: bool = False
     desktop_file_path: Optional[str] = None
     size: int = 0
+    own_folder: bool = False
 
     def set_installed_status(self, installed_status: InstalledStatus):
         self.installed_status = installed_status
@@ -114,9 +116,12 @@ class AppImageProvider():
 
                     if os.path.isfile(exec_location):
                         exec_gfile = Gio.File.new_for_path(exec_location)
-                        exec_in_defalut_folder = os.path.isfile(
+                        exec_in_default_folder = os.path.isfile(
                                 os.path.join(default_folder_path, exec_gfile.get_basename()))
-                        exec_in_folder = True if manage_from_outside else exec_in_defalut_folder
+                        exec_in_own_subfolder = os.path.dirname(
+                            os.path.dirname(exec_location)) == os.path.normpath(default_folder_path)
+                        exec_in_default_folder = exec_in_default_folder or exec_in_own_subfolder
+                        exec_in_folder = True if manage_from_outside else exec_in_default_folder
                         app_version = self._get_app_version(None, desktop_entry=entry, return_hash=False)
                         file_size = os.stat(exec_location).st_size
 
@@ -131,10 +136,11 @@ class AppImageProvider():
                                 provider=self.name,
                                 desktop_entry=entry,
                                 trusted=True,
-                                external_folder=(not exec_in_defalut_folder),
+                                external_folder=(not exec_in_default_folder),
                                 exec_arguments=exec_arguments,
                                 env_variables=exec_command_data['env_vars'],
                                 size=file_size,
+                                own_folder = exec_in_own_subfolder,
                             )
 
                             list_element.architecture = None
@@ -202,8 +208,10 @@ class AppImageProvider():
     def refresh_arch(self, el: AppImageListElement):
         el.architecture = self.get_elf_arch(el)
 
-    def uninstall(self, el: AppImageListElement, force_delete=False, remove_configuration=True):
+    def uninstall(self, el: AppImageListElement, force_delete=False, remove_configuration=True) -> Optional[str]:
         logging.info(f'Removing {el.file_path}')
+
+        own_folder_path = os.path.dirname(el.file_path) if el.own_folder else None
 
         gf = Gio.File.new_for_path(el.file_path)
 
@@ -232,6 +240,27 @@ class AppImageProvider():
         el.set_installed_status(InstalledStatus.NOT_INSTALLED)
         Config.delete_app_config(el)
         Config.delete_app_update_config(el)
+
+        if own_folder_path and os.path.isdir(own_folder_path):
+            icons_dir = os.path.join(own_folder_path, '.icons')
+            try:
+                os.rmdir(icons_dir)
+            except OSError as err:
+                if err.errno not in (errno.ENOTEMPTY, errno.ENOENT, errno.ENOTDIR):
+                    raise
+
+                if err.errno != errno.ENOENT:
+                    return own_folder_path
+
+            try:
+                os.rmdir(own_folder_path)
+            except OSError as err:
+                if err.errno == errno.ENOTEMPTY:
+                    return own_folder_path
+
+                raise
+
+        return None
 
     def run(self, el: AppImageListElement):
         if el.trusted:
@@ -284,6 +313,7 @@ class AppImageProvider():
                 appimage_filename = os.path.basename(el.updating_from.file_path)
                 desktop_file_path = os.path.basename(el.updating_from.desktop_file_path)
                 prefixed_filename = os.path.splitext(desktop_file_path)[0]
+                el.own_folder = el.updating_from.own_folder
             else:
                 dest_file_info_name = os.path.splitext(dest_file_info.get_name())[0]
                 appimage_filename = f'gearlever_{dest_file_info_name}'
@@ -326,6 +356,11 @@ class AppImageProvider():
                     i += 1
 
                 prefixed_filename = os.path.splitext(appimage_filename)[0]
+
+            if el.own_folder:
+                appimages_destination_path = os.path.join(appimages_destination_path, prefixed_filename)
+                os.makedirs(appimages_destination_path, exist_ok=True)
+                appimage_filename = 'app.AppImage'
 
             dest_appimage_file = Gio.File.new_for_path(
                 os.path.join(appimages_destination_path, appimage_filename))
@@ -437,6 +472,7 @@ class AppImageProvider():
 
             app_config = Config.get_app_config(el)
             app_config['default_exec_arguments'] = new_default_exec_arguments
+            app_config['own_folder'] = Config.return_boolean(el.own_folder)
             Config.set_app_config(el, app_config)
 
         except Exception as e:

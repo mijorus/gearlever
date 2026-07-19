@@ -119,13 +119,18 @@ class MultiInstall(Gtk.ScrolledWindow):
         checkbox = Gtk.CheckButton.new_with_label(_('I have verified the source of the apps'))
         checkbox.set_halign(Gtk.Align.CENTER)
 
+        own_folder_checkbox = Gtk.CheckButton.new_with_label(_('Install each app in its own folder'))
+        own_folder_checkbox.set_halign(Gtk.Align.CENTER)
+
         body.append(checkbox)
+        body.append(own_folder_checkbox)
+
         dialog.set_extra_child(body)
-        dialog.connect('response', self.on_dialog_response, checkbox)
+        dialog.connect('response', self.on_dialog_response, checkbox, own_folder_checkbox)
 
         dialog.present()
 
-    def on_dialog_response(self, dialog: Adw.MessageDialog, response: str, checkbox: Gtk.CheckButton):
+    def on_dialog_response(self, dialog: Adw.MessageDialog, response: str, checkbox: Gtk.CheckButton, own_folder_checkbox: Gtk.CheckButton):
         if not checkbox.get_active():
             return
         
@@ -139,6 +144,7 @@ class MultiInstall(Gtk.ScrolledWindow):
                 continue
 
             el.set_trusted()
+            el.own_folder = own_folder_checkbox.get_active()
             appimage_provider.install_file(el)
 
         self.emit('go-back', True)
