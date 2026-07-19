@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-20 14:54+0100\n"
+"POT-Creation-Date: 2026-07-19 16:33+0000\n"
 "PO-Revision-Date: 2024-12-08 13:05+0100\n"
 "Last-Translator: Quentin PAGÈS\n"
 "Language-Team: \n"
@@ -29,37 +29,58 @@ msgstr "Un utilitari per gerir los AppImage amb simplicitat !"
 msgid "AppImage;"
 msgstr "AppImage;"
 
-#: src/main.py:117
+#: src/main.py:112
 msgid "translator_credits"
 msgstr "Quentin PAGÈS"
 
-#: src/AppDetails.py:28 src/AppDetails.py:74 src/AppDetails.py:395
+#: src/AppDetails.py:35 src/AppDetails.py:92 src/AppDetails.py:510
 msgid "Update"
 msgstr "Metre a jorn"
 
-#: src/AppDetails.py:29
+#: src/AppDetails.py:36
+msgid "Save"
+msgstr "Enregistrar"
+
+#: src/AppDetails.py:37
+#, fuzzy
+msgid "Saved"
+msgstr "Enregistrar"
+
+#: src/AppDetails.py:38
+msgid "Invalid data"
+msgstr ""
+
+#: src/AppDetails.py:39
 msgid "Cancel update"
 msgstr "Anullar la mesa a jorn"
 
-#: src/AppDetails.py:30 src/InstalledAppsList.py:32
+#: src/AppDetails.py:40 src/InstalledAppsList.py:30
 msgid "Checking updates..."
 msgstr "Recèrca de mesas a jorn..."
 
-#: src/AppDetails.py:31
+#: src/AppDetails.py:41
 msgid "No updates available"
 msgstr "Cap de mesa a jorn pas disponibla"
 
-#: src/AppDetails.py:32
+#: src/AppDetails.py:42
+msgid "Release file not found"
+msgstr ""
+
+#: src/AppDetails.py:43
 msgid "This application includes update information provided by the developer"
 msgstr ""
 "Aquesta aplicacion inclutz d’informacions de mesa a jorn provesida pel "
 "desvolopaire"
 
-#: src/AppDetails.py:33
+#: src/AppDetails.py:44
 msgid "Manage update details for this application"
 msgstr "Gerir los detalhs de mesa a jorn per aquesta aplicacion"
 
-#: src/AppDetails.py:213
+#: src/AppDetails.py:109
+msgid "Install in its own folder"
+msgstr ""
+
+#: src/AppDetails.py:251
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -67,110 +88,136 @@ msgstr ""
 "Aquesta aplicacion se tròba defòra del dossièr per defaut\n"
 "<small>Podètz rescondre las aplicacions extèrnas als paramètres</small>"
 
-#: src/AppDetails.py:224
+#: src/AppDetails.py:264
 msgid "Please, verify the source of this app before opening it"
 msgstr "Mercés de verificar la font d’aquesta aplicacion abans de l’obrir"
 
-#: src/AppDetails.py:225
+#: src/AppDetails.py:265
 msgid "Unlock"
 msgstr "Desverrolhar"
 
-#: src/AppDetails.py:328
+#: src/AppDetails.py:363
+msgid "Unkown Error"
+msgstr ""
+
+#: src/AppDetails.py:413
 msgid "Launching..."
 msgstr "Lançament..."
 
-#: src/AppDetails.py:335 src/AppDetails.py:501
-#: src/providers/AppImageProvider.py:648
-msgid "Error"
-msgstr "Error"
+#: src/AppDetails.py:442
+msgid "Delete the app's data folder too?"
+msgstr ""
 
-#: src/AppDetails.py:412
+#: src/AppDetails.py:443
+msgid ""
+"This app kept extra files in its own folder besides the AppImage itself. Do "
+"you want to delete them as well?"
+msgstr ""
+
+#: src/AppDetails.py:446
+#, fuzzy
+msgid "Keep data"
+msgstr "Gardar los dos"
+
+#: src/AppDetails.py:447
+#, fuzzy
+msgid "Delete data"
+msgstr "Recargar las metadonadas"
+
+#: src/AppDetails.py:479
+#, python-brace-format
+msgid ""
+"{app_name} is running, please close it before proceeding with the update"
+msgstr ""
+
+#: src/AppDetails.py:539
 msgid "Update error"
 msgstr "Error de mesa a jorn"
 
-#: src/AppDetails.py:416
+#: src/AppDetails.py:543
 msgid "Close"
 msgstr "Tampar"
 
-#: src/AppDetails.py:424
+#: src/AppDetails.py:550
 msgid "Do you really want to remove this app?"
 msgstr "Volètz vertadièrament suprimir aquesta aplicacion ?"
 
-#: src/AppDetails.py:427 src/components/AppDetailsConflictModal.py:14
+#: src/AppDetails.py:553 src/MultiInstall.py:114
+#: src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
 msgstr "Anullar"
 
-#: src/AppDetails.py:428 src/AppDetails.py:467
+#: src/AppDetails.py:554 src/AppDetails.py:596
 msgid "Remove"
 msgstr "Suprimir"
 
-#: src/AppDetails.py:463 src/AppDetails.py:483
+#: src/AppDetails.py:592 src/AppDetails.py:612
 msgid "This app runs in the terminal"
 msgstr "Aquesta aplicacion s’executa dins un terminal"
 
-#: src/AppDetails.py:465 src/AppDetails.py:480 src/AppDetails.py:486
+#: src/AppDetails.py:594 src/AppDetails.py:609 src/AppDetails.py:615
 msgid "Launch"
 msgstr "Lançar"
 
-#: src/AppDetails.py:471
+#: src/AppDetails.py:600
 msgid "Uninstalling..."
 msgstr "Desinstallacion..."
 
-#: src/AppDetails.py:475
+#: src/AppDetails.py:604
 msgid "Installing..."
 msgstr "Installacion..."
 
-#: src/AppDetails.py:488
+#: src/AppDetails.py:617
 msgid "Move to the app menu"
 msgstr "Desplaçar al menú d’aplicacions"
 
-#: src/AppDetails.py:512
+#: src/AppDetails.py:630
+msgid "Error"
+msgstr "Error"
+
+#: src/AppDetails.py:641
 msgid "This app might not be compatible with your system architecture"
 msgstr ""
 "Se poiriá qu'aquesta aplicacion siá pas compatible amb l’arquitectura de "
 "vòstre sistèma"
 
-#: src/AppDetails.py:759
-msgid "Website"
-msgstr "Site Web"
-
-#: src/AppDetails.py:759
+#: src/AppDetails.py:960
 msgid "Add a website"
 msgstr "Apondre un site Web"
 
-#: src/AppDetails.py:768
+#: src/AppDetails.py:964
+msgid "Website"
+msgstr "Site Web"
+
+#: src/AppDetails.py:977
 msgid "Open URL"
 msgstr "Dobrir una URL"
 
-#: src/AppDetails.py:784 src/AppDetails.py:947
-msgid "Save"
-msgstr "Enregistrar"
-
-#: src/AppDetails.py:797
-msgid "Update management"
-msgstr "Gestion de las mesas a jorn"
-
-#: src/AppDetails.py:802
-msgid "Update URL"
-msgstr "URL de mesa a jorn"
-
-#: src/AppDetails.py:809
-msgid "Source"
-msgstr "Font"
-
-#: src/AppDetails.py:810
-msgid "Select the source type"
-msgstr "Seleccionar lo tipe de font"
-
-#: src/AppDetails.py:834
+#: src/AppDetails.py:994
 msgid "How it works"
 msgstr "Cossí fonciona"
 
-#: src/AppDetails.py:851
+#: src/AppDetails.py:1016
+msgid "Update management"
+msgstr "Gestion de las mesas a jorn"
+
+#: src/AppDetails.py:1023
+msgid "Default"
+msgstr ""
+
+#: src/AppDetails.py:1029
+msgid "Source"
+msgstr "Font"
+
+#: src/AppDetails.py:1030
+msgid "Select the source type"
+msgstr "Seleccionar lo tipe de font"
+
+#: src/AppDetails.py:1056
 msgid "Reload metadata"
 msgstr "Recargar las metadonadas"
 
-#: src/AppDetails.py:852
+#: src/AppDetails.py:1057
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -178,87 +225,120 @@ msgstr ""
 "Actualizar las informacions coma l’icòna, la version e la descripcion.\n"
 "Util se l’aplicacion se metèt a jorn soleta."
 
-#: src/AppDetails.py:864
+#: src/AppDetails.py:1069
 msgid "Command line arguments"
 msgstr "Paramètres de la linha de comanda"
 
-#: src/AppDetails.py:882
+#: src/AppDetails.py:1087
 msgid "Hash"
 msgstr "Sòma de contraròtle"
 
-#: src/AppDetails.py:892
+#: src/AppDetails.py:1097
 msgid "Path"
 msgstr "Emplaçament"
 
-#: src/AppDetails.py:894
+#: src/AppDetails.py:1099
 msgid "Open Folder"
 msgstr "Dobrir dossièr"
 
-#: src/AppDetails.py:904
+#: src/AppDetails.py:1109
 msgid "Package type"
 msgstr "Tipe de paquet"
 
-#: src/AppDetails.py:922
+#: src/AppDetails.py:1127
 msgid "Key"
 msgstr "Clau"
 
-#: src/AppDetails.py:923
+#: src/AppDetails.py:1128
 msgid "Value"
 msgstr "Valor"
 
-#: src/AppDetails.py:942
-msgid "Add"
-msgstr "Apondre"
-
-#: src/AppDetails.py:962
+#: src/AppDetails.py:1167
 msgid "Environment variables"
 msgstr "Variablas d'environament"
 
-#: src/AppDetails.py:963
+#: src/AppDetails.py:1168
 msgid "Add or customize environment for this application"
 msgstr "Apondre o personalizar un environament per aquesta aplicacion"
 
-#: src/GearleverWindow.py:37
+#: src/MultiInstall.py:26
+#, fuzzy
+msgid "Move all to the app menu"
+msgstr "Desplaçar al menú d’aplicacions"
+
+#: src/MultiInstall.py:48
+msgid "Some apps are already installed"
+msgstr ""
+
+#: src/MultiInstall.py:111
+#, fuzzy
+msgid "Do you really want to move all the apps to the menu?"
+msgstr "Volètz vertadièrament suprimir aquesta aplicacion ?"
+
+#: src/MultiInstall.py:115
+msgid "Proceed"
+msgstr ""
+
+#: src/MultiInstall.py:119
+#, fuzzy
+msgid "I have verified the source of the apps"
+msgstr "Mercés de verificar la font d’aquesta aplicacion abans de l’obrir"
+
+#: src/MultiInstall.py:122
+msgid "Install each app in its own folder"
+msgstr ""
+
+#: src/GearleverWindow.py:39
 msgid "Open a new AppImage"
 msgstr "Dobrir un AppImage novèl"
 
-#: src/GearleverWindow.py:49
+#: src/GearleverWindow.py:51
 msgid "Open"
 msgstr "Dobrir"
 
-#: src/GearleverWindow.py:253
+#: src/GearleverWindow.py:300
 msgid "Open a file"
 msgstr "Dobrir un fichièr"
 
-#: src/InstalledAppsList.py:30
+#: src/InstalledAppsList.py:28
 msgid "Check for updates"
 msgstr "Recercar de mesas a jorn"
 
-#: src/InstalledAppsList.py:31
+#: src/InstalledAppsList.py:29
 msgid "No updates found"
 msgstr "Cap de mesa a jorn pas trobada"
 
-#: src/InstalledAppsList.py:51
+#: src/InstalledAppsList.py:31
+msgid "No Connection"
+msgstr ""
+
+#: src/InstalledAppsList.py:32
+#, fuzzy
+msgid "Update all"
+msgstr "Metre a jorn"
+
+#: src/InstalledAppsList.py:55
 msgid "Filter installed applications"
 msgstr "Filtrar las aplicacions installadas"
 
-#: src/InstalledAppsList.py:57
+#: src/InstalledAppsList.py:62
 msgid "Installed applications"
 msgstr "Aplicacions installadas"
 
-#: src/preferences.py:28
+#. general group
+#: src/preferences.py:27
 msgid "General"
 msgstr "General"
 
-#: src/preferences.py:33
+#: src/preferences.py:32
 msgid "AppImage default location"
 msgstr "Emplaçament per defaut dels AppImages"
 
-#: src/preferences.py:42
+#: src/preferences.py:41
 msgid "Show integrated AppImages outside the default folder"
 msgstr "Afichar los AppImages integrats defòra del dosisèr per defaut"
 
-#: src/preferences.py:44
+#: src/preferences.py:43
 msgid ""
 "List AppImages that have been integrated into the system menu but are "
 "located outside the default folder"
@@ -266,15 +346,16 @@ msgstr ""
 "Listar los AppImages que foguèron integrats al menú sistèma mas que se "
 "tròban defòra del dossièr per defaut"
 
-#: src/preferences.py:51
+#. updates management group
+#: src/preferences.py:50
 msgid "Updates management"
 msgstr "Gestion de las mesas a jorn"
 
-#: src/preferences.py:53
+#: src/preferences.py:52
 msgid "Check updates on system startup"
 msgstr "Verificar las mesas a jorn al lançament"
 
-#: src/preferences.py:55
+#: src/preferences.py:54
 msgid ""
 "Receive a notification when a new update is detected; updates will not be "
 "installed automatically"
@@ -282,37 +363,39 @@ msgstr ""
 "Recebre una notificacion quand una mesa a jorn es detectada ; s’installaràn "
 "pas automaticament las mesas a jorn"
 
-#: src/preferences.py:62
+#. file management group
+#: src/preferences.py:61
 msgid "File management"
 msgstr "Gestion dels fichièrs"
 
-#: src/preferences.py:64
+#: src/preferences.py:63
 msgid "Move AppImages into the destination folder"
 msgstr "Desplaçar los AppImages al dossièr de destinacion"
 
-#: src/preferences.py:65
+#: src/preferences.py:64
 msgid "Reduce disk usage"
 msgstr "Reduire l’espaci disc"
 
-#: src/preferences.py:69
+#: src/preferences.py:68
 msgid "Clone AppImages into the destination folder"
 msgstr "Clonar los AppImages al dossièr de destinacion"
 
-#: src/preferences.py:70
+#: src/preferences.py:69
 msgid "Keep the original file and create a copy in the destination folder"
 msgstr ""
 "Gardar lo fichièr d’origina e crear una còpia al dossièr de destinacion"
 
-#: src/preferences.py:96
+#. naming conventions group
+#: src/preferences.py:95
 msgid "Naming conventions"
 msgstr "Convencions de nomenatge"
 
-#: src/preferences.py:98
+#: src/preferences.py:97
 msgid "Use executable name for integrated terminal apps"
 msgstr ""
 "Utilizar lo nom de l’executable per las aplicacions integradas al terminal"
 
-#: src/preferences.py:100
+#: src/preferences.py:99
 msgid ""
 "If enabled, apps that run in the terminal are renamed as their executable.\n"
 "You would need to add the aforementioned folder to your $PATH manually.\n"
@@ -325,15 +408,32 @@ msgstr ""
 "\n"
 "Per exemple, « golang_x86_64.appimage » serà salvat coma « go »"
 
-#: src/preferences.py:106
+#: src/preferences.py:105
+msgid "Preview new apps in a minimal UI"
+msgstr ""
+
+#: src/preferences.py:110
+msgid "Use safe mechanisms to load metadata"
+msgstr ""
+
+#: src/preferences.py:112
+msgid ""
+"If enabled, the app will try to load an Appimage without using the built-in "
+"appimage-extract command.\n"
+"Disable only if you trust your sources: malicious apps could execute code "
+"when loading the metadata."
+msgstr ""
+
+#. debugging group
+#: src/preferences.py:119
 msgid "Debugging"
 msgstr "Desbugatge"
 
-#: src/preferences.py:108
+#: src/preferences.py:121
 msgid "Enable debug logs"
 msgstr "Activar los logs de desbugatge"
 
-#: src/preferences.py:110
+#: src/preferences.py:123
 msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
@@ -343,15 +443,15 @@ msgstr ""
 "potencialament tocant las performanças.\n"
 "Requerís una reaviada."
 
-#: src/preferences.py:137
+#: src/preferences.py:149
 msgid "The folder must writeable"
 msgstr "Lo dorsièr deu poder escriure"
 
-#: src/preferences.py:140 src/WelcomeScreen.py:98
+#: src/preferences.py:152 src/WelcomeScreen.py:117
 msgid "Select a folder"
 msgstr "Seleccionar un dossièr"
 
-#: src/WelcomeScreen.py:95
+#: src/WelcomeScreen.py:114
 msgid "The folder must be in your home directory"
 msgstr "Lo dossièr deu èsser dins lo repertòri personal"
 
@@ -401,7 +501,8 @@ msgid "Drag and drop an AppImage here or click on the \"+\" icon."
 msgstr "Lisatz e depausatz un AppImage aicí e cliatz l’icòna « + »."
 
 #: src/gtk/empty-list-placeholder.ui:35
-msgid " If you don't see your apps, check if the selected folder is correct."
+#, fuzzy
+msgid "If you don't see your apps, check if the selected folder is correct."
 msgstr ""
 " Se vesètz pas vòstras aplicacions, verificatz que lo dossièr seleccionat es "
 "corrècte."
@@ -429,24 +530,24 @@ msgctxt "shortcut window"
 msgid "Quit"
 msgstr "Quitar"
 
-#: src/gtk/tutorial/1.ui:21
+#: src/gtk/tutorial/1.ui:26
 msgid "Hi, welcome to Gear lever"
 msgstr "Adieu, la benvenguda dins Maneta"
 
-#: src/gtk/tutorial/1.ui:30
+#: src/gtk/tutorial/1.ui:35
 msgid "An app that helps you integrate AppImages into your system."
 msgstr ""
 "Una aplicacion que vos ajuda a integrar los AppImages a vòstre sistèma."
 
-#: src/gtk/tutorial/1.ui:36
+#: src/gtk/tutorial/1.ui:43
 msgid "Click \"Next\" to follow this tutorial."
 msgstr "Clicatz « Seguent » per seguir aqueste tutorial."
 
-#: src/gtk/tutorial/2.ui:19
+#: src/gtk/tutorial/2.ui:12
 msgid "Set the AppImage location"
 msgstr "Definir l’emplaçament de l’AppImage"
 
-#: src/gtk/tutorial/2.ui:28
+#: src/gtk/tutorial/2.ui:13
 msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
@@ -454,43 +555,43 @@ msgstr ""
 "Maneta agropa totes vòstres AppImages dins d’un dossièr especific e los "
 "garda ordenats."
 
-#: src/gtk/tutorial/2.ui:33
-#, python-brace-format
-msgid "By default, AppImages are saved at: {location}"
+#: src/gtk/tutorial/2.ui:21
+#, fuzzy, python-brace-format
+msgid "<b>By default, AppImages are saved at: {location}</b>"
 msgstr "Per defaut, los AppImages son salvats dins : {location}"
 
-#: src/gtk/tutorial/2.ui:47
+#: src/gtk/tutorial/2.ui:29
 msgid "Change AppImage location"
 msgstr "Modificar l’emplaçament de l’AppImage"
 
-#: src/gtk/tutorial/2.ui:59
+#: src/gtk/tutorial/2.ui:38
 msgid "You can customize it later in the preferences."
 msgstr "O podètz personalizar mai tard dins las preferéncias."
 
-#: src/gtk/tutorial/3.ui:19
+#: src/gtk/tutorial/3.ui:23
 msgid "Set Gear lever as default"
 msgstr "Definir Maneta per defaut"
 
-#: src/gtk/tutorial/3.ui:28
+#: src/gtk/tutorial/3.ui:32
 msgid ""
 "Click on the button to open a demo folder, containing a sample AppImage."
 msgstr ""
 "Clicatz lo boton per dobrir un dossièr de demonstracion, que conten una "
 "mòstra d’AppImage."
 
-#: src/gtk/tutorial/3.ui:33
+#: src/gtk/tutorial/3.ui:40
 msgid ""
-"Use the right-click menu to set Gear lever as the default app for \".appimage"
-"\" files"
+"Use the right-click menu to set Gear lever as the default app for \"."
+"appimage\" files"
 msgstr ""
 "Utilizatz lo menú del clic drech per definir Maneta coma aplicacion per "
 "defaut pels fichièrs « .appimage »"
 
-#: src/gtk/tutorial/3.ui:44
+#: src/gtk/tutorial/3.ui:54
 msgid "Open demo folder"
 msgstr "Dobrir lo dossièr de demostracion"
 
-#: src/gtk/tutorial/3.ui:56
+#: src/gtk/tutorial/3.ui:63
 msgid "This step is optional"
 msgstr "Aquesta etapa es opcionala"
 
@@ -498,15 +599,15 @@ msgstr "Aquesta etapa es opcionala"
 msgid "All done, let's go!"
 msgstr "Tot es prèst, anem-i !"
 
-#: src/gtk/tutorial/last.ui:35
+#: src/gtk/tutorial/last.ui:24
 msgid "Close tutorial"
 msgstr "Tampar lo tutorial"
 
-#: src/models/AppListElement.py:19
+#: src/models/AppListElement.py:20
 msgid "No description provided"
 msgstr "Cap de descripcion pas provesida"
 
-#: src/providers/AppImageProvider.py:584
+#: src/providers/AppImageProvider.py:632
 msgid ""
 "The downloaded file is not a valid appimage, please check if the provided "
 "URL is correct"
@@ -514,22 +615,11 @@ msgstr ""
 "Lo fichièr telecargat es pas un appimage valid, mercés de verificar que "
 "l’URL provesida es corrècta"
 
-#: src/providers/AppImageProvider.py:590
-#, python-brace-format
-msgid ""
-"The downloaded appimage does not have the same app name and can't be "
-"updated\n"
-"{el.name} ➔ {list_element.name}"
-msgstr ""
-"L’appimage telecargat a pas lo meteis nom d’aplicacion e se pòt pas "
-"actualizar\n"
-"{el.name} ➔ {list_element.name}"
-
-#: src/providers/AppImageProvider.py:634
+#: src/providers/AppImageProvider.py:693
 msgid "Running AppImages on NixOS requires appimage-run"
 msgstr "L’execucion d’AppImage sus NixOS requerís appimage-run"
 
-#: src/providers/AppImageProvider.py:649
+#: src/providers/AppImageProvider.py:707
 #, python-brace-format
 msgid ""
 "AppImages require FUSE to run. You might still be able to run it with --"
@@ -543,3 +633,25 @@ msgstr ""
 "\n"
 "Clicatz lo ligam çai-jos per mai d’informacions.\n"
 "{url}"
+
+#: src/providers/AppImageProvider.py:794
+msgid ""
+"Any attempts at loading this app's metadata failed; if you want proceed "
+"using appimage-extract, please disable the security option in the settings."
+msgstr ""
+
+#~ msgid "Update URL"
+#~ msgstr "URL de mesa a jorn"
+
+#~ msgid "Add"
+#~ msgstr "Apondre"
+
+#, python-brace-format
+#~ msgid ""
+#~ "The downloaded appimage does not have the same app name and can't be "
+#~ "updated\n"
+#~ "{el.name} ➔ {list_element.name}"
+#~ msgstr ""
+#~ "L’appimage telecargat a pas lo meteis nom d’aplicacion e se pòt pas "
+#~ "actualizar\n"
+#~ "{el.name} ➔ {list_element.name}"

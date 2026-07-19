@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-20 14:54+0100\n"
+"POT-Creation-Date: 2026-07-19 16:33+0000\n"
 "PO-Revision-Date: 2025-03-23 10:05+0800\n"
 "Last-Translator: Wakimizu <wakimizu@disroot.org>\n"
 "Language-Team: \n"
@@ -29,35 +29,56 @@ msgstr "一个轻松管理 AppImage 的实用工具！"
 msgid "AppImage;"
 msgstr "AppImage;"
 
-#: src/main.py:117
+#: src/main.py:112
 msgid "translator_credits"
 msgstr "Wakimizu <wakimizu@disroot.org>"
 
-#: src/AppDetails.py:28 src/AppDetails.py:74 src/AppDetails.py:395
+#: src/AppDetails.py:35 src/AppDetails.py:92 src/AppDetails.py:510
 msgid "Update"
 msgstr "更新"
 
-#: src/AppDetails.py:29
+#: src/AppDetails.py:36
+msgid "Save"
+msgstr "保存"
+
+#: src/AppDetails.py:37
+#, fuzzy
+msgid "Saved"
+msgstr "保存"
+
+#: src/AppDetails.py:38
+msgid "Invalid data"
+msgstr ""
+
+#: src/AppDetails.py:39
 msgid "Cancel update"
 msgstr "取消更新"
 
-#: src/AppDetails.py:30 src/InstalledAppsList.py:32
+#: src/AppDetails.py:40 src/InstalledAppsList.py:30
 msgid "Checking updates..."
 msgstr "正在检查更新…"
 
-#: src/AppDetails.py:31
+#: src/AppDetails.py:41
 msgid "No updates available"
 msgstr "没有可用的更新"
 
-#: src/AppDetails.py:32
+#: src/AppDetails.py:42
+msgid "Release file not found"
+msgstr ""
+
+#: src/AppDetails.py:43
 msgid "This application includes update information provided by the developer"
 msgstr "此应用程序包含开发者提供的更新信息"
 
-#: src/AppDetails.py:33
+#: src/AppDetails.py:44
 msgid "Manage update details for this application"
 msgstr "管理此应用程序的更新详情"
 
-#: src/AppDetails.py:213
+#: src/AppDetails.py:109
+msgid "Install in its own folder"
+msgstr ""
+
+#: src/AppDetails.py:251
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -65,108 +86,134 @@ msgstr ""
 "此应用位于默认文件夹之外\n"
 "<small>您可以在设置中隐藏外部应用</small>"
 
-#: src/AppDetails.py:224
+#: src/AppDetails.py:264
 msgid "Please, verify the source of this app before opening it"
 msgstr "在打开应用之前请验证其来源"
 
-#: src/AppDetails.py:225
+#: src/AppDetails.py:265
 msgid "Unlock"
 msgstr "解锁"
 
-#: src/AppDetails.py:328
+#: src/AppDetails.py:363
+msgid "Unkown Error"
+msgstr ""
+
+#: src/AppDetails.py:413
 msgid "Launching..."
 msgstr "启动中…"
 
-#: src/AppDetails.py:335 src/AppDetails.py:501
-#: src/providers/AppImageProvider.py:648
-msgid "Error"
-msgstr "错误"
+#: src/AppDetails.py:442
+msgid "Delete the app's data folder too?"
+msgstr ""
 
-#: src/AppDetails.py:412
+#: src/AppDetails.py:443
+msgid ""
+"This app kept extra files in its own folder besides the AppImage itself. Do "
+"you want to delete them as well?"
+msgstr ""
+
+#: src/AppDetails.py:446
+#, fuzzy
+msgid "Keep data"
+msgstr "保留两者"
+
+#: src/AppDetails.py:447
+#, fuzzy
+msgid "Delete data"
+msgstr "重新加载元数据"
+
+#: src/AppDetails.py:479
+#, python-brace-format
+msgid ""
+"{app_name} is running, please close it before proceeding with the update"
+msgstr ""
+
+#: src/AppDetails.py:539
 msgid "Update error"
 msgstr "更新错误"
 
-#: src/AppDetails.py:416
+#: src/AppDetails.py:543
 msgid "Close"
 msgstr "关闭"
 
-#: src/AppDetails.py:424
+#: src/AppDetails.py:550
 msgid "Do you really want to remove this app?"
 msgstr "您真的想删除该应用吗？"
 
-#: src/AppDetails.py:427 src/components/AppDetailsConflictModal.py:14
+#: src/AppDetails.py:553 src/MultiInstall.py:114
+#: src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
 msgstr "取消"
 
-#: src/AppDetails.py:428 src/AppDetails.py:467
+#: src/AppDetails.py:554 src/AppDetails.py:596
 msgid "Remove"
 msgstr "删除"
 
-#: src/AppDetails.py:463 src/AppDetails.py:483
+#: src/AppDetails.py:592 src/AppDetails.py:612
 msgid "This app runs in the terminal"
 msgstr "此应用在终端运行"
 
-#: src/AppDetails.py:465 src/AppDetails.py:480 src/AppDetails.py:486
+#: src/AppDetails.py:594 src/AppDetails.py:609 src/AppDetails.py:615
 msgid "Launch"
 msgstr "启动"
 
-#: src/AppDetails.py:471
+#: src/AppDetails.py:600
 msgid "Uninstalling..."
 msgstr "正在卸载…"
 
-#: src/AppDetails.py:475
+#: src/AppDetails.py:604
 msgid "Installing..."
 msgstr "正在安装…"
 
-#: src/AppDetails.py:488
+#: src/AppDetails.py:617
 msgid "Move to the app menu"
 msgstr "移动到应用菜单"
 
-#: src/AppDetails.py:512
+#: src/AppDetails.py:630
+msgid "Error"
+msgstr "错误"
+
+#: src/AppDetails.py:641
 msgid "This app might not be compatible with your system architecture"
 msgstr "此应用可能不兼容您的系统架构"
 
-#: src/AppDetails.py:759
-msgid "Website"
-msgstr "网站"
-
-#: src/AppDetails.py:759
+#: src/AppDetails.py:960
 msgid "Add a website"
 msgstr "添加网站"
 
-#: src/AppDetails.py:768
+#: src/AppDetails.py:964
+msgid "Website"
+msgstr "网站"
+
+#: src/AppDetails.py:977
 msgid "Open URL"
 msgstr "打开 URL"
 
-#: src/AppDetails.py:784 src/AppDetails.py:947
-msgid "Save"
-msgstr "保存"
-
-#: src/AppDetails.py:797
-msgid "Update management"
-msgstr "更新管理"
-
-#: src/AppDetails.py:802
-msgid "Update URL"
-msgstr "更新 URL"
-
-#: src/AppDetails.py:809
-msgid "Source"
-msgstr "源"
-
-#: src/AppDetails.py:810
-msgid "Select the source type"
-msgstr "选择源类型"
-
-#: src/AppDetails.py:834
+#: src/AppDetails.py:994
 msgid "How it works"
 msgstr "这是怎么工作的"
 
-#: src/AppDetails.py:851
+#: src/AppDetails.py:1016
+msgid "Update management"
+msgstr "更新管理"
+
+#: src/AppDetails.py:1023
+msgid "Default"
+msgstr ""
+
+#: src/AppDetails.py:1029
+msgid "Source"
+msgstr "源"
+
+#: src/AppDetails.py:1030
+msgid "Select the source type"
+msgstr "选择源类型"
+
+#: src/AppDetails.py:1056
 msgid "Reload metadata"
 msgstr "重新加载元数据"
 
-#: src/AppDetails.py:852
+#: src/AppDetails.py:1057
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -174,135 +221,171 @@ msgstr ""
 "更新图标、版本和描述等信息。\n"
 "如果应用程序自行更新则很有用。"
 
-#: src/AppDetails.py:864
+#: src/AppDetails.py:1069
 msgid "Command line arguments"
 msgstr "命令行参数"
 
-#: src/AppDetails.py:882
+#: src/AppDetails.py:1087
 msgid "Hash"
 msgstr "哈希"
 
-#: src/AppDetails.py:892
+#: src/AppDetails.py:1097
 msgid "Path"
 msgstr "路径"
 
-#: src/AppDetails.py:894
+#: src/AppDetails.py:1099
 msgid "Open Folder"
 msgstr "打开目录"
 
-#: src/AppDetails.py:904
+#: src/AppDetails.py:1109
 msgid "Package type"
 msgstr "包类型"
 
-#: src/AppDetails.py:922
+#: src/AppDetails.py:1127
 msgid "Key"
 msgstr "键"
 
-#: src/AppDetails.py:923
+#: src/AppDetails.py:1128
 msgid "Value"
 msgstr "值"
 
-#: src/AppDetails.py:942
-msgid "Add"
-msgstr "添加"
-
-#: src/AppDetails.py:962
+#: src/AppDetails.py:1167
 msgid "Environment variables"
 msgstr "环境变量"
 
-#: src/AppDetails.py:963
+#: src/AppDetails.py:1168
 msgid "Add or customize environment for this application"
 msgstr "为此应用程序添加或自定义环境"
 
-#: src/GearleverWindow.py:37
+#: src/MultiInstall.py:26
+#, fuzzy
+msgid "Move all to the app menu"
+msgstr "移动到应用菜单"
+
+#: src/MultiInstall.py:48
+msgid "Some apps are already installed"
+msgstr ""
+
+#: src/MultiInstall.py:111
+#, fuzzy
+msgid "Do you really want to move all the apps to the menu?"
+msgstr "您真的想删除该应用吗？"
+
+#: src/MultiInstall.py:115
+msgid "Proceed"
+msgstr ""
+
+#: src/MultiInstall.py:119
+#, fuzzy
+msgid "I have verified the source of the apps"
+msgstr "在打开应用之前请验证其来源"
+
+#: src/MultiInstall.py:122
+msgid "Install each app in its own folder"
+msgstr ""
+
+#: src/GearleverWindow.py:39
 msgid "Open a new AppImage"
 msgstr "打开新的 AppImage"
 
-#: src/GearleverWindow.py:49
+#: src/GearleverWindow.py:51
 msgid "Open"
 msgstr "打开"
 
-#: src/GearleverWindow.py:253
+#: src/GearleverWindow.py:300
 msgid "Open a file"
 msgstr "打开文件"
 
-#: src/InstalledAppsList.py:30
+#: src/InstalledAppsList.py:28
 msgid "Check for updates"
 msgstr "检查更新"
 
-#: src/InstalledAppsList.py:31
+#: src/InstalledAppsList.py:29
 msgid "No updates found"
 msgstr "未找到更新"
 
-#: src/InstalledAppsList.py:51
+#: src/InstalledAppsList.py:31
+msgid "No Connection"
+msgstr ""
+
+#: src/InstalledAppsList.py:32
+#, fuzzy
+msgid "Update all"
+msgstr "更新"
+
+#: src/InstalledAppsList.py:55
 msgid "Filter installed applications"
 msgstr "过滤已安装的应用程序"
 
-#: src/InstalledAppsList.py:57
+#: src/InstalledAppsList.py:62
 msgid "Installed applications"
 msgstr "已安装的程序"
 
-#: src/preferences.py:28
+#. general group
+#: src/preferences.py:27
 msgid "General"
 msgstr "通用"
 
-#: src/preferences.py:33
+#: src/preferences.py:32
 msgid "AppImage default location"
 msgstr "AppImage 默认位置"
 
-#: src/preferences.py:42
+#: src/preferences.py:41
 msgid "Show integrated AppImages outside the default folder"
 msgstr "在默认文件夹外显示集成的 AppImages"
 
-#: src/preferences.py:44
+#: src/preferences.py:43
 msgid ""
 "List AppImages that have been integrated into the system menu but are "
 "located outside the default folder"
 msgstr "列出已集成到系统菜单但位于默认文件夹之外的 AppImages"
 
-#: src/preferences.py:51
+#. updates management group
+#: src/preferences.py:50
 msgid "Updates management"
 msgstr "更新管理"
 
-#: src/preferences.py:53
+#: src/preferences.py:52
 msgid "Check updates on system startup"
 msgstr "系统启动时检查更新"
 
-#: src/preferences.py:55
+#: src/preferences.py:54
 msgid ""
 "Receive a notification when a new update is detected; updates will not be "
 "installed automatically"
 msgstr "检测到新更新时接收通知；更新不会自动安装"
 
-#: src/preferences.py:62
+#. file management group
+#: src/preferences.py:61
 msgid "File management"
 msgstr "文件管理"
 
-#: src/preferences.py:64
+#: src/preferences.py:63
 msgid "Move AppImages into the destination folder"
 msgstr "移动 AppImages 到目标目录"
 
-#: src/preferences.py:65
+#: src/preferences.py:64
 msgid "Reduce disk usage"
 msgstr "减少磁盘占用"
 
-#: src/preferences.py:69
+#: src/preferences.py:68
 msgid "Clone AppImages into the destination folder"
 msgstr "克隆 AppImages 到目标目录"
 
-#: src/preferences.py:70
+#: src/preferences.py:69
 msgid "Keep the original file and create a copy in the destination folder"
 msgstr "保留源文件并在目标目录创建新副本"
 
-#: src/preferences.py:96
+#. naming conventions group
+#: src/preferences.py:95
 msgid "Naming conventions"
 msgstr "命名约定"
 
-#: src/preferences.py:98
+#: src/preferences.py:97
 msgid "Use executable name for integrated terminal apps"
 msgstr "对集成终端应用程序使用可执行文件名称"
 
-#: src/preferences.py:100
+#: src/preferences.py:99
 msgid ""
 "If enabled, apps that run in the terminal are renamed as their executable.\n"
 "You would need to add the aforementioned folder to your $PATH manually.\n"
@@ -314,15 +397,32 @@ msgstr ""
 "\n"
 "例如，“golang_x86_64.appimage将保存为\"go\""
 
-#: src/preferences.py:106
+#: src/preferences.py:105
+msgid "Preview new apps in a minimal UI"
+msgstr ""
+
+#: src/preferences.py:110
+msgid "Use safe mechanisms to load metadata"
+msgstr ""
+
+#: src/preferences.py:112
+msgid ""
+"If enabled, the app will try to load an Appimage without using the built-in "
+"appimage-extract command.\n"
+"Disable only if you trust your sources: malicious apps could execute code "
+"when loading the metadata."
+msgstr ""
+
+#. debugging group
+#: src/preferences.py:119
 msgid "Debugging"
 msgstr "调试"
 
-#: src/preferences.py:108
+#: src/preferences.py:121
 msgid "Enable debug logs"
 msgstr "启用调试日志"
 
-#: src/preferences.py:110
+#: src/preferences.py:123
 msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
@@ -331,15 +431,15 @@ msgstr ""
 "增加日志详细程度，占用更多磁盘空间并可能影响性能。\n"
 "需要重启。"
 
-#: src/preferences.py:137
+#: src/preferences.py:149
 msgid "The folder must writeable"
 msgstr "目录必须是可写入的"
 
-#: src/preferences.py:140 src/WelcomeScreen.py:98
+#: src/preferences.py:152 src/WelcomeScreen.py:117
 msgid "Select a folder"
 msgstr "选择目录"
 
-#: src/WelcomeScreen.py:95
+#: src/WelcomeScreen.py:114
 msgid "The folder must be in your home directory"
 msgstr "目录必须在您的主文件夹"
 
@@ -389,7 +489,8 @@ msgid "Drag and drop an AppImage here or click on the \"+\" icon."
 msgstr "将 AppImage 拖放到此处或单击“+”图标。"
 
 #: src/gtk/empty-list-placeholder.ui:35
-msgid " If you don't see your apps, check if the selected folder is correct."
+#, fuzzy
+msgid "If you don't see your apps, check if the selected folder is correct."
 msgstr "如果您看不到您的应用，请检查选择的目录是否正确。"
 
 #: src/gtk/empty-list-placeholder.ui:46
@@ -415,61 +516,61 @@ msgctxt "shortcut window"
 msgid "Quit"
 msgstr "退出"
 
-#: src/gtk/tutorial/1.ui:21
+#: src/gtk/tutorial/1.ui:26
 msgid "Hi, welcome to Gear lever"
 msgstr "你好，欢迎来到 Gear lever"
 
-#: src/gtk/tutorial/1.ui:30
+#: src/gtk/tutorial/1.ui:35
 msgid "An app that helps you integrate AppImages into your system."
 msgstr "一个帮助您集成 AppImages 到您的系统的应用。"
 
-#: src/gtk/tutorial/1.ui:36
+#: src/gtk/tutorial/1.ui:43
 msgid "Click \"Next\" to follow this tutorial."
 msgstr "单击“下一步”继续本教程。"
 
-#: src/gtk/tutorial/2.ui:19
+#: src/gtk/tutorial/2.ui:12
 msgid "Set the AppImage location"
 msgstr "设置 AppImage 位置"
 
-#: src/gtk/tutorial/2.ui:28
+#: src/gtk/tutorial/2.ui:13
 msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
 msgstr "Gear lever 将所有 AppImages 分组到特定目录中并保持其井然有序。"
 
-#: src/gtk/tutorial/2.ui:33
-#, python-brace-format
-msgid "By default, AppImages are saved at: {location}"
+#: src/gtk/tutorial/2.ui:21
+#, fuzzy, python-brace-format
+msgid "<b>By default, AppImages are saved at: {location}</b>"
 msgstr "默认情况下，AppImages 将保存到：{location}"
 
-#: src/gtk/tutorial/2.ui:47
+#: src/gtk/tutorial/2.ui:29
 msgid "Change AppImage location"
 msgstr "更改 AppImage 位置"
 
-#: src/gtk/tutorial/2.ui:59
+#: src/gtk/tutorial/2.ui:38
 msgid "You can customize it later in the preferences."
 msgstr "您可以稍后在偏好设置中对其进行自定义。"
 
-#: src/gtk/tutorial/3.ui:19
+#: src/gtk/tutorial/3.ui:23
 msgid "Set Gear lever as default"
 msgstr "设置 Gear lever 为默认"
 
-#: src/gtk/tutorial/3.ui:28
+#: src/gtk/tutorial/3.ui:32
 msgid ""
 "Click on the button to open a demo folder, containing a sample AppImage."
 msgstr "单击按钮打开演示目录，其中包含示例 AppImage。"
 
-#: src/gtk/tutorial/3.ui:33
+#: src/gtk/tutorial/3.ui:40
 msgid ""
-"Use the right-click menu to set Gear lever as the default app for "
-"\".appimage\" files"
+"Use the right-click menu to set Gear lever as the default app for \"."
+"appimage\" files"
 msgstr "使用右键菜单将 Gear Lever 设置为“.appimage”文件的默认应用程序"
 
-#: src/gtk/tutorial/3.ui:44
+#: src/gtk/tutorial/3.ui:54
 msgid "Open demo folder"
 msgstr "打开演示目录"
 
-#: src/gtk/tutorial/3.ui:56
+#: src/gtk/tutorial/3.ui:63
 msgid "This step is optional"
 msgstr "此步骤是可选的"
 
@@ -477,35 +578,25 @@ msgstr "此步骤是可选的"
 msgid "All done, let's go!"
 msgstr "一切就绪，出发！"
 
-#: src/gtk/tutorial/last.ui:35
+#: src/gtk/tutorial/last.ui:24
 msgid "Close tutorial"
 msgstr "关闭指南"
 
-#: src/models/AppListElement.py:19
+#: src/models/AppListElement.py:20
 msgid "No description provided"
 msgstr "没有提供描述"
 
-#: src/providers/AppImageProvider.py:584
+#: src/providers/AppImageProvider.py:632
 msgid ""
 "The downloaded file is not a valid appimage, please check if the provided "
 "URL is correct"
 msgstr "下载的文件不是正确的 appimage，请检查提供的 URL 是否正确"
 
-#: src/providers/AppImageProvider.py:590
-#, python-brace-format
-msgid ""
-"The downloaded appimage does not have the same app name and can't be "
-"updated\n"
-"{el.name} ➔ {list_element.name}"
-msgstr ""
-"下载的 appimage 没有相同的应用名称，无法更新\n"
-"{el.name} ➔ {list_element.name}"
-
-#: src/providers/AppImageProvider.py:634
+#: src/providers/AppImageProvider.py:693
 msgid "Running AppImages on NixOS requires appimage-run"
 msgstr "在 NixOS 运行 AppImages 需要 appimage-run"
 
-#: src/providers/AppImageProvider.py:649
+#: src/providers/AppImageProvider.py:707
 #, python-brace-format
 msgid ""
 "AppImages require FUSE to run. You might still be able to run it with --"
@@ -519,3 +610,24 @@ msgstr ""
 "\n"
 "点击下方链接查看更多信息。\n"
 "{url}"
+
+#: src/providers/AppImageProvider.py:794
+msgid ""
+"Any attempts at loading this app's metadata failed; if you want proceed "
+"using appimage-extract, please disable the security option in the settings."
+msgstr ""
+
+#~ msgid "Update URL"
+#~ msgstr "更新 URL"
+
+#~ msgid "Add"
+#~ msgstr "添加"
+
+#, python-brace-format
+#~ msgid ""
+#~ "The downloaded appimage does not have the same app name and can't be "
+#~ "updated\n"
+#~ "{el.name} ➔ {list_element.name}"
+#~ msgstr ""
+#~ "下载的 appimage 没有相同的应用名称，无法更新\n"
+#~ "{el.name} ➔ {list_element.name}"

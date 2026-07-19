@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unnamed project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-22 16:42+0100\n"
+"POT-Creation-Date: 2026-07-19 16:33+0000\n"
 "PO-Revision-Date: 2026-02-04 23:57+0200\n"
 "Last-Translator: Muhammed Al-Basha <contact.mu7basha@gmail.com>\n"
 "Language-Team: Arabic\n"
@@ -21,15 +21,15 @@ msgstr ""
 "X-Generator: Gtranslator 49.0\n"
 
 # المترجمون: لا تترجم اسم التطبيق
-#: data/it.mijorus.gearlever.desktop.in:2
+#: data/it.mijorus.gearlever.desktop.in:3
 msgid "Gear Lever"
 msgstr "جيير ليفر"
 
-#: data/it.mijorus.gearlever.desktop.in:3
+#: data/it.mijorus.gearlever.desktop.in:4
 msgid "An utility to manage AppImages with ease!"
 msgstr "أداة لإدارة حزم AppImage بسهولة!"
 
-#: data/it.mijorus.gearlever.desktop.in:11
+#: data/it.mijorus.gearlever.desktop.in:12
 msgid "AppImage;"
 msgstr "AppImage;ه"
 
@@ -37,7 +37,7 @@ msgstr "AppImage;ه"
 msgid "translator_credits"
 msgstr "محمد الباشا <contact.mu7basha@gmail.com>"
 
-#: src/AppDetails.py:35 src/AppDetails.py:83 src/AppDetails.py:465
+#: src/AppDetails.py:35 src/AppDetails.py:92 src/AppDetails.py:510
 msgid "Update"
 msgstr "حدث"
 
@@ -57,7 +57,7 @@ msgstr "بيانات غير صالحة"
 msgid "Cancel update"
 msgstr "ألغي التحديث"
 
-#: src/AppDetails.py:40 src/InstalledAppsList.py:31
+#: src/AppDetails.py:40 src/InstalledAppsList.py:30
 msgid "Checking updates..."
 msgstr "جارٍ التحقق من التحديثات..."
 
@@ -66,14 +66,22 @@ msgid "No updates available"
 msgstr "لا تحديثات متوفرة"
 
 #: src/AppDetails.py:42
+msgid "Release file not found"
+msgstr ""
+
+#: src/AppDetails.py:43
 msgid "This application includes update information provided by the developer"
 msgstr "هذا التطبيق يحتوي على معلومات للتحديثات، مقدَّمة من المطور"
 
-#: src/AppDetails.py:43
+#: src/AppDetails.py:44
 msgid "Manage update details for this application"
 msgstr "ادِر تفاصيل التحديثات لهذا التطبيق"
 
-#: src/AppDetails.py:236
+#: src/AppDetails.py:109
+msgid "Install in its own folder"
+msgstr "ثبّت التطبيق في مجلد خاص به"
+
+#: src/AppDetails.py:251
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -81,113 +89,134 @@ msgstr ""
 "هذا التطبيق يوجد خارج المجلد الافتراضي\n"
 "<small>يمكنك إخفاء التطبيقات الخارجية في الاعدادات</small>"
 
-#: src/AppDetails.py:247
+#: src/AppDetails.py:264
 msgid "Please, verify the source of this app before opening it"
 msgstr "تأكَّد من مصدر التطبيق قبل فتحه"
 
-#: src/AppDetails.py:248
+#: src/AppDetails.py:265
 msgid "Unlock"
 msgstr "إلغاء القفل"
 
-#: src/AppDetails.py:333
+#: src/AppDetails.py:363
 msgid "Unkown Error"
 msgstr "خطأ مجهول"
 
-#: src/AppDetails.py:382
+#: src/AppDetails.py:413
 msgid "Launching..."
 msgstr "يُطلق..."
 
-#: src/AppDetails.py:433
+#: src/AppDetails.py:442
+msgid "Delete the app's data folder too?"
+msgstr ""
+
+#: src/AppDetails.py:443
+msgid ""
+"This app kept extra files in its own folder besides the AppImage itself. Do "
+"you want to delete them as well?"
+msgstr ""
+
+#: src/AppDetails.py:446
+#, fuzzy
+msgid "Keep data"
+msgstr "اترك كلاهما"
+
+#: src/AppDetails.py:447
+#, fuzzy
+msgid "Delete data"
+msgstr "اعِد تحميل البيانات الوصفية"
+
+#: src/AppDetails.py:479
 #, python-brace-format
 msgid ""
 "{app_name} is running, please close it before proceeding with the update"
 msgstr "التطبيق {app_name} مشغّل، اغلقه قبل بدء التحديث"
 
-#: src/AppDetails.py:487
+#: src/AppDetails.py:539
 msgid "Update error"
 msgstr "خطأ في التحديث"
 
-#: src/AppDetails.py:491
+#: src/AppDetails.py:543
 msgid "Close"
 msgstr "اغلق"
 
-#: src/AppDetails.py:498
+#: src/AppDetails.py:550
 msgid "Do you really want to remove this app?"
 msgstr "أترغب في حذف هذا التطبيق؟"
 
-#: src/AppDetails.py:501 src/components/AppDetailsConflictModal.py:14
+#: src/AppDetails.py:553 src/MultiInstall.py:114
+#: src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
 msgstr "إلغاء"
 
-#: src/AppDetails.py:502 src/AppDetails.py:541
+#: src/AppDetails.py:554 src/AppDetails.py:596
 msgid "Remove"
 msgstr "حذف"
 
-#: src/AppDetails.py:537 src/AppDetails.py:557
+#: src/AppDetails.py:592 src/AppDetails.py:612
 msgid "This app runs in the terminal"
 msgstr "هذا التطبيق يعمل في الطرفية"
 
-#: src/AppDetails.py:539 src/AppDetails.py:554 src/AppDetails.py:560
+#: src/AppDetails.py:594 src/AppDetails.py:609 src/AppDetails.py:615
 msgid "Launch"
 msgstr "إطلاق"
 
-#: src/AppDetails.py:545
+#: src/AppDetails.py:600
 msgid "Uninstalling..."
 msgstr "جارٍ إلغاء التثبيت..."
 
-#: src/AppDetails.py:549
+#: src/AppDetails.py:604
 msgid "Installing..."
 msgstr "جارٍ التثبيت..."
 
-#: src/AppDetails.py:562
+#: src/AppDetails.py:617
 msgid "Move to the app menu"
 msgstr "انقل لقائمة التطبيقات"
 
-#: src/AppDetails.py:575
+#: src/AppDetails.py:630
 msgid "Error"
 msgstr "خطأ"
 
-#: src/AppDetails.py:586
+#: src/AppDetails.py:641
 msgid "This app might not be compatible with your system architecture"
 msgstr "هذا التطبيق قد لا يكون متوافقًا مع بنية نظامك"
 
-#: src/AppDetails.py:889
+#: src/AppDetails.py:960
 msgid "Add a website"
 msgstr "اضف موقعًا إكترونيًا"
 
-#: src/AppDetails.py:893
+#: src/AppDetails.py:964
 msgid "Website"
 msgstr "الموقع الإلكتروني"
 
-#: src/AppDetails.py:906
+#: src/AppDetails.py:977
 msgid "Open URL"
 msgstr "افتح عنوان URL"
 
-#: src/AppDetails.py:923
+#: src/AppDetails.py:994
 msgid "How it works"
 msgstr "كيف يعمل"
 
-#: src/AppDetails.py:945
+#: src/AppDetails.py:1016
 msgid "Update management"
 msgstr "إدارة التحديثات"
 
-#: src/AppDetails.py:952
+#: src/AppDetails.py:1023
 msgid "Default"
 msgstr "الافتراضي"
 
-#: src/AppDetails.py:958
+#: src/AppDetails.py:1029
 msgid "Source"
 msgstr "المصدر"
 
-#: src/AppDetails.py:959
+#: src/AppDetails.py:1030
 msgid "Select the source type"
 msgstr "اختر نوع المصدر"
 
-#: src/AppDetails.py:985
+#: src/AppDetails.py:1056
 msgid "Reload metadata"
 msgstr "اعِد تحميل البيانات الوصفية"
 
-#: src/AppDetails.py:986
+#: src/AppDetails.py:1057
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -195,41 +224,68 @@ msgstr ""
 "حدِث معلومات كالأيقونة، الإصدار، والوصف.\n"
 "مفيدة إذا حدَّث التطبيق نفسه."
 
-#: src/AppDetails.py:998
+#: src/AppDetails.py:1069
 msgid "Command line arguments"
 msgstr "معاملات سطر الأوامر"
 
-#: src/AppDetails.py:1016
+#: src/AppDetails.py:1087
 msgid "Hash"
 msgstr "التجزئة"
 
-#: src/AppDetails.py:1026
+#: src/AppDetails.py:1097
 msgid "Path"
 msgstr "المسار"
 
-#: src/AppDetails.py:1028
+#: src/AppDetails.py:1099
 msgid "Open Folder"
 msgstr "افتح المجلد"
 
-#: src/AppDetails.py:1038
+#: src/AppDetails.py:1109
 msgid "Package type"
 msgstr "نوع الحزمة"
 
-#: src/AppDetails.py:1056
+#: src/AppDetails.py:1127
 msgid "Key"
 msgstr "المفتاح"
 
-#: src/AppDetails.py:1057
+#: src/AppDetails.py:1128
 msgid "Value"
 msgstr "القيمة"
 
-#: src/AppDetails.py:1096
+#: src/AppDetails.py:1167
 msgid "Environment variables"
 msgstr "متغيرات البيئة"
 
-#: src/AppDetails.py:1097
+#: src/AppDetails.py:1168
 msgid "Add or customize environment for this application"
 msgstr "اضف أو خصص بيئة هذا التطبيق"
+
+#: src/MultiInstall.py:26
+#, fuzzy
+msgid "Move all to the app menu"
+msgstr "انقل لقائمة التطبيقات"
+
+#: src/MultiInstall.py:48
+msgid "Some apps are already installed"
+msgstr "بعض التطبيقات مثبتة مسبقاً"
+
+#: src/MultiInstall.py:111
+#, fuzzy
+msgid "Do you really want to move all the apps to the menu?"
+msgstr "أترغب في حذف هذا التطبيق؟"
+
+#: src/MultiInstall.py:115
+msgid "Proceed"
+msgstr "متابعة"
+
+#: src/MultiInstall.py:119
+#, fuzzy
+msgid "I have verified the source of the apps"
+msgstr "تأكَّد من مصدر التطبيق قبل فتحه"
+
+#: src/MultiInstall.py:122
+msgid "Install each app in its own folder"
+msgstr "ثبّت كل تطبيق في مجلد خاص به"
 
 #: src/GearleverWindow.py:39
 msgid "Open a new AppImage"
@@ -239,17 +295,21 @@ msgstr "افتح حزمة AppImage جديدة"
 msgid "Open"
 msgstr "افتح"
 
-#: src/GearleverWindow.py:294
+#: src/GearleverWindow.py:300
 msgid "Open a file"
 msgstr "افتح ملفًا"
 
-#: src/InstalledAppsList.py:29
+#: src/InstalledAppsList.py:28
 msgid "Check for updates"
 msgstr "تحقق من التحديثات"
 
-#: src/InstalledAppsList.py:30
+#: src/InstalledAppsList.py:29
 msgid "No updates found"
 msgstr "لم يُعثر على تحديثات"
+
+#: src/InstalledAppsList.py:31
+msgid "No Connection"
+msgstr ""
 
 #: src/InstalledAppsList.py:32
 msgid "Update all"
@@ -263,19 +323,20 @@ msgstr "رشّح التطبيقات المثبَّتة"
 msgid "Installed applications"
 msgstr "التطبيقات المثبَّتة"
 
-#: src/preferences.py:29
+#. general group
+#: src/preferences.py:27
 msgid "General"
 msgstr "عام"
 
-#: src/preferences.py:34
+#: src/preferences.py:32
 msgid "AppImage default location"
 msgstr "المكان الافتراضي للأبايميج"
 
-#: src/preferences.py:43
+#: src/preferences.py:41
 msgid "Show integrated AppImages outside the default folder"
 msgstr "اظهر حزم AppImage المدمجة خارج المجلد الافتراضي"
 
-#: src/preferences.py:45
+#: src/preferences.py:43
 msgid ""
 "List AppImages that have been integrated into the system menu but are "
 "located outside the default folder"
@@ -283,49 +344,52 @@ msgstr ""
 "اظهر حزم AppImage التي تم دمجها بقائمة النظام لكنها توجد خارج المجلد "
 "الافتراضي"
 
-#: src/preferences.py:52
+#. updates management group
+#: src/preferences.py:50
 msgid "Updates management"
 msgstr "إدارة التحديثات"
 
-#: src/preferences.py:54
+#: src/preferences.py:52
 msgid "Check updates on system startup"
 msgstr "تحقق من التحديثات عند إقلاع النظام"
 
-#: src/preferences.py:56
+#: src/preferences.py:54
 msgid ""
 "Receive a notification when a new update is detected; updates will not be "
 "installed automatically"
 msgstr "استلم إشعار عند العثور على تحديث جديد؛ التحديثات لن تثبَّت آليًا"
 
-#: src/preferences.py:63
+#. file management group
+#: src/preferences.py:61
 msgid "File management"
 msgstr "إدارة الملفات"
 
-#: src/preferences.py:65
+#: src/preferences.py:63
 msgid "Move AppImages into the destination folder"
 msgstr "انقل حزم AppImage لمجلد الوجهة"
 
-#: src/preferences.py:66
+#: src/preferences.py:64
 msgid "Reduce disk usage"
 msgstr "يقلل من استخدام القرص"
 
-#: src/preferences.py:70
+#: src/preferences.py:68
 msgid "Clone AppImages into the destination folder"
 msgstr "استنسخ حزم AppImage لمجلد الوجهة"
 
-#: src/preferences.py:71
+#: src/preferences.py:69
 msgid "Keep the original file and create a copy in the destination folder"
 msgstr "يحافظ على الملف الأصلي وينشئ نسخة في مجلد الوجهة"
 
-#: src/preferences.py:97
+#. naming conventions group
+#: src/preferences.py:95
 msgid "Naming conventions"
 msgstr "قواعد التسمية"
 
-#: src/preferences.py:99
+#: src/preferences.py:97
 msgid "Use executable name for integrated terminal apps"
 msgstr "استخدم اسم الملف التنفيذي لتطبيقات الطرفية المدمجة"
 
-#: src/preferences.py:101
+#: src/preferences.py:99
 msgid ""
 "If enabled, apps that run in the terminal are renamed as their executable.\n"
 "You would need to add the aforementioned folder to your $PATH manually.\n"
@@ -337,25 +401,15 @@ msgstr ""
 "\n"
 "كمثال، \"golang_x86_64.appimage\" سيُحفظ كـ\"go\""
 
-#: src/preferences.py:107
-msgid "Preview hashes for new apps before loading metadata"
-msgstr "عاين تجزئات التطبيقات الجديدة قبل تحميل معلوماتها الوصفية"
-
-#: src/preferences.py:109
-msgid ""
-"If enabled, a preview of the file you are trying to open is shown.\n"
-"Disable only if you trust your sources: malicious apps could execute code "
-"when loading the metadata."
+#: src/preferences.py:105
+msgid "Preview new apps in a minimal UI"
 msgstr ""
-"إذا فُعِلت، ستظهر معاينة للملف الذي تحاول فتحه.\n"
-"ألغي تفعيله فقط إذا كنت تثق بمصادرك: يمكن للتطبيقات الخبيثة تنفيذ الأوامر "
-"أثناء تحميل المعلومات الوصفية."
 
-#: src/preferences.py:113
+#: src/preferences.py:110
 msgid "Use safe mechanisms to load metadata"
 msgstr "استخدم آليات آمنة لتحميل البيانات الوصفية"
 
-#: src/preferences.py:115
+#: src/preferences.py:112
 msgid ""
 "If enabled, the app will try to load an Appimage without using the built-in "
 "appimage-extract command.\n"
@@ -367,15 +421,16 @@ msgstr ""
 "ألغي تفعيله فقط إذا كنت تثق بمصادرك: يمكن للتطبيقات الخبيثة تنفيذ الأوامر "
 "أثناء تحميل المعلومات الوصفية."
 
-#: src/preferences.py:122
+#. debugging group
+#: src/preferences.py:119
 msgid "Debugging"
 msgstr "التنقيح"
 
-#: src/preferences.py:124
+#: src/preferences.py:121
 msgid "Enable debug logs"
 msgstr "فعِّل سجلات التنقيح"
 
-#: src/preferences.py:126
+#: src/preferences.py:123
 msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
@@ -384,15 +439,15 @@ msgstr ""
 "يزيد من سجلات الإسهاب، محتلًا المزيد من مساحة القرص مما قد يؤثر على الأداء.\n"
 "يتطلب إعادة تشغيل."
 
-#: src/preferences.py:153
+#: src/preferences.py:149
 msgid "The folder must writeable"
 msgstr "يجب أن يكون المجلد قابلًا للكتابة"
 
-#: src/preferences.py:156 src/WelcomeScreen.py:118
+#: src/preferences.py:152 src/WelcomeScreen.py:117
 msgid "Select a folder"
 msgstr "اختر مجلدًا"
 
-#: src/WelcomeScreen.py:115
+#: src/WelcomeScreen.py:114
 msgid "The folder must be in your home directory"
 msgstr "المجلد يجب أن يكون داخل مسار المنزل خاصتك"
 
@@ -491,6 +546,7 @@ msgid ""
 msgstr "جيير ليفر سيجمع كل حزم AppImage خاصتك في مجلد محدَّد لإبقائهم مرتبين."
 
 #: src/gtk/tutorial/2.ui:21
+#, python-brace-format
 msgid "<b>By default, AppImages are saved at: {location}</b>"
 msgstr "<b>إفتراضيًا، تُحفَظ حزم AppImage في: {location}</b>"
 
@@ -513,11 +569,11 @@ msgstr "اضغط على الزر لفتح مجلد عرضي، يحتوي على 
 
 #: src/gtk/tutorial/3.ui:40
 msgid ""
-"Use the right-click menu to set Gear lever as the default app for "
-"\".appimage\" files"
+"Use the right-click menu to set Gear lever as the default app for \"."
+"appimage\" files"
 msgstr ""
-"استخدم قائمة الزر الايمن لتعيين جيير ليفر كالتطبيق الافتراضي لملفات "
-"\".appimage\""
+"استخدم قائمة الزر الايمن لتعيين جيير ليفر كالتطبيق الافتراضي لملفات \"."
+"appimage\""
 
 #: src/gtk/tutorial/3.ui:54
 msgid "Open demo folder"
@@ -535,21 +591,21 @@ msgstr "كل شيء جاهز، هيا بنا!"
 msgid "Close tutorial"
 msgstr "اغلق الدرس التعليمي"
 
-#: src/models/AppListElement.py:19
+#: src/models/AppListElement.py:20
 msgid "No description provided"
 msgstr "لم يُوفَر وصف"
 
-#: src/providers/AppImageProvider.py:587
+#: src/providers/AppImageProvider.py:632
 msgid ""
 "The downloaded file is not a valid appimage, please check if the provided "
 "URL is correct"
 msgstr "الملف المحمَّل ليس AppImage صالح، تأكَّد من أن عنوان URL المزوَّد صحيح"
 
-#: src/providers/AppImageProvider.py:648
+#: src/providers/AppImageProvider.py:693
 msgid "Running AppImages on NixOS requires appimage-run"
 msgstr "تشغيل حزم AppImage على NixOS يتطلب appimage-run"
 
-#: src/providers/AppImageProvider.py:662
+#: src/providers/AppImageProvider.py:707
 #, python-brace-format
 msgid ""
 "AppImages require FUSE to run. You might still be able to run it with --"
@@ -564,10 +620,22 @@ msgstr ""
 "لمزيد من المعلومات اضغط على الرابط الآتي.\n"
 "{url}"
 
-#: src/providers/AppImageProvider.py:749
+#: src/providers/AppImageProvider.py:794
 msgid ""
 "Any attempts at loading this app's metadata failed; if you want proceed "
 "using appimage-extract, please disable the security option in the settings."
 msgstr ""
 "فشلت كل محاولات تحميل المعلومات الوصفية لهذا التطبيق؛ للمتابعة استخدم "
 "appimage-extract، وعطّل خيار الأمان في الإعدادات."
+
+#~ msgid "Preview hashes for new apps before loading metadata"
+#~ msgstr "عاين تجزئات التطبيقات الجديدة قبل تحميل معلوماتها الوصفية"
+
+#~ msgid ""
+#~ "If enabled, a preview of the file you are trying to open is shown.\n"
+#~ "Disable only if you trust your sources: malicious apps could execute code "
+#~ "when loading the metadata."
+#~ msgstr ""
+#~ "إذا فُعِلت، ستظهر معاينة للملف الذي تحاول فتحه.\n"
+#~ "ألغي تفعيله فقط إذا كنت تثق بمصادرك: يمكن للتطبيقات الخبيثة تنفيذ الأوامر "
+#~ "أثناء تحميل المعلومات الوصفية."

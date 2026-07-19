@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 16:17+0100\n"
+"POT-Creation-Date: 2026-07-19 16:33+0000\n"
 "PO-Revision-Date: 2025-11-25 18:58+0300\n"
 "Last-Translator: Ворон <voron@duck.com>\n"
 "Language-Team: Russian <kde-russian@lists.kde.ru>\n"
@@ -36,45 +36,53 @@ msgstr "AppImage;"
 msgid "translator_credits"
 msgstr "Ворон <voron@duck.com>"
 
-#: src/AppDetails.py:32 src/AppDetails.py:80 src/AppDetails.py:437
+#: src/AppDetails.py:35 src/AppDetails.py:92 src/AppDetails.py:510
 msgid "Update"
 msgstr "Обновить"
 
-#: src/AppDetails.py:33
+#: src/AppDetails.py:36
 msgid "Save"
 msgstr "Сохранить"
 
-#: src/AppDetails.py:34
+#: src/AppDetails.py:37
 msgid "Saved"
 msgstr "Сохранено"
 
-#: src/AppDetails.py:35
+#: src/AppDetails.py:38
 msgid "Invalid data"
 msgstr "Неверные данные"
 
-#: src/AppDetails.py:36
+#: src/AppDetails.py:39
 msgid "Cancel update"
 msgstr "Отменить обновление"
 
-#: src/AppDetails.py:37 src/InstalledAppsList.py:31
+#: src/AppDetails.py:40 src/InstalledAppsList.py:30
 msgid "Checking updates..."
 msgstr "Проверка обновлений…"
 
-#: src/AppDetails.py:38
+#: src/AppDetails.py:41
 msgid "No updates available"
 msgstr "Нет обновлений"
 
-#: src/AppDetails.py:39
+#: src/AppDetails.py:42
+msgid "Release file not found"
+msgstr ""
+
+#: src/AppDetails.py:43
 msgid "This application includes update information provided by the developer"
 msgstr ""
 "Это приложение содержит информацию об обновлении, предоставленную "
 "разработчиком"
 
-#: src/AppDetails.py:40
+#: src/AppDetails.py:44
 msgid "Manage update details for this application"
 msgstr "Управление сведениями об обновлении для этого приложения"
 
-#: src/AppDetails.py:233
+#: src/AppDetails.py:109
+msgid "Install in its own folder"
+msgstr ""
+
+#: src/AppDetails.py:251
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -82,105 +90,135 @@ msgstr ""
 "Это приложение находится вне папки по умолчанию.\n"
 "<small>Внешние приложения можно скрыть в настройке параметров</small>"
 
-#: src/AppDetails.py:244
+#: src/AppDetails.py:264
 msgid "Please, verify the source of this app before opening it"
 msgstr "Проверьте источник этого приложения, прежде чем открывать его"
 
-#: src/AppDetails.py:245
+#: src/AppDetails.py:265
 msgid "Unlock"
 msgstr "Разблокировать"
 
-#: src/AppDetails.py:365
+#: src/AppDetails.py:363
+msgid "Unkown Error"
+msgstr ""
+
+#: src/AppDetails.py:413
 msgid "Launching..."
 msgstr "Запуск…"
 
-#: src/AppDetails.py:372 src/AppDetails.py:547
-#: src/providers/AppImageProvider.py:645
-msgid "Error"
-msgstr "Ошибка"
+#: src/AppDetails.py:442
+msgid "Delete the app's data folder too?"
+msgstr ""
 
-#: src/AppDetails.py:459
+#: src/AppDetails.py:443
+msgid ""
+"This app kept extra files in its own folder besides the AppImage itself. Do "
+"you want to delete them as well?"
+msgstr ""
+
+#: src/AppDetails.py:446
+#, fuzzy
+msgid "Keep data"
+msgstr "Оставить оба"
+
+#: src/AppDetails.py:447
+#, fuzzy
+msgid "Delete data"
+msgstr "Обновить метаданные"
+
+#: src/AppDetails.py:479
+#, python-brace-format
+msgid ""
+"{app_name} is running, please close it before proceeding with the update"
+msgstr ""
+
+#: src/AppDetails.py:539
 msgid "Update error"
 msgstr "Ошибка обновления"
 
-#: src/AppDetails.py:463
+#: src/AppDetails.py:543
 msgid "Close"
 msgstr "Закрыть"
 
-#: src/AppDetails.py:470
+#: src/AppDetails.py:550
 msgid "Do you really want to remove this app?"
 msgstr "Удалить это приложение?"
 
-#: src/AppDetails.py:473 src/components/AppDetailsConflictModal.py:14
+#: src/AppDetails.py:553 src/MultiInstall.py:114
+#: src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
 msgstr "Отмена"
 
-#: src/AppDetails.py:474 src/AppDetails.py:513
+#: src/AppDetails.py:554 src/AppDetails.py:596
 msgid "Remove"
 msgstr "Удалить"
 
-#: src/AppDetails.py:509 src/AppDetails.py:529
+#: src/AppDetails.py:592 src/AppDetails.py:612
 msgid "This app runs in the terminal"
 msgstr "Это приложение запускается в терминале"
 
-#: src/AppDetails.py:511 src/AppDetails.py:526 src/AppDetails.py:532
+#: src/AppDetails.py:594 src/AppDetails.py:609 src/AppDetails.py:615
 msgid "Launch"
 msgstr "Запустить"
 
-#: src/AppDetails.py:517
+#: src/AppDetails.py:600
 msgid "Uninstalling..."
 msgstr "Удаление…"
 
-#: src/AppDetails.py:521
+#: src/AppDetails.py:604
 msgid "Installing..."
 msgstr "Установка…"
 
-#: src/AppDetails.py:534
+#: src/AppDetails.py:617
 msgid "Move to the app menu"
 msgstr "Добавить в меню приложений"
 
-#: src/AppDetails.py:558
+#: src/AppDetails.py:630
+msgid "Error"
+msgstr "Ошибка"
+
+#: src/AppDetails.py:641
 msgid "This app might not be compatible with your system architecture"
 msgstr "Это приложение может быть несовместимо с архитектурой вашей системы"
 
-#: src/AppDetails.py:860
+#: src/AppDetails.py:960
 msgid "Add a website"
 msgstr "Добавить веб-сайт"
 
-#: src/AppDetails.py:864
+#: src/AppDetails.py:964
 msgid "Website"
 msgstr "Веб-сайт"
 
-#: src/AppDetails.py:877
+#: src/AppDetails.py:977
 msgid "Open URL"
 msgstr "Открыть URL-адрес"
 
-#: src/AppDetails.py:894
+#: src/AppDetails.py:994
 msgid "How it works"
 msgstr "Как это работает"
 
-#: src/AppDetails.py:916
+#: src/AppDetails.py:1016
 msgid "Update management"
 msgstr "Управление обновлениями"
 
-#: src/AppDetails.py:923
+#: src/AppDetails.py:1023
 #, fuzzy
 msgid "Default"
 msgstr "По умолчанию"
 
-#: src/AppDetails.py:929
+#: src/AppDetails.py:1029
 msgid "Source"
 msgstr "Источник"
 
-#: src/AppDetails.py:930
+#: src/AppDetails.py:1030
 msgid "Select the source type"
 msgstr "Выберите тип источника"
 
-#: src/AppDetails.py:956
+#: src/AppDetails.py:1056
 msgid "Reload metadata"
 msgstr "Обновить метаданные"
 
-#: src/AppDetails.py:957
+#: src/AppDetails.py:1057
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -188,41 +226,68 @@ msgstr ""
 "Обновление информации, такой как значок, версия и описание.\n"
 "Полезно, если приложение обновлялось само."
 
-#: src/AppDetails.py:969
+#: src/AppDetails.py:1069
 msgid "Command line arguments"
 msgstr "Аргументы командной строки"
 
-#: src/AppDetails.py:987
+#: src/AppDetails.py:1087
 msgid "Hash"
 msgstr "Хэш"
 
-#: src/AppDetails.py:997
+#: src/AppDetails.py:1097
 msgid "Path"
 msgstr "Путь"
 
-#: src/AppDetails.py:999
+#: src/AppDetails.py:1099
 msgid "Open Folder"
 msgstr "Открыть папку"
 
-#: src/AppDetails.py:1009
+#: src/AppDetails.py:1109
 msgid "Package type"
 msgstr "Тип пакета"
 
-#: src/AppDetails.py:1027
+#: src/AppDetails.py:1127
 msgid "Key"
 msgstr "Ключ"
 
-#: src/AppDetails.py:1028
+#: src/AppDetails.py:1128
 msgid "Value"
 msgstr "Значение"
 
-#: src/AppDetails.py:1067
+#: src/AppDetails.py:1167
 msgid "Environment variables"
 msgstr "Переменные среды"
 
-#: src/AppDetails.py:1068
+#: src/AppDetails.py:1168
 msgid "Add or customize environment for this application"
 msgstr "Добавьте или настройте среду для этого приложения"
+
+#: src/MultiInstall.py:26
+#, fuzzy
+msgid "Move all to the app menu"
+msgstr "Добавить в меню приложений"
+
+#: src/MultiInstall.py:48
+msgid "Some apps are already installed"
+msgstr ""
+
+#: src/MultiInstall.py:111
+#, fuzzy
+msgid "Do you really want to move all the apps to the menu?"
+msgstr "Удалить это приложение?"
+
+#: src/MultiInstall.py:115
+msgid "Proceed"
+msgstr ""
+
+#: src/MultiInstall.py:119
+#, fuzzy
+msgid "I have verified the source of the apps"
+msgstr "Проверьте источник этого приложения, прежде чем открывать его"
+
+#: src/MultiInstall.py:122
+msgid "Install each app in its own folder"
+msgstr ""
 
 #: src/GearleverWindow.py:39
 msgid "Open a new AppImage"
@@ -232,17 +297,21 @@ msgstr "Открыть новый AppImage"
 msgid "Open"
 msgstr "Открыть"
 
-#: src/GearleverWindow.py:294
+#: src/GearleverWindow.py:300
 msgid "Open a file"
 msgstr "Открыть файл"
 
-#: src/InstalledAppsList.py:29
+#: src/InstalledAppsList.py:28
 msgid "Check for updates"
 msgstr "Проверить обновления"
 
-#: src/InstalledAppsList.py:30
+#: src/InstalledAppsList.py:29
 msgid "No updates found"
 msgstr "Обновлений не найдено"
+
+#: src/InstalledAppsList.py:31
+msgid "No Connection"
+msgstr ""
 
 #: src/InstalledAppsList.py:32
 msgid "Update all"
@@ -256,19 +325,20 @@ msgstr "Фильтровать установленные приложения"
 msgid "Installed applications"
 msgstr "Установленные приложения"
 
-#: src/preferences.py:29
+#. general group
+#: src/preferences.py:27
 msgid "General"
 msgstr "Общие"
 
-#: src/preferences.py:34
+#: src/preferences.py:32
 msgid "AppImage default location"
 msgstr "Расположение AppImage по умолчанию"
 
-#: src/preferences.py:43
+#: src/preferences.py:41
 msgid "Show integrated AppImages outside the default folder"
 msgstr "Показывать интегрированные AppImage за пределами папки по умолчанию"
 
-#: src/preferences.py:45
+#: src/preferences.py:43
 msgid ""
 "List AppImages that have been integrated into the system menu but are "
 "located outside the default folder"
@@ -276,15 +346,16 @@ msgstr ""
 "Показывает список AppImage, которые были интегрированы в системное меню, но "
 "расположены за пределами папки по умолчанию"
 
-#: src/preferences.py:52
+#. updates management group
+#: src/preferences.py:50
 msgid "Updates management"
 msgstr "Управление обновлениями"
 
-#: src/preferences.py:54
+#: src/preferences.py:52
 msgid "Check updates on system startup"
 msgstr "Проверять обновления при запуске системы"
 
-#: src/preferences.py:56
+#: src/preferences.py:54
 msgid ""
 "Receive a notification when a new update is detected; updates will not be "
 "installed automatically"
@@ -292,36 +363,38 @@ msgstr ""
 "Получать уведомление при обнаружении нового обновления; обновления не будут "
 "устанавливаться автоматически"
 
-#: src/preferences.py:63
+#. file management group
+#: src/preferences.py:61
 msgid "File management"
 msgstr "Управление файлами"
 
-#: src/preferences.py:65
+#: src/preferences.py:63
 msgid "Move AppImages into the destination folder"
 msgstr "Перемещать AppImage в папку назначения"
 
-#: src/preferences.py:66
+#: src/preferences.py:64
 msgid "Reduce disk usage"
 msgstr "Уменьшает использование диска"
 
-#: src/preferences.py:70
+#: src/preferences.py:68
 msgid "Clone AppImages into the destination folder"
 msgstr "Клонировать AppImage в папку назначения"
 
-#: src/preferences.py:71
+#: src/preferences.py:69
 msgid "Keep the original file and create a copy in the destination folder"
 msgstr "Сохраняет оригинальный файл и создает копию в папке назначения"
 
-#: src/preferences.py:97
+#. naming conventions group
+#: src/preferences.py:95
 msgid "Naming conventions"
 msgstr "Соглашения об именах"
 
-#: src/preferences.py:99
+#: src/preferences.py:97
 msgid "Use executable name for integrated terminal apps"
 msgstr ""
 "Использовать имя исполняемого файла для встроенных консольных приложений"
 
-#: src/preferences.py:101
+#: src/preferences.py:99
 msgid ""
 "If enabled, apps that run in the terminal are renamed as their executable.\n"
 "You would need to add the aforementioned folder to your $PATH manually.\n"
@@ -334,13 +407,19 @@ msgstr ""
 "\n"
 "Например, «golang_x86_64.appimage» будет сохранено как «go»"
 
-#: src/preferences.py:107
-msgid "Preview hashes for new apps before loading metadata"
-msgstr "Просмотр хэшей для новых приложений перед загрузкой метаданных"
+#: src/preferences.py:105
+msgid "Preview new apps in a minimal UI"
+msgstr ""
 
-#: src/preferences.py:109
+#: src/preferences.py:110
+msgid "Use safe mechanisms to load metadata"
+msgstr ""
+
+#: src/preferences.py:112
+#, fuzzy
 msgid ""
-"If enabled, a preview of the file you are trying to open is shown.\n"
+"If enabled, the app will try to load an Appimage without using the built-in "
+"appimage-extract command.\n"
 "Disable only if you trust your sources: malicious apps could execute code "
 "when loading the metadata."
 msgstr ""
@@ -349,15 +428,16 @@ msgstr ""
 "Отключайте только в случае доверия к источнику: вредоносные приложения могут "
 "выполнять код при загрузке метаданных."
 
-#: src/preferences.py:115
+#. debugging group
+#: src/preferences.py:119
 msgid "Debugging"
 msgstr "Отладка"
 
-#: src/preferences.py:117
+#: src/preferences.py:121
 msgid "Enable debug logs"
 msgstr "Включить журнал отладки"
 
-#: src/preferences.py:119
+#: src/preferences.py:123
 msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
@@ -367,15 +447,15 @@ msgstr ""
 "потенциально снижает производительность.\n"
 "Требуется перезагрузка."
 
-#: src/preferences.py:146
+#: src/preferences.py:149
 msgid "The folder must writeable"
 msgstr "Папка должна быть доступна для записи"
 
-#: src/preferences.py:149 src/WelcomeScreen.py:118
+#: src/preferences.py:152 src/WelcomeScreen.py:117
 msgid "Select a folder"
 msgstr "Выбрать папку"
 
-#: src/WelcomeScreen.py:115
+#: src/WelcomeScreen.py:114
 msgid "The folder must be in your home directory"
 msgstr "Папка должна находиться в вашем домашнем каталоге"
 
@@ -425,7 +505,8 @@ msgid "Drag and drop an AppImage here or click on the \"+\" icon."
 msgstr "Перетащите сюда AppImage или нажмите на значок «+»."
 
 #: src/gtk/empty-list-placeholder.ui:35
-msgid " If you don't see your apps, check if the selected folder is correct."
+#, fuzzy
+msgid "If you don't see your apps, check if the selected folder is correct."
 msgstr " Если приложения не отображаются, проверьте правильность выбора папки."
 
 #: src/gtk/empty-list-placeholder.ui:46
@@ -498,8 +579,8 @@ msgstr "Нажмите на кнопку для открытия демо-пап
 
 #: src/gtk/tutorial/3.ui:40
 msgid ""
-"Use the right-click menu to set Gear lever as the default app for "
-"\".appimage\" files"
+"Use the right-click menu to set Gear lever as the default app for \"."
+"appimage\" files"
 msgstr ""
 "Используйте контекстное меню для установки Gear lever в качестве приложения "
 "по умолчанию для файлов «.appimage»"
@@ -520,11 +601,11 @@ msgstr "Все готово, поехали!"
 msgid "Close tutorial"
 msgstr "Закрыть руководство"
 
-#: src/models/AppListElement.py:19
+#: src/models/AppListElement.py:20
 msgid "No description provided"
 msgstr "Описание не предоставлено"
 
-#: src/providers/AppImageProvider.py:585
+#: src/providers/AppImageProvider.py:632
 msgid ""
 "The downloaded file is not a valid appimage, please check if the provided "
 "URL is correct"
@@ -532,11 +613,11 @@ msgstr ""
 "Загруженный файл не является допустимым AppImage, проверьте правильность "
 "предоставленного URL-адреса"
 
-#: src/providers/AppImageProvider.py:631
+#: src/providers/AppImageProvider.py:693
 msgid "Running AppImages on NixOS requires appimage-run"
 msgstr "Для запуска AppImage на NixOS требуется appimage-run"
 
-#: src/providers/AppImageProvider.py:646
+#: src/providers/AppImageProvider.py:707
 #, python-brace-format
 msgid ""
 "AppImages require FUSE to run. You might still be able to run it with --"
@@ -550,6 +631,15 @@ msgstr ""
 "\n"
 "Для получения более подробной информации, нажмите на ссылку ниже. \n"
 "{url}"
+
+#: src/providers/AppImageProvider.py:794
+msgid ""
+"Any attempts at loading this app's metadata failed; if you want proceed "
+"using appimage-extract, please disable the security option in the settings."
+msgstr ""
+
+#~ msgid "Preview hashes for new apps before loading metadata"
+#~ msgstr "Просмотр хэшей для новых приложений перед загрузкой метаданных"
 
 #~ msgid "Update URL"
 #~ msgstr "URL-адрес обновления"
