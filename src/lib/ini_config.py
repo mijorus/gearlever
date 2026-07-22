@@ -12,7 +12,7 @@ from gi.repository import GLib  # noqa
 
 class Config:
     path = os.path.join(GLib.get_user_config_dir(), 'gearlever.conf')
-    parser = configparser.ConfigParser()
+    parser = configparser.ConfigParser(interpolation=None)
 
     @staticmethod
     def return_boolean(v):
