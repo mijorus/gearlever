@@ -241,6 +241,7 @@ class Cli():
         Cli._print_help_if_requested(argv, [
             ['--keep-both', 'If a name conflict occurs, keeps both files (default behaviour)'],
             ['--replace', 'If a name conflict occurs, replaces the old file with the one that you are currently integrating'],
+            ['--own-folder', 'Installs the AppImage into its own dedicated subfolder, instead of the shared default folder'],
             ['--yes | -y', 'Skips any interactive question and integrates the file'],
             ['--update-url <url>', 'Set a custom URL for updates'],
         ], text='Usage: --integrate <file_path>')
@@ -292,6 +293,7 @@ class Cli():
                 list_element.update_logic = AppImageUpdateLogic.REPLACE
                 list_element.updating_from = already_installed
 
+        list_element.own_folder = ('--own-folder' in argv)
         appimage_provider.install_file(list_element)
         print(f'{list_element.file_path} was integrated successfully')
 

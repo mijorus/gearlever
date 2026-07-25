@@ -2,6 +2,7 @@ data/it.mijorus.gearlever.desktop.in
 data/it.mijorus.gearlever.gschema.xml
 src/main.py
 src/AppDetails.py
+src/MultiInstall.py
 src/GearleverWindow.py
 src/InstalledAppsList.py
 src/preferences.py

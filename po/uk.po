@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Gear Lever\n"
-"Report-Msgid-Bugs-To: https://github.com/mijorus/gearlever/issues\n"
-"POT-Creation-Date: 2024-11-20 14:54+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-19 16:33+0000\n"
 "PO-Revision-Date: 2024-12-07 17:14+0200\n"
 "Last-Translator: volkov <volkovissocool@gmail.com>\n"
 "Language-Team: \n"
@@ -31,35 +31,56 @@ msgstr ""
 "AppImage;program;install;remove;апка;аппімадже;додаток;застосунок;програма;"
 "встановити;видалити;"
 
-#: src/main.py:117
+#: src/main.py:112
 msgid "translator_credits"
 msgstr "volkov <volkovissocool@gmail.com>"
 
-#: src/AppDetails.py:28 src/AppDetails.py:74 src/AppDetails.py:395
+#: src/AppDetails.py:35 src/AppDetails.py:92 src/AppDetails.py:510
 msgid "Update"
 msgstr "Оновити"
 
-#: src/AppDetails.py:29
+#: src/AppDetails.py:36
+msgid "Save"
+msgstr "Зберегти"
+
+#: src/AppDetails.py:37
+#, fuzzy
+msgid "Saved"
+msgstr "Зберегти"
+
+#: src/AppDetails.py:38
+msgid "Invalid data"
+msgstr ""
+
+#: src/AppDetails.py:39
 msgid "Cancel update"
 msgstr "Скасувати оновлення"
 
-#: src/AppDetails.py:30 src/InstalledAppsList.py:32
+#: src/AppDetails.py:40 src/InstalledAppsList.py:30
 msgid "Checking updates..."
 msgstr "Перевіряємо оновлення..."
 
-#: src/AppDetails.py:31
+#: src/AppDetails.py:41
 msgid "No updates available"
 msgstr "Оновлень немає"
 
-#: src/AppDetails.py:32
+#: src/AppDetails.py:42
+msgid "Release file not found"
+msgstr ""
+
+#: src/AppDetails.py:43
 msgid "This application includes update information provided by the developer"
 msgstr "Додаток включає інформацію про оновлення надану його розробником"
 
-#: src/AppDetails.py:33
+#: src/AppDetails.py:44
 msgid "Manage update details for this application"
 msgstr "Керувати деталями оновлення цього додатку"
 
-#: src/AppDetails.py:213
+#: src/AppDetails.py:109
+msgid "Install in its own folder"
+msgstr ""
+
+#: src/AppDetails.py:251
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
@@ -67,108 +88,134 @@ msgstr ""
 "Цей додаток знаходиться за межами стандартної теки\n"
 "<small>Ви можете сховати додатки за межами теки у налаштуваннях</small>"
 
-#: src/AppDetails.py:224
+#: src/AppDetails.py:264
 msgid "Please, verify the source of this app before opening it"
 msgstr "Будь ласка, перевірте джерело цього додатку перш ніж відкривати його"
 
-#: src/AppDetails.py:225
+#: src/AppDetails.py:265
 msgid "Unlock"
 msgstr "Розблокувати"
 
-#: src/AppDetails.py:328
+#: src/AppDetails.py:363
+msgid "Unkown Error"
+msgstr ""
+
+#: src/AppDetails.py:413
 msgid "Launching..."
 msgstr "Запускаємо..."
 
-#: src/AppDetails.py:335 src/AppDetails.py:501
-#: src/providers/AppImageProvider.py:648
-msgid "Error"
-msgstr "Помилка"
+#: src/AppDetails.py:442
+msgid "Delete the app's data folder too?"
+msgstr ""
 
-#: src/AppDetails.py:412
+#: src/AppDetails.py:443
+msgid ""
+"This app kept extra files in its own folder besides the AppImage itself. Do "
+"you want to delete them as well?"
+msgstr ""
+
+#: src/AppDetails.py:446
+#, fuzzy
+msgid "Keep data"
+msgstr "Зберегти обидва"
+
+#: src/AppDetails.py:447
+#, fuzzy
+msgid "Delete data"
+msgstr "Перезавантажити метадані"
+
+#: src/AppDetails.py:479
+#, python-brace-format
+msgid ""
+"{app_name} is running, please close it before proceeding with the update"
+msgstr ""
+
+#: src/AppDetails.py:539
 msgid "Update error"
 msgstr "Помилка оновлення"
 
-#: src/AppDetails.py:416
+#: src/AppDetails.py:543
 msgid "Close"
 msgstr "Закрити"
 
-#: src/AppDetails.py:424
+#: src/AppDetails.py:550
 msgid "Do you really want to remove this app?"
 msgstr "Ви дійсно бажаєте видалити цей додаток?"
 
-#: src/AppDetails.py:427 src/components/AppDetailsConflictModal.py:14
+#: src/AppDetails.py:553 src/MultiInstall.py:114
+#: src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
 msgstr "Скасувати"
 
-#: src/AppDetails.py:428 src/AppDetails.py:467
+#: src/AppDetails.py:554 src/AppDetails.py:596
 msgid "Remove"
 msgstr "Видалити"
 
-#: src/AppDetails.py:463 src/AppDetails.py:483
+#: src/AppDetails.py:592 src/AppDetails.py:612
 msgid "This app runs in the terminal"
 msgstr "Цей додаток запущено у терміналі"
 
-#: src/AppDetails.py:465 src/AppDetails.py:480 src/AppDetails.py:486
+#: src/AppDetails.py:594 src/AppDetails.py:609 src/AppDetails.py:615
 msgid "Launch"
 msgstr "Запустити"
 
-#: src/AppDetails.py:471
+#: src/AppDetails.py:600
 msgid "Uninstalling..."
 msgstr "Видаляємо..."
 
-#: src/AppDetails.py:475
+#: src/AppDetails.py:604
 msgid "Installing..."
 msgstr "Встановлюємо..."
 
-#: src/AppDetails.py:488
+#: src/AppDetails.py:617
 msgid "Move to the app menu"
 msgstr "Пересунути у меню додатків"
 
-#: src/AppDetails.py:512
+#: src/AppDetails.py:630
+msgid "Error"
+msgstr "Помилка"
+
+#: src/AppDetails.py:641
 msgid "This app might not be compatible with your system architecture"
 msgstr "Цей додаток може бути не сумісним з архітектурою вашої системи"
 
-#: src/AppDetails.py:759
-msgid "Website"
-msgstr "Веб-сайт"
-
-#: src/AppDetails.py:759
+#: src/AppDetails.py:960
 msgid "Add a website"
 msgstr "Додати веб-сайт"
 
-#: src/AppDetails.py:768
+#: src/AppDetails.py:964
+msgid "Website"
+msgstr "Веб-сайт"
+
+#: src/AppDetails.py:977
 msgid "Open URL"
 msgstr "Відкрити URL-посилання"
 
-#: src/AppDetails.py:784 src/AppDetails.py:947
-msgid "Save"
-msgstr "Зберегти"
-
-#: src/AppDetails.py:797
-msgid "Update management"
-msgstr "Керування оновленнями"
-
-#: src/AppDetails.py:802
-msgid "Update URL"
-msgstr "Оновити URL-адресу"
-
-#: src/AppDetails.py:809
-msgid "Source"
-msgstr "Джерело"
-
-#: src/AppDetails.py:810
-msgid "Select the source type"
-msgstr "Обрати тип джерела"
-
-#: src/AppDetails.py:834
+#: src/AppDetails.py:994
 msgid "How it works"
 msgstr "Як це працює"
 
-#: src/AppDetails.py:851
+#: src/AppDetails.py:1016
+msgid "Update management"
+msgstr "Керування оновленнями"
+
+#: src/AppDetails.py:1023
+msgid "Default"
+msgstr ""
+
+#: src/AppDetails.py:1029
+msgid "Source"
+msgstr "Джерело"
+
+#: src/AppDetails.py:1030
+msgid "Select the source type"
+msgstr "Обрати тип джерела"
+
+#: src/AppDetails.py:1056
 msgid "Reload metadata"
 msgstr "Перезавантажити метадані"
 
-#: src/AppDetails.py:852
+#: src/AppDetails.py:1057
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
@@ -176,87 +223,120 @@ msgstr ""
 "Оновити інформацію, таку як: піктограму, версію і опис.\n"
 "Корисно, якщо додаток оновився самостійно."
 
-#: src/AppDetails.py:864
+#: src/AppDetails.py:1069
 msgid "Command line arguments"
 msgstr "Аргументи командного рядку"
 
-#: src/AppDetails.py:882
+#: src/AppDetails.py:1087
 msgid "Hash"
 msgstr "Хеш-сума"
 
-#: src/AppDetails.py:892
+#: src/AppDetails.py:1097
 msgid "Path"
 msgstr "Шлях"
 
-#: src/AppDetails.py:894
+#: src/AppDetails.py:1099
 msgid "Open Folder"
 msgstr "Відкрити теку"
 
-#: src/AppDetails.py:904
+#: src/AppDetails.py:1109
 msgid "Package type"
 msgstr "Тип пакунку"
 
-#: src/AppDetails.py:922
+#: src/AppDetails.py:1127
 msgid "Key"
 msgstr "Ключ"
 
-#: src/AppDetails.py:923
+#: src/AppDetails.py:1128
 msgid "Value"
 msgstr "Значення"
 
-#: src/AppDetails.py:942
-msgid "Add"
-msgstr "Додати"
-
-#: src/AppDetails.py:962
+#: src/AppDetails.py:1167
 msgid "Environment variables"
 msgstr "Змінні середовища"
 
-#: src/AppDetails.py:963
+#: src/AppDetails.py:1168
 msgid "Add or customize environment for this application"
 msgstr "Додати або керувати змінними цього додатку"
 
-#: src/GearleverWindow.py:37
+#: src/MultiInstall.py:26
+#, fuzzy
+msgid "Move all to the app menu"
+msgstr "Пересунути у меню додатків"
+
+#: src/MultiInstall.py:48
+msgid "Some apps are already installed"
+msgstr ""
+
+#: src/MultiInstall.py:111
+#, fuzzy
+msgid "Do you really want to move all the apps to the menu?"
+msgstr "Ви дійсно бажаєте видалити цей додаток?"
+
+#: src/MultiInstall.py:115
+msgid "Proceed"
+msgstr ""
+
+#: src/MultiInstall.py:119
+#, fuzzy
+msgid "I have verified the source of the apps"
+msgstr "Будь ласка, перевірте джерело цього додатку перш ніж відкривати його"
+
+#: src/MultiInstall.py:122
+msgid "Install each app in its own folder"
+msgstr ""
+
+#: src/GearleverWindow.py:39
 msgid "Open a new AppImage"
 msgstr "Відкрити новий AppImage"
 
-#: src/GearleverWindow.py:49
+#: src/GearleverWindow.py:51
 msgid "Open"
 msgstr "Відкрити"
 
-#: src/GearleverWindow.py:253
+#: src/GearleverWindow.py:300
 msgid "Open a file"
 msgstr "Відкрити файл"
 
-#: src/InstalledAppsList.py:30
+#: src/InstalledAppsList.py:28
 msgid "Check for updates"
 msgstr "Перевірити наявність оновлень"
 
-#: src/InstalledAppsList.py:31
+#: src/InstalledAppsList.py:29
 msgid "No updates found"
 msgstr "Оновлень не знайдено"
 
-#: src/InstalledAppsList.py:51
+#: src/InstalledAppsList.py:31
+msgid "No Connection"
+msgstr ""
+
+#: src/InstalledAppsList.py:32
+#, fuzzy
+msgid "Update all"
+msgstr "Оновити"
+
+#: src/InstalledAppsList.py:55
 msgid "Filter installed applications"
 msgstr "Сортувати встановлені додатки"
 
-#: src/InstalledAppsList.py:57
+#: src/InstalledAppsList.py:62
 msgid "Installed applications"
 msgstr "Встановлені додатки"
 
-#: src/preferences.py:28
+#. general group
+#: src/preferences.py:27
 msgid "General"
 msgstr "Загальні"
 
-#: src/preferences.py:33
+#: src/preferences.py:32
 msgid "AppImage default location"
 msgstr "Стандартна тека для додатків AppImage"
 
-#: src/preferences.py:42
+#: src/preferences.py:41
 msgid "Show integrated AppImages outside the default folder"
 msgstr "Показувати інтегровані AppImage додатки за межами стандартної теки"
 
-#: src/preferences.py:44
+#: src/preferences.py:43
 msgid ""
 "List AppImages that have been integrated into the system menu but are "
 "located outside the default folder"
@@ -264,15 +344,16 @@ msgstr ""
 "Показувати AppImage додатки які були інтегровані в системне меню, але які "
 "знаходяться за межами стандартної теки"
 
-#: src/preferences.py:51
+#. updates management group
+#: src/preferences.py:50
 msgid "Updates management"
 msgstr "Керування оновленнями"
 
-#: src/preferences.py:53
+#: src/preferences.py:52
 msgid "Check updates on system startup"
 msgstr "Перевіряти наявність оновлень при завантаженні системи"
 
-#: src/preferences.py:55
+#: src/preferences.py:54
 msgid ""
 "Receive a notification when a new update is detected; updates will not be "
 "installed automatically"
@@ -280,37 +361,39 @@ msgstr ""
 "Отримувати сповіщення коли знайдено оновлення; оновлення не будуть "
 "автоматично встановлюватися"
 
-#: src/preferences.py:62
+#. file management group
+#: src/preferences.py:61
 msgid "File management"
 msgstr "Керування файлами"
 
-#: src/preferences.py:64
+#: src/preferences.py:63
 msgid "Move AppImages into the destination folder"
 msgstr "Пересувати AppImage додатки у теку призначення"
 
-#: src/preferences.py:65
+#: src/preferences.py:64
 msgid "Reduce disk usage"
 msgstr "Зменшує використання дискового простору"
 
-#: src/preferences.py:69
+#: src/preferences.py:68
 msgid "Clone AppImages into the destination folder"
 msgstr "Клонувати AppImage додатки у теку призначення"
 
-#: src/preferences.py:70
+#: src/preferences.py:69
 msgid "Keep the original file and create a copy in the destination folder"
 msgstr "Зберегти оригінальний файл і створити його копію у теці призначення"
 
-#: src/preferences.py:96
+#. naming conventions group
+#: src/preferences.py:95
 msgid "Naming conventions"
 msgstr "Конвенція найменування"
 
-#: src/preferences.py:98
+#: src/preferences.py:97
 msgid "Use executable name for integrated terminal apps"
 msgstr ""
 "Використовувати назву виконувального файлу для інтеграції термінальних "
 "додатків"
 
-#: src/preferences.py:100
+#: src/preferences.py:99
 msgid ""
 "If enabled, apps that run in the terminal are renamed as their executable.\n"
 "You would need to add the aforementioned folder to your $PATH manually.\n"
@@ -323,15 +406,32 @@ msgstr ""
 "\n"
 "Наприклад, \"golang_x86_64.appimage\" буде збережено як \"go\""
 
-#: src/preferences.py:106
+#: src/preferences.py:105
+msgid "Preview new apps in a minimal UI"
+msgstr ""
+
+#: src/preferences.py:110
+msgid "Use safe mechanisms to load metadata"
+msgstr ""
+
+#: src/preferences.py:112
+msgid ""
+"If enabled, the app will try to load an Appimage without using the built-in "
+"appimage-extract command.\n"
+"Disable only if you trust your sources: malicious apps could execute code "
+"when loading the metadata."
+msgstr ""
+
+#. debugging group
+#: src/preferences.py:119
 msgid "Debugging"
 msgstr "Налагодження"
 
-#: src/preferences.py:108
+#: src/preferences.py:121
 msgid "Enable debug logs"
 msgstr "Увімкнути звіти налагодження додатку"
 
-#: src/preferences.py:110
+#: src/preferences.py:123
 msgid ""
 "Increases log verbosity, occupying more disk space and potentially impacting "
 "performance.\n"
@@ -341,15 +441,15 @@ msgstr ""
 "диску і потенційно впливати на продуктивність додатку.\n"
 "Щоб ця опція вступила в силу, треба перезавантажити додаток."
 
-#: src/preferences.py:137
+#: src/preferences.py:149
 msgid "The folder must writeable"
 msgstr "Тека має бути доступною для запису"
 
-#: src/preferences.py:140 src/WelcomeScreen.py:98
+#: src/preferences.py:152 src/WelcomeScreen.py:117
 msgid "Select a folder"
 msgstr "Обрати теку"
 
-#: src/WelcomeScreen.py:95
+#: src/WelcomeScreen.py:114
 msgid "The folder must be in your home directory"
 msgstr "Ця тека повинна бути у вашій \"Домівка\" теці"
 
@@ -399,7 +499,8 @@ msgid "Drag and drop an AppImage here or click on the \"+\" icon."
 msgstr "Перетягніть AppImage додаток сюди або натисніть на \"+\" піктограму."
 
 #: src/gtk/empty-list-placeholder.ui:35
-msgid " If you don't see your apps, check if the selected folder is correct."
+#, fuzzy
+msgid "If you don't see your apps, check if the selected folder is correct."
 msgstr ""
 " Якщо ви не бачите ваші додатки, перевірте, чи правильну теку ви обрали."
 
@@ -426,24 +527,24 @@ msgctxt "shortcut window"
 msgid "Quit"
 msgstr "Вийти"
 
-#: src/gtk/tutorial/1.ui:21
+#: src/gtk/tutorial/1.ui:26
 msgid "Hi, welcome to Gear lever"
 msgstr "Ласкаво просимо до Gear lever"
 
-#: src/gtk/tutorial/1.ui:30
+#: src/gtk/tutorial/1.ui:35
 msgid "An app that helps you integrate AppImages into your system."
 msgstr ""
 "Це додаток, який допоможе вам інтегрувати AppImage додатки у вашу систему."
 
-#: src/gtk/tutorial/1.ui:36
+#: src/gtk/tutorial/1.ui:43
 msgid "Click \"Next\" to follow this tutorial."
 msgstr "Натисніть \"Далі\", щоб продовжити."
 
-#: src/gtk/tutorial/2.ui:19
+#: src/gtk/tutorial/2.ui:12
 msgid "Set the AppImage location"
 msgstr "Встановити теку з AppImage додатками"
 
-#: src/gtk/tutorial/2.ui:28
+#: src/gtk/tutorial/2.ui:13
 msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
@@ -451,30 +552,30 @@ msgstr ""
 "Gear lever згрупує усі ваші AppImage додатки у обрану теку і буде сортувати "
 "їх там."
 
-#: src/gtk/tutorial/2.ui:33
-#, python-brace-format
-msgid "By default, AppImages are saved at: {location}"
+#: src/gtk/tutorial/2.ui:21
+#, fuzzy, python-brace-format
+msgid "<b>By default, AppImages are saved at: {location}</b>"
 msgstr "За замовченням, AppImage зберігаються у: {location}"
 
-#: src/gtk/tutorial/2.ui:47
+#: src/gtk/tutorial/2.ui:29
 msgid "Change AppImage location"
 msgstr "Змінити теку з AppImage додатками"
 
-#: src/gtk/tutorial/2.ui:59
+#: src/gtk/tutorial/2.ui:38
 msgid "You can customize it later in the preferences."
 msgstr "Ви можете змінити цю опцію потім у налаштуваннях."
 
-#: src/gtk/tutorial/3.ui:19
+#: src/gtk/tutorial/3.ui:23
 msgid "Set Gear lever as default"
 msgstr "Встановити Gear lever за замовченням"
 
-#: src/gtk/tutorial/3.ui:28
+#: src/gtk/tutorial/3.ui:32
 msgid ""
 "Click on the button to open a demo folder, containing a sample AppImage."
 msgstr ""
 "Натисніть на кнопку, щоб відкрити теку з демонстраційним AppImage додатком."
 
-#: src/gtk/tutorial/3.ui:33
+#: src/gtk/tutorial/3.ui:40
 msgid ""
 "Use the right-click menu to set Gear lever as the default app for \"."
 "appimage\" files"
@@ -482,11 +583,11 @@ msgstr ""
 "Натисніть праву кнопку миші по ньому і у меню оберіть пункт, щоб зробити "
 "Gear Lever стандартним додатком для відкривання \".appimage\" файлів"
 
-#: src/gtk/tutorial/3.ui:44
+#: src/gtk/tutorial/3.ui:54
 msgid "Open demo folder"
 msgstr "Відкрити демонстраційну теку"
 
-#: src/gtk/tutorial/3.ui:56
+#: src/gtk/tutorial/3.ui:63
 msgid "This step is optional"
 msgstr "Цей крок не обов'язковий"
 
@@ -494,15 +595,15 @@ msgstr "Цей крок не обов'язковий"
 msgid "All done, let's go!"
 msgstr "Все готово, можна розпочинати!"
 
-#: src/gtk/tutorial/last.ui:35
+#: src/gtk/tutorial/last.ui:24
 msgid "Close tutorial"
 msgstr "Закрити інструкції"
 
-#: src/models/AppListElement.py:19
+#: src/models/AppListElement.py:20
 msgid "No description provided"
 msgstr "Опис не надано"
 
-#: src/providers/AppImageProvider.py:584
+#: src/providers/AppImageProvider.py:632
 msgid ""
 "The downloaded file is not a valid appimage, please check if the provided "
 "URL is correct"
@@ -510,22 +611,11 @@ msgstr ""
 "Завантажений файл не є валідним додатком appimage, будь ласка, перевірте чи "
 "є надане URL-посилання дійсним"
 
-#: src/providers/AppImageProvider.py:590
-#, python-brace-format
-msgid ""
-"The downloaded appimage does not have the same app name and can't be "
-"updated\n"
-"{el.name} ➔ {list_element.name}"
-msgstr ""
-"Завантажений додаток appimage не має ту ж назву додатку, і тому не може бути "
-"оновлено\n"
-"{el.name} ➔ {list_element.name}"
-
-#: src/providers/AppImageProvider.py:634
+#: src/providers/AppImageProvider.py:693
 msgid "Running AppImages on NixOS requires appimage-run"
 msgstr "Запуск AppImage додатків на NixOS потребує appimage-run"
 
-#: src/providers/AppImageProvider.py:649
+#: src/providers/AppImageProvider.py:707
 #, python-brace-format
 msgid ""
 "AppImages require FUSE to run. You might still be able to run it with --"
@@ -539,6 +629,28 @@ msgstr ""
 "\n"
 "Клацніть на посилання нижче щоб дізнатися більше.\n"
 "{url}"
+
+#: src/providers/AppImageProvider.py:794
+msgid ""
+"Any attempts at loading this app's metadata failed; if you want proceed "
+"using appimage-extract, please disable the security option in the settings."
+msgstr ""
+
+#~ msgid "Update URL"
+#~ msgstr "Оновити URL-адресу"
+
+#~ msgid "Add"
+#~ msgstr "Додати"
+
+#, python-brace-format
+#~ msgid ""
+#~ "The downloaded appimage does not have the same app name and can't be "
+#~ "updated\n"
+#~ "{el.name} ➔ {list_element.name}"
+#~ msgstr ""
+#~ "Завантажений додаток appimage не має ту ж назву додатку, і тому не може "
+#~ "бути оновлено\n"
+#~ "{el.name} ➔ {list_element.name}"
 
 #~ msgid "Updating"
 #~ msgstr "Оновлюємо"
