@@ -60,6 +60,18 @@ class AppDetails(Gtk.ScrolledWindow):
 
         title_col = CenteringBox(orientation=Gtk.Orientation.VERTICAL, hexpand=True, spacing=2, margin_top=5)
         self.title = Gtk.Label(label='', css_classes=['title-1'], hexpand=True, halign=Gtk.Align.CENTER, wrap=True)
+
+        # title + rename pencil (shown only for installed apps)
+        self.rename_button = Gtk.Button(icon_name='gl-document-edit-symbolic', valign=Gtk.Align.CENTER,
+                                        visible=False, css_classes=['flat', 'circular'],
+                                        tooltip_text=_('Rename'))
+        self.rename_button.connect('clicked', self.on_rename_button_clicked)
+        self.rename_popover = self.build_rename_popover()
+        self.rename_popover.set_parent(self.rename_button)
+        title_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6,
+                            halign=Gtk.Align.CENTER, hexpand=True)
+        title_row.append(self.title)
+        title_row.append(self.rename_button)
         self.app_subtitle = Gtk.Label(
             label='',
             halign=Gtk.Align.CENTER,
@@ -76,7 +88,7 @@ class AppDetails(Gtk.ScrolledWindow):
                                               margin_top=20,
                                               margin_bottom=10)
 
-        [title_col.append(el) for el in [self.title, self.app_subtitle]]
+        [title_col.append(el) for el in [title_row, self.app_subtitle]]
 
         self.source_selector_hdlr = None
         self.source_selector = Gtk.ComboBoxText()
@@ -173,6 +185,9 @@ class AppDetails(Gtk.ScrolledWindow):
 
         self.details_row.prepend(self.icon_slot)
         self.title.set_label(self.app_list_element.name)
+        self.rename_button.set_visible(
+            self.app_list_element.installed_status == InstalledStatus.INSTALLED
+        )
 
         self.app_subtitle.set_text(self.app_list_element.description)
         self.app_subtitle.set_visible(
@@ -303,6 +318,7 @@ class AppDetails(Gtk.ScrolledWindow):
     def before_load(self):
         self.show_row_spinner(True)
         self.title.set_visible(False)
+        self.rename_button.set_visible(False)
         self.app_subtitle.set_visible(False)
         self.secondary_action_button.set_visible(False)
         self.primary_action_button.set_visible(False)
@@ -365,6 +381,32 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_list_element.update_logic = AppImageUpdateLogic[data]
         self.on_primary_action_button_clicked()
 
+    def build_rename_popover(self) -> Gtk.Popover:
+        popover = Gtk.Popover(autohide=True)
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6, width_request=300)
+
+        group = Adw.PreferencesGroup()
+        self.rename_entry = AdwEntryRowDefault(title=_('App name'), icon_name='gl-document-edit-symbolic')
+        self.rename_entry.set_show_apply_button(True)
+        self.rename_entry.connect('apply', self.on_rename_apply)
+        group.add(self.rename_entry)
+
+        box.append(group)
+        popover.set_child(box)
+        return popover
+
+    def on_rename_button_clicked(self, button: Gtk.Button):
+        original = self.provider.get_original_name(self.app_list_element) or self.app_list_element.name
+        self.rename_entry.set_default_text(original)
+        self.rename_entry.set_text(self.app_list_element.name)
+        self.rename_popover.popup()
+        self.rename_entry.grab_focus()
+
+    def on_rename_apply(self, entry: AdwEntryRowDefault):
+        self.provider.set_custom_name(self.app_list_element, entry.get_text())
+        self.title.set_label(self.app_list_element.name)
+        self.rename_popover.popdown()
+
     def on_primary_action_button_clicked(self, button: Optional[Gtk.Button] = None):
         if self.app_list_element.installed_status == InstalledStatus.INSTALLED:
             self.show_remove_confirm_dialog()
@@ -382,13 +424,15 @@ class AppDetails(Gtk.ScrolledWindow):
                 self.update_installation_status()
 
                 if self.app_list_element.update_logic and (self.app_list_element.update_logic == AppImageUpdateLogic.REPLACE):
+                    incoming_id = self.provider.identity_name(self.app_list_element)
                     old_version = next(
-                        filter(lambda old_v: (old_v.name == self.app_list_element.name), self.provider.list_installed()), 
+                        filter(lambda old_v: (self.provider.identity_name(old_v) == incoming_id), self.provider.list_installed()),
                         None
                     )
 
-                    self.app_list_element.updating_from = old_version
-                    self.provider.uninstall(old_version)
+                    if old_version:
+                        self.app_list_element.updating_from = old_version
+                        self.provider.uninstall(old_version)
 
                 self.install_file(self.app_list_element)
 

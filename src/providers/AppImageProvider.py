@@ -55,6 +55,7 @@ class AppImageListElement():
     update_logic: Optional[AppImageUpdateLogic] = None
     architecture: Optional[AppImageArchitecture] = None
     updating_from: Optional[any] = None # AppImageListElement
+    custom_name: Optional[str] = None
     version: Optional[str] = None
     extracted: Optional[ExtractedAppImage] = None
     local_file: Optional[bool] = None
@@ -191,13 +192,20 @@ class AppImageProvider():
         return ''
 
     def refresh_data(self, el: AppImageListElement):
+        # capture the user-chosen name from the installed entry before
+        # _load_appimage_metadata replaces el.desktop_entry with the embedded one
         if el.desktop_entry:
             el.name = el.desktop_entry.getName()
+            el.custom_name = el.desktop_entry.get('X-GearLever-CustomName') or el.custom_name
 
         extracted = self._load_appimage_metadata(el)
         if extracted.desktop_entry:
             el.name = extracted.desktop_entry.getName()
             el.version = el.desktop_entry.get('X-AppImage-Version')
+
+        # a user-chosen name wins over the AppImage's own name
+        if el.custom_name:
+            el.name = el.custom_name
 
     def refresh_arch(self, el: AppImageListElement):
         el.architecture = self.get_elf_arch(el)
@@ -255,9 +263,27 @@ class AppImageProvider():
     def can_install_file(self, file: Gio.File) -> bool:
         return get_giofile_content_type(file) in self.supported_mimes
 
+    def identity_name(self, el: AppImageListElement) -> str:
+        # The name to match apps by, independent of any custom display name:
+        # the AppImage's own name (X-AppImage-Name), falling back to the current
+        # name for entries created before that key existed / not yet installed.
+        if el.desktop_entry:
+            original = el.desktop_entry.get('X-AppImage-Name')
+            if original:
+                # A kept side-by-side copy is auto-named "<name> (<version>)";
+                # keep its own identity so it isn't mistaken for the live app
+                # during update/replace detection.
+                name = el.desktop_entry.getName()
+                if not el.desktop_entry.get('X-GearLever-CustomName') \
+                        and name != original \
+                        and name.startswith(f'{original} (') and name.endswith(')'):
+                    return name
+                return original
+        return el.name
+
     def is_updatable(self, el: AppImageListElement) -> bool:
         for item in self.list_installed():
-            if item.name == el.name:
+            if self.identity_name(item) == self.identity_name(el):
                 return True
 
         return False
@@ -407,6 +433,23 @@ class AppImageProvider():
             if version:
                 jd_desktop_entry.CustomKeys['X-AppImage-Version'] = version
             jd_desktop_entry.CustomKeys['X-AppImage-Name'] = extracted_appimage.desktop_entry.getName()
+
+            # Re-apply a user-chosen name, if any: set on the element (e.g. by the
+            # rename UI), or carried over from the entry we are replacing so the
+            # name survives updates
+            custom_name = el.custom_name
+            if not custom_name and el.updating_from:
+                custom_name = el.updating_from.custom_name
+                if not custom_name and el.updating_from.desktop_entry:
+                    custom_name = el.updating_from.desktop_entry.get('X-GearLever-CustomName')
+
+            if custom_name:
+                jd_desktop_entry.Name.default_text = custom_name
+                # localized Name[*] keys would take precedence over default_text
+                jd_desktop_entry.Name.translations.clear()
+                jd_desktop_entry.CustomKeys['X-GearLever-CustomName'] = custom_name
+                el.name = custom_name
+
             desktop_file_content = jd_desktop_entry.get_text()
 
             # finally, write the new .desktop file
@@ -469,6 +512,11 @@ class AppImageProvider():
         new_file = Gio.File.new_for_path(f'{dest_path}/tmp.appimage')
 
         gio_copy(outdated_file, new_file)
+
+        # keep the user-chosen name across the uninstall + reinstall cycle
+        # (install_file re-applies el.custom_name)
+        if not el.custom_name and el.desktop_entry:
+            el.custom_name = el.desktop_entry.get('X-GearLever-CustomName') or None
 
         self.uninstall(el, remove_configuration=False)
 
@@ -580,6 +628,52 @@ class AppImageProvider():
         jd_desktop_file.write_file(el.desktop_file_path)
 
         el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
+
+    def set_custom_name(self, el: AppImageListElement, custom_name: Optional[str]):
+        # Renames the app by changing only the Name of its desktop file; the
+        # appimage, icon and .desktop file names on disk are never touched.
+        # A None or empty name reverts to the AppImage's own name.
+        if not el.desktop_file_path:
+            raise Exception('desktop_file_path not specified')
+
+        jd_desktop_file = JdDesktopEntry.from_file(el.desktop_file_path)
+        original_name = jd_desktop_file.CustomKeys.get('X-AppImage-Name')
+
+        if custom_name:
+            custom_name = custom_name.strip()
+
+        if custom_name and custom_name != original_name:
+            if not original_name:
+                # desktop files created before X-AppImage-Name existed: record
+                # the current name so the rename stays revertible
+                jd_desktop_file.CustomKeys['X-AppImage-Name'] = jd_desktop_file.Name.default_text
+            jd_desktop_file.Name.default_text = custom_name
+            jd_desktop_file.Name.translations.clear()
+            jd_desktop_file.CustomKeys['X-GearLever-CustomName'] = custom_name
+            el.custom_name = custom_name
+        else:
+            if original_name:
+                jd_desktop_file.Name.default_text = original_name
+            jd_desktop_file.CustomKeys.pop('X-GearLever-CustomName', None)
+            el.custom_name = None
+
+        jd_desktop_file.write_file(el.desktop_file_path)
+
+        el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
+        el.name = el.desktop_entry.getName()
+
+        # refresh the menu caches off the main loop so a rename doesn't block the UI
+        terminal.host_threaded_sh(['update-desktop-database', self.user_desktop_files_path, '-q'])
+
+    def get_custom_name(self, el: AppImageListElement) -> Optional[str]:
+        if el.desktop_entry:
+            return el.desktop_entry.get('X-GearLever-CustomName') or None
+        return None
+
+    def get_original_name(self, el: AppImageListElement) -> Optional[str]:
+        if el.desktop_entry:
+            return el.desktop_entry.get('X-AppImage-Name') or None
+        return None
 
     def update_from_url(self, manager, el: AppImageListElement, status_cb: callable) -> AppImageListElement | None:
         try:
