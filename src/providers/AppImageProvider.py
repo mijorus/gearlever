@@ -815,7 +815,7 @@ class AppImageProvider():
                     # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#the-filesystem-image
 
                     tmp_icon_file: Optional[Gio.File] = None
-                    
+
                     if not tmp_icon_file:
                         # if icon file is still not found, let's try with .DirIcon file
                         diricon = Gio.File.new_for_path(
@@ -823,20 +823,28 @@ class AppImageProvider():
                         )
 
                         if diricon.query_exists():
-                            diricon_ct = get_giofile_content_type(diricon)
+                            diricon_file_info = diricon.query_info(
+                                "standard::symlink-target",
+                                Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS
+                            )
+                            symlink_target_icon_path = diricon_file_info.get_symlink_target()
+                            symlink_target_icon = Gio.File.new_for_path(symlink_target_icon_path)
+
+                            src_icon = symlink_target_icon if symlink_target_icon.query_exists() else diricon
+                            src_icon_ct = get_giofile_content_type(src_icon)
 
                             # https://docs.appimage.org/reference/appdir.html
-                            if diricon_ct in ['image/png', 'image/svg', 'image/svg+xml']:
-                                tmp_icon_file = diricon
-                            elif diricon_ct in ['text/plain']:
-                                with open(diricon.get_path(), 'r') as f:
+                            if src_icon_ct in ['image/png', 'image/svg', 'image/svg+xml']:
+                                tmp_icon_file = src_icon
+                            elif src_icon_ct in ['text/plain']:
+                                with open(src_icon.get_path(), 'r') as f:
                                     possible_icon_path = f.read()
-                                    diricon_linked_to = Gio.File.new_for_path(possible_icon_path)
+                                    src_icon_linked_to = Gio.File.new_for_path(possible_icon_path)
 
-                                    if diricon_linked_to.query_exists() and \
-                                        get_giofile_content_type(diricon_linked_to) in ['image/png']:
-                                        tmp_icon_file = diricon_linked_to
-                    
+                                    if src_icon_linked_to.query_exists() and \
+                                        get_giofile_content_type(src_icon_linked_to) in ['image/png']:
+                                        tmp_icon_file = src_icon_linked_to
+
                     if not tmp_icon_file:
                         icon_xt_f = None
                         for icon_xt in ['.svg', '.png']:
