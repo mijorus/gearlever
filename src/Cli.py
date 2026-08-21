@@ -85,15 +85,15 @@ class Cli():
 
         if update_all:
             Cli.list_updates([])
-            
+
             if not assume_yes:
-                ans = Cli.ask('\nDo you really want to update all AppImages? (y/N)', ['y', 'Y', 'n', 'N'])
+                ans = Cli.ask('\nDo you really want to update all AppImages? (y/N)', ['y', 'Y', 'n', 'N', ''])
                 if ans.lower() != 'y':
                     sys.exit(0)
 
             assume_yes = True
             installed = appimage_provider.list_installed()
-            
+
             for el in installed:
                 manager = UpdateManagerChecker.check_url_for_app(el)
 
@@ -119,12 +119,12 @@ class Cli():
                 sys.exit(0)
 
             if not assume_yes:
-                ans = Cli.ask('Do you really want to update this AppImage? (y/N)', ['y', 'Y', 'n', 'N'])
+                ans = Cli.ask('Do you really want to update this AppImage? (y/N)', ['y', 'Y', 'n', 'N', ''])
                 if ans.lower() != 'y':
                     sys.exit(0)
 
             print(f'Downloading update from: {manager.name}')
-            appimage_provider.update_from_url(manager, el, 
+            appimage_provider.update_from_url(manager, el,
                 lambda s: print("\rStatus: " + str(round(s * 100)) + "%", end=""))
 
             print(f'\n{el.file_path} updated successfully')
@@ -152,7 +152,7 @@ class Cli():
 
         ans = 'n'
         if not assume_yes:
-            ans = Cli.ask(f'{q} (y/N)', ['y', 'Y', 'n', 'N'])
+            ans = Cli.ask(f'{q} (y/N)', ['y', 'Y', 'n', 'N', ''])
 
         if ans.lower() == 'y' or assume_yes:
             appimage_provider.uninstall(el, force_delete=force)
@@ -172,7 +172,7 @@ class Cli():
 
         ans = 'n'
         if not assume_yes:
-            ans = Cli.ask(f'{q} (y/N)', ['y', 'Y', 'n', 'N'])
+            ans = Cli.ask(f'{q} (y/N)', ['y', 'Y', 'n', 'N', ''])
 
         if ans.lower() == 'y' or assume_yes:
             for el in apps:
@@ -279,13 +279,13 @@ class Cli():
             ]
 
             Cli._print_table(info_table)
-            ans = Cli.ask(f'\nDo you really want to integrate this AppImage? (y/N) ', ['y', 'Y', 'n', 'N'])
+            ans = Cli.ask(f'\nDo you really want to integrate this AppImage? (y/N) ', ['y', 'Y', 'n', 'N', ''])
 
             if ans.lower() != 'y':
                 sys.exit(0)
 
             if already_installed:
-                ans = Cli.ask('\nAnother version of this app is already integrated.\nHow do you want to proceed? ((K)eep both/(R)eplace): ', 
+                ans = Cli.ask('\nAnother version of this app is already integrated.\nHow do you want to proceed? ((K)eep both/(R)eplace): ',
                     ['k', 'r', 'K', 'R'])
 
             if ans.lower() == 'r':
@@ -459,7 +459,7 @@ class Cli():
             if len(r) > longst_row:
                 longst_row = len(r)
 
-        
+
         for r in table:
             if len(r) < longst_row:
                 while len(r) < longst_row:
@@ -523,5 +523,5 @@ class Cli():
         if not el:
             print('Error: AppImage not integrated')
             sys.exit(1)
-    
+
         return el
