@@ -122,6 +122,8 @@ class CodebergUpdater(UpdateManager):
         if not rel_data:
             return
 
+        self._last_available_version = rel_data[0].get('tag_name')
+
         if not conf.get('repo_filename'):
             return
 

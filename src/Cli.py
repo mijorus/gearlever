@@ -407,7 +407,7 @@ class Cli():
             'path': el.file_path,
             'desktop_id': os.path.basename(desktop_file_path) if desktop_file_path else None,
             'current_version': getattr(el, 'version', None),
-            'available_version': None,
+            'available_version': manager.get_available_version() if manager else None,
             'download_size': None,
             'manager': manager.name if manager else None,
             'embedded_source': bool(manager and manager.embedded),

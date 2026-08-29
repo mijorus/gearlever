@@ -226,6 +226,8 @@ class GithubUpdater(UpdateManager):
         if not release:
             return
 
+        self._last_available_version = release.get('tag_name')
+
         if len(possible_targets) == 1:
             tmp_target_file = possible_targets[0]
         else:
