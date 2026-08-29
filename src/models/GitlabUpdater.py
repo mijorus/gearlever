@@ -114,6 +114,8 @@ class GitlabUpdater(UpdateManager):
         if not rel_data:
             return
 
+        self._last_available_version = rel_data[0].get('tag_name')
+
         download_asset = None
 
         possible_targets = []

@@ -132,6 +132,8 @@ class ForgejoUpdater(UpdateManager):
             logging.error('Empty release list')
             return
 
+        self._last_available_version = release.get('tag_name')
+
         logging.debug(f'Found {len(release["assets"])} assets from {rel_url}')
 
         if not conf.get('repo_filename'):
