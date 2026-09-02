@@ -24,6 +24,7 @@ class Cli():
         make_option('list-installed', description='List integrated apps'),
         make_option('list-updates', description='List available updates'),
         make_option('list-update-managers', description='List available update managers'),
+        make_option('list-versions', description='List installable versions for an AppImage with a GitHub update source'),
         make_option('set-update-url', description='(DEPRECATED, use set-update-source instead) Set a custom update url'),
         make_option('set-update-source', description='Set a custom update source'),
         make_option(FETCH_UPDATES_ARG, description='Fetch updates in the background and sends a desktop notification, used on system startup'),
@@ -71,11 +72,17 @@ class Cli():
             ['--yes | -y', 'Skips any interactive question'],
             ['--force', 'Forces updates for running applications'],
             ['--all', 'Updates all AppImages'],
+            ['--tag <tag>', 'Installs a specific release tag instead of the latest one (GitHub update source only, see --list-versions). Not allowed together with --all.'],
         ], text='Usage: --update <file_path>')
 
         assume_yes = ('-y' in argv) or ('--yes' in argv)
         update_all = ('--all' in argv)
         force = ('--force' in argv)
+        target_tag = Cli._get_arg_value(argv, '--tag') if '--tag' in argv else None
+
+        if target_tag and update_all:
+            print('Error: --tag cannot be used together with --all')
+            sys.exit(1)
 
         updates: list[AppImageListElement] = []
 
@@ -118,14 +125,19 @@ class Cli():
                 print('No update method was found for this AppImage')
                 sys.exit(0)
 
+            if target_tag and manager.name != 'GithubUpdater':
+                print(f'Error: --tag is only supported for a GitHub update source, this app uses {manager.name}')
+                sys.exit(1)
+
             if not assume_yes:
                 ans = Cli.ask('Do you really want to update this AppImage? (y/N)', ['y', 'Y', 'n', 'N'])
                 if ans.lower() != 'y':
                     sys.exit(0)
 
             print(f'Downloading update from: {manager.name}')
-            appimage_provider.update_from_url(manager, el, 
-                lambda s: print("\rStatus: " + str(round(s * 100)) + "%", end=""))
+            appimage_provider.update_from_url(manager, el,
+                lambda s: print("\rStatus: " + str(round(s * 100)) + "%", end=""),
+                target_tag=target_tag)
 
             print(f'\n{el.file_path} updated successfully')
 
@@ -390,6 +402,46 @@ class Cli():
             print('No updates available')
             return
 
+        Cli._print_table(table)
+
+    @staticmethod
+    def list_versions(argv):
+        Cli._print_help_if_requested(argv, [
+            ['--json', 'Prints a versioned, machine-readable JSON document'],
+        ], text='Usage: --list-versions <file_path>')
+
+        json_output = '--json' in argv
+        g_file = Cli._get_file_from_args(argv)
+        el = Cli._get_list_element_from_gfile(g_file)
+        manager = UpdateManagerChecker.check_url_for_app(el)
+
+        if not manager or not hasattr(manager, 'list_available_versions'):
+            msg = 'No GitHub update source is configured for this AppImage'
+            if json_output:
+                print(json.dumps({'schema_version': 1, 'versions': []}))
+            else:
+                print(msg)
+            return
+
+        if not check_internet():
+            print('Internet connection not available',
+                  file=sys.stderr if json_output else sys.stdout)
+            sys.exit(1)
+
+        versions = manager.list_available_versions()
+
+        if json_output:
+            print(json.dumps({'schema_version': 1, 'versions': versions}, ensure_ascii=False))
+            return
+
+        if not versions:
+            print('No matching versions found')
+            return
+
+        table = [
+            [v['tag'], v['asset_name'], '[pre-release]' if v['prerelease'] else '']
+            for v in versions
+        ]
         Cli._print_table(table)
 
     @staticmethod

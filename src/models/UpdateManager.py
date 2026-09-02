@@ -32,7 +32,7 @@ class UpdateManager(ABC):
         pass
 
     @abstractmethod
-    def download(self, status_update_cb: Callable[[float], None]) -> tuple[str, str]:
+    def download(self, status_update_cb: Callable[[float], None], target_tag: Optional[str] = None) -> tuple[str, str]:
         pass
 
     @abstractmethod

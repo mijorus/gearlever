@@ -133,8 +133,8 @@ class GithubUpdater(UpdateManager):
 
         return allow_prereleases
 
-    def download(self, status_update_cb) -> tuple[str, str]:
-        target_asset = self.fetch_target_asset()
+    def download(self, status_update_cb, target_tag: Optional[str] = None) -> tuple[str, str]:
+        target_asset = self.fetch_target_asset(target_tag=target_tag)
         if not target_asset:
             raise Exception(f'Missing target_asset for {self.name} instance')
 
@@ -154,7 +154,7 @@ class GithubUpdater(UpdateManager):
         if self.staticfile_manager:
             self.staticfile_manager.cleanup()
 
-    def fetch_target_asset(self):
+    def fetch_target_asset(self, target_tag: Optional[str] = None):
         update_data = None
 
         if self.embedded:
@@ -186,14 +186,21 @@ class GithubUpdater(UpdateManager):
 
         rel_data = []
 
-        if not allow_prereleases:
+        if target_tag:
+            # A specific release the caller already picked (see
+            # list_available_versions/--tag below) — fetched directly by
+            # tag rather than through the allow_prereleases-driven
+            # /latest or full-list paths below, which only ever resolve
+            # to "the newest one", not an arbitrary older release.
+            rel_url += f'/tags/{target_tag}'
+        elif not allow_prereleases:
             rel_url += f'/latest'
 
         try:
             rel_data_resp = requests.get(rel_url)
             rel_data_resp.raise_for_status()
             rel_data = rel_data_resp.json()
-            if not allow_prereleases:
+            if target_tag or (not allow_prereleases):
                 rel_data = [rel_data]
         except Exception as e:
             if 'rate limit exceeded' in str(e):
@@ -257,6 +264,57 @@ class GithubUpdater(UpdateManager):
                     return {'asset': asset, 'zsync': tmp_target_file}
 
                 return {'asset': asset, 'zsync': None}
+
+    def list_available_versions(self) -> list[dict]:
+        """Every non-draft release whose assets include one matching this
+        app's own configured repo_filename pattern — lets a caller (the
+        GTK app, or a CLI user via `--list-versions`) offer switching to
+        any of these with `--update --tag <tag>`, not just whatever
+        fetch_target_asset() would resolve as "latest"."""
+        config = self.get_config()
+        repo = config.get('repo', '').split('/')
+        filename_pattern = config.get('repo_filename')
+
+        if len(repo) < 2 or not filename_pattern:
+            return []
+
+        rel_url = '/'.join([
+            'https://api.github.com/repos',
+            repo[0],
+            repo[1],
+            'releases',
+        ])
+
+        try:
+            rel_data_resp = requests.get(rel_url)
+            rel_data_resp.raise_for_status()
+            rel_data = rel_data_resp.json()
+        except Exception as e:
+            logging.error(e)
+            return []
+
+        versions = []
+        for release in rel_data:
+            if release.get('draft'):
+                continue
+
+            matching_asset = None
+            for asset in release.get('assets', []):
+                if fnmatch.fnmatch(asset['name'], filename_pattern):
+                    matching_asset = asset
+                    break
+
+            if not matching_asset:
+                continue
+
+            versions.append({
+                'tag': release['tag_name'],
+                'prerelease': bool(release.get('prerelease')),
+                'asset_name': matching_asset['name'],
+                'asset_size': matching_asset.get('size'),
+            })
+
+        return versions
 
     def is_update_available(self):
         if not self.el:

@@ -57,7 +57,7 @@ class StaticFileUpdater(UpdateManager):
         self.form_row = None
         self.current_download = None
 
-    def download(self, status_update_cb) -> tuple[str, str]:
+    def download(self, status_update_cb, target_tag: Optional[str] = None) -> tuple[str, str]:
         random_name = get_random_string()
         fname = f'{self.download_folder}/{random_name}.appimage'
 

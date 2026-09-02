@@ -581,9 +581,9 @@ class AppImageProvider():
 
         el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
 
-    def update_from_url(self, manager, el: AppImageListElement, status_cb: callable) -> AppImageListElement | None:
+    def update_from_url(self, manager, el: AppImageListElement, status_cb: callable, target_tag: Optional[str] = None) -> AppImageListElement | None:
         try:
-            update_file_path, f_hash = manager.download(status_cb)
+            update_file_path, f_hash = manager.download(status_cb, target_tag=target_tag)
         except DownloadInterruptedException as de:
             return None
         except Exception as e:
