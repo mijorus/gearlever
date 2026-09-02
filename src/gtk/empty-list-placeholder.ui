@@ -43,7 +43,7 @@
         <property name="halign">3</property>
          <child>
           <object class="GtkButton" id="show-welcome-screen">
-            <property name="label" translatable="yes">Show welcome screen</property>
+            <property name="label" translatable="yes">Show tutorial</property>
             <property name="margin-bottom">10</property>
             <property name="vexpand">0</property>
             <style>
