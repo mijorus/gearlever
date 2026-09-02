@@ -66,7 +66,7 @@ class GitlabUpdater(UpdateManager):
         if config:
             Config.set_app_update_config(self.el, self, config)
 
-    def download(self, status_update_cb) -> tuple[str, str]:
+    def download(self, status_update_cb, target_tag: Optional[str] = None) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
         if not target_asset:
             raise Exception(f'Missing target_asset for {self.name} instance')

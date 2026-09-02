@@ -48,7 +48,7 @@ class FTPUpdater(UpdateManager):
         if config:
             Config.set_app_update_config(self.el, self, config)
 
-    def download(self, status_update_cb) -> tuple[str, str]:
+    def download(self, status_update_cb, target_tag: Optional[str] = None) -> tuple[str, str]:
         conf = self.get_config()
 
         if not conf:
