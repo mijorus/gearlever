@@ -8,7 +8,7 @@ import re
 from gi.repository import Adw, Gio
 from typing import Optional, Literal
 
-from ..lib.utils import get_random_string, url_is_valid, get_file_hash
+from ..lib.utils import get_random_string, url_is_valid, get_file_hash, get_zsync_file_hash
 from ..lib import json_config
 from ..lib.ini_config import Config
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
@@ -148,13 +148,13 @@ class StaticFileUpdater(UpdateManager):
         if e_url:
             zsync_file = requests.get(e_url).text
             zsync_file_header = zsync_file.split('\n\n', 1)[0]
-            sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
-            curr_version_hash = get_file_hash(Gio.File.new_for_path(self.el.file_path), alg='sha1')
+            zsync_hash = get_zsync_file_hash(zsync_file_header)
 
-            match = re.search(sha_pattern, zsync_file_header)
-            if match:
-                updatable = match.group(1) != curr_version_hash
-                logging.info('SHA-1 detected, app updatable: ' + str(updatable))
+            if zsync_hash:
+                alg, new_version_hash = zsync_hash
+                curr_version_hash = get_file_hash(Gio.File.new_for_path(self.el.file_path), alg=alg)
+                updatable = new_version_hash != curr_version_hash
+                logging.info(f'{alg} detected, app updatable: ' + str(updatable))
                 return updatable
 
         headers = StaticFileUpdater.get_url_headers(dwnl_url)
