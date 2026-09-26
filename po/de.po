@@ -18,15 +18,15 @@ msgstr ""
 
 #: data/it.mijorus.gearlever.desktop.in:3
 msgid "Gear Lever"
-msgstr ""
+msgstr "Gear Lever"
 
 #: data/it.mijorus.gearlever.desktop.in:4
 msgid "An utility to manage AppImages with ease!"
-msgstr "Ein Werkzeug um AppImages einfach zu verwalten!"
+msgstr "Ein Programm zur einfachen Verwaltung von AppImages!"
 
 #: data/it.mijorus.gearlever.desktop.in:12
 msgid "AppImage;"
-msgstr ""
+msgstr "AppImage;"
 
 #: src/main.py:117
 msgid "translator_credits"
@@ -50,7 +50,7 @@ msgstr "Keine Aktualisierung verfügbar"
 
 #: src/AppDetails.py:32
 msgid "This application includes update information provided by the developer"
-msgstr "Diese Applikation enthält Aktualisierungsinformationen des Entwicklers"
+msgstr "Diese App enthält vom Entwickler bereitgestellte Informationen zu Updates"
 
 #: src/AppDetails.py:33
 msgid "Manage update details for this application"
@@ -61,7 +61,7 @@ msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
 msgstr ""
-"Diese App liegt außerhalb des Default-Ordners\n"
+"Diese App liegt außerhalb des Standard-Ordners\n"
 "<small>Externe Apps können in den Einstellungen verborgen werden</small>"
 
 #: src/AppDetails.py:224
@@ -107,15 +107,15 @@ msgstr "Deinstallieren..."
 
 #: src/AppDetails.py:456
 msgid "Installing..."
-msgstr "Installieren"
+msgstr "Installieren..."
 
 #: src/AppDetails.py:469
 msgid "Move to the app menu"
-msgstr "Ins App Menü verschieben"
+msgstr "Ins App-Menü verschieben"
 
 #: src/AppDetails.py:493
 msgid "This app might not be compatible with your system architecture"
-msgstr "Diese app könnte mit der Systemarchitektur inkompatibel sein"
+msgstr "Diese App ist möglicherweise mit der Systemarchitektur inkompatibel"
 
 #: src/AppDetails.py:740
 msgid "Website"
@@ -162,12 +162,12 @@ msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
 msgstr ""
-"Aktualisierungsinformationen wie Icon, Version und Beschreibung.\n"
-"Nützlich in der App."
+"Aktualisierungsinformation wie Icon, Version und Beschreibung.\n"
+"Nützlich, wenn sich die App selbst aktualisiert."
 
 #: src/AppDetails.py:845
 msgid "Command line arguments"
-msgstr "Kommandozeilenargumente"
+msgstr "Befehlszeilenargumente"
 
 #: src/AppDetails.py:861
 msgid "Hash"
@@ -179,7 +179,7 @@ msgstr "Pfad"
 
 #: src/AppDetails.py:873
 msgid "Open Folder"
-msgstr "Ordner öffenn"
+msgstr "Ordner öffnen"
 
 #: src/AppDetails.py:883
 msgid "Package type"
@@ -222,9 +222,8 @@ msgid "Check for updates"
 msgstr "Nach Aktualisierungen suchen"
 
 #: src/InstalledAppsList.py:31
-#, fuzzy
 msgid "No updates found"
-msgstr "Keine Aktualisierung gefunden"
+msgstr "Keine Aktualisierungen gefunden"
 
 #: src/InstalledAppsList.py:51
 msgid "Filter installed applications"
@@ -240,11 +239,11 @@ msgstr "Allgemein"
 
 #: src/preferences.py:33
 msgid "AppImage default location"
-msgstr "AppImage Default-Speicherort"
+msgstr "AppImage Standard-Speicherort"
 
 #: src/preferences.py:42
 msgid "Show integrated AppImages outside the default folder"
-msgstr "Zeige integrierte AppImages außerhalb des Default-Ordners"
+msgstr "Zeige integrierte AppImages außerhalb des Standard-Ordners"
 
 #: src/preferences.py:44
 msgid ""
@@ -252,14 +251,13 @@ msgid ""
 "located outside the default folder"
 msgstr ""
 "Liste AppImages, die in das Systemmenü integriert wurden, aber außerhalb des "
-"Default-Ordners liegen"
+"Standard-Ordners liegen"
 
 #: src/preferences.py:51
 msgid "Updates management"
-msgstr "Akutalisierungsverwaltung"
+msgstr "Aktualisierungsverwaltung"
 
 #: src/preferences.py:53
-#, fuzzy
 msgid "Check updates on system startup"
 msgstr "Suche nach Updates im Hintergrund"
 
@@ -268,8 +266,8 @@ msgid ""
 "Receive a notification when a new update is detected; updates will not be "
 "installed automatically"
 msgstr ""
-"Benachrichtige, wenn eine neue Aktualisierung gefunden wurde; Aktualisierung "
-"wird nicht automatisch installiert"
+"Erhalte eine Benachrichtigung, wenn eine neue Aktualisierung gefunden wurde; Aktualisierungen "
+"werden nicht automatisch installiert"
 
 #: src/preferences.py:62
 msgid "File management"
@@ -281,7 +279,7 @@ msgstr "Verschiebe AppImages in den Zielordner"
 
 #: src/preferences.py:65
 msgid "Reduce disk usage"
-msgstr "Festplattenplatz reduzieren"
+msgstr "Festplattenspeicherplatz reduzieren"
 
 #: src/preferences.py:69
 msgid "Clone AppImages into the destination folder"
@@ -297,7 +295,7 @@ msgstr "Namenskonventionen"
 
 #: src/preferences.py:98
 msgid "Use executable name for integrated terminal apps"
-msgstr "Nutze Namen der ausführbaren Datei für integrierte Terminal-Apps"
+msgstr "Nutze den Namen der ausführbaren Datei für integrierte Terminal-Apps"
 
 #: src/preferences.py:100
 msgid ""
@@ -314,11 +312,11 @@ msgstr ""
 
 #: src/preferences.py:106
 msgid "Debugging"
-msgstr "Debugging"
+msgstr "Fehlerbehebung"
 
 #: src/preferences.py:108
 msgid "Enable debug logs"
-msgstr "Debug-Logs aktivieren"
+msgstr "Fehlerbehebungs-Protokolle aktivieren"
 
 #: src/preferences.py:110
 msgid ""
@@ -326,13 +324,13 @@ msgid ""
 "performance.\n"
 "Requires a restart."
 msgstr ""
-"Erhöht die Ausführlichkeit des Logs, belegt mehr Speicherplatz und kann "
-"sich  auf die Performance auswirken.\n"
+"Erhöht die Protokollausführlichkeit, belegt mehr Speicherplatz und kann "
+"sich  auf die Leistung auswirken.\n"
 "Erfordert einen Neustart."
 
 #: src/preferences.py:137
 msgid "The folder must writeable"
-msgstr ""
+msgstr "Der Ordner muss beschreibbar sein"
 
 #: src/preferences.py:140 src/WelcomeScreen.py:98
 msgid "Select a folder"
@@ -348,7 +346,7 @@ msgstr "Einstellungen"
 
 #: src/gtk/main-menu.ui:10
 msgid "_Open Log File"
-msgstr "Log-Datei öffnen"
+msgstr "Protokoll-Datei öffnen"
 
 #: src/gtk/main-menu.ui:14
 msgid "_Show tutorial"
@@ -365,8 +363,7 @@ msgstr "Konflikt mit \"{app_name}\""
 
 #: src/components/AppDetailsConflictModal.py:11
 msgid "There is already an app with the same name, how do you want to proceed?"
-msgstr ""
-"Eine app desselben Namens exisitert bereits. Wie soll fortgefahren werden?"
+msgstr "Eine App desselben Namens existiert bereits. Wie soll fortgefahren werden?"
 
 #: src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
@@ -382,7 +379,7 @@ msgstr "Ersetzen"
 
 #: src/gtk/drag-drop.ui:18
 msgid "Drop your file here"
-msgstr "Datei hier droppen"
+msgstr "Datei hier ablegen"
 
 #: src/gtk/empty-list-placeholder.ui:18
 msgid "Get started"
@@ -394,7 +391,7 @@ msgstr "AppImage hierhin ziehen und ablegen oder auf das \"+\"-Symbol klicken."
 
 #: src/gtk/empty-list-placeholder.ui:35
 msgid " If you don't see your apps, check if the selected folder is correct."
-msgstr "Wenn die Apps nicht auftrauchen, prüfe den ob der Ordner korrekt ist."
+msgstr "Wenn die Apps nicht auftauchen, prüfe ob der ausgewählte Ordner korrekt ist."
 
 #: src/gtk/empty-list-placeholder.ui:46
 msgid "Show welcome screen"
@@ -412,7 +409,7 @@ msgstr "Allgemein"
 #: src/gtk/help-overlay.ui:14
 msgctxt "shortcut window"
 msgid "Show Shortcuts"
-msgstr "Zeige Tastenkürzel"
+msgstr "Zeige Tastaturkürzel"
 
 #: src/gtk/help-overlay.ui:20
 msgctxt "shortcut window"
@@ -421,15 +418,15 @@ msgstr "Beenden"
 
 #: src/gtk/tutorial/1.ui:21
 msgid "Hi, welcome to Gear lever"
-msgstr "Hi, willkommen zu Gear Lever"
+msgstr "Hi, willkommen bei Gear Lever"
 
 #: src/gtk/tutorial/1.ui:30
 msgid "An app that helps you integrate AppImages into your system."
-msgstr "Eine App, die hilft AppImages in das System zu integrieren"
+msgstr "Eine App, die hilft AppImages in das System zu integrieren."
 
 #: src/gtk/tutorial/1.ui:36
 msgid "Click \"Next\" to follow this tutorial."
-msgstr "\"Weiter\" klicken, um diesem Tutorial zu folgen"
+msgstr "\"Weiter\" klicken, um diesem Tutorial zu folgen."
 
 #: src/gtk/tutorial/2.ui:19
 msgid "Set the AppImage location"
@@ -440,8 +437,8 @@ msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
 msgstr ""
-"Gear Lever gruppiert AppImages in einem eigenen Ordner und hält sie "
-"organisiert"
+"Gear Lever gruppiert all deine AppImages in einem eigenen Ordner und hält sie "
+"organisiert."
 
 #: src/gtk/tutorial/2.ui:33
 msgid "By default, AppImages are saved at: {location}"
@@ -453,7 +450,7 @@ msgstr "AppImage-Speicherort ändern"
 
 #: src/gtk/tutorial/2.ui:59
 msgid "You can customize it later in the preferences."
-msgstr "Einstellungen lassen sich später ändern"
+msgstr "Einstellungen lassen sich später ändern."
 
 #: src/gtk/tutorial/3.ui:19
 msgid "Set Gear lever as default"
@@ -463,15 +460,15 @@ msgstr "Lege Gear Lever als Standard fest"
 msgid ""
 "Click on the button to open a demo folder, containing a sample AppImage."
 msgstr ""
-"Button-Klick öffnet ein Demo-Verzeichnis, das ein Beispiel-AppImage enthält"
+"Klicke auf den Button, um ein Demo-Verzeichnis zu öffnen, das ein Beispiel-AppImage enthält."
 
 #: src/gtk/tutorial/3.ui:33
 msgid ""
 "Use the right-click menu to set Gear lever as the default app for \"."
 "appimage\" files"
 msgstr ""
-"Verwende das Rechtsklick-Menü, um Gear Lever als Standardanwendung für\"."
-"appimage-Dateien zu verwenden"
+"Öffne das Rechtsklick-Menü, um Gear Lever als Standardanwendung für \"."
+"AppImage\"-Dateien zu verwenden"
 
 #: src/gtk/tutorial/3.ui:44
 msgid "Open demo folder"
@@ -483,11 +480,11 @@ msgstr "Dieser Schritt ist optional"
 
 #: src/gtk/tutorial/last.ui:21
 msgid "All done, let's go!"
-msgstr "Alles fertig, weiter geht's"
+msgstr "Alles fertig, weiter geht's!"
 
 #: src/gtk/tutorial/last.ui:35
 msgid "Close tutorial"
-msgstr "Tutorial schließen"
+msgstr "Tutorial beenden"
 
 #: src/models/AppListElement.py:19
 msgid "No description provided"
@@ -498,7 +495,7 @@ msgid ""
 "The downloaded file is not a valid appimage, please check if the provided "
 "URL is correct"
 msgstr ""
-"Die heruntergeladnene Datei ist kein valides AppImage. Bitte prüfe, ob die "
+"Die heruntergeladene Datei ist kein gültiges AppImage. Bitte prüfe, ob die "
 "URL korrekt ist"
 
 #: src/providers/AppImageProvider.py:590
@@ -526,7 +523,7 @@ msgid ""
 "{url}"
 msgstr ""
 "AppImages erfordern FUSE. Ausführung mit --appimage-extract-and-run in "
-"denKommandozeilenargumenten könnte aber funktionieren \n"
+"den Befehlszeilenargumenten könnte dennoch funktionieren \n"
 "\n"
-"Klicke den Link unten für weitere Informationen. \n"
+"Klicke unten auf den Link für mehr Information. \n"
 "{url}"
