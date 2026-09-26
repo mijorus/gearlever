@@ -7,7 +7,7 @@ from typing import Optional, Literal
 from gi.repository import Adw, Gio
 from urllib.parse import urlsplit
 
-from ..lib.utils import get_file_hash
+from ..lib.utils import get_file_hash, get_zsync_file_hash
 from ..lib import json_config
 from ..lib.ini_config import Config
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
@@ -272,12 +272,12 @@ class GithubUpdater(UpdateManager):
                 logging.debug('GithubUpdated: checking zsync file at ' + target_asset['zsync']['browser_download_url'])
                 zsync_file = requests.get(target_asset['zsync']['browser_download_url']).text
                 zsync_file_header = zsync_file.split('\n\n', 1)[0]
-                sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
-                curr_version_hash = get_file_hash(Gio.File.new_for_path(self.el.file_path), alg='sha1')
+                zsync_hash = get_zsync_file_hash(zsync_file_header)
 
-                match = re.search(sha_pattern, zsync_file_header)
-                if match:
-                    return match.group(1) != curr_version_hash
+                if zsync_hash:
+                    alg, new_version_hash = zsync_hash
+                    curr_version_hash = get_file_hash(Gio.File.new_for_path(self.el.file_path), alg=alg)
+                    return new_version_hash != curr_version_hash
 
             else:
                 digest = target_asset['asset'].get('digest', '')

@@ -93,6 +93,18 @@ def get_file_hash(file: Gio.File | None, alg='md5', file_path=None) -> str:
     raise Exception('Invalid hash requested')
 
 
+def get_zsync_file_hash(zsync_header: str) -> tuple[str, str] | None:
+    match = re.search(r"^File-Hash:\s*SHA-256:\s*([0-9a-fA-F]{64})\s*$", zsync_header, re.MULTILINE)
+    if match:
+        return ('sha256', match.group(1).lower())
+
+    match = re.search(r"^(?:File-Hash:\s*)?SHA-1:\s*([0-9a-fA-F]{40})\s*$", zsync_header, re.MULTILINE)
+    if match:
+        return ('sha1', match.group(1).lower())
+
+    return None
+
+
 def send_notification(notification=Gio.Notification, tag=None):
     if not tag:
         tag = str(time.time_ns())
