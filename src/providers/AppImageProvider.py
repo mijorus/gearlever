@@ -177,6 +177,16 @@ class AppImageProvider():
             if el.desktop_entry and icon_theme.has_icon(el.desktop_entry.getIcon()):
                 return Gtk.Image.new_from_icon_name(el.desktop_entry.getIcon())
 
+            # Check the .icons cache directory before resorting to
+            # expensive AppImage extraction.  Icon= may be a bare name
+            # (e.g. "bitwarden") rather than a full path, which is
+            # common on NFS-mounted homes where the absolute path
+            # varies between machines.
+            if icon_path and not os.path.sep in icon_path:
+                cached = self._find_cached_icon(icon_path, el)
+                if cached:
+                    return Gtk.Image.new_from_file(cached)
+
             extracted = self._load_appimage_metadata(el)
 
             if extracted.icon_file and os.path.exists(extracted.icon_file.get_path()):
@@ -887,6 +897,34 @@ class AppImageProvider():
         el.extracted = result
 
         return result
+
+    def _find_cached_icon(self, icon_name: str, el: AppImageListElement) -> Optional[str]:
+        """Look for a previously cached icon in the .icons directory.
+
+        During installation, Gear Lever copies the app icon to
+        {default_folder}/.icons/{prefix}{ext}.  If Icon= in the
+        .desktop file is a bare name we can look it up there directly,
+        avoiding an expensive AppImage extraction."""
+        icons_dir = os.path.join(self._get_appimages_default_destination_path(), '.icons')
+        if not os.path.isdir(icons_dir):
+            return None
+
+        # Also derive a prefix from the desktop file name if available
+        candidates = {icon_name}
+        if el.desktop_file_path:
+            prefix = os.path.splitext(os.path.basename(el.desktop_file_path))[0]
+            candidates.add(prefix)
+
+        for candidate in candidates:
+            for entry in os.listdir(icons_dir):
+                name_without_ext = os.path.splitext(entry)[0]
+                if name_without_ext == candidate or entry == candidate:
+                    full_path = os.path.join(icons_dir, entry)
+                    if os.path.isfile(full_path):
+                        logging.debug(f'Found cached icon: {full_path}')
+                        return full_path
+
+        return None
 
     def _get_appimages_default_destination_path(self) -> str:
         folder = Settings.settings.get_string('appimages-default-folder')

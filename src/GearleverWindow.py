@@ -36,6 +36,7 @@ class GearleverWindow(Adw.Window):
         super().__init__(**kwargs)
         self.from_file = from_file
         self.selected_files_count = 0
+        self._installed_list_dirty = True
         self.open_appimage_tooltip = _('Open a new AppImage')
         self.settings = Settings.settings
 
@@ -83,6 +84,7 @@ class GearleverWindow(Adw.Window):
 
         self.installed_apps_list = InstalledAppsList()
         self.installed_apps_list.refresh_list()
+        self._installed_list_dirty = False
         self.installed_apps_list.connect('update-all', self.on_update_all_event)
 
         self.multi_install = MultiInstall()
@@ -147,6 +149,8 @@ class GearleverWindow(Adw.Window):
         self.container_stack.set_visible_child(self.app_details)
 
     def on_selected_local_file(self, files: list[Gio.File]) -> bool:
+        self._installed_list_dirty = True
+
         if files:
             self.container_stack.set_transition_type(
                 Adw.LeafletTransitionType.UNDER if self.from_file else Adw.LeafletTransitionType.OVER
@@ -206,10 +210,12 @@ class GearleverWindow(Adw.Window):
                     self.on_show_installed_list()
 
             elif container_visible == self.multi_install:
+                self._installed_list_dirty = True
                 self.titlebar.set_title_widget(self.view_title_widget)
                 self.on_show_installed_list()
 
             elif container_visible == self.multi_update:
+                self._installed_list_dirty = True
                 self.titlebar.set_title_widget(self.view_title_widget)
                 self.on_show_installed_list()
 
@@ -241,7 +247,9 @@ class GearleverWindow(Adw.Window):
             self.left_button.set_child(self.open_appimage_button_child)
 
         if in_apps_list:
-            self.installed_apps_list.refresh_list()
+            if self._installed_list_dirty:
+                self.installed_apps_list.refresh_list()
+                self._installed_list_dirty = False
 
         self.view_title_widget.set_visible(not in_app_details)
 
@@ -271,6 +279,8 @@ class GearleverWindow(Adw.Window):
         return Gdk.DragAction.COPY
     
     def on_uninstalled_app(self, widget, data):
+        self._installed_list_dirty = True
+
         if self.from_file:
             return self.close()
 
@@ -281,6 +291,7 @@ class GearleverWindow(Adw.Window):
         self.left_button.set_sensitive(False)
 
     def on_app_update_ended(self, *args):
+        self._installed_list_dirty = True
         self.left_button.set_visible(True)
         self.left_button.set_sensitive(True)
 
