@@ -84,7 +84,7 @@ class Cli():
             sys.exit(1)
 
         if update_all:
-            Cli.list_updates([])
+            updates = Cli.list_updates([])
             
             if not assume_yes:
                 ans = Cli.ask('\nDo you really want to update all AppImages? (y/N)', ['y', 'Y', 'n', 'N'])
@@ -92,13 +92,6 @@ class Cli():
                     sys.exit(0)
 
             assume_yes = True
-            installed = appimage_provider.list_installed()
-            
-            for el in installed:
-                manager = UpdateManagerChecker.check_url_for_app(el)
-
-                if manager and manager.is_update_available():
-                    updates.append(el)
         else:
             g_file = Cli._get_file_from_args(argv)
             el = Cli._get_list_element_from_gfile(g_file)
@@ -345,6 +338,8 @@ class Cli():
         table = []
         updates = []
         json_output = '--json' in argv
+        available_apps = []
+        errors = []
 
         if not check_internet():
             print('Internet connection not available',
@@ -352,11 +347,11 @@ class Cli():
             sys.exit(1)
 
         for el in installed:
-            manager = UpdateManagerChecker.check_url_for_app(el)
-            if not manager:
-                continue
-
             try:
+                manager = UpdateManagerChecker.check_url_for_app(el)
+                if not manager:
+                    continue
+
                 if json_output:
                     with redirect_stdout(sys.stderr):
                         update_available = manager.is_update_available()
@@ -364,6 +359,7 @@ class Cli():
                     update_available = manager.is_update_available()
 
                 if update_available:
+                    available_apps.append(el)
                     if json_output:
                         updates.append(Cli._make_app_json(el, manager))
                         continue
@@ -378,19 +374,23 @@ class Cli():
                     table.append(row)
             except Exception as e:
                 logging.error(traceback.format_exc())
+                errors.append({'name': el.name, 'file_path': el.file_path, 'error': str(e)})
+                print(f'Update check failed for {el.name}: {e}', file=sys.stderr)
 
         if json_output:
-            print(json.dumps({
-                'schema_version': 1,
-                'updates': updates,
-            }, ensure_ascii=False))
-            return
-
-        if not table:
+            result = {'schema_version': 1, 'updates': updates}
+            if errors:
+                result['errors'] = errors
+            print(json.dumps(result, ensure_ascii=False))
+        elif table:
+            Cli._print_table(table)
+        elif not errors:
             print('No updates available')
-            return
 
-        Cli._print_table(table)
+        if errors:
+            sys.exit(1)
+
+        return available_apps
 
     @staticmethod
     def _make_app_json(el, manager):
