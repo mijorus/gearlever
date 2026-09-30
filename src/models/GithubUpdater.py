@@ -189,18 +189,13 @@ class GithubUpdater(UpdateManager):
         if not allow_prereleases:
             rel_url += f'/latest'
 
-        try:
-            rel_data_resp = requests.get(rel_url)
-            rel_data_resp.raise_for_status()
-            rel_data = rel_data_resp.json()
-            if not allow_prereleases:
-                rel_data = [rel_data]
-        except Exception as e:
-            if 'rate limit exceeded' in str(e):
-                print(str(e))
-
-            logging.error(e)
-            return
+        # Let request failures reach the CLI and UI error handlers instead of
+        # treating them as a successful check with no matching release.
+        rel_data_resp = requests.get(rel_url)
+        rel_data_resp.raise_for_status()
+        rel_data = rel_data_resp.json()
+        if not allow_prereleases:
+            rel_data = [rel_data]
 
         release = None
 
@@ -270,7 +265,9 @@ class GithubUpdater(UpdateManager):
         if target_asset:
             if target_asset['zsync']:
                 logging.debug('GithubUpdated: checking zsync file at ' + target_asset['zsync']['browser_download_url'])
-                zsync_file = requests.get(target_asset['zsync']['browser_download_url']).text
+                zsync_response = requests.get(target_asset['zsync']['browser_download_url'])
+                zsync_response.raise_for_status()
+                zsync_file = zsync_response.text
                 zsync_file_header = zsync_file.split('\n\n', 1)[0]
                 sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
                 curr_version_hash = get_file_hash(Gio.File.new_for_path(self.el.file_path), alg='sha1')
