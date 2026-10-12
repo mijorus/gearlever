@@ -1,220 +1,211 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Polish translation for Gear Lever.
+# This file is distributed under the same license as the gearlever package.
+# Kacper Paczos <kacper-paczos@linux.pl>, 2023.
+# Tomasz Bojanowski <tomasz@bojanowski.me>, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: gearlever\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-04 15:35+0200\n"
-"PO-Revision-Date: 2023-10-21 00:22+0200\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"POT-Creation-Date: 2026-05-07 15:44+0200\n"
+"PO-Revision-Date: 2026-10-13 01:30+0200\n"
+"Last-Translator: Tomasz Bojanowski <tomasz@bojanowski.me>\n"
+"Language-Team: Polish\n"
 "Language: pl_PL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4\n"
-
-#: data/it.mijorus.gearlever.desktop.in:2
-msgid "Gear Lever"
-msgstr "Przerzutka"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: data/it.mijorus.gearlever.desktop.in:3
+msgid "Gear Lever"
+msgstr "Gear Lever"
+
+#: data/it.mijorus.gearlever.desktop.in:4
 msgid "An utility to manage AppImages with ease!"
-msgstr "Narzędzie do zarządzania AppImages bez wysiłku!"
+msgstr "Łatwe zarządzanie plikami AppImage"
 
-#: src/main.py:93
+#: src/main.py:112
 msgid "translator_credits"
-msgstr "Kacper Paczos <kacper-paczos@linux.pl>"
+msgstr ""
+"Kacper Paczos <kacper-paczos@linux.pl>\n"
+"Tomasz Bojanowski <tomasz@bojanowski.me>"
 
-#: src/AppDetails.py:53
-msgid "I have verified the source of this app"
-msgstr "Zweryfikowałem źródło tej aplikacji"
-
-#: src/AppDetails.py:152
+#: src/AppDetails.py:1062
 msgid "Package type"
 msgstr "Typ pakietu"
 
-#: src/AppDetails.py:160
+#: src/AppDetails.py:1050
 msgid "Path"
-msgstr "Ścieżka dostępu"
+msgstr "Ścieżka"
 
-#: src/AppDetails.py:170
+#: src/AppDetails.py:917
 msgid "Website"
 msgstr "Strona internetowa"
 
-#: src/AppDetails.py:170
+#: src/AppDetails.py:913
 msgid "Add a website"
 msgstr "Dodaj stronę internetową"
 
-#: src/AppDetails.py:176
+#: src/AppDetails.py:930
 msgid "Open URL"
-msgstr "Otwórz URL"
+msgstr "Otwórz adres URL"
 
-#: src/AppDetails.py:186
+#: src/AppDetails.py:1009
 msgid "Reload metadata"
-msgstr "Przeładuj metadane"
+msgstr "Wczytaj ponownie metadane"
 
-#: src/AppDetails.py:187
+#: src/AppDetails.py:1010
 msgid ""
 "Update information like icon, version and description.\n"
 "Useful if the app updated itself."
 msgstr ""
-"Aktualizuj informacje takie jak ikona, wersja i opis.\n"
-"Przydatne, jeśli aplikacja zaktualizowała się sama."
+"Aktualizuje informacje, takie jak ikona, wersja i opis.\n"
+"Przydatne, gdy aplikacja sama się zaktualizowała."
 
-#: src/AppDetails.py:202
+#: src/AppDetails.py:244
 msgid ""
 "This app is located outside the default folder\n"
 "<small>You can hide external apps in the settings</small>"
 msgstr ""
-"Ta aplikacja jest położona poza domyślnym folderem\n"
-"<small>Możesz ukryć zewnętrzne aplikacje w ustawieniach</small>"
+"Ta aplikacja znajduje się poza domyślnym katalogiem\n"
+"<small>Zewnętrzne aplikacje można ukryć w preferencjach</small>"
 
-#: src/AppDetails.py:279
+#: src/AppDetails.py:404
 msgid "Launching..."
-msgstr "Uruchamianie..."
+msgstr "Uruchamianie…"
 
-#: src/AppDetails.py:309
+#: src/AppDetails.py:547 src/AppDetails.py:567
 msgid "This app runs in the terminal"
 msgstr "Ta aplikacja działa w terminalu"
 
-#: src/AppDetails.py:313 src/AppDetails.py:330
+#: src/AppDetails.py:549 src/AppDetails.py:564 src/AppDetails.py:570
 msgid "Launch"
 msgstr "Uruchom"
 
-#: src/AppDetails.py:316 src/AppDetails.py:337
+#: src/AppDetails.py:512 src/AppDetails.py:551
 msgid "Remove"
 msgstr "Usuń"
 
-#: src/AppDetails.py:320
+#: src/AppDetails.py:555
 msgid "Uninstalling..."
-msgstr "Odinstalowywanie..."
+msgstr "Odinstalowywanie…"
 
-#: src/AppDetails.py:323
+#: src/AppDetails.py:559
 msgid "Installing..."
-msgstr "Instalowanie..."
+msgstr "Instalowanie…"
 
-#: src/AppDetails.py:329
+#: src/AppDetails.py:572
 msgid "Move to the app menu"
 msgstr "Przenieś do menu aplikacji"
 
-#: src/AppDetails.py:333
+#: src/AppDetails.py:34 src/AppDetails.py:90 src/AppDetails.py:476
 msgid "Update"
-msgstr "Aktualizuj"
+msgstr "Zaktualizuj"
 
-#: src/AppDetails.py:341
-msgid "Updating"
-msgstr "Aktualizowanie"
-
-#: src/AppDetails.py:344
+#: src/AppDetails.py:585
 msgid "Error"
 msgstr "Błąd"
 
-#: src/GearleverWindow.py:35
+#: src/GearleverWindow.py:39
 msgid "Open a new AppImage"
-msgstr "Otwórz nowy AppImage"
+msgstr "Otwórz nowy plik AppImage"
 
-#: src/GearleverWindow.py:45
+#: src/GearleverWindow.py:51
 msgid "Open"
 msgstr "Otwórz"
 
-#: src/GearleverWindow.py:209
+#: src/GearleverWindow.py:299
 msgid "Open a file"
 msgstr "Otwórz plik"
 
-#: src/InstalledAppsList.py:36
+#: src/InstalledAppsList.py:55
 msgid "Filter installed applications"
 msgstr "Filtruj zainstalowane aplikacje"
 
-#: src/InstalledAppsList.py:41
+#: src/InstalledAppsList.py:62
 msgid "Installed applications"
 msgstr "Zainstalowane aplikacje"
 
-#: src/preferences.py:22
+#: src/preferences.py:27
 msgid "General"
 msgstr "Ogólne"
 
-#: src/preferences.py:27
+#: src/preferences.py:32
 msgid "AppImage default location"
-msgstr "Domyślna lokalizacja AppImage"
+msgstr "Domyślne położenie plików AppImage"
 
-#: src/preferences.py:36
+#: src/preferences.py:97
 msgid "Use executable name for integrated terminal apps"
-msgstr "Użyj nazwy wykonywalnej dla zintegrowanych aplikacji terminalowych"
+msgstr "Nazywanie aplikacji terminala nazwą pliku wykonywalnego"
 
-#: src/preferences.py:38
+#: src/preferences.py:99
 msgid ""
 "If enabled, apps that run in the terminal are renamed as their executable.\n"
 "You would need to add the aforementioned folder to your $PATH manually.\n"
 "\n"
 "For example, \"golang_x86_64.appimage\" will be saved as \"go\""
 msgstr ""
-"Jeśli jest włączone, aplikacje działające w terminalu są przemianowane na "
-"swoje pliki wykonywalne.\n"
-"Musiałbyś ręcznie dodać wspomniany folder do swojego $PATH.\n"
+"Po włączeniu tej funkcji aplikacje działające w terminalu są zapisywane pod nazwą swojego pliku wykonywalnego.\n"
+"Wspomniany katalog należy ręcznie dodać do zmiennej $PATH.\n"
 "\n"
-"Na przykład, \"golang_x86_64.appimage\" zostanie zapisane jako \"go\""
+"Na przykład plik „golang_x86_64.appimage” zostanie zapisany jako „go”"
 
-#: src/preferences.py:42
+#: src/preferences.py:41
 msgid "Show integrated AppImages outside the default folder"
-msgstr "Pokaż zintegrowane AppImages poza domyślnym folderem"
+msgstr "Wyświetlanie zintegrowanych plików AppImage spoza domyślnego katalogu"
 
-#: src/preferences.py:44
+#: src/preferences.py:43
 msgid ""
-"List AppImages that have been integrated into the system menu but are "
-"located outside the default folder"
+"List AppImages that have been integrated into the system menu but are located"
+" outside the default folder"
 msgstr ""
-"Wyświetl AppImages, które zostały zintegrowane z menu systemowym, ale są "
-"położone poza domyślnym folderem"
+"Wyświetla pliki AppImage zintegrowane z menu systemu, ale znajdujące się poza"
+" domyślnym katalogiem"
 
-#: src/preferences.py:52
+#: src/preferences.py:61
 msgid "File management"
 msgstr "Zarządzanie plikami"
 
-#: src/preferences.py:54
+#: src/preferences.py:63
 msgid "Move AppImages into the destination folder"
-msgstr "Przenieś AppImages do folderu docelowego"
+msgstr "Przenoszenie plików AppImage do katalogu docelowego"
 
-#: src/preferences.py:55
+#: src/preferences.py:64
 msgid "Reduce disk usage"
-msgstr "Zmniejsz użycie dysku"
+msgstr "Zmniejsza wykorzystanie dysku"
 
-#: src/preferences.py:59
+#: src/preferences.py:68
 msgid "Clone AppImages into the destination folder"
-msgstr "Klonuj AppImages do folderu docelowego"
+msgstr "Kopiowanie plików AppImage do katalogu docelowego"
 
-#: src/preferences.py:60
+#: src/preferences.py:69
 msgid "Keep the original file and create a copy in the destination folder"
-msgstr "Zachowaj oryginalny plik i utwórz kopię w folderze docelowym"
+msgstr "Zachowuje oryginalny plik i tworzy kopię w katalogu docelowym"
 
-#: src/preferences.py:85
+#: src/preferences.py:119
 msgid "Debugging"
 msgstr "Debugowanie"
 
-#: src/preferences.py:87
+#: src/preferences.py:121
 msgid "Enable debug logs"
-msgstr "Włącz logi debugowania"
+msgstr "Komunikaty debugowania w dzienniku"
 
-#: src/preferences.py:89
+#: src/preferences.py:123
 msgid ""
-"Increases log verbosity, occupying more disk space and potentially impacting "
-"performance.\n"
+"Increases log verbosity, occupying more disk space and potentially impacting performance.\n"
 "Requires a restart."
 msgstr ""
-"Zwiększa szczegółowość logów, zajmując więcej miejsca na dysku i "
-"potencjalnie wpływając na wydajność.\n"
+"Zwiększa szczegółowość dziennika, co zajmuje więcej miejsca na dysku i może obniżyć wydajność.\n"
 "Wymaga ponownego uruchomienia."
 
-#: src/preferences.py:112 src/WelcomeScreen.py:90
+#: src/WelcomeScreen.py:114
 msgid "The folder must be in your home directory"
-msgstr "Folder musi znajdować się w katalogu domowym"
+msgstr "Katalog musi się znajdować w katalogu domowym"
 
-#: src/preferences.py:115 src/WelcomeScreen.py:93
+#: src/preferences.py:152 src/WelcomeScreen.py:117
 msgid "Select a folder"
-msgstr "Wybierz folder"
+msgstr "Wybierz katalog"
 
 #: src/gtk/main-menu.ui:6
 msgid "_Preferences"
@@ -222,32 +213,32 @@ msgstr "_Preferencje"
 
 #: src/gtk/main-menu.ui:10
 msgid "_Open Log File"
-msgstr "_Otwórz plik dziennika"
+msgstr "Otwórz plik _dziennika"
 
 #: src/gtk/main-menu.ui:14
 msgid "_Show tutorial"
-msgstr "_Pokaż samouczek"
+msgstr "_Wyświetl samouczek"
 
 #: src/gtk/main-menu.ui:18
 msgid "_About Gear lever"
-msgstr "_O Przerzutce"
+msgstr "_O programie"
 
 #: src/components/AppDetailsConflictModal.py:10
 #, python-brace-format
 msgid "Conflict with \"{app_name}\""
-msgstr "Konflikt z \"{app_name}\""
+msgstr "Konflikt z aplikacją „{app_name}”"
 
 #: src/components/AppDetailsConflictModal.py:11
 msgid "There is already an app with the same name, how do you want to proceed?"
-msgstr "Istnieje już aplikacja o tej samej nazwie, jak chcesz postąpić?"
+msgstr "Aplikacja o tej samej nazwie już istnieje. Co zrobić?"
 
-#: src/components/AppDetailsConflictModal.py:14
+#: src/AppDetails.py:511 src/components/AppDetailsConflictModal.py:14
 msgid "Cancel"
 msgstr "Anuluj"
 
 #: src/components/AppDetailsConflictModal.py:17
 msgid "Keep both"
-msgstr "Zachowaj oba"
+msgstr "Zachowaj obie"
 
 #: src/components/AppDetailsConflictModal.py:19
 msgid "Replace"
@@ -255,7 +246,7 @@ msgstr "Zastąp"
 
 #: src/gtk/drag-drop.ui:18
 msgid "Drop your file here"
-msgstr "Upuść swój plik tutaj"
+msgstr "Upuść plik tutaj"
 
 #: src/gtk/empty-list-placeholder.ui:18
 msgid "Get started"
@@ -263,17 +254,11 @@ msgstr "Rozpocznij"
 
 #: src/gtk/empty-list-placeholder.ui:30
 msgid "Drag and drop an AppImage here or click on the \"+\" icon."
-msgstr "Przeciągnij i upuść tutaj AppImage lub kliknij na ikonę \"+\"."
+msgstr "Przeciągnij tutaj plik AppImage lub kliknij ikonę „+”."
 
-#: src/gtk/empty-list-placeholder.ui:35
-msgid " If you don't see your apps, check if the selected folder is correct."
-msgstr ""
-" Jeśli nie widzisz swoich aplikacji, sprawdź, czy wybrany folder jest "
-"poprawny."
-
-#: src/gtk/empty-list-placeholder.ui:46
+#: src/gtk/empty-list-placeholder.ui:56
 msgid "Open Preferences"
-msgstr "Otwórz Preferencje"
+msgstr "Otwórz preferencje"
 
 #: src/gtk/help-overlay.ui:11
 msgctxt "shortcut window"
@@ -283,73 +268,69 @@ msgstr "Ogólne"
 #: src/gtk/help-overlay.ui:14
 msgctxt "shortcut window"
 msgid "Show Shortcuts"
-msgstr "Pokaż Skróty"
+msgstr "Wyświetlenie skrótów klawiszowych"
 
 #: src/gtk/help-overlay.ui:20
 msgctxt "shortcut window"
 msgid "Quit"
-msgstr "Zakończ"
+msgstr "Zakończenie działania"
 
-#: src/gtk/tutorial/1.ui:21
+#: src/gtk/tutorial/1.ui:26
 msgid "Hi, welcome to Gear lever"
-msgstr "Cześć, witaj w Przerzutce"
+msgstr "Witamy w programie Gear Lever"
 
-#: src/gtk/tutorial/1.ui:30
+#: src/gtk/tutorial/1.ui:35
 msgid "An app that helps you integrate AppImages into your system."
-msgstr "Aplikacja, która pomaga Ci integrować AppImages z Twoim systemem."
+msgstr "Aplikacja pomagająca zintegrować pliki AppImage z systemem."
 
-#: src/gtk/tutorial/1.ui:36
+#: src/gtk/tutorial/1.ui:43
 msgid "Click \"Next\" to follow this tutorial."
-msgstr "Kliknij \"Dalej\", aby kontynuować ten samouczek."
+msgstr "Kliknij przycisk ze strzałką, aby przejść przez samouczek."
 
-#: src/gtk/tutorial/2.ui:19
+#: src/gtk/tutorial/2.ui:12
 msgid "Set the AppImage location"
-msgstr "Ustaw lokalizację AppImage"
+msgstr "Ustaw położenie plików AppImage"
 
-#: src/gtk/tutorial/2.ui:28
+#: src/gtk/tutorial/2.ui:13
 msgid ""
 "Gear lever groups all your AppImages into a specific folder and keeps them "
 "organized."
 msgstr ""
-"Przerzutka grupuje wszystkie Twoje AppImages w określonym "
-"folderze i utrzymuje je zorganizowane."
+"Gear Lever gromadzi wszystkie pliki AppImage w jednym katalogu i utrzymuje w "
+"nich porządek."
 
-#: src/gtk/tutorial/2.ui:33
-#, python-brace-format
-msgid "By default, AppImages are saved at: {location}"
-msgstr "Domyślnie, AppImages są zapisywane w: {location}"
-
-#: src/gtk/tutorial/2.ui:47
+#: src/gtk/tutorial/2.ui:29
 msgid "Change AppImage location"
-msgstr "Zmień lokalizację AppImage"
+msgstr "Zmień położenie plików AppImage"
 
-#: src/gtk/tutorial/2.ui:59
+#: src/gtk/tutorial/2.ui:38
 msgid "You can customize it later in the preferences."
-msgstr "Możesz dostosować to później w preferencjach."
+msgstr "Można to później zmienić w preferencjach."
 
-#: src/gtk/tutorial/3.ui:19
+#: src/gtk/tutorial/3.ui:23
 msgid "Set Gear lever as default"
-msgstr "Ustaw Przerzutkę jako domyślną"
+msgstr "Ustaw program Gear Lever jako domyślny"
 
-#: src/gtk/tutorial/3.ui:28
+#: src/gtk/tutorial/3.ui:32
 msgid ""
 "Click on the button to open a demo folder, containing a sample AppImage."
 msgstr ""
-"Kliknij przycisk, aby otworzyć folder demo, zawierający przykładowy AppImage."
+"Kliknij przycisk, aby otworzyć katalog demonstracyjny z przykładowym plikiem "
+"AppImage."
 
-#: src/gtk/tutorial/3.ui:33
+#: src/gtk/tutorial/3.ui:40
 msgid ""
-"Use the right-click menu to set Gear lever as the default app for \"."
-"appimage\" files"
+"Use the right-click menu to set Gear lever as the default app for "
+"\".appimage\" files"
 msgstr ""
-"Użyj menu prawego kliknięcia, aby ustawić Przerzutkę jako "
-"domyślną aplikację dla plików \".appimage\""
+"Kliknij plik prawym przyciskiem myszy i ustaw program Gear Lever jako "
+"domyślną aplikację do otwierania plików „.appimage”"
 
-#: src/gtk/tutorial/3.ui:44
+#: src/gtk/tutorial/3.ui:54
 msgid "Open demo folder"
-msgstr "Otwórz folder demo"
+msgstr "Otwórz katalog demonstracyjny"
 
-#: src/gtk/tutorial/3.ui:56
+#: src/gtk/tutorial/3.ui:63
 msgid "This step is optional"
 msgstr "Ten krok jest opcjonalny"
 
@@ -357,7 +338,7 @@ msgstr "Ten krok jest opcjonalny"
 msgid "All done, let's go!"
 msgstr "Wszystko gotowe, ruszajmy!"
 
-#: src/gtk/tutorial/last.ui:35
+#: src/gtk/tutorial/last.ui:24
 msgid "Close tutorial"
 msgstr "Zamknij samouczek"
 
@@ -365,6 +346,228 @@ msgstr "Zamknij samouczek"
 msgid "No description provided"
 msgstr "Nie podano opisu"
 
-#: src/providers/AppImageProvider.py:487
-msgid "Cannot load an untrusted AppImage"
-msgstr "Nie można załadować niezaufanego AppImage"
+#: data/it.mijorus.gearlever.desktop.in:12
+msgid "AppImage;"
+msgstr "AppImage;"
+
+#: src/AppDetails.py:35
+msgid "Save"
+msgstr "Zapisz"
+
+#: src/AppDetails.py:36
+msgid "Saved"
+msgstr "Zapisano"
+
+#: src/AppDetails.py:37
+msgid "Invalid data"
+msgstr "Nieprawidłowe dane"
+
+#: src/AppDetails.py:38
+msgid "Cancel update"
+msgstr "Anuluj aktualizację"
+
+#: src/AppDetails.py:39 src/InstalledAppsList.py:30
+msgid "Checking updates..."
+msgstr "Wyszukiwanie aktualizacji…"
+
+#: src/AppDetails.py:40
+msgid "No updates available"
+msgstr "Brak dostępnych aktualizacji"
+
+#: src/AppDetails.py:41
+msgid "This application includes update information provided by the developer"
+msgstr ""
+"Ta aplikacja zawiera informacje o aktualizacjach dostarczone przez jej twórcę"
+
+#: src/AppDetails.py:42
+msgid "Manage update details for this application"
+msgstr "Zarządzanie szczegółami aktualizacji tej aplikacji"
+
+#: src/AppDetails.py:257
+msgid "Please, verify the source of this app before opening it"
+msgstr "Przed otwarciem należy sprawdzić źródło tej aplikacji"
+
+#: src/AppDetails.py:258
+msgid "Unlock"
+msgstr "Odblokuj"
+
+#: src/AppDetails.py:355
+msgid "Unkown Error"
+msgstr "Nieznany błąd"
+
+#: src/AppDetails.py:444
+#, python-brace-format
+msgid ""
+"{app_name} is running, please close it before proceeding with the update"
+msgstr ""
+"Aplikacja {app_name} jest uruchomiona. Przed aktualizacją należy ją zamknąć"
+
+#: src/AppDetails.py:497
+msgid "Update error"
+msgstr "Błąd aktualizacji"
+
+#: src/AppDetails.py:501
+msgid "Close"
+msgstr "Zamknij"
+
+#: src/AppDetails.py:508
+msgid "Do you really want to remove this app?"
+msgstr "Czy na pewno usunąć tę aplikację?"
+
+#: src/AppDetails.py:596
+msgid "This app might not be compatible with your system architecture"
+msgstr "Ta aplikacja może nie być zgodna z architekturą systemu"
+
+#: src/AppDetails.py:947
+msgid "How it works"
+msgstr "Jak to działa"
+
+#: src/AppDetails.py:969
+msgid "Update management"
+msgstr "Zarządzanie aktualizacjami"
+
+#: src/AppDetails.py:976
+msgid "Default"
+msgstr "Domyślne"
+
+#: src/AppDetails.py:982
+msgid "Source"
+msgstr "Źródło"
+
+#: src/AppDetails.py:983
+msgid "Select the source type"
+msgstr "Rodzaj źródła aktualizacji"
+
+#: src/AppDetails.py:1022
+msgid "Command line arguments"
+msgstr "Parametry wiersza poleceń"
+
+#: src/AppDetails.py:1040
+msgid "Hash"
+msgstr "Suma kontrolna"
+
+#: src/AppDetails.py:1052
+msgid "Open Folder"
+msgstr "Otwórz katalog"
+
+#: src/AppDetails.py:1080
+msgid "Key"
+msgstr "Klucz"
+
+#: src/AppDetails.py:1081
+msgid "Value"
+msgstr "Wartość"
+
+#: src/AppDetails.py:1120
+msgid "Environment variables"
+msgstr "Zmienne środowiskowe"
+
+#: src/AppDetails.py:1121
+msgid "Add or customize environment for this application"
+msgstr "Dodawanie i dostosowywanie środowiska tej aplikacji"
+
+#: src/InstalledAppsList.py:28
+msgid "Check for updates"
+msgstr "Wyszukaj aktualizacje"
+
+#: src/InstalledAppsList.py:29
+msgid "No updates found"
+msgstr "Nie odnaleziono aktualizacji"
+
+#: src/InstalledAppsList.py:31
+msgid "No Connection"
+msgstr "Brak połączenia"
+
+#: src/InstalledAppsList.py:32
+msgid "Update all"
+msgstr "Zaktualizuj wszystkie"
+
+#: src/preferences.py:50
+msgid "Updates management"
+msgstr "Zarządzanie aktualizacjami"
+
+#: src/preferences.py:52
+msgid "Check updates on system startup"
+msgstr "Wyszukiwanie aktualizacji podczas uruchamiania systemu"
+
+#: src/preferences.py:54
+msgid ""
+"Receive a notification when a new update is detected; updates will not be "
+"installed automatically"
+msgstr ""
+"Wyświetla powiadomienie o wykryciu nowej aktualizacji. Aktualizacje nie są "
+"instalowane automatycznie"
+
+#: src/preferences.py:95
+msgid "Naming conventions"
+msgstr "Konwencje nazewnictwa"
+
+#: src/preferences.py:105
+msgid "Preview new apps in a minimal UI"
+msgstr "Podgląd nowych aplikacji w uproszczonym interfejsie"
+
+#: src/preferences.py:110
+msgid "Use safe mechanisms to load metadata"
+msgstr "Bezpieczne wczytywanie metadanych"
+
+#: src/preferences.py:112
+msgid ""
+"If enabled, the app will try to load an Appimage without using the built-in appimage-extract command.\n"
+"Disable only if you trust your sources: malicious apps could execute code when loading the metadata."
+msgstr ""
+"Po włączeniu tej funkcji program spróbuje wczytać plik AppImage bez użycia wbudowanego polecenia appimage-extract.\n"
+"Funkcję należy wyłączać tylko wtedy, gdy źródła aplikacji są zaufane: złośliwe aplikacje mogą wykonać kod podczas wczytywania metadanych."
+
+#: src/preferences.py:149
+msgid "The folder must writeable"
+msgstr "Katalog musi umożliwiać zapis"
+
+#: src/gtk/empty-list-placeholder.ui:35
+msgid "If you don't see your apps, check if the selected folder is correct."
+msgstr ""
+"Jeśli aplikacje nie są widoczne, należy sprawdzić, czy wybrano właściwy "
+"katalog."
+
+#: src/gtk/empty-list-placeholder.ui:46
+msgid "Show welcome screen"
+msgstr "Wyświetl ekran powitalny"
+
+#: src/gtk/tutorial/2.ui:21
+#, python-brace-format
+msgid "<b>By default, AppImages are saved at: {location}</b>"
+msgstr "<b>Domyślnie pliki AppImage są zapisywane w katalogu: {location}</b>"
+
+#: src/providers/AppImageProvider.py:580
+msgid ""
+"The downloaded file is not a valid appimage, please check if the provided URL"
+" is correct"
+msgstr ""
+"Pobrany plik nie jest prawidłowym plikiem AppImage. Należy sprawdzić, czy "
+"podany adres URL jest poprawny"
+
+#: src/providers/AppImageProvider.py:641
+msgid "Running AppImages on NixOS requires appimage-run"
+msgstr ""
+"Uruchamianie plików AppImage w systemie NixOS wymaga programu appimage-run"
+
+#: src/providers/AppImageProvider.py:655
+#, python-brace-format
+msgid ""
+"AppImages require FUSE to run. You might still be able to run it with --appimage-extract-and-run in the command line arguments. \n"
+"\n"
+"Click the link below for more information. \n"
+"{url}"
+msgstr ""
+"Pliki AppImage wymagają do działania systemu FUSE. Mimo to można spróbować uruchomić aplikację, dodając --appimage-extract-and-run do parametrów wiersza poleceń. \n"
+"\n"
+"Więcej informacji można znaleźć pod poniższym odnośnikiem. \n"
+"{url}"
+
+#: src/providers/AppImageProvider.py:742
+msgid ""
+"Any attempts at loading this app's metadata failed; if you want proceed using"
+" appimage-extract, please disable the security option in the settings."
+msgstr ""
+"Wszystkie próby wczytania metadanych tej aplikacji zakończyły się "
+"niepowodzeniem. Aby kontynuować za pomocą appimage-extract, należy wyłączyć "
+"funkcję „Bezpieczne wczytywanie metadanych” w preferencjach."
