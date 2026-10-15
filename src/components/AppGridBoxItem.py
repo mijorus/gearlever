@@ -67,6 +67,16 @@ class AppGridBoxItem(Gtk.FlowBoxChild):
         )
         box.append(self.subtitle_label)
 
+        # shown in place of the actions while an update is running
+        self.progress_bar = Gtk.ProgressBar(
+            visible=False,
+            margin_top=8,
+            margin_bottom=8,
+            margin_start=10,
+            margin_end=10,
+        )
+        box.append(self.progress_bar)
+
         # per-card quick actions (launch / update / remove)
         self.launch_btn = Gtk.Button(
             icon_name='media-playback-start-symbolic',
@@ -90,7 +100,7 @@ class AppGridBoxItem(Gtk.FlowBoxChild):
         )
         self.remove_btn.connect('clicked', lambda *_: self.emit('remove-app', self._app))
 
-        actions_box = Gtk.Box(
+        self.actions_box = actions_box = Gtk.Box(
             orientation=Gtk.Orientation.HORIZONTAL,
             spacing=2,
             halign=Gtk.Align.CENTER,
@@ -118,3 +128,12 @@ class AppGridBoxItem(Gtk.FlowBoxChild):
     def show_updatable_badge(self):
         self.update_available_icon.set_visible(True)
         self.update_btn.set_visible(True)
+
+    def set_busy(self, busy: bool):
+        self.actions_box.set_visible(not busy)
+        self.progress_bar.set_visible(busy)
+        self.progress_bar.set_fraction(0)
+        self.set_opacity(0.5 if busy else 1)
+
+    def set_progress(self, fraction: float):
+        self.progress_bar.set_fraction(fraction)

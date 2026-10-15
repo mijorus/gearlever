@@ -65,6 +65,8 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
         self.installed_apps_list_rows: List[AppListBoxItem] = []
         self.installed_apps_grid_rows: List[AppGridBoxItem] = []
+        # file paths of apps being updated from a grid card; survives refresh_list()
+        self.grid_updates_in_progress: set[str] = set()
         self.no_apps_found_row = NoAppsFoundRow(visible=False)
 
         # Create the filter search bar
@@ -176,16 +178,21 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         for i in installed:
             list_row = AppListBoxItem(i, activatable=True, selectable=False, hexpand=True)
             list_row.set_update_version(i.version, i.size)
-            list_row.load_icon()
+            # get_icon() can extract the AppImage when no icon is cached, so load it once for both views
+            icon = appimage_provider.get_icon(i)
+            list_row.set_icon(icon)
             self.installed_apps_list_rows.append(list_row)
             self.installed_apps_list.append(list_row)
 
             grid_row = AppGridBoxItem(i)
             grid_row.set_update_version(i.version)
-            grid_row.load_icon()
+            grid_row.set_icon(self.clone_image(icon))
             grid_row.connect('launch-app', self.on_grid_item_launch)
             grid_row.connect('update-app', self.on_grid_item_update)
             grid_row.connect('remove-app', self.on_grid_item_remove)
+            if i.file_path in self.grid_updates_in_progress:
+                grid_row.set_busy(True)
+
             self.installed_apps_grid_rows.append(grid_row)
             self.installed_apps_grid.append(grid_row)
 
@@ -336,31 +343,83 @@ class InstalledAppsList(Gtk.ScrolledWindow):
         tutorial = WelcomeScreen()
         tutorial.present(self)
 
-    def on_grid_item_launch(self, card, app: AppImageListElement):
-        appimage_provider.run(app)
+    def clone_image(self, image: Gtk.Image) -> Gtk.Image:
+        # a widget can only have one parent, so the grid needs its own Gtk.Image
+        storage = image.get_storage_type()
+
+        if storage == Gtk.ImageType.PAINTABLE:
+            return Gtk.Image.new_from_paintable(image.get_paintable())
+        if storage == Gtk.ImageType.GICON:
+            return Gtk.Image.new_from_gicon(image.get_gicon())
+        if storage == Gtk.ImageType.ICON_NAME:
+            return Gtk.Image.new_from_icon_name(image.get_icon_name())
+
+        return Gtk.Image(icon_name='gl-application-x-executable-symbolic')
+
+    def on_grid_item_launch(self, card: AppGridBoxItem, app: AppImageListElement):
+        try:
+            appimage_provider.run(app)
+        except Exception as e:
+            logging.error('Launch error', exc_info=e)
+            show_message_dialog(str(e))
+            return
+
+        # avoid spawning the app several times on repeated clicks
+        def _restore_launch_btn():
+            card.launch_btn.set_sensitive(True)
+            return GLib.SOURCE_REMOVE
+
+        card.launch_btn.set_sensitive(False)
+        GLib.timeout_add_seconds(3, _restore_launch_btn)
+
+    def on_grid_item_update(self, card: AppGridBoxItem, app: AppImageListElement):
+        if app.file_path in self.grid_updates_in_progress:
+            return
+
+        self.grid_updates_in_progress.add(app.file_path)
+        card.set_busy(True)
+        self.run_grid_item_update(app)
 
     @_async
-    def on_grid_item_update(self, card, app: AppImageListElement):
-        if appimage_provider.is_app_running(app):
-            GLib.idle_add(show_message_dialog, _('{app_name} is running, please close it before proceeding with the update').format(app_name=app.name))
-            return
-
-        manager = UpdateManagerChecker.check_url_for_app(app)
-        if not manager:
-            return
+    def run_grid_item_update(self, app: AppImageListElement):
+        manager = None
 
         try:
-            appimage_provider.update_from_url(manager, app, status_cb=lambda s: None)
-        except Exception as e:
-            logging.error(e)
-            GLib.idle_add(show_message_dialog, str(e))
+            if appimage_provider.is_app_running(app):
+                raise Exception(_('{app_name} is running, please close it before proceeding with the update').format(app_name=app.name))
 
-        GLib.idle_add(self.refresh_list)
+            manager = UpdateManagerChecker.check_url_for_app(app)
+            if manager:
+                appimage_provider.update_from_url(manager, app,
+                    status_cb=lambda perc: GLib.idle_add(self.set_grid_update_progress, app.file_path, perc))
+        except Exception as e:
+            logging.error('Update error', exc_info=e)
+            GLib.idle_add(show_message_dialog, str(e))
+        finally:
+            if manager:
+                manager.cleanup()
+
+            def _complete():
+                self.grid_updates_in_progress.discard(app.file_path)
+                self.refresh_list()
+
+            GLib.idle_add(_complete)
+
+    def set_grid_update_progress(self, file_path: str, fraction: float):
+        # look the card up each time: refresh_list() may have replaced it mid-update
+        for row in self.installed_apps_grid_rows:
+            if row._app.file_path == file_path:
+                row.set_progress(fraction)
 
     def on_grid_item_remove(self, card, app: AppImageListElement):
         show_remove_confirm_dialog(self.on_grid_item_remove_confirm, app)
 
     def on_grid_item_remove_confirm(self, dialog, response: str, app: AppImageListElement):
         if response == 'remove':
-            appimage_provider.uninstall(app)
+            try:
+                appimage_provider.uninstall(app)
+            except Exception as e:
+                logging.error('Uninstall error', exc_info=e)
+                show_message_dialog(str(e))
+
             self.refresh_list()
