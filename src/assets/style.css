@@ -36,3 +36,13 @@
 .big-btn {
     padding: 10px;
 }
+
+.app-gridbox-item {
+    margin: 6px;
+    padding: 10px;
+}
+
+.grid-update-badge {
+    margin-top: -4px;
+    margin-right: -4px;
+}

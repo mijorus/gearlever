@@ -9,6 +9,7 @@ src/WelcomeScreen.py
 src/gtk/main-menu.ui
 
 src/components/AppDetailsConflictModal.py
+src/components/AppGridBoxItem.py
 src/components/AppListBoxItem.py
 src/components/CustomComponents.py
 src/components/FilterEntry.py

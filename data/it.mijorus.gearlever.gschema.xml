@@ -31,5 +31,14 @@
         <key name="block-unsafe-extractor" type="b">
             <default>true</default>
         </key>
+        <key name="installed-apps-view-mode" type="s">
+            <choices>
+                <choice value="list"/>
+                <choice value="grid"/>
+            </choices>
+            <default>"list"</default>
+            <summary>Installed apps view mode</summary>
+            <description>Whether installed applications are shown as a list or as a grid</description>
+        </key>
     </schema>
 </schemalist>

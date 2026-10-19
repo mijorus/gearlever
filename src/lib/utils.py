@@ -171,6 +171,21 @@ def show_message_dialog(message, header=None, markup=False):
     dialog.present()
 
 
+def show_remove_confirm_dialog(on_response, *response_args):
+    dialog = Adw.MessageDialog(
+        transient_for=get_application_window(),
+        heading=_('Do you really want to remove this app?'),
+    )
+
+    dialog.add_response('cancel', _('Cancel'))
+    dialog.add_response('remove', _('Remove'))
+    dialog.set_response_appearance('remove', Adw.ResponseAppearance.DESTRUCTIVE)
+    dialog.set_close_response('cancel')
+    dialog.connect('response', on_response, *response_args)
+
+    dialog.present()
+
+
 def get_osinfo():
     os_release_file = "/run/host/os-release"
     if os.environ.get('FLATPAK_ID', None) is None:

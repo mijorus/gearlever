@@ -17,7 +17,7 @@ from .models.AppListElement import InstalledStatus
 from .providers.AppImageProvider import AppImageListElement, AppImageUpdateLogic
 from .providers.providers_list import appimage_provider
 from .lib.async_utils import _async, idle, debounce
-from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog, gnu_naturalsize, check_internet
+from .lib.utils import url_is_valid, get_file_hash, get_application_window, show_message_dialog, gnu_naturalsize, check_internet, show_remove_confirm_dialog as confirm_app_removal
 from .components.CustomComponents import CenteringBox, LabelStart
 from .components.AppDetailsConflictModal import AppDetailsConflictModal
 from .components.AdwEntryRowDefault import AdwEntryRowDefault
@@ -511,19 +511,7 @@ class AppDetails(Gtk.ScrolledWindow):
 
     @idle
     def show_remove_confirm_dialog(self):
-        dialog = Adw.MessageDialog(
-            transient_for=get_application_window(),
-            heading=_('Do you really want to remove this app?'),
-        )
-
-        dialog.add_response('cancel', _('Cancel'))
-        dialog.add_response('remove', _('Remove'))
-        dialog.set_response_appearance('remove', Adw.ResponseAppearance.DESTRUCTIVE)
-        dialog.set_close_response('cancel')
-        dialog.set_close_response('remove')
-        dialog.connect('response', self.on_remove_app_clicked)
-
-        dialog.present()
+        confirm_app_removal(self.on_remove_app_clicked)
 
     @idle
     def set_all_btn_sensitivity(self, s: bool):
