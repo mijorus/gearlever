@@ -79,10 +79,16 @@ class AppGridBoxItem(Gtk.FlowBoxChild):
 
         # per-card quick actions (launch / update / remove)
         self.launch_btn = Gtk.Button(
-            icon_name='media-playback-start-symbolic',
+            icon_name='gl-media-playback-start-symbolic',
             css_classes=['flat', 'circular'],
             tooltip_text=_('Launch'),
         )
+
+        # terminal apps can't be started from here, same as in AppDetails
+        if self._app.desktop_entry and self._app.desktop_entry.getTerminal():
+            self.launch_btn.set_sensitive(False)
+            self.launch_btn.set_tooltip_text(_('This app runs in the terminal'))
+
         self.launch_btn.connect('clicked', lambda *_: self.emit('launch-app', self._app))
 
         self.update_btn = Gtk.Button(
