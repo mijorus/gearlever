@@ -100,9 +100,13 @@ class MultiUpdate(Gtk.ScrolledWindow):
 
             manager = UpdateManagerChecker.check_url_for_app(el)
             self.current_update_manager = manager
-            appimage_provider.update_from_url(manager, el, 
-                status_cb=lambda s: self.update_progress_fraction((s / p) * (i + 1)))
-            self.mark_as_updated(el)
+
+            try:
+                appimage_provider.update_from_url(manager, el,
+                    status_cb=lambda s: self.update_progress_fraction((s / p) * (i + 1)))
+                self.mark_as_updated(el)
+            except Exception as e:
+                logging.error(f'Error while updating {el.name}', exc_info=e)
 
         self.update_progress_fraction(1)
         self.on_update_end()
