@@ -609,13 +609,17 @@ class AppImageProvider():
         if not el.file_path:
             return False
 
+        # The kernel reports the exe path with symlinks resolved,
+        # e.g. /var/home/... on systems where /home is a symlink to /var/home
+        file_path = os.path.realpath(el.file_path)
+
         running = terminal.host_sh(["ps", "-eo", "exe"])
         spl = running.split('\n')
 
         for l in spl:
             l = l.strip()
 
-            if l == el.file_path:
+            if l == file_path:
                 return True
             
         return False
