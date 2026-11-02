@@ -94,7 +94,7 @@ class AppImageProvider():
     desk_entry_section_regex = re.compile(r'\[Desktop Entry\][\s\S]*?(?=\n\[)', flags=re.MULTILINE)
 
     def list_installed(self) -> list[AppImageListElement]:
-        default_folder_path = self._get_appimages_default_destination_path()
+        install_folders = self.get_install_folders()
         manage_from_outside = Settings.settings.get_boolean('manage-files-outside-default-folder')
         output = []
 
@@ -114,9 +114,10 @@ class AppImageProvider():
 
                     if os.path.isfile(exec_location):
                         exec_gfile = Gio.File.new_for_path(exec_location)
-                        exec_in_defalut_folder = os.path.isfile(
-                                os.path.join(default_folder_path, exec_gfile.get_basename()))
-                        exec_in_folder = True if manage_from_outside else exec_in_defalut_folder
+                        exec_in_install_folder = any(
+                                os.path.isfile(os.path.join(folder, exec_gfile.get_basename()))
+                                for folder in install_folders)
+                        exec_in_folder = True if manage_from_outside else exec_in_install_folder
                         app_version = self._get_app_version(None, desktop_entry=entry, return_hash=False)
                         file_size = os.stat(exec_location).st_size
 
@@ -131,7 +132,7 @@ class AppImageProvider():
                                 provider=self.name,
                                 desktop_entry=entry,
                                 trusted=True,
-                                external_folder=(not exec_in_defalut_folder),
+                                external_folder=(not exec_in_install_folder),
                                 exec_arguments=exec_arguments,
                                 env_variables=exec_command_data['env_vars'],
                                 size=file_size,
@@ -151,15 +152,19 @@ class AppImageProvider():
         return output
 
     def is_installed(self, el: AppImageListElement) -> bool:
-        if el.file_path and os.path.exists(self._get_appimages_default_destination_path()):
-            for file_name in os.listdir(self._get_appimages_default_destination_path()):
-                installed_gfile = Gio.File.new_for_path(self._get_appimages_default_destination_path() + '/' + file_name)
-                loaded_gfile = Gio.File.new_for_path(el.file_path)
+        if el.file_path:
+            for folder in self.get_install_folders():
+                if not os.path.exists(folder):
+                    continue
 
-                if get_giofile_content_type(installed_gfile) in self.supported_mimes:
-                    if filecmp.cmp(installed_gfile.get_path(), loaded_gfile.get_path(), shallow=False):
-                        el.file_path = installed_gfile.get_path()
-                        return True
+                for file_name in os.listdir(folder):
+                    installed_gfile = Gio.File.new_for_path(os.path.join(folder, file_name))
+                    loaded_gfile = Gio.File.new_for_path(el.file_path)
+
+                    if get_giofile_content_type(installed_gfile) in self.supported_mimes:
+                        if filecmp.cmp(installed_gfile.get_path(), loaded_gfile.get_path(), shallow=False):
+                            el.file_path = installed_gfile.get_path()
+                            return True
 
         return False
 
@@ -262,11 +267,11 @@ class AppImageProvider():
 
         return False
 
-    def install_file(self, el: AppImageListElement):
+    def install_file(self, el: AppImageListElement, destination: Optional[str] = None):
         logging.info('Installing appimage: ' + el.file_path)
         el.installed_status = InstalledStatus.INSTALLING
         extracted_appimage: Optional[ExtractedAppImage] = None
-        appimages_destination_path = self._get_appimages_default_destination_path()
+        appimages_destination_path = self._resolve_install_destination(el, destination)
 
         try:
             extracted_appimage = self._load_appimage_metadata(el)
@@ -274,8 +279,7 @@ class AppImageProvider():
             dest_file_info = extracted_appimage.appimage_file.query_info('*', Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS)
 
             # Move .appimage to its default location
-            if not os.path.exists(f'{appimages_destination_path}'):
-                os.mkdir(f'{appimages_destination_path}')
+            os.makedirs(appimages_destination_path, exist_ok=True)
 
             # how the appimage will be called
             appimage_filename = ''
@@ -310,7 +314,7 @@ class AppImageProvider():
                 appimage_filename = remove_special_chars(appimage_filename).lower()
 
                 i = 0
-                files_in_dest_dir = os.listdir(self._get_appimages_default_destination_path())
+                files_in_dest_dir = os.listdir(appimages_destination_path)
 
                 # if there is already an app with the same name,
                 # we try not to overwrite
@@ -330,8 +334,19 @@ class AppImageProvider():
             dest_appimage_file = Gio.File.new_for_path(
                 os.path.join(appimages_destination_path, appimage_filename))
 
-            if not gio_copy(extracted_appimage.appimage_file, dest_appimage_file):
-                raise InternalError('Error while moving appimage file to the destination folder')
+            source_appimage_file = extracted_appimage.appimage_file
+            source_path = source_appimage_file.get_path()
+            dest_path = dest_appimage_file.get_path()
+
+            if os.path.abspath(source_path) != os.path.abspath(dest_path):
+                same_folder = os.path.dirname(os.path.abspath(source_path)) == os.path.dirname(os.path.abspath(dest_path))
+
+                if same_folder:
+                    # The appimage already lives in the destination folder: rename it
+                    # in place instead of leaving a duplicate next to it
+                    os.replace(source_path, dest_path)
+                elif not gio_copy(source_appimage_file, dest_appimage_file):
+                    raise InternalError('Error while moving appimage file to the destination folder')
 
             logging.debug(f'file copied to {appimages_destination_path}')
 
@@ -444,8 +459,13 @@ class AppImageProvider():
             raise e
 
         if Settings.settings.get_boolean('move-appimage-on-integration'):
-            if os.path.dirname(extracted_appimage.appimage_file.get_path()) != appimages_destination_path:
-                logging.info('Deleting original appimage file from: '  + extracted_appimage.appimage_file.get_path())
+            source_path = extracted_appimage.appimage_file.get_path()
+            dest_path = dest_appimage_file.get_path()
+
+            # Only remove the original if it is actually left somewhere else;
+            # same-folder installs are already handled by the rename above
+            if os.path.abspath(source_path) != os.path.abspath(dest_path) and os.path.exists(source_path):
+                logging.info('Deleting original appimage file from: ' + source_path)
                 if not extracted_appimage.appimage_file.delete(None):
                     raise InternalError('Cannot delete original file')
 
@@ -461,6 +481,7 @@ class AppImageProvider():
         logging.info(f'Reloading metadata for {el.file_path}')
         random_str = get_random_string()
         dest_path = f'{self.extraction_folder}/gearlever_{random_str}'
+        original_folder = os.path.dirname(el.file_path)
 
         if not os.path.exists(dest_path):
             os.makedirs(dest_path)
@@ -475,7 +496,7 @@ class AppImageProvider():
         el.file_path = f'{dest_path}/tmp.appimage'
         el.extracted = None
 
-        self.install_file(el)
+        self.install_file(el, destination=original_folder)
 
     def get_appimage_type(self, el: AppImageListElement) -> str:
         # https://github.com/AppImage/AppImageSpec/blob/fb05d9e1b8b8616dbeb7491303edc537dca573f3/draft.md#type-1-image-format
@@ -517,10 +538,12 @@ class AppImageProvider():
         if return_new_el:
             return el
 
-        if self.is_installed(el):
-            for installed in self.list_installed():
-                if filecmp.cmp(installed.file_path, el.file_path, shallow=False):
-                    return installed
+        # Match an already-integrated app even when it lives outside the
+        # registered install folders (is_installed() only knows about those)
+        for installed in self.list_installed():
+            if installed.file_path == el.file_path \
+                    or (installed.size == el.size and filecmp.cmp(installed.file_path, el.file_path, shallow=False)):
+                return installed
 
         return el
 
@@ -889,8 +912,56 @@ class AppImageProvider():
         return result
 
     def _get_appimages_default_destination_path(self) -> str:
-        folder = Settings.settings.get_string('appimages-default-folder')
-        return re.sub(r'^~', GLib.get_home_dir(), folder)
+        return self._expand_folder_path(Settings.settings.get_string('appimages-default-folder'))
+
+    def _expand_folder_path(self, folder: str) -> str:
+        return re.sub(r'^~', GLib.get_home_dir(), (folder or '').strip())
+
+    def get_install_folders(self) -> list[str]:
+        """All the folders where AppImages are allowed to be installed.
+
+        The default folder always comes first, followed by any extra folder
+        configured by the user. Duplicates and empty entries are dropped.
+        """
+        folders = [self._get_appimages_default_destination_path()]
+
+        for folder in Settings.settings.get_strv('appimages-extra-folders'):
+            path = self._expand_folder_path(folder)
+            if path and path not in folders:
+                folders.append(path)
+
+        return folders
+
+    def get_preferred_install_folder(self) -> str:
+        """The folder that should be preselected when installing a new app.
+
+        Falls back to the last used folder, then to the default folder.
+        """
+        last_used = self._expand_folder_path(Settings.settings.get_string('last-install-folder'))
+        if last_used in self.get_install_folders():
+            return last_used
+
+        return self._get_appimages_default_destination_path()
+
+    def _resolve_install_destination(self, el: AppImageListElement, destination: Optional[str] = None) -> str:
+        """Determine where an AppImage will be moved to during installation."""
+        if destination:
+            path = self._expand_folder_path(destination)
+        elif el.update_logic is AppImageUpdateLogic.REPLACE and el.updating_from is not None \
+                and el.updating_from.file_path:
+            # updates always stay in the folder where the app is already installed
+            path = os.path.dirname(el.updating_from.file_path)
+        else:
+            path = self._get_appimages_default_destination_path()
+
+        if not os.path.isdir(path):
+            os.makedirs(path, exist_ok=True)
+
+        if not os.access(path, os.W_OK):
+            raise InternalError(_('The folder must be writable: {path}').format(path=path))
+
+        Settings.settings.set_string('last-install-folder', path)
+        return path
 
     def _get_app_version(self, extracted_appimage: Optional[ExtractedAppImage], desktop_entry: Optional[DesktopEntry] = None, return_hash=True):
         if not desktop_entry:

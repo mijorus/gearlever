@@ -82,6 +82,15 @@ class AppDetails(Gtk.ScrolledWindow):
         self.source_selector = Gtk.ComboBoxText()
         self.source_selector_revealer = Gtk.Revealer(child=self.source_selector, transition_type=Gtk.RevealerTransitionType.CROSSFADE)
 
+        # Destination folder picker, shown when more than one installation folder is configured
+        self.install_folder_ids: list[str] = []
+        self.install_folder_selector = Gtk.DropDown(halign=Gtk.Align.CENTER)
+        self.install_folder_revealer = Gtk.Revealer(
+            child=self.install_folder_selector,
+            transition_type=Gtk.RevealerTransitionType.CROSSFADE,
+            reveal_child=False,
+        )
+
         # Action buttons
         self.primary_action_button = Gtk.Button(label='', valign=Gtk.Align.CENTER, halign=Gtk.Align.CENTER, 
                                                 css_classes=self.common_btn_css_classes, width_request=200)
@@ -103,6 +112,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.primary_action_buttons_row = CenteringBox(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         [self.primary_action_buttons_row.append(el) for el in [self.secondary_action_button, self.primary_action_button]]
         [action_buttons_row.append(el) for el in [self.primary_action_buttons_row, self.update_action_button]]
+        action_buttons_row.prepend(self.install_folder_revealer)
 
         [self.details_row.append(el) for el in [self.icon_slot, title_col, self.app_info_pills, action_buttons_row]]
 
@@ -212,7 +222,8 @@ class AppDetails(Gtk.ScrolledWindow):
         # Hashes
         if self.app_list_element.installed_status is not InstalledStatus.INSTALLED:
             gtk_list.append(self.create_app_hash_row())
-        
+
+        self.populate_install_folder_selector()
         self.update_installation_status()
 
         self.secondary_action_button.set_visible(True)
@@ -242,7 +253,7 @@ class AppDetails(Gtk.ScrolledWindow):
             elif self.app_list_element.external_folder:
                 self.window_banner.set_revealed(True)
                 self.window_banner.set_button_label(None)
-                self.window_banner.set_title(_('This app is located outside the default folder\n<small>You can hide external apps in the settings</small>'))
+                self.window_banner.set_title(_('This app is located outside your installation folders\n<small>You can hide external apps in the settings</small>'))
             else:
                 self.window_banner.set_revealed(False)
         else:
@@ -306,6 +317,7 @@ class AppDetails(Gtk.ScrolledWindow):
         self.app_subtitle.set_visible(False)
         self.secondary_action_button.set_visible(False)
         self.primary_action_button.set_visible(False)
+        self.install_folder_revealer.set_reveal_child(False)
         self.window_banner.set_revealed(False)
         self.app_info_pills.set_visible(False)
 
@@ -330,9 +342,9 @@ class AppDetails(Gtk.ScrolledWindow):
             self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
     @_async
-    def install_file(self, el: AppImageListElement):
+    def install_file(self, el: AppImageListElement, destination: Optional[str] = None):
         try:
-            self.provider.install_file(el)
+            self.provider.install_file(el, destination=destination)
             self.update_installation_status()
 
             self.complete_load(
@@ -342,6 +354,33 @@ class AppDetails(Gtk.ScrolledWindow):
         except Exception as e:
             self.handle_exception(e)
             self.emit('uninstalled-app', self)
+
+    def populate_install_folder_selector(self):
+        folders = appimage_provider.get_install_folders()
+        home_dir = GLib.get_home_dir()
+
+        labels = [('~' + folder[len(home_dir):]) if folder.startswith(home_dir + os.sep) else folder
+                  for folder in folders]
+
+        self.install_folder_ids = folders
+        self.install_folder_selector.set_model(Gtk.StringList.new(labels))
+
+        preferred = appimage_provider.get_preferred_install_folder()
+        if preferred in folders:
+            self.install_folder_selector.set_selected(folders.index(preferred))
+        elif folders:
+            self.install_folder_selector.set_selected(0)
+
+    def select_install_folder(self, path: str):
+        if path in self.install_folder_ids:
+            self.install_folder_selector.set_selected(self.install_folder_ids.index(path))
+
+    def get_selected_install_folder(self) -> Optional[str]:
+        selected = self.install_folder_selector.get_selected()
+        if selected >= len(self.install_folder_ids):
+            return None
+
+        return self.install_folder_ids[selected]
             
     def handle_exception(self, e: Exception):
         if type(e) is InternalError:
@@ -388,9 +427,11 @@ class AppDetails(Gtk.ScrolledWindow):
                     )
 
                     self.app_list_element.updating_from = old_version
+                    if old_version and old_version.file_path:
+                        self.select_install_folder(os.path.dirname(old_version.file_path))
                     self.provider.uninstall(old_version)
 
-                self.install_file(self.app_list_element)
+                self.install_file(self.app_list_element, destination=self.get_selected_install_folder())
 
         self.update_installation_status()
 
@@ -546,6 +587,11 @@ class AppDetails(Gtk.ScrolledWindow):
         self.primary_action_button.set_css_classes(self.common_btn_css_classes)
         self.secondary_action_button.set_css_classes(self.common_btn_css_classes)
         self.source_selector.set_visible(False)
+
+        self.install_folder_revealer.set_reveal_child(
+            self.app_list_element.installed_status == InstalledStatus.NOT_INSTALLED
+            and len(appimage_provider.get_install_folders()) > 1
+        )
 
         self.primary_action_button.set_sensitive(True)
         self.secondary_action_button.set_sensitive(True)

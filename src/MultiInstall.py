@@ -1,4 +1,5 @@
 import logging
+import os
 from gi.repository import Gtk, GObject, Adw, Gdk, Gio, GLib
 
 from .models.AppListElement import InstalledStatus
@@ -27,6 +28,24 @@ class MultiInstall(Gtk.ScrolledWindow):
         
         self.install_all_btn.connect('clicked', self.on_install_all_clicked)
 
+        # Destination folder picker, shown when more than one installation folder is configured
+        self.install_folder_ids: list[str] = []
+        self.install_folder_selector = Gtk.DropDown(halign=Gtk.Align.CENTER)
+        self.install_folder_revealer = Gtk.Revealer(
+            child=self.install_folder_selector,
+            transition_type=Gtk.RevealerTransitionType.CROSSFADE,
+            reveal_child=False,
+        )
+
+        install_action_row = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL,
+            spacing=10,
+            halign=Gtk.Align.CENTER,
+            valign=Gtk.Align.CENTER,
+        )
+        install_action_row.append(self.install_folder_revealer)
+        install_action_row.append(self.install_all_btn)
+
         self.main_box = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL, 
             margin_top=30, 
@@ -36,7 +55,7 @@ class MultiInstall(Gtk.ScrolledWindow):
             spacing=20
         )
 
-        self.main_box.append(self.install_all_btn)
+        self.main_box.append(install_action_row)
         self.main_box.append(self.app_list_box)
 
         self.already_installed_warn = Gtk.Button(
@@ -139,9 +158,34 @@ class MultiInstall(Gtk.ScrolledWindow):
                 continue
 
             el.set_trusted()
-            appimage_provider.install_file(el)
+            appimage_provider.install_file(el, destination=self.get_selected_install_folder())
 
         self.emit('go-back', True)
+
+    def populate_install_folder_selector(self):
+        folders = appimage_provider.get_install_folders()
+        home_dir = GLib.get_home_dir()
+
+        labels = [('~' + folder[len(home_dir):]) if folder.startswith(home_dir + os.sep) else folder
+                  for folder in folders]
+
+        self.install_folder_ids = folders
+        self.install_folder_selector.set_model(Gtk.StringList.new(labels))
+
+        preferred = appimage_provider.get_preferred_install_folder()
+        if preferred in folders:
+            self.install_folder_selector.set_selected(folders.index(preferred))
+        elif folders:
+            self.install_folder_selector.set_selected(0)
+
+        self.install_folder_revealer.set_reveal_child(len(folders) > 1)
+
+    def get_selected_install_folder(self):
+        selected = self.install_folder_selector.get_selected()
+        if selected >= len(self.install_folder_ids):
+            return None
+
+        return self.install_folder_ids[selected]
 
     def on_details_btn_clicked(self, widget: Gtk.Button, el: AppImageListElement):
         self.emit('show-details', el)
@@ -183,6 +227,7 @@ class MultiInstall(Gtk.ScrolledWindow):
             if appimage_provider.can_install_file(f):
                 installable += 1
 
+        self.populate_install_folder_selector()
         self.create_list_elements(files)
         return installable > 0
 

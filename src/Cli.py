@@ -2,9 +2,10 @@ import sys
 import os
 import logging
 import json
+import shutil
 import traceback
 from contextlib import redirect_stdout
-from .lib.constants import APP_ID
+from .lib.constants import APP_ID, TMP_DIR
 from gi.repository import Gio # noqa
 from .BackgroudUpdatesFetcher import BackgroudUpdatesFetcher
 from .lib.constants import FETCH_UPDATES_ARG
@@ -49,7 +50,12 @@ class Cli():
 
         if opt:
             name = str(opt.long_name).replace('-', '_')
-            getattr(Cli, name)(argv)
+
+            try:
+                getattr(Cli, name)(argv)
+            finally:
+                Cli._cleanup_tmp_dir()
+
             sys.exit(0)
 
 
@@ -130,6 +136,19 @@ class Cli():
             print(f'\n{el.file_path} updated successfully')
 
     @staticmethod
+    def _is_integrated(g_file, el) -> bool:
+        """Whether this file already refers to an integrated app, wherever its AppImage lives.
+
+        is_installed() only looks inside the registered install folders, while apps
+        can also live in a custom folder or outside of them entirely.
+        """
+        if appimage_provider.is_installed(el):
+            return True
+
+        listed_paths = {a.file_path for a in appimage_provider.list_installed()}
+        return g_file.get_path() in listed_paths or el.file_path in listed_paths
+
+    @staticmethod
     def remove(argv):
         Cli._print_help_if_requested(argv, [
             ['Usage: --remove <file_path>'],
@@ -141,7 +160,8 @@ class Cli():
         force = ('--delete' in argv)
         assume_yes = ('-y' in argv) or ('--yes' in argv)
         el = Cli._get_list_element_from_gfile(g_file)
-        if not appimage_provider.is_installed(el):
+
+        if not Cli._is_integrated(g_file, el):
             print('This AppImage is not integrated')
             sys.exit(1)
 
@@ -243,12 +263,13 @@ class Cli():
             ['--replace', 'If a name conflict occurs, replaces the old file with the one that you are currently integrating'],
             ['--yes | -y', 'Skips any interactive question and integrates the file'],
             ['--update-url <url>', 'Set a custom URL for updates'],
-        ], text='Usage: --integrate <file_path>')
+            ['--folder <path>', 'Install the AppImage into this folder instead of the default one'],
+        ], text='Usage: --integrate <file_path> [--folder <path>]')
 
         g_file = Cli._get_file_from_args(argv)
 
         list_element = appimage_provider.create_list_element_from_file(g_file)
-        if appimage_provider.is_installed(list_element):
+        if Cli._is_integrated(g_file, list_element):
             print('This AppImage is already integrated')
             sys.exit(0)
 
@@ -292,7 +313,16 @@ class Cli():
                 list_element.update_logic = AppImageUpdateLogic.REPLACE
                 list_element.updating_from = already_installed
 
-        appimage_provider.install_file(list_element)
+        destination = Cli._get_arg_value(argv, '--folder') or Cli._get_key_pairs(argv).get('--folder')
+
+        if destination:
+            destination = os.path.expanduser(destination)
+
+            if not (os.path.isdir(destination) and os.access(destination, os.W_OK)):
+                print(f'Error: "{destination}" must be an existing writable folder')
+                sys.exit(1)
+
+        appimage_provider.install_file(list_element, destination=destination)
         print(f'{list_element.file_path} was integrated successfully')
 
     @staticmethod
@@ -423,6 +453,20 @@ class Cli():
             table.append([m.label, m.name])
 
         Cli._print_table(table)
+
+    @staticmethod
+    def _cleanup_tmp_dir():
+        """Remove the temporary extraction folder created by this run.
+
+        TMP_DIR is unique per process: the GUI deletes it when the window closes,
+        but short lived CLI commands would otherwise leak their extracted
+        AppImages into /tmp on every invocation.
+        """
+        try:
+            if os.path.isdir(TMP_DIR):
+                shutil.rmtree(TMP_DIR, ignore_errors=True)
+        except Exception as e:
+            logging.debug(f'Could not clean {TMP_DIR}: {e}')
 
     @staticmethod
     def _get_key_pairs(argv: list[str]) -> dict:

@@ -15,6 +15,7 @@ https://gearlever.mijorus.it
 - Integrate AppImages into your app menu with **just one click**
 - **Drag and drop** files directly from your file manager
 - Keep all the AppImages organized in a custom folder
+- **Multiple installation folders**: keep AppImages on several disks (e.g. `~/AppImages` and `/mnt/Games/AppImages`) and pick the destination when installing
 - Open new AppImages directly with Gear lever
 - **Manage updates**: keep older versions installed or replace them with the latest release
 - Save CLI apps with their executable name automatically
@@ -43,6 +44,14 @@ Usage: flatpak run it.mijorus.gearlever [OPTION...]
 --set-update-source Set/Unset a custom update source
 --fetch-updates     Fetch updates in the background and sends a desktop notification, used on system startup
 
+```
+
+`--integrate` accepts `--folder <path>` to install into a specific folder instead
+of the default one. Extra folders can be managed in the app preferences and are
+then offered as a destination in the UI:
+
+```sh
+gearlever --integrate ~/Downloads/Foo.AppImage --folder /mnt/Games/AppImages
 ```
 
 Use `--json` with the list commands to get machine-readable JSON documents:
@@ -86,7 +95,7 @@ flatpak install --bundle --user gearlever.flatpak
 
 ## Preview
 <p align="center">
-  <img width="850" src="https://raw.githubusercontent.com/mijorus/gearlever/master/docs/gearlever3.png">
+  <img width="850" src="./docs/gearlever3.png">
 </p>
 
 ## Building and running
