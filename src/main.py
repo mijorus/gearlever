@@ -20,6 +20,7 @@ import gi
 import logging
 import shutil
 import os
+import time
 
 from .models.Settings import Settings
 from .lib.ini_config import Config
@@ -178,6 +179,54 @@ def migrate_to_v2_config():
 
     Config.write()
 
+STALE_TMP_DIR_MAX_AGE = 24 * 60 * 60  # seconds
+
+
+def cleanup_stale_tmp_dirs():
+    """Remove temporary folders left behind by crashed runs.
+
+    Every process gets its own TMP_DIR and deletes it when it exits, but a
+    killed or crashed process cannot clean up after itself. On a small tmpfs
+    those leftovers eventually fill up /tmp and break installs, so remove any
+    sibling folder that has shown no activity for a day. Folders of a running
+    instance are touched whenever it extracts something, and every extraction
+    path recreates its directories on demand, so sweeping is always safe.
+    """
+    tmp_root = GLib.get_tmp_dir()
+    prefix = f'{APP_ID}-'
+
+    try:
+        entries = os.listdir(tmp_root)
+    except OSError:
+        return
+
+    now = time.time()
+
+    for name in entries:
+        if not name.startswith(prefix):
+            continue
+
+        path = os.path.join(tmp_root, name)
+        if path == TMP_DIR or os.path.islink(path) or not os.path.isdir(path):
+            continue
+
+        try:
+            # the newest mtime of the folder and of its direct children
+            # covers extraction activity, which happens in subfolders
+            last_used = os.path.getmtime(path)
+            for child in os.listdir(path):
+                try:
+                    last_used = max(last_used, os.path.getmtime(os.path.join(path, child)))
+                except OSError:
+                    pass
+        except OSError:
+            continue
+
+        if now - last_used > STALE_TMP_DIR_MAX_AGE:
+            logging.info(f'Removing stale temporary folder: {path}')
+            shutil.rmtree(path, ignore_errors=True)
+
+
 def main(version, pkgdatadir):
     """The application's entry point."""
     APP_DATA['PKGDATADIR'] = pkgdatadir
@@ -208,6 +257,8 @@ def main(version, pkgdatadir):
         level= logging.DEBUG if Settings.settings.get_boolean('debug-logs') else logging.INFO,
         force=True
     )
+
+    cleanup_stale_tmp_dirs()
 
     if not Config.exists():
         migrate_to_v2_config()

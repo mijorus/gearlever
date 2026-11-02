@@ -99,6 +99,7 @@ class InstalledAppsList(Gtk.ScrolledWindow):
 
         self.set_child(self.container_stack)
         Settings.settings.connect('changed::appimages-default-folder', lambda *_: self.refresh_list())
+        Settings.settings.connect('changed::appimages-extra-folders', lambda *_: self.refresh_list())
 
     # Emit and event that changes the active page of the Stack in the parent widget
     def on_activated_row(self, listbox, row: Gtk.ListBoxRow):

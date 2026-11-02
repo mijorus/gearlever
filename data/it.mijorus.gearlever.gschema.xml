@@ -4,6 +4,12 @@
         <key name="appimages-default-folder" type="s">
             <default>"~/AppImages"</default>
         </key>
+        <key name="appimages-extra-folders" type="as">
+            <default>[]</default>
+        </key>
+        <key name="last-install-folder" type="s">
+            <default>""</default>
+        </key>
         <key name="move-appimage-on-integration" type="b">
             <default>true</default>
         </key>

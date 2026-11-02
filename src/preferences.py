@@ -6,7 +6,7 @@ import os
 from .lib.constants import FETCH_UPDATES_ARG
 from .models.Models import InternalError
 from .models.Settings import Settings
-from .lib.utils import portal
+from .lib.utils import portal, show_message_dialog
 from .lib.ini_config import Config
 from dbus import Array as DBusArray
 
@@ -38,13 +38,45 @@ class Preferences(Adw.PreferencesWindow):
         self.default_location_row.add_suffix(pick_default_localtion_btn)
 
         files_outside_folder_switch = self.create_boolean_settings_entry(
-            _('Show integrated AppImages outside the default folder'),
+            _('Show integrated AppImages outside the installation folders'),
             'manage-files-outside-default-folder',
-            _('List AppImages that have been integrated into the system menu but are located outside the default folder')
+            _('List AppImages that have been integrated into the system menu but are located outside your installation folders')
         )
 
         general_preference_group.add(self.default_location_row)
         general_preference_group.add(files_outside_folder_switch)
+
+        # installation folders group
+        install_folders_group = Adw.PreferencesGroup(
+            name=_('Installation folders'),
+            title=_('Installation folders'),
+            description=_(
+                'Besides the default location you can allow more folders, '
+                'for example on another disk; you will be able to choose the destination when installing an app'
+            )
+        )
+
+        self.extra_folder_rows: list[Adw.ActionRow] = []
+
+        self.add_folder_row = Adw.ActionRow(
+            title=_('Add a folder'),
+            subtitle=_('Choose another location where new AppImages can be installed'),
+        )
+
+        add_folder_btn = Gtk.Button(
+            icon_name='list-add-symbolic',
+            valign=Gtk.Align.CENTER,
+            css_classes=['flat'],
+            tooltip_text=_('Add a folder'),
+        )
+        add_folder_btn.connect('clicked', self.on_add_folder_btn_clicked)
+        self.add_folder_row.add_suffix(add_folder_btn)
+        self.add_folder_row.add_prefix(Gtk.Image(icon_name='folder-download-symbolic', valign=Gtk.Align.CENTER))
+
+        install_folders_group.add(self.add_folder_row)
+        self.install_folders_group = install_folders_group
+
+        self.rebuild_extra_folders_list()
 
         # updates management group
         updates_management_group = Adw.PreferencesGroup(name=_('Updates management'), title=_('Updates management'))
@@ -126,6 +158,7 @@ class Preferences(Adw.PreferencesWindow):
         debug_group.add(debug_row)
 
         page1.add(general_preference_group)
+        page1.add(install_folders_group)
         page1.add(updates_management_group)
         page1.add(move_appimages_group)
         page1.add(nconvention_group)
@@ -145,6 +178,7 @@ class Preferences(Adw.PreferencesWindow):
         if selected_file.query_exists() and os.access(file_path, os.W_OK):
             self.settings.set_string('appimages-default-folder', file_path)
             self.default_location_row.set_subtitle(file_path)
+            self.rebuild_extra_folders_list()
         else:
             raise InternalError(_('The folder must writeable'))
 
@@ -156,6 +190,87 @@ class Preferences(Adw.PreferencesWindow):
             cancellable=None,
             callback=self.on_select_default_location_response
         )
+
+    def rebuild_extra_folders_list(self, *args):
+        for row in self.extra_folder_rows:
+            self.install_folders_group.remove(row)
+
+        self.extra_folder_rows = []
+        known_folders = [os.path.expanduser(self.settings.get_string('appimages-default-folder'))]
+
+        for folder in self.settings.get_strv('appimages-extra-folders'):
+            path = os.path.expanduser(folder)
+
+            if path in known_folders:
+                continue
+
+            known_folders.append(path)
+
+            row = Adw.ActionRow(
+                title=path,
+                subtitle=_('Installation folder'),
+            )
+
+            remove_btn = Gtk.Button(
+                icon_name='user-trash-symbolic',
+                valign=Gtk.Align.CENTER,
+                css_classes=['flat'],
+                tooltip_text=_('Remove this folder from the list (the folder itself is not deleted)'),
+            )
+            remove_btn.connect('clicked', self.on_remove_extra_folder_clicked, path)
+            row.add_suffix(remove_btn)
+
+            self.install_folders_group.add(row)
+            self.extra_folder_rows.append(row)
+
+        # keep the "Add a folder" entry at the bottom of the group
+        self.install_folders_group.remove(self.add_folder_row)
+        self.install_folders_group.add(self.add_folder_row)
+
+    def on_remove_extra_folder_clicked(self, widget, path: str):
+        folders = [f for f in self.settings.get_strv('appimages-extra-folders')
+                   if os.path.expanduser(f) != path]
+        self.settings.set_strv('appimages-extra-folders', folders)
+        self.rebuild_extra_folders_list()
+
+    def on_add_folder_btn_clicked(self, widget):
+        dialog = Gtk.FileDialog(title=_('Select a folder'), modal=True)
+
+        dialog.select_folder(
+            parent=self,
+            cancellable=None,
+            callback=self.on_add_folder_response
+        )
+
+    def on_add_folder_response(self, dialog, result):
+        try:
+            selected_file = dialog.select_folder_finish(result)
+            file_path = selected_file.get_path()
+        except Exception as e:
+            logging.error(str(e))
+            return
+
+        if not file_path:
+            return
+
+        file_path = os.path.expanduser(file_path)
+
+        if not (selected_file.query_exists() and os.path.isdir(file_path) and os.access(file_path, os.W_OK)):
+            show_message_dialog(_('The folder must exist and be writable'))
+            return
+
+        known_folders = [os.path.expanduser(f) for f in self.settings.get_strv('appimages-extra-folders')]
+        known_folders.append(os.path.expanduser(self.settings.get_string('appimages-default-folder')))
+
+        if file_path in known_folders:
+            show_message_dialog(_('This folder is already in the list'))
+            return
+
+        self.settings.set_strv(
+            'appimages-extra-folders',
+            [*self.settings.get_strv('appimages-extra-folders'), file_path]
+        )
+        self.rebuild_extra_folders_list()
 
     def on_move_appimages_setting_changed(self, widget):
         self.settings.set_boolean('move-appimage-on-integration', self.move_to_destination_check.get_active())
