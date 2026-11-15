@@ -10,24 +10,49 @@ from desktop_entry_lib import DesktopEntry as JdDesktopEntry
 
 import dataclasses
 from ..models.Settings import Settings
-from ..models.AppListElement import AppListElement, InstalledStatus
+from ..models.AppListElement import InstalledStatus
 from ..lib.constants import TMP_DIR
 from ..lib import terminal
 from ..lib.async_utils import idle
 from ..lib.ini_config import Config
+from ..lib.launchers import desktop_id_from_filename, launcher_filename_part, pick_primary_launcher
 from ..lib.utils import get_giofile_content_type, gio_copy, get_file_hash, \
     remove_special_chars, get_random_string, get_osinfo, extract_terminal_arguments, show_message_dialog, gnu_naturalsize
-from ..models.Models import AppUpdateElement, InternalError, DownloadInterruptedException
+from ..models.Models import InternalError, DownloadInterruptedException
 from typing import Optional, List, TypedDict
 from gi.repository import GLib, Gtk, Gdk, Gio
 from enum import Enum
+
+
+@dataclasses.dataclass
+class ExtractedLauncher:
+    """A .desktop file shipped inside an AppImage.
+    The first launcher of ``ExtractedAppImage.launchers`` is the primary one.
+    """
+    desktop_id: str
+    name: str
+    desktop_file: Gio.File
+    desktop_entry: DesktopEntry.DesktopEntry
+    icon_file: Optional[Gio.File] = None
+
+
+@dataclasses.dataclass
+class AppImageLauncher:
+    """A .desktop file installed by Gear Lever for an AppImage.
+    ``AppImageListElement.launchers[0]`` is always the primary launcher.
+    """
+    name: str
+    desktop_file_path: str
+    desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
+    exec_arguments: str = ''
+    icon_file_path: Optional[str] = None
 
 
 class ExtractedAppImage():
     extraction_folder: str
     desktop_entry: Optional[DesktopEntry.DesktopEntry]
     appimage_file: Gio.File
-    desktop_file: Optional[Gio.File]
+    launchers: List[ExtractedLauncher]
     icon_file: Optional[Gio.File]
     md5: str
 
@@ -60,6 +85,7 @@ class AppImageListElement():
     local_file: Optional[bool] = None
     external_folder: bool = False
     desktop_file_path: Optional[str] = None
+    launchers: List[AppImageLauncher] = dataclasses.field(default_factory=lambda: [])
     size: int = 0
 
     def set_installed_status(self, installed_status: InstalledStatus):
@@ -101,54 +127,105 @@ class AppImageProvider():
         if not os.path.exists(self.user_desktop_files_path):
             return output
 
-        for file_name in os.listdir(self.user_desktop_files_path):
+        # An AppImage can ship more than one launcher, so several .desktop
+        # files can point to the same executable. Keep them grouped under a
+        # single list element, otherwise the app would show up once per
+        # launcher and removing one entry would delete the shared AppImage.
+        elements_by_appimage: dict[str, AppImageListElement] = {}
+
+        for file_name in sorted(os.listdir(self.user_desktop_files_path)):
             gfile = Gio.File.new_for_path(
                 os.path.join(self.user_desktop_files_path, file_name))
 
             try:
-                if os.path.isfile(gfile.get_path()) and get_giofile_content_type(gfile) == 'application/x-desktop':
-                    entry = DesktopEntry.DesktopEntry(filename=gfile.get_path())
-                    exec_location = entry.getTryExec()
-                    exec_command_data = extract_terminal_arguments(entry.getExec())
-                    exec_arguments = ' '.join(exec_command_data['arguments'])
+                if not (os.path.isfile(gfile.get_path()) and get_giofile_content_type(gfile) == 'application/x-desktop'):
+                    continue
 
-                    if os.path.isfile(exec_location):
-                        exec_gfile = Gio.File.new_for_path(exec_location)
-                        exec_in_defalut_folder = os.path.isfile(
-                                os.path.join(default_folder_path, exec_gfile.get_basename()))
-                        exec_in_folder = True if manage_from_outside else exec_in_defalut_folder
-                        app_version = self._get_app_version(None, desktop_entry=entry, return_hash=False)
-                        file_size = os.stat(exec_location).st_size
+                entry = DesktopEntry.DesktopEntry(filename=gfile.get_path())
+                exec_location = entry.getTryExec()
+                exec_command_data = extract_terminal_arguments(entry.getExec())
+                exec_arguments = ' '.join(exec_command_data['arguments'])
 
-                        if exec_in_folder and self.can_install_file(exec_gfile):
-                            list_element = AppImageListElement(
-                                name=entry.getName(),
-                                desktop_file_path=gfile.get_path(),
-                                description=entry.getComment(),
-                                version=(app_version or None),
-                                installed_status=InstalledStatus.INSTALLED,
-                                file_path=exec_location,
-                                provider=self.name,
-                                desktop_entry=entry,
-                                trusted=True,
-                                external_folder=(not exec_in_defalut_folder),
-                                exec_arguments=exec_arguments,
-                                env_variables=exec_command_data['env_vars'],
-                                size=file_size,
-                            )
+                if not os.path.isfile(exec_location):
+                    logging.debug(f'{gfile.get_path()} skipped because {exec_location} does not exists on the filesystem')
+                    continue
 
-                            list_element.architecture = None
+                exec_gfile = Gio.File.new_for_path(exec_location)
+                exec_in_defalut_folder = os.path.isfile(
+                        os.path.join(default_folder_path, exec_gfile.get_basename()))
+                exec_in_folder = True if manage_from_outside else exec_in_defalut_folder
 
-                            output.append(list_element)
-                        else:
-                            logging.debug(f'{gfile.get_path()} skipped because {exec_location} is not a supported file type')
-                    else:
-                        logging.debug(f'{gfile.get_path()} skipped because {exec_location} does not exists on the filesystem')
+                if not (exec_in_folder and self.can_install_file(exec_gfile)):
+                    logging.debug(f'{gfile.get_path()} skipped because {exec_location} is not a supported file type')
+                    continue
+
+                launcher = AppImageLauncher(
+                    name=entry.getName(),
+                    desktop_file_path=gfile.get_path(),
+                    desktop_entry=entry,
+                    exec_arguments=exec_arguments,
+                    icon_file_path=entry.getIcon(),
+                )
+
+                list_element = elements_by_appimage.get(exec_location)
+
+                if not list_element:
+                    app_version = self._get_app_version(None, desktop_entry=entry, return_hash=False)
+                    file_size = os.stat(exec_location).st_size
+
+                    list_element = AppImageListElement(
+                        name=entry.getName(),
+                        desktop_file_path=gfile.get_path(),
+                        description=entry.getComment(),
+                        version=(app_version or None),
+                        installed_status=InstalledStatus.INSTALLED,
+                        file_path=exec_location,
+                        provider=self.name,
+                        desktop_entry=entry,
+                        trusted=True,
+                        external_folder=(not exec_in_defalut_folder),
+                        exec_arguments=exec_arguments,
+                        env_variables=exec_command_data['env_vars'],
+                        size=file_size,
+                    )
+
+                    list_element.architecture = None
+                    elements_by_appimage[exec_location] = list_element
+
+                list_element.launchers.append(launcher)
 
             except Exception as e:
                 logging.warn(e)
 
+        for list_element in elements_by_appimage.values():
+            self._set_primary_launcher(list_element)
+            output.append(list_element)
+
         return output
+
+    def _set_primary_launcher(self, el: AppImageListElement):
+        """Move the launcher that represents the app to the front."""
+        if not el.launchers:
+            return
+
+        primary_index = pick_primary_launcher(
+            os.path.basename(el.file_path),
+            [(desktop_id_from_filename(launcher.desktop_file_path), launcher.name)
+             for launcher in el.launchers]
+        )
+
+        el.launchers.insert(0, el.launchers.pop(primary_index))
+        primary = el.launchers[0]
+
+        el.desktop_file_path = primary.desktop_file_path
+        el.desktop_entry = primary.desktop_entry
+        el.name = primary.name
+        el.exec_arguments = primary.exec_arguments
+
+        if primary.desktop_entry:
+            el.description = primary.desktop_entry.getComment()
+            el.env_variables = extract_terminal_arguments(primary.desktop_entry.getExec())['env_vars']
+            el.version = self._get_app_version(None, desktop_entry=primary.desktop_entry, return_hash=False) or None
 
     def is_installed(self, el: AppImageListElement) -> bool:
         if el.file_path and os.path.exists(self._get_appimages_default_destination_path()):
@@ -218,13 +295,25 @@ class AppImageProvider():
                 logging.warn(e)
                 os.remove(el.file_path)
 
-        if el.desktop_entry:
-            logging.info(f'Removing {el.desktop_entry.getFileName()}')
-            os.remove(el.desktop_entry.getFileName())
+        for desktop_file_path in self._get_element_desktop_files(el):
+            logging.info(f'Removing {desktop_file_path}')
 
-        icon = el.desktop_entry.getIcon()
-        if '/' in icon and os.path.isfile(icon):
-            os.remove(icon)
+            try:
+                os.remove(desktop_file_path)
+            except FileNotFoundError:
+                pass
+            except Exception as e:
+                logging.warning(f'Cannot remove {desktop_file_path}: {e}')
+
+        for icon_path in self._get_element_icon_files(el):
+            logging.info(f'Removing {icon_path}')
+
+            try:
+                os.remove(icon_path)
+            except FileNotFoundError:
+                pass
+            except Exception as e:
+                logging.warning(f'Cannot remove {icon_path}: {e}')
 
         if remove_configuration:
             Config.delete_app_update_config(el)
@@ -232,6 +321,49 @@ class AppImageProvider():
         el.set_installed_status(InstalledStatus.NOT_INSTALLED)
         Config.delete_app_config(el)
         Config.delete_app_update_config(el)
+
+    def _get_element_desktop_files(self, el: AppImageListElement) -> list[str]:
+        desktop_files = [launcher.desktop_file_path
+                         for launcher in el.launchers if launcher.desktop_file_path]
+
+        if not desktop_files and el.desktop_file_path:
+            desktop_files = [el.desktop_file_path]
+
+        return list(dict.fromkeys(desktop_files))
+
+    def _get_element_icon_files(self, el: AppImageListElement) -> list[str]:
+        """Icon files Gear Lever copied for this app, ignoring theme icon names."""
+        allowed_folders = {
+            os.path.realpath(os.path.join(
+                self._get_appimages_default_destination_path(), '.icons'
+            )),
+        }
+
+        if el.file_path:
+            allowed_folders.add(os.path.realpath(os.path.join(
+                os.path.dirname(el.file_path), '.icons'
+            )))
+
+        # Every installed launcher records the icon it points at
+        icon_paths = [launcher.icon_file_path for launcher in el.launchers]
+
+        if not icon_paths and el.desktop_entry:
+            icon_paths = [el.desktop_entry.getIcon()]
+
+        result = []
+
+        # Only ever delete icons that Gear Lever copied inside its own folder
+        for icon_path in icon_paths:
+            if not icon_path or '/' not in icon_path:
+                continue
+
+            if os.path.dirname(os.path.realpath(icon_path)) not in allowed_folders:
+                continue
+
+            if os.path.isfile(icon_path):
+                result.append(icon_path)
+
+        return list(dict.fromkeys(result))
 
     def run(self, el: AppImageListElement):
         if el.trusted:
@@ -265,11 +397,15 @@ class AppImageProvider():
     def install_file(self, el: AppImageListElement):
         logging.info('Installing appimage: ' + el.file_path)
         el.installed_status = InstalledStatus.INSTALLING
-        extracted_appimage: Optional[ExtractedAppImage] = None
+        None
         appimages_destination_path = self._get_appimages_default_destination_path()
 
         try:
             extracted_appimage = self._load_appimage_metadata(el)
+
+            if not extracted_appimage.launchers:
+                raise InternalError(_('This AppImage does not contain any .desktop file'))
+
             version = self._get_app_version(extracted_appimage, return_hash=False)
             dest_file_info = extracted_appimage.appimage_file.query_info('*', Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS)
 
@@ -338,33 +474,13 @@ class AppImageProvider():
             el.file_path = dest_appimage_file.get_path()
             el.set_trusted()
 
-            # copy the icon file
-            icon_file = None
-            dest_appimage_icon_file = None
-            if extracted_appimage.desktop_entry:
-                icon_file = extracted_appimage.icon_file
+            launchers_to_install = extracted_appimage.launchers
 
-            if icon_file and os.path.exists(icon_file.get_path()):
-                icons_folder = os.path.join(appimages_destination_path, '.icons')
-                if not os.path.exists(icons_folder):
-                    os.mkdir(icons_folder)
-
-                i, icon_file_ext = os.path.splitext(icon_file.get_path())
-                dest_appimage_icon_file_path = os.path.join(appimages_destination_path, '.icons', prefixed_filename)
-                dest_appimage_icon_file = Gio.File.new_for_path(
-                    f'{dest_appimage_icon_file_path}{icon_file_ext}')
-
-                gio_copy(icon_file, dest_appimage_icon_file)
-
-            # Move .desktop file to its default location
-            if not os.path.exists(self.user_desktop_files_path):
-                os.makedirs(self.user_desktop_files_path)
-
-            dest_desktop_file_path = f'{os.path.join(self.user_desktop_files_path, prefixed_filename)}.desktop'
-            dest_desktop_file_path = dest_desktop_file_path.replace(' ', '_')
+            icons_folder = os.path.join(appimages_destination_path, '.icons')
 
             # Get default exec arguments shipped by this version of the appimage
-            term_arguments = extract_terminal_arguments(extracted_appimage.desktop_entry.getExec())
+            term_arguments = extract_terminal_arguments(
+                launchers_to_install[0].desktop_entry.getExec())
             exec_arguments = term_arguments['arguments']
             new_default_exec_arguments = ' '.join(exec_arguments)
 
@@ -381,45 +497,99 @@ class AppImageProvider():
 
             el.exec_arguments = ' '.join(exec_arguments)
 
-            jd_desktop_entry = JdDesktopEntry.from_file(
-                extracted_appimage.desktop_file.get_path()
-            )
+            # Move the .desktop files to their default location
+            if not os.path.exists(self.user_desktop_files_path):
+                os.makedirs(self.user_desktop_files_path)
 
-            jd_desktop_entry.TryExec = dest_appimage_file.get_path()
-            jd_desktop_entry.Exec = shlex.join([dest_appimage_file.get_path(), *exec_arguments])
+            new_launchers: List[AppImageLauncher] = []
+            used_desktop_filenames: set[str] = set()
 
-            if el.update_logic is AppImageUpdateLogic.KEEP:
-                v_version = self._get_app_version(extracted_appimage, return_hash=True)
-                final_app_name = extracted_appimage.desktop_entry.getName() + f' ({v_version})'
-                jd_desktop_entry.Name.default_text = final_app_name
+            for index, extracted_launcher in enumerate(launchers_to_install):
+                if index == 0:
+                    launcher_basename = prefixed_filename
+                    launcher_exec_arguments = exec_arguments
+                else:
+                    launcher_basename = f'{prefixed_filename}-{launcher_filename_part(extracted_launcher.desktop_id)}'
+                    launcher_exec_arguments = extract_terminal_arguments(
+                        extracted_launcher.desktop_entry.getExec())['arguments']
 
-            desktop_icon = f'applications-other'
-            if dest_appimage_icon_file:
-                desktop_icon = f"{dest_appimage_icon_file.get_path()}"
+                launcher_basename = launcher_basename.replace(' ', '_')
 
-            jd_desktop_entry.Icon = desktop_icon
+                desktop_filename = f'{launcher_basename}.desktop'
+                suffix = 1
 
-            for a, action in jd_desktop_entry.Actions.items():
-                a_exec_args = extract_terminal_arguments(action.Exec)
-                action.Icon = desktop_icon
-                action.Exec = shlex.join([dest_appimage_file.get_path(), *a_exec_args['arguments']])
+                while desktop_filename in used_desktop_filenames:
+                    desktop_filename = f'{launcher_basename}_{suffix}.desktop'
+                    suffix += 1
 
-            if version:
-                jd_desktop_entry.CustomKeys['X-AppImage-Version'] = version
-            jd_desktop_entry.CustomKeys['X-AppImage-Name'] = extracted_appimage.desktop_entry.getName()
-            desktop_file_content = jd_desktop_entry.get_text()
+                used_desktop_filenames.add(desktop_filename)
+                dest_desktop_file_path = os.path.join(self.user_desktop_files_path, desktop_filename)
 
-            # finally, write the new .desktop file
-            if (not os.path.exists(self.user_desktop_files_path)) and os.path.exists(self.user_local_share_path):
-                os.mkdir(self.user_desktop_files_path)
+                # copy the icon file of this launcher
+                dest_appimage_icon_file: Optional[Gio.File] = None
 
-            with open(dest_desktop_file_path, 'w+') as desktop_file_python_dest:
-                desktop_file_python_dest.write(desktop_file_content)
+                if extracted_launcher.icon_file and os.path.exists(extracted_launcher.icon_file.get_path()):
+                    if not os.path.exists(icons_folder):
+                        os.mkdir(icons_folder)
 
-            if os.path.exists(dest_desktop_file_path):
-                el.desktop_entry = DesktopEntry.DesktopEntry(filename=dest_desktop_file_path)
-                el.desktop_file_path = dest_desktop_file_path
-                el.installed_status = InstalledStatus.INSTALLED
+                    _, icon_file_ext = os.path.splitext(extracted_launcher.icon_file.get_path())
+                    dest_appimage_icon_file = Gio.File.new_for_path(
+                        os.path.join(icons_folder, f'{launcher_basename}{icon_file_ext}')
+                    )
+
+                    gio_copy(extracted_launcher.icon_file, dest_appimage_icon_file)
+
+                jd_desktop_entry = JdDesktopEntry.from_file(
+                    extracted_launcher.desktop_file.get_path()
+                )
+
+                jd_desktop_entry.TryExec = dest_appimage_file.get_path()
+                jd_desktop_entry.Exec = shlex.join([dest_appimage_file.get_path(), *launcher_exec_arguments])
+
+                if el.update_logic is AppImageUpdateLogic.KEEP:
+                    v_version = self._get_app_version(extracted_appimage, return_hash=True)
+                    final_app_name = extracted_launcher.desktop_entry.getName() + f' ({v_version})'
+                    jd_desktop_entry.Name.default_text = final_app_name
+
+                desktop_icon = f'applications-other'
+                if dest_appimage_icon_file:
+                    desktop_icon = f"{dest_appimage_icon_file.get_path()}"
+
+                jd_desktop_entry.Icon = desktop_icon
+
+                for a, action in jd_desktop_entry.Actions.items():
+                    a_exec_args = extract_terminal_arguments(action.Exec)
+                    action.Icon = desktop_icon
+                    action.Exec = shlex.join([dest_appimage_file.get_path(), *a_exec_args['arguments']])
+
+                if version:
+                    jd_desktop_entry.CustomKeys['X-AppImage-Version'] = version
+                jd_desktop_entry.CustomKeys['X-AppImage-Name'] = extracted_launcher.desktop_entry.getName()
+
+                # finally, write the new .desktop file
+                with open(dest_desktop_file_path, 'w+') as desktop_file_python_dest:
+                    desktop_file_python_dest.write(jd_desktop_entry.get_text())
+
+                if not os.path.exists(dest_desktop_file_path):
+                    raise InternalError('Cannot write the destination .desktop file')
+
+                installed_desktop_entry = DesktopEntry.DesktopEntry(filename=dest_desktop_file_path)
+
+                new_launchers.append(AppImageLauncher(
+                    name=installed_desktop_entry.getName(),
+                    desktop_file_path=dest_desktop_file_path,
+                    desktop_entry=installed_desktop_entry,
+                    exec_arguments=' '.join(launcher_exec_arguments),
+                    icon_file_path=dest_appimage_icon_file.get_path() if dest_appimage_icon_file else None,
+                ))
+
+            self._cleanup_replaced_launchers(el.updating_from, new_launchers)
+
+            el.launchers = new_launchers
+
+            el.desktop_entry = new_launchers[0].desktop_entry
+            el.desktop_file_path = new_launchers[0].desktop_file_path
+            el.installed_status = InstalledStatus.INSTALLED
 
             if el.updating_from and el.updating_from.env_variables:
                 el.env_variables = el.updating_from.env_variables
@@ -453,6 +623,35 @@ class AppImageProvider():
         logging.debug(update_dkt_db)
 
         el.updating_from = None
+
+    def _cleanup_replaced_launchers(self, old_element: Optional[AppImageListElement],
+                                    new_launchers: List[AppImageLauncher]):
+        """Drop launchers and icons that the version being replaced shipped but the new one does not."""
+        if not old_element:
+            return
+
+        self._remove_stale_paths(
+            self._get_element_desktop_files(old_element),
+            {launcher.desktop_file_path for launcher in new_launchers},
+            'launcher'
+        )
+        self._remove_stale_paths(
+            self._get_element_icon_files(old_element),
+            {launcher.icon_file_path for launcher in new_launchers if launcher.icon_file_path},
+            'icon'
+        )
+
+    def _remove_stale_paths(self, old_paths: list[str], current_paths: set[str], kind: str):
+        for path in old_paths:
+            if path in current_paths:
+                continue
+
+            try:
+                if os.path.exists(path):
+                    logging.info(f'Removing obsolete {kind} {path}')
+                    os.remove(path)
+            except Exception as e:
+                logging.warning(f'Cannot remove {path}: {e}')
 
     def reload_metadata(self, el: AppImageListElement):
         if not (el.installed_status is InstalledStatus.INSTALLED):
@@ -555,31 +754,52 @@ class AppImageProvider():
             desktop_file.write(desktop_file_content)
 
     def update_desktop_file(self, el: AppImageListElement):
-        if not el.desktop_file_path:
+        launchers = list(el.launchers)
+
+        if not launchers and el.desktop_file_path:
+            launchers = [AppImageLauncher(
+                name=el.name,
+                desktop_file_path=el.desktop_file_path,
+                desktop_entry=el.desktop_entry,
+                exec_arguments=el.exec_arguments,
+            )]
+
+        if not launchers:
             raise Exception('desktop_file_path not specified')
 
-        jd_desktop_file = JdDesktopEntry.from_file(el.desktop_file_path)
-
-        tryexec_command = jd_desktop_file.TryExec
-        exec_arguments = el.exec_arguments
         env_vars = ' '.join(el.env_variables)
-
-        if exec_arguments:
-            exec_arguments = f' {exec_arguments}'
 
         if env_vars:
             env_vars = f'env {env_vars} '
 
-        exec_command = ''.join([
-            env_vars,
-            shlex.quote(tryexec_command),
-            exec_arguments
-        ])
+        for index, launcher in enumerate(launchers):
+            if not launcher.desktop_file_path:
+                continue
 
-        jd_desktop_file.Exec = exec_command
-        jd_desktop_file.write_file(el.desktop_file_path)
+            jd_desktop_file = JdDesktopEntry.from_file(launcher.desktop_file_path)
 
-        el.desktop_entry = DesktopEntry.DesktopEntry(filename=el.desktop_file_path)
+            tryexec_command = jd_desktop_file.TryExec
+            exec_arguments = el.exec_arguments if index == 0 else launcher.exec_arguments
+
+            if exec_arguments:
+                exec_arguments = f' {exec_arguments}'
+
+            exec_command = ''.join([
+                env_vars,
+                shlex.quote(tryexec_command),
+                exec_arguments
+            ])
+
+            jd_desktop_file.Exec = exec_command
+            jd_desktop_file.write_file(launcher.desktop_file_path)
+
+            launcher.desktop_entry = DesktopEntry.DesktopEntry(filename=launcher.desktop_file_path)
+
+            if index == 0:
+                launcher.exec_arguments = el.exec_arguments
+
+        el.desktop_entry = launchers[0].desktop_entry
+        el.desktop_file_path = launchers[0].desktop_file_path
 
     def update_from_url(self, manager, el: AppImageListElement, status_cb: callable) -> AppImageListElement | None:
         try:
@@ -622,7 +842,7 @@ class AppImageProvider():
 
     # Private methods
     def _run_filepath(self, el: AppImageListElement):
-        is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) != None
+        is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) is not None
 
         if is_nixos:
             self._nixos_checks()
@@ -637,11 +857,10 @@ class AppImageProvider():
         terminal.host_threaded_sh([el.file_path, *exec_args], callback=self._check_launch_output, return_stderr=True)
 
     def _run_from_desktopentry(self, el: AppImageListElement):
-        is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) != None
+        is_nixos = re.search(r"^NAME=NixOS$", get_osinfo(), re.MULTILINE) is not None
 
         if is_nixos:
             self._nixos_checks()
-            cmd = ['appimage-run', el.desktop_entry.getTryExec()]
             return
 
         cmd = shlex.split(el.desktop_entry.getExec())
@@ -774,9 +993,7 @@ class AppImageProvider():
 
         file = Gio.File.new_for_path(el.file_path)
 
-        icon_file: Optional[Gio.File] = None
-        desktop_file: Optional[Gio.File] = None
-        desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
+        launchers: List[ExtractedLauncher] = []
 
         # hash file
         md5_hash = get_file_hash(file)
@@ -794,99 +1011,175 @@ class AppImageProvider():
                 if not extraction_folder.query_exists():
                     raise InternalError('Missing mounted extraction folder ' + mounted_appimage_path)
 
-                for d in  os.listdir(f'{extraction_folder.get_path()}'):
-                    if not d.endswith('.desktop'):
-                        continue
-
-                    gdesk_file = Gio.File.new_for_path(f'{extraction_folder.get_path()}/{d}')
-                    if get_giofile_content_type(gdesk_file) == 'application/x-desktop':
-                        desktop_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/app.desktop')
-                        gio_copy(file=gdesk_file, destination=desktop_file)
-
-                        break
-
-                desktop_entry_icon = None
-                if desktop_file:
-                    desktop_entry = DesktopEntry.DesktopEntry(desktop_file.get_path())
-                    desktop_entry_icon = desktop_entry.getIcon()
-                    desktop_entry_icon = re.sub(r"\.(png|svg)$", '', desktop_entry_icon)
-
-                if desktop_entry_icon:
-                    # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#the-filesystem-image
-
-                    tmp_icon_file: Optional[Gio.File] = None
-                    
-                    if not tmp_icon_file:
-                        # if icon file is still not found, let's try with .DirIcon file
-                        diricon = Gio.File.new_for_path(
-                            os.path.join(extraction_folder.get_path(), '.DirIcon')
-                        )
-
-                        if diricon.query_exists():
-                            diricon_ct = get_giofile_content_type(diricon)
-
-                            # https://docs.appimage.org/reference/appdir.html
-                            if diricon_ct in ['image/png', 'image/svg', 'image/svg+xml']:
-                                tmp_icon_file = diricon
-                            elif diricon_ct in ['text/plain']:
-                                with open(diricon.get_path(), 'r') as f:
-                                    possible_icon_path = f.read()
-                                    diricon_linked_to = Gio.File.new_for_path(possible_icon_path)
-
-                                    if diricon_linked_to.query_exists() and \
-                                        get_giofile_content_type(diricon_linked_to) in ['image/png']:
-                                        tmp_icon_file = diricon_linked_to
-                    
-                    if not tmp_icon_file:
-                        icon_xt_f = None
-                        for icon_xt in ['.svg', '.png']:
-                            icon_xt_f = Gio.File.new_for_path(extraction_folder.get_path() + f'/{desktop_entry_icon}{icon_xt}')
-
-                            if icon_xt_f.query_exists():
-                                tmp_icon_file = icon_xt_f
-                                break
-
-                        if (not icon_xt_f.query_exists()) or (get_giofile_content_type(icon_xt_f) not in ['image/svg+xml', 'image/svg']):
-                            # always prefer svg(s) to png(s)
-                            # if a png is not found in the root of the filesystem, try somewhere else
-
-                            icons_folder_prefix = '/usr/share/icons/hicolor'
-                            icon_try_paths = [
-                                extraction_folder.get_path() + f'{icons_folder_prefix}/scalable/apps/{desktop_entry_icon}.svg',
-                                extraction_folder.get_path() + f'{icons_folder_prefix}/512x512/apps/{desktop_entry_icon}.png',
-                                extraction_folder.get_path() + f'{icons_folder_prefix}/256x256/apps/{desktop_entry_icon}.png',
-                                extraction_folder.get_path() + f'{icons_folder_prefix}/128x128/apps/{desktop_entry_icon}.png',
-                                extraction_folder.get_path() + f'{icons_folder_prefix}/96x96/apps/{desktop_entry_icon}.png'
-                            ]
-
-                            for icon_xt in icon_try_paths:
-                                logging.debug('Looking for icon in: ' + icon_xt)
-                                icon_xt_f = Gio.File.new_for_path(icon_xt)
-
-                                if icon_xt_f.query_exists():
-                                    tmp_icon_file = icon_xt_f
-                                    break
-
-                    if tmp_icon_file:
-                        i, tmp_icon_ext = os.path.splitext(tmp_icon_file.get_path())
-                        icon_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/icon{tmp_icon_ext}')
-                        gio_copy(file=tmp_icon_file, destination=icon_file)
+                launchers = self._load_launchers(
+                    extraction_folder.get_path(),
+                    tmp_folder.get_path(),
+                    os.path.basename(el.file_path)
+                )
 
             except Exception as e:
                 logging.error(str(e))
 
         result = ExtractedAppImage()
-        result.desktop_entry = desktop_entry
         result.extraction_folder = tmp_folder.get_path()
         result.appimage_file = file
-        result.desktop_file = desktop_file
-        result.icon_file = icon_file
+        result.launchers = launchers
+        result.desktop_entry = launchers[0].desktop_entry if launchers else None
+        result.icon_file = launchers[0].icon_file if launchers else None
         result.md5 = md5_hash
 
-        el.desktop_entry = desktop_entry
+        el.desktop_entry = result.desktop_entry
         el.extracted = result
 
         return result
+
+    def _load_launchers(self, extraction_folder_path: str, tmp_folder_path: str,
+                        appimage_name: str) -> List[ExtractedLauncher]:
+        """Read every visible .desktop file shipped in the root of the AppImage."""
+        candidates: List[ExtractedLauncher] = []
+
+        for desktop_name in sorted(os.listdir(extraction_folder_path)):
+            if not desktop_name.lower().endswith('.desktop'):
+                continue
+
+            gdesk_file = Gio.File.new_for_path(os.path.join(extraction_folder_path, desktop_name))
+
+            if get_giofile_content_type(gdesk_file) != 'application/x-desktop':
+                continue
+
+            try:
+                desktop_entry = DesktopEntry.DesktopEntry(gdesk_file.get_path())
+            except Exception as e:
+                logging.warning(f'Cannot parse {desktop_name}: {e}')
+                continue
+
+            desktop_id = desktop_id_from_filename(desktop_name)
+
+            candidates.append(ExtractedLauncher(
+                desktop_id=desktop_id,
+                name=desktop_entry.getName() or desktop_id,
+                desktop_file=gdesk_file,
+                desktop_entry=desktop_entry,
+            ))
+
+        # Launchers hidden from the app menu should not be integrated; if
+        # every launcher is hidden, keep one so the app can still be added.
+        launchers = [
+            launcher for launcher in candidates
+            if not launcher.desktop_entry.getNoDisplay() and not launcher.desktop_entry.getHidden()
+        ] or candidates[:1]
+
+        if not launchers:
+            return []
+
+        primary_index = pick_primary_launcher(
+            appimage_name,
+            [(launcher.desktop_id, launcher.name) for launcher in launchers]
+        )
+
+        launchers.insert(0, launchers.pop(primary_index))
+
+        result: List[ExtractedLauncher] = []
+
+        for index, launcher in enumerate(launchers):
+            tmp_desktop_file = Gio.File.new_for_path(
+                os.path.join(tmp_folder_path, f'launcher_{index}.desktop')
+            )
+
+            try:
+                gio_copy(file=launcher.desktop_file, destination=tmp_desktop_file)
+                launcher.desktop_entry = DesktopEntry.DesktopEntry(tmp_desktop_file.get_path())
+            except Exception as e:
+                logging.warning(f'Cannot copy {launcher.desktop_id}: {e}')
+                continue
+
+            launcher.desktop_file = tmp_desktop_file
+
+            try:
+                launcher.icon_file = self._find_launcher_icon_file(
+                    extraction_folder_path,
+                    launcher.desktop_entry,
+                    allow_dir_icon=(index == 0)
+                )
+            except Exception as e:
+                logging.warning(f'Cannot load the icon of {launcher.desktop_id}: {e}')
+
+            result.append(launcher)
+
+        return result
+
+    def _find_launcher_icon_file(self, extraction_folder_path: str,
+                                 desktop_entry: DesktopEntry.DesktopEntry,
+                                 allow_dir_icon: bool = False) -> Optional[Gio.File]:
+        # https://github.com/AppImage/AppImageSpec/blob/master/draft.md#the-filesystem-image
+        if not desktop_entry:
+            return None
+
+        desktop_entry_icon = desktop_entry.getIcon()
+
+        if not desktop_entry_icon:
+            return None
+
+        desktop_entry_icon = re.sub(r"\.(png|svg)$", '', desktop_entry_icon)
+
+        if allow_dir_icon:
+            diricon = Gio.File.new_for_path(
+                os.path.join(extraction_folder_path, '.DirIcon')
+            )
+
+            if diricon.query_exists():
+                diricon_ct = get_giofile_content_type(diricon)
+
+                # https://docs.appimage.org/reference/appdir.html
+                if diricon_ct in ['image/png', 'image/svg', 'image/svg+xml']:
+                    return diricon
+
+                if diricon_ct in ['text/plain']:
+                    with open(diricon.get_path(), 'r') as f:
+                        possible_icon_path = f.read().strip()
+
+                    icon_candidates = [possible_icon_path]
+
+                    if not os.path.isabs(possible_icon_path):
+                        icon_candidates.insert(
+                            0, os.path.join(extraction_folder_path, possible_icon_path)
+                        )
+
+                    for icon_path in icon_candidates:
+                        diricon_linked_to = Gio.File.new_for_path(icon_path)
+
+                        if diricon_linked_to.query_exists() and \
+                            get_giofile_content_type(diricon_linked_to) in ['image/png']:
+                            return diricon_linked_to
+
+        # icons in the root of the AppDir
+        for icon_ext in ['.svg', '.png']:
+            icon_candidate = Gio.File.new_for_path(
+                os.path.join(extraction_folder_path, f'{desktop_entry_icon}{icon_ext}')
+            )
+
+            if icon_candidate.query_exists():
+                return icon_candidate
+
+        # icons below usr/share/icons/hicolor;
+        # always prefer svg(s) to png(s)
+        icons_folder_prefix = '/usr/share/icons/hicolor'
+        icon_try_paths = [
+            f'{extraction_folder_path}{icons_folder_prefix}/scalable/apps/{desktop_entry_icon}.svg',
+            f'{extraction_folder_path}{icons_folder_prefix}/512x512/apps/{desktop_entry_icon}.png',
+            f'{extraction_folder_path}{icons_folder_prefix}/256x256/apps/{desktop_entry_icon}.png',
+            f'{extraction_folder_path}{icons_folder_prefix}/128x128/apps/{desktop_entry_icon}.png',
+            f'{extraction_folder_path}{icons_folder_prefix}/96x96/apps/{desktop_entry_icon}.png',
+        ]
+
+        for icon_path in icon_try_paths:
+            logging.debug('Looking for icon in: ' + icon_path)
+            icon_candidate = Gio.File.new_for_path(icon_path)
+
+            if icon_candidate.query_exists():
+                return icon_candidate
+
+        return None
 
     def _get_appimages_default_destination_path(self) -> str:
         folder = Settings.settings.get_string('appimages-default-folder')
