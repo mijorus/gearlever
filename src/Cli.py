@@ -26,6 +26,8 @@ class Cli():
         make_option('list-update-managers', description='List available update managers'),
         make_option('set-update-url', description='(DEPRECATED, use set-update-source instead) Set a custom update url'),
         make_option('set-update-source', description='Set a custom update source'),
+        make_option('backup', description='Create a backup archive of applications, data, and settings'),
+        make_option('restore', description='Restore applications, data, and settings from a backup archive'),
         make_option(FETCH_UPDATES_ARG, description='Fetch updates in the background and sends a desktop notification, used on system startup'),
     ]
 
@@ -525,3 +527,130 @@ class Cli():
             sys.exit(1)
     
         return el
+
+    @staticmethod
+    def _get_target_path_from_args(argv):
+        for a in argv[1:]:
+            if not a.startswith('-'):
+                return os.path.abspath(os.path.expanduser(a))
+        return None
+
+    @staticmethod
+    def backup(argv):
+        Cli._print_help_if_requested(argv, [
+            ['--no-binaries', 'Exclude AppImage binary files (configuration & data only)'],
+            ['--no-data', 'Exclude application data directories in ~/.config'],
+            ['--app=<name>', 'Backup only a specific application'],
+        ], text='Usage: --backup <output_file.glbackup>')
+
+        file_path = Cli._get_target_path_from_args(argv)
+        if not file_path:
+            print('Error: Output file path required. Usage: --backup <output_file.glbackup>')
+            sys.exit(1)
+
+        include_binaries = ('--no-binaries' not in argv)
+        include_data = ('--no-data' not in argv)
+
+        installed = appimage_provider.list_installed()
+        app_filter = None
+        for arg in argv:
+            if arg.startswith('--app='):
+                app_filter = arg.split('=', 1)[1].lower()
+
+        if app_filter:
+            installed = [a for a in installed if a.name.lower() == app_filter]
+
+        if not installed:
+            print('No matching applications found to back up.')
+            sys.exit(1)
+
+        print(f'Backing up {len(installed)} application(s) to {file_path}...')
+        from .lib.backup_manager import BackupManager
+
+        def progress(cur, total, msg):
+            print(f'[{cur}/{total}] {msg}')
+
+        try:
+            manifest = BackupManager.create_backup(
+                selected_apps=installed,
+                output_file_path=file_path,
+                include_binaries=include_binaries,
+                include_app_data=include_data,
+                include_gearlever_config=True,
+                progress_callback=progress
+            )
+            print(f'Backup created successfully: {file_path} ({len(manifest.get("apps", []))} apps)')
+        except Exception as e:
+            print(f'Backup failed: {e}')
+            sys.exit(1)
+
+    @staticmethod
+    def restore(argv):
+        Cli._print_help_if_requested(argv, [
+            ['--dest=<path>', 'Destination folder for AppImages (default: Gear Lever default folder)'],
+            ['--no-data', 'Do not restore application data (~/.config)'],
+            ['--app=<name>', 'Restore only a specific application from the backup'],
+            ['--list', 'List contents of the backup archive without restoring'],
+        ], text='Usage: --restore <backup_file.glbackup>')
+
+        file_path = Cli._get_target_path_from_args(argv)
+        if not file_path:
+            print('Error: Backup archive path required. Usage: --restore <backup_file.glbackup>')
+            sys.exit(1)
+
+        from .lib.backup_manager import BackupManager
+
+        try:
+            manifest = BackupManager.inspect_backup(file_path)
+        except Exception as e:
+            print(f'Error reading backup file: {e}')
+            sys.exit(1)
+
+        apps = manifest.get('apps', [])
+        if '--list' in argv:
+            print(f'Backup archive created: {manifest.get("created_at")}')
+            print(f'Applications found ({len(apps)}):')
+            for a in apps:
+                bin_info = 'with binary' if a.get('has_binary') else 'no binary'
+                data_info = f'{len(a.get("app_data", []))} data folder(s)'
+                print(f' - {a.get("name")} ({bin_info}, {data_info})')
+            sys.exit(0)
+
+        dest_folder = None
+        for arg in argv:
+            if arg.startswith('--dest='):
+                dest_folder = os.path.abspath(os.path.expanduser(arg.split('=', 1)[1]))
+
+        if not dest_folder:
+            dest_folder = Settings.settings.get_string('appimages-default-folder') or os.path.expanduser('~/Applications')
+
+        restore_data = ('--no-data' not in argv)
+
+        app_filter = None
+        for arg in argv:
+            if arg.startswith('--app='):
+                app_filter = arg.split('=', 1)[1].lower()
+
+        selected_names = [a['name'] for a in apps if not app_filter or a['name'].lower() == app_filter]
+
+        if not selected_names:
+            print('No matching applications found to restore.')
+            sys.exit(1)
+
+        print(f'Restoring {len(selected_names)} application(s) to {dest_folder}...')
+
+        def progress(cur, total, msg):
+            print(f'[{cur}/{total}] {msg}')
+
+        try:
+            results = BackupManager.restore_backup(
+                archive_path=file_path,
+                selected_app_names=selected_names,
+                destination_folder=dest_folder,
+                restore_app_data=restore_data,
+                progress_callback=progress
+            )
+            print(f'Successfully restored {len(results)} application(s).')
+        except Exception as e:
+            print(f'Restore failed: {e}')
+            sys.exit(1)

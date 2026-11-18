@@ -115,6 +115,17 @@ class Preferences(Adw.PreferencesWindow):
         general_preference_group.add(preview_minimal_ui)
         general_preference_group.add(block_appimage_extract)
 
+        # backup & restore group
+        backup_group = Adw.PreferencesGroup(name=_('Backup and restore'), title=_('Backup and restore'))
+        backup_row = Adw.ActionRow(
+            title=_('Manage backups'),
+            subtitle=_('Create or restore backups of your applications, data, and settings')
+        )
+        backup_btn = Gtk.Button(label=_('Open'), valign=Gtk.Align.CENTER)
+        backup_btn.connect('clicked', self.on_open_backup_restore_clicked)
+        backup_row.add_suffix(backup_btn)
+        backup_group.add(backup_row)
+
         # debugging group
         debug_group = Adw.PreferencesGroup(name=_('Debugging'), title=_('Debugging'))
         debug_row = self.create_boolean_settings_entry(
@@ -129,6 +140,7 @@ class Preferences(Adw.PreferencesWindow):
         page1.add(updates_management_group)
         page1.add(move_appimages_group)
         page1.add(nconvention_group)
+        page1.add(backup_group)
         page1.add(debug_group)
         self.add(page1)
 
@@ -180,3 +192,8 @@ class Preferences(Adw.PreferencesWindow):
             'background': True, 
             'commandline': DBusArray(['gearlever', f'--{FETCH_UPDATES_ARG}'])
         })
+
+    def on_open_backup_restore_clicked(self, widget):
+        from .BackupRestoreWindow import BackupRestoreWindow
+        win = BackupRestoreWindow(parent_window=self)
+        win.present()

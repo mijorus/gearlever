@@ -19,3 +19,6 @@ tests/__pycache__
 tests/testfiles/*.appimage
 tests/testfiles/*.AppImage
 tests/testfiles.tar.gz
+.dev_config/
+src/gearlever.gresource
+pr_description.md
