@@ -187,12 +187,17 @@ def migrate_to_v2_config():
 
 def main(version, pkgdatadir):
     """The application's entry point."""
+    global LOG_FOLDER, LOG_FILE
     APP_DATA['PKGDATADIR'] = pkgdatadir
 
-    LOG_FILE = os.path.join(LOG_FOLDER, f'{APP_NAME}.log')
+    try:
+        if not os.path.exists(LOG_FOLDER):
+            os.makedirs(LOG_FOLDER, exist_ok=True)
+    except OSError:
+        LOG_FOLDER = os.path.join(GLib.get_tmp_dir(), APP_NAME)
+        os.makedirs(LOG_FOLDER, exist_ok=True)
 
-    if not os.path.exists(LOG_FOLDER):
-        os.makedirs(LOG_FOLDER)
+    LOG_FILE = os.path.join(LOG_FOLDER, f'{APP_NAME}.log')
 
     if not os.path.exists(TMP_DIR):
         os.makedirs(TMP_DIR)
