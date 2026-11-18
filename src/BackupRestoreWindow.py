@@ -20,7 +20,7 @@ class BackupRestoreWindow(Adw.Window):
     def __init__(self, parent_window=None, **kwargs):
         super().__init__(**kwargs)
         self.parent_window = parent_window
-        self.set_title(_("Backup & Restore"))
+        self.set_title(_("Backup and Restore"))
         self.set_default_size(680, 720)
         self.set_modal(True)
         if parent_window:
@@ -76,7 +76,7 @@ class BackupRestoreWindow(Adw.Window):
         )
 
         self.include_app_data_row = Adw.SwitchRow(
-            title=_("Include application data & settings"),
+            title=_("Include application data and settings"),
             subtitle=_("Backs up configuration and data directories (e.g. in ~/.config or portable .home/.config folders)"),
             active=True
         )
@@ -190,7 +190,7 @@ class BackupRestoreWindow(Adw.Window):
         self.restore_dest_row.add_suffix(choose_dest_btn)
 
         self.restore_app_data_switch = Adw.SwitchRow(
-            title=_("Restore application data & settings"),
+            title=_("Restore application data and settings"),
             subtitle=_("Restores application configuration to ~/.config and portable folders"),
             active=True
         )
@@ -323,16 +323,15 @@ class BackupRestoreWindow(Adw.Window):
         default_name = f"gearlever-backup-{datetime.now().strftime('%Y-%m-%d')}.glbackup"
         dialog.set_initial_name(default_name)
 
-        dialog.save_file(
+        dialog.save(
             parent=self,
             cancellable=None,
-            callback=self.on_save_backup_file_response,
-            user_data=selected_apps
+            callback=lambda d, res: self.on_save_backup_file_response(d, res, selected_apps)
         )
 
     def on_save_backup_file_response(self, dialog, result, selected_apps):
         try:
-            target_gfile = dialog.save_file_finish(result)
+            target_gfile = dialog.save_finish(result)
             output_path = target_gfile.get_path()
         except Exception as e:
             logging.info(f"Backup save cancelled: {e}")
