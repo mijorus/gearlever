@@ -30,6 +30,7 @@ from .providers.providers_list import appimage_provider
 from .GearleverWindow import GearleverWindow
 from  .WelcomeScreen import WelcomeScreen
 from .preferences import Preferences
+from .BackupRestoreWindow import BackupRestoreWindow
 from  .Cli import Cli
 
 gi.require_version('Gtk', '4.0')
@@ -48,6 +49,7 @@ class GearleverApplication(Adw.Application):
         super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.HANDLES_OPEN)
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action, ['<primary>comma'])
+        self.create_action('backup_restore', self.on_backup_restore_action, ['<primary>b'])
         self.create_action('open_log_file', self.on_open_log_file)
         self.create_action('open_welcome_screen', self.on_open_welcome_screen, ['F1'])
         self.win = None
@@ -118,6 +120,11 @@ class GearleverApplication(Adw.Application):
         pref = Preferences()
         pref.connect('close-request', lambda w: self.win.on_show_installed_list() if self.win else None)
         pref.present()
+
+    def on_backup_restore_action(self, widget, _):
+        """Callback for the app.backup_restore action."""
+        win = BackupRestoreWindow(parent_window=self.win)
+        win.present()
 
     def create_action(self, name, callback, shortcuts=None):
         """Add an application action.
