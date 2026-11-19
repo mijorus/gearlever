@@ -28,6 +28,7 @@ class ExtractedAppImage():
     desktop_entry: Optional[DesktopEntry.DesktopEntry]
     appimage_file: Gio.File
     desktop_file: Optional[Gio.File]
+    desktop_file_name: Optional[str]
     icon_file: Optional[Gio.File]
     md5: str
 
@@ -282,8 +283,8 @@ class AppImageProvider():
             prefixed_filename = ''
             if el.update_logic == AppImageUpdateLogic.REPLACE and el.updating_from is not None:
                 appimage_filename = os.path.basename(el.updating_from.file_path)
-                desktop_file_path = os.path.basename(el.updating_from.desktop_file_path)
-                prefixed_filename = os.path.splitext(desktop_file_path)[0]
+                desktop_file_name = os.path.basename(el.updating_from.desktop_file_path)
+                prefixed_filename = os.path.splitext(desktop_file_name)[0]
             else:
                 dest_file_info_name = os.path.splitext(dest_file_info.get_name())[0]
                 appimage_filename = f'gearlever_{dest_file_info_name}'
@@ -326,6 +327,18 @@ class AppImageProvider():
                     i += 1
 
                 prefixed_filename = os.path.splitext(appimage_filename)[0]
+                desktop_file_name = f'{prefixed_filename}.desktop'
+
+                # Keep the name of the .desktop file shipped in the AppImage (its desktop file ID):
+                # desktops match the app's windows to it through the Wayland app_id or X11 WM_CLASS.
+                # Fall back to the name above if another entry already uses it, e.g. a Flatpak or
+                # an older version kept side by side, so that no launcher gets replaced or hidden.
+                shipped_name = extracted_appimage.desktop_file_name
+                if shipped_name:
+                    shipped_name = shipped_name.replace(' ', '_')
+
+                if shipped_name and not self._desktop_file_exists(shipped_name):
+                    desktop_file_name = shipped_name
 
             dest_appimage_file = Gio.File.new_for_path(
                 os.path.join(appimages_destination_path, appimage_filename))
@@ -360,7 +373,7 @@ class AppImageProvider():
             if not os.path.exists(self.user_desktop_files_path):
                 os.makedirs(self.user_desktop_files_path)
 
-            dest_desktop_file_path = f'{os.path.join(self.user_desktop_files_path, prefixed_filename)}.desktop'
+            dest_desktop_file_path = os.path.join(self.user_desktop_files_path, desktop_file_name)
             dest_desktop_file_path = dest_desktop_file_path.replace(' ', '_')
 
             # Get default exec arguments shipped by this version of the appimage
@@ -776,6 +789,7 @@ class AppImageProvider():
 
         icon_file: Optional[Gio.File] = None
         desktop_file: Optional[Gio.File] = None
+        desktop_file_name: Optional[str] = None
         desktop_entry: Optional[DesktopEntry.DesktopEntry] = None
 
         # hash file
@@ -802,6 +816,7 @@ class AppImageProvider():
                     if get_giofile_content_type(gdesk_file) == 'application/x-desktop':
                         desktop_file = Gio.File.new_for_path(f'{tmp_folder.get_path()}/app.desktop')
                         gio_copy(file=gdesk_file, destination=desktop_file)
+                        desktop_file_name = d
 
                         break
 
@@ -880,6 +895,7 @@ class AppImageProvider():
         result.extraction_folder = tmp_folder.get_path()
         result.appimage_file = file
         result.desktop_file = desktop_file
+        result.desktop_file_name = desktop_file_name
         result.icon_file = icon_file
         result.md5 = md5_hash
 
@@ -887,6 +903,20 @@ class AppImageProvider():
         el.extracted = result
 
         return result
+
+    def _desktop_file_exists(self, file_name: str) -> bool:
+        if os.path.lexists(os.path.join(self.user_desktop_files_path, file_name)):
+            return True
+
+        # System and Flatpak entries live on the host, outside the sandbox
+        try:
+            found = terminal.host_sh(['sh', '-c',
+                'IFS=:; for d in ${XDG_DATA_DIRS:-/usr/local/share:/usr/share}; do [ -e "$d/applications/$1" ] && echo yes; done; true',
+                'sh', file_name])
+            return bool(found.strip())
+        except Exception:
+            # can't tell: keep the old naming
+            return True
 
     def _get_appimages_default_destination_path(self) -> str:
         folder = Settings.settings.get_string('appimages-default-folder')
