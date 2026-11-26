@@ -20,6 +20,12 @@ https://gearlever.mijorus.it
 - Save CLI apps with their executable name automatically
 - Modern and Fresh UI
 
+## GitHub updates
+
+In **Preferences → GitHub**, enter a GitHub personal access token and apply it to use GitHub's higher authenticated API rate limit. For private repositories, grant a fine-grained token access to the repositories with **Contents: Read-only** permission. The app must have an embedded GitHub update source or be configured to use GitHub with the repository and release filename.
+
+Gear Lever stores the token through libsecret, not in its settings file. To return to anonymous GitHub requests, clear the field and apply the change.
+
 ## Download
 <a href="https://flathub.org/apps/details/it.mijorus.gearlever" align="center">
   <img width="240" src="https://flathub.org/api/badge?svg&locale=en" alt="Get it on Flathub">

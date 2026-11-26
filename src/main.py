@@ -208,6 +208,8 @@ def main(version, pkgdatadir):
         level= logging.DEBUG if Settings.settings.get_boolean('debug-logs') else logging.INFO,
         force=True
     )
+    # HTTP debug logs can include signed private release download URLs.
+    logging.getLogger('urllib3').setLevel(logging.WARNING)
 
     if not Config.exists():
         migrate_to_v2_config()
