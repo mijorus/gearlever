@@ -58,12 +58,6 @@ class StaticFileUpdater(UpdateManager):
         self.current_download = None
 
     def download(self, status_update_cb) -> tuple[str, str]:
-        random_name = get_random_string()
-        fname = f'{self.download_folder}/{random_name}.appimage'
-
-        if not os.path.exists(self.download_folder):
-            os.makedirs(self.download_folder)
-
         dwnl_url = self.get_config().get('url')
         edwnl_url = self.get_embedded_url()
 
@@ -89,34 +83,39 @@ class StaticFileUpdater(UpdateManager):
         if not dwnl_url:
             raise Exception('Missing download URL')
 
-        self.current_download = requests.get(dwnl_url, stream=True)
-        etag = self.current_download.headers.get("etag", '')
-        total_size = int(self.current_download.headers.get("content-length", 0))
-        status = 0
-        block_size = 1024
+        return self.download_url(dwnl_url, status_update_cb)
 
-        if os.path.exists(fname):
-            os.remove(fname)
+    def download_url(self, url, status_update_cb, headers=None, auth=None) -> tuple[str, str]:
+        random_name = get_random_string()
+        fname = f'{self.download_folder}/{random_name}.appimage'
 
-        d_notify_at = 0.1
-        with open(fname, 'wb') as f:
-            for chunk in self.current_download.iter_content(block_size):
-                f.write(chunk)
+        if not os.path.exists(self.download_folder):
+            os.makedirs(self.download_folder)
 
-                status += block_size
+        with requests.get(url, headers=headers, auth=auth, stream=True) as response:
+            response.raise_for_status()
+            self.current_download = response
+            etag = response.headers.get("etag", '')
+            total_size = int(response.headers.get("content-length", 0))
+            status = 0
+            block_size = 1024
+            d_notify_at = 0.1
 
-                if total_size:
-                    d_perc = (status / total_size)
+            try:
+                with open(fname, 'wb') as f:
+                    for chunk in response.iter_content(block_size):
+                        f.write(chunk)
+                        status += block_size
 
-                    if d_perc > d_notify_at:
-                        d_notify_at += 0.01
-                        # logging.info(f'Download status {d_perc * 100}')
-                        status_update_cb(status / total_size)
+                        if total_size and status / total_size > d_notify_at:
+                            d_notify_at += 0.01
+                            status_update_cb(status / total_size)
+            finally:
+                self.current_download = None
 
         if os.path.getsize(fname) < total_size:
             raise DownloadInterruptedException()
 
-        self.current_download = None
         return fname, etag
 
     def cancel_download(self):

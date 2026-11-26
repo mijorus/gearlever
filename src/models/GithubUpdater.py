@@ -4,10 +4,11 @@ import os
 import re
 import fnmatch
 from typing import Optional, Literal
-from gi.repository import Adw, Gio
+from gi.repository import Adw, Gio, GLib
 from urllib.parse import urlsplit
 
 from ..lib.utils import get_file_hash
+from ..lib.github_token import load_github_token
 from ..lib import json_config
 from ..lib.ini_config import Config
 from ..providers.AppImageProvider import AppImageProvider, AppImageListElement
@@ -133,14 +134,50 @@ class GithubUpdater(UpdateManager):
 
         return allow_prereleases
 
+    @staticmethod
+    def _api_auth():
+        try:
+            token = load_github_token()
+        except GLib.Error:
+            logging.debug('Could not read the GitHub token from the keyring')
+            return None
+
+        if not token:
+            return None
+
+        def authenticate(request):
+            request.headers['Authorization'] = f'Bearer {token}'
+            return request
+
+        return authenticate
+
+    @staticmethod
+    def _asset_request(asset, auth):
+        if not auth:
+            return asset['browser_download_url'], {}
+
+        url = asset['url']
+        parsed = urlsplit(url)
+        if parsed.scheme != 'https' or parsed.netloc != 'api.github.com':
+            raise ValueError('Invalid GitHub release asset API URL')
+
+        # Requests drops Authorization when GitHub redirects to the asset host.
+        return url, {'Accept': 'application/octet-stream'}
+
     def download(self, status_update_cb) -> tuple[str, str]:
         target_asset = self.fetch_target_asset()
         if not target_asset:
             raise Exception(f'Missing target_asset for {self.name} instance')
 
-        dwnl = target_asset['asset']['browser_download_url']
-        self.staticfile_manager = StaticFileUpdater(self.el, dwnl)
-        fname, etag = self.staticfile_manager.download(status_update_cb)
+        auth = target_asset['auth']
+        url, headers = self._asset_request(target_asset['asset'], auth)
+        self.staticfile_manager = StaticFileUpdater(self.el)
+        try:
+            fname, _ = self.staticfile_manager.download_url(url, status_update_cb, headers, auth=auth)
+        except requests.RequestException as error:
+            # A redirected URL can contain a temporary download credential.
+            status = f' (HTTP {error.response.status_code})' if error.response is not None else ''
+            raise Exception(f'GitHub release asset download failed{status}') from None
 
         self.staticfile_manager = None
         return fname, target_asset['asset']['id']
@@ -189,8 +226,13 @@ class GithubUpdater(UpdateManager):
         if not allow_prereleases:
             rel_url += f'/latest'
 
+        auth = self._api_auth()
         try:
-            rel_data_resp = requests.get(rel_url)
+            rel_data_resp = requests.get(rel_url, auth=auth)
+            if auth and rel_data_resp.status_code == 401:
+                logging.warning('GitHub rejected the saved token; retrying release lookup without it')
+                auth = None
+                rel_data_resp = requests.get(rel_url)
             rel_data_resp.raise_for_status()
             rel_data = rel_data_resp.json()
             if not allow_prereleases:
@@ -252,11 +294,7 @@ class GithubUpdater(UpdateManager):
         for asset in release['assets']:
             if asset['name'] == target_file:
                 logging.debug(f'Found 1 matching asset: {asset["name"]}')
-
-                if is_zsync:
-                    return {'asset': asset, 'zsync': tmp_target_file}
-
-                return {'asset': asset, 'zsync': None}
+                return {'asset': asset, 'zsync': tmp_target_file if is_zsync else None, 'auth': auth}
 
     def is_update_available(self):
         if not self.el:
@@ -269,8 +307,15 @@ class GithubUpdater(UpdateManager):
 
         if target_asset:
             if target_asset['zsync']:
-                logging.debug('GithubUpdated: checking zsync file at ' + target_asset['zsync']['browser_download_url'])
-                zsync_file = requests.get(target_asset['zsync']['browser_download_url']).text
+                auth = target_asset['auth']
+                try:
+                    url, headers = self._asset_request(target_asset['zsync'], auth)
+                    with requests.get(url, headers=headers, auth=auth) as response:
+                        response.raise_for_status()
+                        zsync_file = response.text
+                except (requests.RequestException, ValueError):
+                    logging.warning('Could not download the GitHub zsync file')
+                    return None
                 zsync_file_header = zsync_file.split('\n\n', 1)[0]
                 sha_pattern = r"SHA-1:\s*([0-9a-f]{40})"
                 curr_version_hash = get_file_hash(Gio.File.new_for_path(self.el.file_path), alg='sha1')

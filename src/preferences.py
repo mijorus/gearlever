@@ -3,7 +3,9 @@ import threading
 import logging
 import os
 
+from .lib.async_utils import _async, idle
 from .lib.constants import FETCH_UPDATES_ARG
+from .lib.github_token import KEYRING_AVAILABLE, load_github_token, save_github_token
 from .models.Models import InternalError
 from .models.Settings import Settings
 from .lib.utils import portal
@@ -56,6 +58,20 @@ class Preferences(Adw.PreferencesWindow):
 
         updates_management_group.add(autofetch_updates)
         autofetch_updates.connect('notify::active', self.on_background_fetchupdates_changed)
+
+        github_group = Adw.PreferencesGroup(
+            title=_('GitHub'),
+            description=_('Use a personal access token for higher rate limits and private releases. Clear the field and apply to remove it.'),
+        )
+        self.github_token_row = Adw.PasswordEntryRow(
+            title=_('GitHub personal access token'), show_apply_button=True, sensitive=False
+        )
+        self.github_token_row.connect('apply', self.on_github_token_apply)
+        github_group.add(self.github_token_row)
+        if KEYRING_AVAILABLE:
+            self.load_github_token_setting()
+        else:
+            github_group.set_description(_('GitHub tokens require libsecret support.'))
 
         # file management group
         move_appimages_group = Adw.PreferencesGroup(name=_('File management'), title=_('File management'))
@@ -127,10 +143,54 @@ class Preferences(Adw.PreferencesWindow):
 
         page1.add(general_preference_group)
         page1.add(updates_management_group)
+        page1.add(github_group)
         page1.add(move_appimages_group)
         page1.add(nconvention_group)
         page1.add(debug_group)
         self.add(page1)
+
+    @_async
+    def load_github_token_setting(self):
+        try:
+            self.finish_github_token_edit(None, load_github_token())
+        except GLib.Error:
+            self.finish_github_token_edit(_('Could not read the GitHub token from the keyring.'))
+
+    def on_github_token_apply(self, row):
+        token = row.get_text().strip()
+        if token and (not token.isascii() or not token.isprintable() or ' ' in token):
+            self.add_toast(Adw.Toast.new(_('Enter a GitHub personal access token without spaces.')))
+            return
+
+        row.set_editable(False)
+        self.save_github_token_setting(token)
+
+    @_async
+    def save_github_token_setting(self, token):
+        try:
+            if save_github_token(token):
+                self.finish_github_token_edit(_('GitHub token saved.') if token else _('GitHub token removed.'), token)
+                return
+        except GLib.Error:
+            pass
+
+        # Reload the saved value so an unsuccessful write is not shown as applied.
+        try:
+            saved_token = load_github_token()
+        except GLib.Error:
+            saved_token = ''
+        self.finish_github_token_edit(_('Could not update the GitHub token in the keyring.'), saved_token)
+
+    @idle
+    def finish_github_token_edit(self, message=None, token=None):
+        if token is not None and self.github_token_row.get_text() != token:
+            self.github_token_row.set_text(token)
+            self.github_token_row.set_show_apply_button(False)
+            self.github_token_row.set_show_apply_button(True)
+        self.github_token_row.set_editable(True)
+        self.github_token_row.set_sensitive(True)
+        if message:
+            self.add_toast(Adw.Toast.new(message))
 
     def on_select_default_location_response(self, dialog, result):
         file_path = ''
